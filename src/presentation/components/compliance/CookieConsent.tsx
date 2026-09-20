@@ -80,78 +80,58 @@ export function CookieConsent(): React.JSX.Element | null {
       role="region"
       aria-label="Cookie & Privacy Consent"
       aria-describedby="cookie-consent-desc"
-      className="fixed bottom-4 left-4 right-4 max-w-xl mx-auto z-[999] p-4 sm:p-5 rounded-2xl bg-[#140F0B]/95 backdrop-blur-md border border-[#C9943E]/50 shadow-2xl transition-all duration-300 animate-in fade-in slide-in-from-bottom-5"
-      style={{
-        boxShadow:
-          '0 25px 50px -12px rgba(0, 0, 0, 0.95), 0 0 25px rgba(201, 148, 62, 0.25)',
-      }}
+      className="fixed bottom-4 right-4 z-50 max-w-lg rounded-xl border border-amber-600/30 bg-black/95 p-5 text-zinc-300 shadow-2xl backdrop-blur-md transition-all duration-300 animate-in fade-in slide-in-from-bottom-5"
     >
-      <div className="flex flex-col gap-3">
-        {/* Top Header: Badge, Title & Close Button */}
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <span className="text-base" aria-hidden="true">⛩️</span>
-            <span className="text-xs font-mono font-bold tracking-wider text-amber-300 uppercase">
-              Collector Privacy &amp; Escrow Security
-            </span>
-          </div>
-
-          <button
-            type="button"
-            onClick={handleDecline}
-            aria-label="Close cookie consent banner and decline analytical tracking"
-            className="text-stone-300 hover:text-white p-1 rounded-lg transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-[#F85B1A] focus-visible:outline-none"
-          >
-            <span aria-hidden="true" className="text-sm font-bold">✕</span>
-          </button>
-        </div>
-
-        {/* Descriptive Statement with Links */}
-        <p
-          id="cookie-consent-desc"
-          className="text-xs text-stone-200 leading-relaxed m-0"
+      <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
+        <span className="text-xs font-bold tracking-widest text-amber-500 uppercase">
+          Collector Privacy &amp; Escrow Security
+        </span>
+        <button
+          type="button"
+          onClick={handleDecline}
+          aria-label="Close cookie consent banner"
+          className="text-zinc-400 hover:text-white p-1 rounded transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
         >
-          OtakuBazaar uses essential cryptographic session cookies to power our 15-minute checkout locks and 48-hour inspection escrow vaults. We never sell your personal data. You can choose whether to enable non-essential analytical cookies. Review our{' '}
-          <Link
-            href="/legal/privacy"
-            aria-label="Read our full Privacy Policy"
-            className="text-amber-300 hover:text-[#F85B1A] underline font-semibold transition-colors focus-visible:ring-2 focus-visible:ring-[#F85B1A] focus-visible:outline-none rounded px-0.5"
-          >
-            Privacy Policy
-          </Link>{' '}
-          and{' '}
-          <Link
-            href="/legal/terms"
-            aria-label="Read our Terms of Service"
-            className="text-amber-300 hover:text-[#F85B1A] underline font-semibold transition-colors focus-visible:ring-2 focus-visible:ring-[#F85B1A] focus-visible:outline-none rounded px-0.5"
-          >
-            Terms of Service
-          </Link>
-          .
-        </p>
+          <span aria-hidden="true" className="text-sm font-bold">✕</span>
+        </button>
+      </div>
 
-        {/* Action Controls: Zero Pre-Checked Boxes, Explicit User Choices */}
-        <div className="flex items-center justify-end gap-2.5 pt-1">
-          <button
-            type="button"
-            onClick={handleDecline}
-            aria-label="Decline non-essential tracking cookies and keep essential cookies only"
-            className="px-3.5 py-1.5 text-xs font-bold text-stone-200 hover:text-white bg-[#1A1410] hover:bg-[#2A2118] border border-amber-900/60 rounded-xl transition-all cursor-pointer focus-visible:ring-2 focus-visible:ring-[#F85B1A] focus-visible:outline-none"
-          >
-            Decline / Essential Only
-          </button>
+      <p
+        id="cookie-consent-desc"
+        className="mt-3 text-xs leading-relaxed text-zinc-400"
+      >
+        OtakuBazaar uses essential cryptographic session cookies to power our 15-minute checkout locks and 48-hour inspection escrow vaults. Review our{' '}
+        <Link
+          href="/privacy"
+          className="text-amber-400 underline hover:text-amber-300 transition-colors"
+        >
+          Privacy Policy
+        </Link>{' '}
+        and{' '}
+        <Link
+          href="/terms"
+          className="text-amber-400 underline hover:text-amber-300 transition-colors"
+        >
+          Terms of Service
+        </Link>
+        .
+      </p>
 
-          <button
-            type="button"
-            onClick={handleAccept}
-            aria-label="Accept all cookies including analytical cookies"
-            className="px-4 py-1.5 text-xs font-black text-white rounded-xl transition-all shadow-md hover:brightness-110 active:scale-95 cursor-pointer flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-[#F85B1A] focus-visible:outline-none"
-            style={{ backgroundColor: '#F85B1A' }}
-          >
-            <span>Accept All</span>
-            <span aria-hidden="true" className="text-[10px]">⚔️</span>
-          </button>
-        </div>
+      <div className="mt-4 flex items-center justify-end gap-3">
+        <button
+          type="button"
+          onClick={handleDecline}
+          className="rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-2 text-xs font-medium text-zinc-300 transition hover:bg-zinc-800 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+        >
+          Decline / Essential Only
+        </button>
+        <button
+          type="button"
+          onClick={handleAccept}
+          className="rounded-lg bg-amber-600 px-4 py-2 text-xs font-semibold text-white transition hover:bg-amber-500 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+        >
+          Accept All
+        </button>
       </div>
     </aside>
   );
