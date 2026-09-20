@@ -322,8 +322,8 @@ export default function SellPage(): React.JSX.Element {
                 />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start">
+                <div className="flex flex-col">
                   <label className="block text-xs font-mono text-zinc-400 mb-1.5 uppercase tracking-wider">
                     Anime Franchise *
                   </label>
@@ -350,7 +350,7 @@ export default function SellPage(): React.JSX.Element {
                   )}
                 </div>
 
-                <div>
+                <div className="flex flex-col">
                   <label className="block text-xs font-mono text-zinc-400 mb-1.5 uppercase tracking-wider">
                     Category *
                   </label>
