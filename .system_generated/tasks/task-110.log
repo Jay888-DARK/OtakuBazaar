@@ -1,0 +1,11 @@
+Successfully scheduled one-shot timer.
+Expected to fire at: 2026-09-04T17:10:50+05:30
+Prompt: Check if Prisma install is done
+Early Termination: task-102
+
+[2026-09-04T17:10:00+05:30] Still waiting. Remaining time: 50s
+[2026-09-04T17:10:10+05:30] Still waiting. Remaining time: 40s
+[2026-09-04T17:10:20+05:30] Still waiting. Remaining time: 30s
+[2026-09-04T17:10:30+05:30] Still waiting. Remaining time: 20s
+[2026-09-04T17:10:40+05:30] Still waiting. Remaining time: 10s
+[2026-09-04T17:10:50+05:30] Timer fired.

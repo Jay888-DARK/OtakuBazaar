@@ -1,0 +1,1 @@
+{"id":"2fcc4a0b-434c-44f2-ae4b-1cfd11dd6f59","recipient":"4ef0148b-ff8c-4889-8f54-3ee5a03210d9","sender":"4ef0148b-ff8c-4889-8f54-3ee5a03210d9/task-99","priority":"MESSAGE_PRIORITY_HIGH","timestamp":"2026-09-04T11:39:19.470570100Z","renderDetails":{"messageTitle":"Wait for tsc: Timer has expired"},"content":"Check tsc --noEmit result"}

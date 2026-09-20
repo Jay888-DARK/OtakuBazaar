@@ -1,0 +1,41 @@
+
+Using defaults for unprovided options:
+
+  --ts                    TypeScript (use --js for JavaScript)
+  --no-react-compiler     No React Compiler (use --react-compiler for React Compiler)
+  --agents-md             AGENTS.md (use --no-agents-md for No AGENTS.md)
+
+Creating a new Next.js app in C:\Users\HP\.gemini\antigravity-ide\scratch\otaku-bazaar.
+
+Using npm.
+
+Initializing project with template: app 
+
+
+Installing dependencies:
+- next
+- react
+- react-dom
+
+Installing devDependencies:
+- @types/node
+- @types/react
+- @types/react-dom
+- eslint
+- eslint-config-next
+- typescript
+
+npm warn deprecated eslint@9.39.5: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+
+added 346 packages in 7m
+
+141 packages are looking for funding
+  run `npm fund` for details
+
+Generating route types...
+✓ Types generated successfully
+
+Initialized a git repository.
+
+Success! Created otaku-bazaar at C:\Users\HP\.gemini\antigravity-ide\scratch\otaku-bazaar
+

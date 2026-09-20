@@ -1,0 +1,6 @@
+{
+  "summary": "Comprehensive implementation plan for OtakuBazaar — a production-grade Next.js 15 App Router project with Clean Architecture (domain, application, infrastructure, presentation layers), multi-window sync via BroadcastChannel + WebSocket, strict TypeScript, and full JSDoc documentation. Covers ~22 foundational files across all layers, plus Prisma schema, typed error hierarchy, and API route wiring.",
+  "updatedAt": "2026-09-04T11:24:58.686183200Z",
+  "requestFeedback": true,
+  "userFacing": true
+}

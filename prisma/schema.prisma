@@ -1,0 +1,348 @@
+// @file prisma/schema.prisma
+//
+// Prisma schema for OtakuBazaar — defines the relational model backing
+// the domain entities.
+//
+// LOCAL DEV / PRODUCTION: Configured for PostgreSQL
+// Run `npx prisma generate` after editing this file.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// User (Integrated Domain & NextAuth Model)
+// ---------------------------------------------------------------------------
+
+model User {
+  id              String          @id @default(uuid())
+  name            String?
+  email           String?         @unique
+  emailVerified   DateTime?
+  image           String?
+  displayName     String?         @map("display_name")
+  avatarUrl       String?         @map("avatar_url")
+  rating          Float           @default(0)
+  totalSales      Int             @default(0) @map("total_sales")
+  totalPurchases  Int             @default(0) @map("total_purchases")
+  verifiedUpiVpa  String?         @map("verified_upi_vpa")
+  upiVerifiedAt   DateTime?       @map("upi_verified_at")
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
+
+  // NextAuth Relations
+  accounts        Account[]
+  sessions        Session[]
+
+  // OtakuBazaar Domain Relations
+  listings        Listing[]       @relation("SellerListings")
+  offersAsBuyer   BargainOffer[]  @relation("BuyerOffers")
+  offersAsSeller  BargainOffer[]  @relation("SellerOffers")
+  ordersAsBuyer   Order[]         @relation("BuyerOrders")
+  ordersAsSeller  Order[]         @relation("SellerOrders")
+  messages        Message[]
+  buyerDeals      DealOffer[]     @relation("BuyerDeals")
+  sellerDeals     DealOffer[]     @relation("SellerDeals")
+  chatMessages    ChatMessage[]
+  cartItems       CartItem[]
+
+  @@map("users")
+}
+
+// ---------------------------------------------------------------------------
+// Listing
+// ---------------------------------------------------------------------------
+
+model Listing {
+  id                String   @id @default(uuid())
+  sellerId          String   @map("seller_id")
+  title             String
+  description       String
+  imageUrls         String   @map("image_urls") // JSON array string for SQLite; use String[] for PostgreSQL
+  askingPriceAmount  Int     @map("asking_price_amount")   // smallest currency unit
+  askingPriceCurrency String @map("asking_price_currency") // ISO 4217
+  status            String   @default("DRAFT")
+  category          String
+  condition         String
+  reservedByBuyerId String?  @map("reserved_by_buyer_id")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  seller           User           @relation("SellerListings", fields: [sellerId], references: [id])
+  bargainOffers    BargainOffer[]
+  orders           Order[]
+
+  @@index([sellerId])
+  @@index([status])
+  @@index([category])
+  @@map("listings")
+}
+
+// ---------------------------------------------------------------------------
+// BargainOffer
+// ---------------------------------------------------------------------------
+
+model BargainOffer {
+  id                   String   @id @default(uuid())
+  listingId            String   @map("listing_id")
+  buyerId              String   @map("buyer_id")
+  sellerId             String   @map("seller_id")
+  offeredPriceAmount   Int      @map("offered_price_amount")   // smallest unit
+  offeredPriceCurrency String   @map("offered_price_currency") // ISO 4217
+  counterPriceAmount   Int?     @map("counter_price_amount")
+  counterPriceCurrency String?  @map("counter_price_currency")
+  status               String   @default("PENDING")
+  message              String
+  expiresAt            DateTime @map("expires_at")
+  createdAt            DateTime @default(now()) @map("created_at")
+  updatedAt            DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  listing              Listing  @relation(fields: [listingId], references: [id])
+  buyer                User     @relation("BuyerOffers", fields: [buyerId], references: [id])
+  seller               User     @relation("SellerOffers", fields: [sellerId], references: [id])
+
+  @@index([listingId])
+  @@index([buyerId])
+  @@index([sellerId])
+  @@index([status])
+  @@map("bargain_offers")
+}
+
+// ---------------------------------------------------------------------------
+// Order & Escrow
+// ---------------------------------------------------------------------------
+
+model Order {
+  id                   String              @id @default(uuid())
+  listingId            String              @map("listing_id")
+  buyerId              String              @map("buyer_id")
+  sellerId             String              @map("seller_id")
+  totalAmount          Int                 @map("total_amount") // in smallest currency unit (paise)
+  currency             String              @default("INR")
+  escrowStatus         String              @default("PAYMENT_PENDING") @map("escrow_status")
+  inspectionEndsAt     DateTime?           @map("inspection_ends_at")
+
+  // Payment Provider Details
+  razorpayOrderId      String?             @unique @map("razorpay_order_id")
+  razorpayPaymentId    String?             @unique @map("razorpay_payment_id")
+
+  // Logistics Provider Details
+  shiprocketShipmentId String?             @map("shiprocket_shipment_id")
+  shiprocketAwb        String?             @map("shiprocket_awb")
+
+  // Payout Details
+  payoutReferenceId    String?             @map("payout_reference_id")
+  payoutCompletedAt    DateTime?           @map("payout_completed_at")
+
+  createdAt            DateTime            @default(now()) @map("created_at")
+  updatedAt            DateTime            @updatedAt @map("updated_at")
+
+  // Relations
+  listing              Listing             @relation(fields: [listingId], references: [id])
+  buyer                User                @relation("BuyerOrders", fields: [buyerId], references: [id])
+  seller               User                @relation("SellerOrders", fields: [sellerId], references: [id])
+  ledgerEntries        EscrowLedgerEntry[]
+
+  @@index([buyerId])
+  @@index([sellerId])
+  @@index([escrowStatus])
+  @@index([inspectionEndsAt])
+  @@map("orders")
+}
+
+// ---------------------------------------------------------------------------
+// Double-Entry Escrow Ledger
+// ---------------------------------------------------------------------------
+
+model EscrowLedgerEntry {
+  id          String   @id @default(uuid())
+  orderId     String   @map("order_id")
+  accountType String   @map("account_type") // GATEWAY_CLEARING, ESCROW_LIABILITY, SELLER_PAYABLE, PLATFORM_REVENUE, PAYOUT_CLEARING
+  entryType   String   @map("entry_type")   // DEBIT, CREDIT
+  amount      Int                           // in smallest currency unit (paise)
+  currency    String   @default("INR")
+  description String
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Relations
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([accountType])
+  @@map("escrow_ledger_entries")
+}
+
+// ---------------------------------------------------------------------------
+// Webhook Idempotency Log
+// ---------------------------------------------------------------------------
+
+model IdempotencyLog {
+  id          String   @id @default(uuid())
+  eventId     String   @unique @map("event_id")
+  provider    String   // RAZORPAY, SHIPROCKET, CASHFREE
+  status      String   @default("PROCESSED") // PROCESSED, FAILED
+  payload     String?
+  processedAt DateTime @default(now()) @map("processed_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@index([provider, eventId])
+  @@map("idempotency_logs")
+}
+
+// ---------------------------------------------------------------------------
+// NextAuth Standard Models
+// ---------------------------------------------------------------------------
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+// ---------------------------------------------------------------------------
+// Messaging (Post-Bid Real-Time Chat)
+// ---------------------------------------------------------------------------
+
+model Message {
+  id        String   @id @default(cuid())
+  text      String
+  orderId   String   // The ID of the Escrow Order/Transaction
+  senderId  String
+  createdAt DateTime @default(now())
+  sender    User     @relation(fields: [senderId], references: [id])
+
+  @@map("messages")
+}
+
+// ---------------------------------------------------------------------------
+// Product (Marketplace Collectible Grail)
+// ---------------------------------------------------------------------------
+
+model Product {
+  id                  String      @id @default(cuid())
+  sellerId            String?     @map("seller_id")
+  title               String
+  description         String?
+  price               Float       @default(0) // Asking Price
+  minOfferPrice       Float?      // Auto-reject floor (e.g. 70% of asking price)
+  imageUrls           String?     @map("image_urls")
+  askingPriceAmount   Int         @default(0) @map("asking_price_amount")
+  askingPriceCurrency String      @default("INR") @map("asking_price_currency")
+  status              String      @default("ACTIVE")
+  category            String?
+  condition           String?
+  createdAt           DateTime    @default(now()) @map("created_at")
+  updatedAt           DateTime    @default(now()) @updatedAt @map("updated_at")
+
+  dealOffers          DealOffer[]
+  cartItems           CartItem[]
+
+  @@map("products")
+}
+
+// ---------------------------------------------------------------------------
+// Bargain & Offer Negotiation Model (24-Hour Lifecycles & Floor Pricing)
+// ---------------------------------------------------------------------------
+
+model DealOffer {
+  id            String        @id @default(cuid())
+  productId     String
+  buyerId       String
+  sellerId      String
+  offeredPrice  Float
+  status        String        @default("PENDING") // PENDING, ACCEPTED, REJECTED, AUTO_REJECTED, EXPIRED, PAID
+  expiresAt     DateTime      // Exactly now() + 24 hours
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  product       Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
+  buyer         User          @relation("BuyerDeals", fields: [buyerId], references: [id], onDelete: Cascade)
+  seller        User          @relation("SellerDeals", fields: [sellerId], references: [id], onDelete: Cascade)
+  messages      ChatMessage[]
+
+  @@index([productId])
+  @@index([buyerId])
+  @@index([sellerId])
+  @@index([status])
+  @@map("deal_offers")
+}
+
+// ---------------------------------------------------------------------------
+// Real-Time Chat Message for Bargaining & Negotiation
+// ---------------------------------------------------------------------------
+
+model ChatMessage {
+  id          String     @id @default(cuid())
+  dealOfferId String?    @map("deal_offer_id")
+  senderId    String     @map("sender_id")
+  text        String
+  createdAt   DateTime   @default(now()) @map("created_at")
+
+  dealOffer   DealOffer? @relation(fields: [dealOfferId], references: [id], onDelete: Cascade)
+  sender      User       @relation(fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([dealOfferId])
+  @@index([senderId])
+  @@map("chat_messages")
+}
+
+// ---------------------------------------------------------------------------
+// Cart Item for Slide-Over Cart Drawer
+// ---------------------------------------------------------------------------
+
+model CartItem {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  productId String   @map("product_id")
+  quantity  Int      @default(1)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+  @@index([userId])
+  @@index([productId])
+  @@map("cart_items")
+}

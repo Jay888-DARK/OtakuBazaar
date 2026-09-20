@@ -1,0 +1,7 @@
+Successfully scheduled one-shot timer.
+Expected to fire at: 2026-09-04T16:54:19+05:30
+Prompt: Check on the create-next-app help command
+Early Termination: task-4
+
+[2026-09-04T16:54:17+05:30] Still waiting. Remaining time: 2s
+[2026-09-04T16:54:19+05:30] Timer fired.

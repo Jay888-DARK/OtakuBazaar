@@ -1,0 +1,6 @@
+src/infrastructure/database/repositories/PrismaBargainOfferRepository.ts(8,64): error TS2307: Cannot find module '@prisma/client' or its corresponding type declarations.
+src/infrastructure/database/repositories/PrismaBargainOfferRepository.ts(61,24): error TS7006: Parameter 'row' implicitly has an 'any' type.
+src/infrastructure/database/repositories/PrismaBargainOfferRepository.ts(83,24): error TS7006: Parameter 'row' implicitly has an 'any' type.
+src/infrastructure/database/repositories/PrismaListingRepository.ts(9,61): error TS2307: Cannot find module '@prisma/client' or its corresponding type declarations.
+src/infrastructure/database/repositories/PrismaListingRepository.ts(69,24): error TS7006: Parameter 'row' implicitly has an 'any' type.
+src/infrastructure/database/repositories/PrismaListingRepository.ts(93,24): error TS7006: Parameter 'row' implicitly has an 'any' type.

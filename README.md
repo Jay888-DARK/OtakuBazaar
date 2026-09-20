@@ -1,4 +1,7 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# OtakuBazaar
+
+A production-grade Next.js 15 (App Router) + TypeScript C2C marketplace for anime figures, manga, cosplay gear, and collectibles, built with Clean Architecture and real-time multi-window sync.
+
 
 ## Getting Started
 
