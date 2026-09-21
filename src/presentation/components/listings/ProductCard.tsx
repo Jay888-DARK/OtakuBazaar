@@ -11,7 +11,9 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { BargainModal } from '@/presentation/components/BargainModal';
+import { BargainChatDrawer } from '@/presentation/components/chat/BargainChatDrawer';
+import { addToCart } from '@/app/actions/dealActions';
+import { openCartDrawer } from '@/presentation/components/cart/CartDrawer';
 
 export interface ProductCardProps {
   product: {
@@ -76,7 +78,8 @@ export function ProductCard({ product, className = '' }: ProductCardProps): Reac
       <Link
         href={`/products/${product.id}`}
         aria-label={`View vault details for ${product.title}`}
-        className="block no-underline"
+        className="block no-underline product-thumbnail"
+        data-testid="product-thumbnail"
       >
         <div className="relative w-full aspect-[4/5] overflow-hidden rounded-lg bg-[#0a0a0c] flex items-center justify-center p-3 my-2">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.05)_0%,_transparent_70%)] pointer-events-none" />
@@ -105,23 +108,47 @@ export function ProductCard({ product, className = '' }: ProductCardProps): Reac
           <span>{offersCount || 2} ACTIVE BIDS</span>
         </div>
 
-        {/* Consolidated Price / Offer Pill (Universal Button Token) */}
-        <button
-          onClick={() => handleOpenBargain(product.id)}
-          className="w-full mt-3 flex items-center justify-between px-3.5 py-2.5 bg-zinc-900 hover:bg-zinc-100 text-zinc-300 hover:text-black border border-zinc-700 hover:border-zinc-100 font-mono text-[11px] font-semibold uppercase tracking-[0.2em] rounded-lg transition-all duration-300 cursor-pointer group/btn"
-        >
-          <span className="text-[10px] uppercase font-mono tracking-widest text-zinc-400 group-hover/btn:text-black">
-            Asking / Offer
-          </span>
-          <span className="text-sm font-bold font-mono text-zinc-100 group-hover/btn:text-black">
-            ₹{displayPrice.toLocaleString('en-IN')}
-          </span>
-        </button>
+        {/* Consolidated Price / Offer Pill & Quick Cart (Universal Button Token) */}
+        <div className="flex items-center gap-2 mt-3">
+          <button
+            onClick={() => handleOpenBargain(product.id)}
+            aria-label={`Tap asking price to make an offer on ${product.title}`}
+            data-testid="price-offer-pill"
+            className="flex-1 flex items-center justify-between px-3.5 py-2.5 bg-zinc-900 hover:bg-zinc-100 text-zinc-300 hover:text-black border border-zinc-700 hover:border-zinc-100 font-mono text-[11px] font-semibold uppercase tracking-[0.2em] rounded-lg transition-all duration-300 cursor-pointer group/btn"
+          >
+            <span className="text-[10px] uppercase font-mono tracking-widest text-zinc-400 group-hover/btn:text-black">
+              Asking / Offer
+            </span>
+            <span className="text-sm font-bold font-mono text-zinc-100 group-hover/btn:text-black">
+              ₹{displayPrice.toLocaleString('en-IN')}
+            </span>
+          </button>
+          <button
+            type="button"
+            aria-label="Quick Cart"
+            title="Add to Vault Cart"
+            onClick={async (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (product.id) {
+                try {
+                  await addToCart(product.id);
+                } catch (err) {
+                  console.warn('Error adding to cart:', err);
+                }
+                openCartDrawer();
+              }
+            }}
+            className="w-10 h-10 rounded-lg bg-zinc-900 hover:bg-zinc-100 text-zinc-300 hover:text-black border border-zinc-700 hover:border-zinc-100 flex items-center justify-center text-sm transition-all duration-300 cursor-pointer shrink-0"
+          >
+            🛒
+          </button>
+        </div>
       </div>
 
-      {/* Real-Time Live Bargain Modal */}
+      {/* Real-Time Live Bargain Negotiation Drawer */}
       {isBargainOpen && (
-        <BargainModal
+        <BargainChatDrawer
           productId={product.id}
           isOpen={isBargainOpen}
           onClose={() => setIsBargainOpen(false)}

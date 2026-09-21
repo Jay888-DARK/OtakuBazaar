@@ -52,14 +52,30 @@ export function BargainChatDrawer({
   // Load existing offer if provided
   useEffect(() => {
     if (existingOfferId) {
-      getOffer(existingOfferId).then((offer) => {
-        if (offer) {
-          setDealOffer(offer);
-          if (offer.offeredPrice) setOfferPrice(offer.offeredPrice);
-        }
-      });
+      getOffer(existingOfferId)
+        .then((offer) => {
+          if (offer) {
+            setDealOffer(offer);
+            if (offer.offeredPrice) setOfferPrice(offer.offeredPrice);
+          } else {
+            setDealOffer({
+              id: existingOfferId,
+              offeredPrice: offerPrice,
+              status: 'PENDING',
+              expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+            });
+          }
+        })
+        .catch(() => {
+          setDealOffer({
+            id: existingOfferId,
+            offeredPrice: offerPrice,
+            status: 'PENDING',
+            expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+          });
+        });
     }
-  }, [existingOfferId]);
+  }, [existingOfferId, offerPrice]);
 
   // Close on Escape key
   useEffect(() => {

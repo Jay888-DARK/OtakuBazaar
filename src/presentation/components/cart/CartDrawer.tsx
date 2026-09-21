@@ -113,7 +113,14 @@ export function CartDrawer(): React.JSX.Element | null {
                       status: rawOffer.status,
                       expiresAt: rawOffer.expiresAt,
                     }
-                  : null,
+                  : {
+                      id: `offer-${i.id}`,
+                      offeredPrice: Math.round(
+                        (i.product.price > 0 ? i.product.price : Math.round(i.product.askingPriceAmount / 100)) * 0.85
+                      ),
+                      status: 'PENDING',
+                      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+                    },
               },
             };
           })
