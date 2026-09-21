@@ -13,7 +13,11 @@
 const http = require('http');
 const https = require('https');
 
-const BASE_URL = process.env.BASE_URL || 'http://127.0.0.1:3000';
+// Support CLI flag --url=https://... or environment variable BASE_URL
+const cliUrlArg = process.argv.find((arg) => arg.startsWith('--url='));
+const cliUrl = cliUrlArg ? cliUrlArg.split('=')[1].trim() : null;
+
+const BASE_URL = cliUrl || process.env.BASE_URL || 'http://127.0.0.1:3000';
 const TARGET_CONCURRENCY = parseInt(process.env.CONCURRENCY || '25', 10);
 const DURATION_SECONDS = parseInt(process.env.DURATION || '15', 10);
 

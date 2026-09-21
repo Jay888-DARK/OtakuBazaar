@@ -84,6 +84,25 @@ export class ListingRepository {
    * Retrieves all active listings from the database.
    */
   public static async findAllActive(): Promise<ListingRecord[]> {
+    const lockDuration = 900; // 15 minutes = 900 seconds
+    const expiredCutoff = new Date(Date.now() - lockDuration * 1000);
+
+    // Single batched query to release all expired reservations at once (Zero N+1 DB round-trips)
+    try {
+      await prisma.listing.updateMany({
+        where: {
+          status: 'RESERVED',
+          updatedAt: { lte: expiredCutoff },
+        },
+        data: {
+          status: 'ACTIVE',
+          reservedByBuyerId: null,
+        },
+      });
+    } catch {
+      // Non-blocking in case of concurrency or read-only replica
+    }
+
     const rows = await prisma.listing.findMany({
       where: {
         status: {
@@ -96,44 +115,17 @@ export class ListingRepository {
     });
 
     const now = Date.now();
-    const records: ListingRecord[] = [];
-
-    for (const row of rows) {
+    return rows.map((row) => {
+      const rec = toRecord(row);
       if (row.status === 'RESERVED') {
         const lockedAt = new Date(row.updatedAt).getTime();
         const elapsedSeconds = Math.floor((now - lockedAt) / 1000);
-        const lockDuration = 900; // 15 minutes = 900 seconds
-
-        if (elapsedSeconds >= lockDuration) {
-          // Lock expired! Auto-revert to ACTIVE in database
-          try {
-            await prisma.listing.update({
-              where: { id: row.id },
-              data: {
-                status: 'ACTIVE',
-                reservedByBuyerId: null,
-              },
-            });
-            row.status = 'ACTIVE';
-            row.reservedByBuyerId = null;
-          } catch {}
-          const rec = toRecord(row);
-          rec.lockRemainingSeconds = 0;
-          records.push(rec);
-        } else {
-          // Still locked within 15 minutes
-          const rec = toRecord(row);
-          rec.lockRemainingSeconds = lockDuration - elapsedSeconds;
-          records.push(rec);
-        }
+        rec.lockRemainingSeconds = Math.max(0, lockDuration - elapsedSeconds);
       } else {
-        const rec = toRecord(row);
         rec.lockRemainingSeconds = 0;
-        records.push(rec);
       }
-    }
-
-    return records;
+      return rec;
+    });
   }
 
   /**
