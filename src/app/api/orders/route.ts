@@ -69,22 +69,18 @@ export async function POST(req: Request): Promise<NextResponse> {
         itemTitle = dealOffer.product.title;
       }
     } else if (targetLotId) {
-      // 1A. Attempt database query for product or listing
-      let dbProduct = await prisma.product.findUnique({
-        where: { id: targetLotId },
-      });
+      // 1A. Attempt parallel database query for product or listing
+      const [dbProduct, dbListing] = await Promise.all([
+        prisma.product.findUnique({ where: { id: targetLotId } }),
+        prisma.listing.findUnique({ where: { id: targetLotId } }),
+      ]);
 
-      if (!dbProduct) {
-        const dbListing = await prisma.listing.findUnique({
-          where: { id: targetLotId },
-        });
-        if (dbListing) {
-          truePriceINR = Math.round(dbListing.askingPriceAmount / 100);
-          itemTitle = dbListing.title;
-        }
-      } else {
+      if (dbProduct) {
         truePriceINR = dbProduct.price > 0 ? dbProduct.price : Math.round(dbProduct.askingPriceAmount / 100);
         itemTitle = dbProduct.title;
+      } else if (dbListing) {
+        truePriceINR = Math.round(dbListing.askingPriceAmount / 100);
+        itemTitle = dbListing.title;
       }
 
       // 1B. Fallback to verified catalog grails if not found in dynamic database tables

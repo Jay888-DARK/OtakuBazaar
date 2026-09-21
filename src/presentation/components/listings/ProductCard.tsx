@@ -10,6 +10,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { BargainModal } from '@/presentation/components/BargainModal';
 
 export interface ProductCardProps {
@@ -79,15 +80,13 @@ export function ProductCard({ product, className = '' }: ProductCardProps): Reac
       >
         <div className="relative w-full aspect-[4/5] overflow-hidden rounded-lg bg-[#0a0a0c] flex items-center justify-center p-3 my-2">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.05)_0%,_transparent_70%)] pointer-events-none" />
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={imageUrl}
+          <Image
+            src={imageUrl || '/Firefly_clean.png'}
             alt={product.title || 'Anime Collectible'}
-            className="w-full h-full object-contain relative z-10 drop-shadow-[0_15px_25px_rgba(0,0,0,0.9)] transition-transform duration-700 ease-out group-hover:scale-110"
+            fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+            className="object-contain p-2 relative z-10 drop-shadow-[0_15px_25px_rgba(0,0,0,0.9)] transition-transform duration-700 ease-out group-hover:scale-110"
             loading="lazy"
-            onError={(e) => {
-              (e.currentTarget as HTMLImageElement).src = '/Firefly_clean.png';
-            }}
           />
         </div>
       </Link>

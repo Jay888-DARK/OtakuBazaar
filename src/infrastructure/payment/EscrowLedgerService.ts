@@ -120,9 +120,8 @@ export class EscrowLedgerService {
 
     // Save to Prisma if DB is available
     try {
-      const { PrismaClient } = await import('@prisma/client').catch(() => ({ PrismaClient: null }));
-      if (PrismaClient) {
-        const prisma = new PrismaClient();
+      const { prisma } = await import('@/infrastructure/database/prismaClient');
+      if (prisma) {
         await prisma.escrowLedgerEntry.createMany({
           data: createdEntries.map((e) => ({
             id: e.id,
@@ -221,9 +220,8 @@ export class EscrowLedgerService {
     this.memoryEntries.push(...createdEntries);
 
     try {
-      const { PrismaClient } = await import('@prisma/client').catch(() => ({ PrismaClient: null }));
-      if (PrismaClient) {
-        const prisma = new PrismaClient();
+      const { prisma } = await import('@/infrastructure/database/prismaClient');
+      if (prisma) {
         await prisma.escrowLedgerEntry.createMany({
           data: createdEntries.map((e) => ({
             id: e.id,
@@ -263,9 +261,8 @@ export class EscrowLedgerService {
     if (memory.length > 0) return memory;
 
     try {
-      const { PrismaClient } = await import('@prisma/client').catch(() => ({ PrismaClient: null }));
-      if (PrismaClient) {
-        const prisma = new PrismaClient();
+      const { prisma } = await import('@/infrastructure/database/prismaClient');
+      if (prisma) {
         const records = await prisma.escrowLedgerEntry.findMany({
           where: { orderId },
         });

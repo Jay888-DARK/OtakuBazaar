@@ -92,30 +92,36 @@ export async function POST(req: Request): Promise<NextResponse> {
         `[RazorpayWebhook] Processing ${eventType} for Order ${orderId}: ₹${amountInPaise / 100} ${currency}`
       );
 
-      // 1. Update DB: Mark item as SOLD, lock escrow
+      // 1. Update DB: Mark item as SOLD, lock escrow (concurrent execution)
+      const statusUpdates: Promise<unknown>[] = [];
+
       if (lotId) {
-        try {
-          await prisma.product.updateMany({
+        statusUpdates.push(
+          prisma.product.updateMany({
             where: { id: lotId },
             data: { status: 'SOLD' },
-          });
-          await prisma.listing.updateMany({
+          }),
+          prisma.listing.updateMany({
             where: { id: lotId },
             data: { status: 'SOLD' },
-          });
-        } catch (dbErr) {
-          console.warn('[RazorpayWebhook] Note updating product status:', dbErr);
-        }
+          })
+        );
       }
 
       if (dealOfferId) {
-        try {
-          await prisma.dealOffer.updateMany({
+        statusUpdates.push(
+          prisma.dealOffer.updateMany({
             where: { id: dealOfferId },
             data: { status: 'PAID' },
-          });
+          })
+        );
+      }
+
+      if (statusUpdates.length > 0) {
+        try {
+          await Promise.all(statusUpdates);
         } catch (dbErr) {
-          console.warn('[RazorpayWebhook] Note updating dealOffer status:', dbErr);
+          console.warn('[RazorpayWebhook] Note updating product/dealOffer status:', dbErr);
         }
       }
 

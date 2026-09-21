@@ -13,41 +13,38 @@ export async function createDealOffer(input: CreateDealOfferInput) {
   try {
     const { productId, offeredPrice, message } = input;
 
-    // Find the product or listing
-    let product = await prisma.product.findUnique({
-      where: { id: productId },
-    });
+    // Find the product or listing in parallel
+    const [dbProduct, dbListing] = await Promise.all([
+      prisma.product.findUnique({ where: { id: productId } }),
+      prisma.listing.findUnique({ where: { id: productId } }),
+    ]);
 
+    let product = dbProduct;
     let originalPrice = 0;
     let sellerId = 'user_seller_rengoku';
 
     if (product) {
       originalPrice = Math.round(product.askingPriceAmount / 100);
       if (product.sellerId) sellerId = product.sellerId;
-    } else {
-      const listing = await prisma.listing.findUnique({
-        where: { id: productId },
+    } else if (dbListing) {
+      originalPrice = Math.round(dbListing.askingPriceAmount / 100);
+      sellerId = dbListing.sellerId;
+      // Also ensure product mirror exists
+      product = await prisma.product.upsert({
+        where: { id: dbListing.id },
+        update: {},
+        create: {
+          id: dbListing.id,
+          sellerId: dbListing.sellerId,
+          title: dbListing.title,
+          description: dbListing.description,
+          imageUrls: dbListing.imageUrls,
+          askingPriceAmount: dbListing.askingPriceAmount,
+          status: dbListing.status,
+          category: dbListing.category,
+          condition: dbListing.condition,
+        },
       });
-      if (listing) {
-        originalPrice = Math.round(listing.askingPriceAmount / 100);
-        sellerId = listing.sellerId;
-        // Also ensure product mirror exists
-        product = await prisma.product.upsert({
-          where: { id: listing.id },
-          update: {},
-          create: {
-            id: listing.id,
-            sellerId: listing.sellerId,
-            title: listing.title,
-            description: listing.description,
-            imageUrls: listing.imageUrls,
-            askingPriceAmount: listing.askingPriceAmount,
-            status: listing.status,
-            category: listing.category,
-            condition: listing.condition,
-          },
-        });
-      }
     }
 
     if (!product) {

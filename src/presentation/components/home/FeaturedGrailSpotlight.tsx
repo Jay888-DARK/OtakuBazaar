@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { DepthCard } from '../ui/DepthCard';
 import { AuthenticityLedger } from '../ui/AuthenticityLedger';
 import { BargainModal } from '@/presentation/components/BargainModal';
@@ -148,13 +149,14 @@ export default function FeaturedGrailSpotlight({ onOpenOfferModal }: FeaturedGra
             {/* Left Column: Figure Presentation Stage with Jeweler's Loupe Image Zoom */}
             <div className="relative h-80 sm:h-96 w-full flex items-center justify-center bg-[#0a0a0c] rounded-xl border border-zinc-800/60 p-6 overflow-hidden group/loupe cursor-crosshair">
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.05)_0%,_transparent_70%)] pointer-events-none" />
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              <Image
                 key={featuredLot.id}
                 src={featuredLot.imageUrl}
                 alt={featuredLot.title}
-                className="relative z-10 max-h-full max-w-full object-contain drop-shadow-[0_20px_35px_rgba(0,0,0,0.95)] transition-transform duration-700 ease-out group-hover/loupe:scale-125"
-                loading="eager"
+                fill
+                priority
+                sizes="(max-width: 768px) 100vw, 50vw"
+                className="relative z-10 object-contain p-4 drop-shadow-[0_20px_35px_rgba(0,0,0,0.95)] transition-transform duration-700 ease-out group-hover/loupe:scale-125"
               />
             </div>
 

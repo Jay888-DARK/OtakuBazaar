@@ -93,24 +93,26 @@ export async function POST(req: Request): Promise<NextResponse> {
     // Ensure foreign key relations exist for user records
     const effectiveBuyerId = buyerId || 'user_buyer_tanjiro';
     try {
-      await prisma.user.upsert({
-        where: { id: sellerId },
-        update: {},
-        create: {
-          id: sellerId,
-          name: 'Kyojuro Rengoku',
-          email: `${sellerId}@otakubazaar.dev`,
-        },
-      });
-      await prisma.user.upsert({
-        where: { id: effectiveBuyerId },
-        update: {},
-        create: {
-          id: effectiveBuyerId,
-          name: 'Tanjiro Kamado',
-          email: `${effectiveBuyerId}@otakubazaar.dev`,
-        },
-      });
+      await Promise.all([
+        prisma.user.upsert({
+          where: { id: sellerId },
+          update: {},
+          create: {
+            id: sellerId,
+            name: 'Kyojuro Rengoku',
+            email: `${sellerId}@otakubazaar.dev`,
+          },
+        }),
+        prisma.user.upsert({
+          where: { id: effectiveBuyerId },
+          update: {},
+          create: {
+            id: effectiveBuyerId,
+            name: 'Tanjiro Kamado',
+            email: `${effectiveBuyerId}@otakubazaar.dev`,
+          },
+        }),
+      ]);
     } catch (userErr) {
       console.warn('[bargain/offer] Note ensuring user records:', userErr);
     }

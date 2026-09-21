@@ -52,48 +52,61 @@ export class OrderRepository {
    * Creates an order record in the database, ensuring prerequisite foreign entities exist.
    */
   public static async createOrder(order: Omit<OrderRecord, 'createdAt' | 'updatedAt'>): Promise<OrderRecord> {
-    // 1. Ensure buyer user exists
-    const buyer = await prisma.user.findUnique({ where: { id: order.buyerId } });
+    // 1. Fetch prerequisite entities in parallel
+    const [buyer, seller, listing] = await Promise.all([
+      prisma.user.findUnique({ where: { id: order.buyerId } }),
+      prisma.user.findUnique({ where: { id: order.sellerId } }),
+      prisma.listing.findUnique({ where: { id: order.listingId } }),
+    ]);
+
+    const creationTasks: Promise<unknown>[] = [];
+
     if (!buyer) {
-      await prisma.user.create({
-        data: {
-          id: order.buyerId,
-          displayName: 'Otaku Buyer',
-          email: `${order.buyerId}@otakubazaar.dev`,
-        },
-      });
+      creationTasks.push(
+        prisma.user.create({
+          data: {
+            id: order.buyerId,
+            displayName: 'Otaku Buyer',
+            email: `${order.buyerId}@otakubazaar.dev`,
+          },
+        })
+      );
     }
 
-    // 2. Ensure seller user exists
-    const seller = await prisma.user.findUnique({ where: { id: order.sellerId } });
     if (!seller) {
-      await prisma.user.create({
-        data: {
-          id: order.sellerId,
-          displayName: 'Otaku Seller',
-          email: `${order.sellerId}@otakubazaar.dev`,
-        },
-      });
+      creationTasks.push(
+        prisma.user.create({
+          data: {
+            id: order.sellerId,
+            displayName: 'Otaku Seller',
+            email: `${order.sellerId}@otakubazaar.dev`,
+          },
+        })
+      );
     }
 
-    // 3. Ensure listing exists
-    const listing = await prisma.listing.findUnique({ where: { id: order.listingId } });
     if (!listing) {
-      await prisma.listing.create({
-        data: {
-          id: order.listingId,
-          sellerId: order.sellerId,
-          title: 'Anime Collectible Item',
-          description: 'Collectible purchased through escrow checkout',
-          imageUrls: '[]',
-          askingPriceAmount: order.totalAmount,
-          askingPriceCurrency: order.currency,
-          status: 'RESERVED',
-          category: 'Figures',
-          condition: 'NEW',
-          reservedByBuyerId: order.buyerId,
-        },
-      });
+      creationTasks.push(
+        prisma.listing.create({
+          data: {
+            id: order.listingId,
+            sellerId: order.sellerId,
+            title: 'Anime Collectible Item',
+            description: 'Collectible purchased through escrow checkout',
+            imageUrls: '[]',
+            askingPriceAmount: order.totalAmount,
+            askingPriceCurrency: order.currency,
+            status: 'RESERVED',
+            category: 'Figures',
+            condition: 'NEW',
+            reservedByBuyerId: order.buyerId,
+          },
+        })
+      );
+    }
+
+    if (creationTasks.length > 0) {
+      await Promise.all(creationTasks);
     }
 
     const record = await prisma.order.create({

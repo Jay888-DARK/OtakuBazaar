@@ -70,9 +70,8 @@ export class EscrowReleaseJob {
    */
   private static async getSellerVerifiedUpi(sellerId: string): Promise<string | null> {
     try {
-      const { PrismaClient } = await import('@prisma/client').catch(() => ({ PrismaClient: null }));
-      if (PrismaClient) {
-        const prisma = new PrismaClient();
+      const { prisma } = await import('@/infrastructure/database/prismaClient');
+      if (prisma) {
         const user = await prisma.user.findUnique({ where: { id: sellerId } });
         if (user?.verifiedUpiVpa) {
           return user.verifiedUpiVpa;

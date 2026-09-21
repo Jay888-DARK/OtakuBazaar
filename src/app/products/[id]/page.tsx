@@ -54,7 +54,7 @@ export default function ProductDetailsPage({ params }: ProductDetailsProps) {
               sizes="(max-width: 768px) 100vw, 50vw"
               className="object-contain p-4 product-thumbnail"
               data-testid="product-details-image"
-              unoptimized
+              priority
             />
             <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-xs font-black bg-amber-500/20 text-[#E8C36A] border border-amber-500/40">
               [S-RANK] FACTORY SEALED

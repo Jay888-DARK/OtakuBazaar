@@ -39,6 +39,6 @@ const basePrisma = globalForPrisma.prisma ?? new PrismaClient();
 export const prisma: PrismaClient = basePrisma;
 export default prisma;
 
-if (process.env['NODE_ENV'] !== 'production') {
-  globalForPrisma.prisma = prisma;
-}
+// Cache on globalThis across hot and warm serverless lambda invocations to reuse connection pools
+globalForPrisma.prisma = prisma;
+
