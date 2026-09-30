@@ -108,9 +108,14 @@ export function Navbar() {
             <input
               type="text"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="SEARCH VERIFIED SCALE FIGURES..."
-              className="w-full border border-zinc-800 bg-[#0e0e11] px-3.5 py-1.5 text-xs text-zinc-200 placeholder-zinc-500 outline-none transition-colors focus:border-zinc-500 uppercase tracking-wider text-[11px]"
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                if (typeof window !== 'undefined') {
+                  window.dispatchEvent(new CustomEvent('otaku_search', { detail: e.target.value }));
+                }
+              }}
+              placeholder="SEARCH ARCHIVAL LOTS, SERIES, OR SPEC..."
+              className="w-full border border-zinc-800 bg-[#0e0e11] px-3.5 py-1.5 text-xs text-zinc-200 placeholder-zinc-500 outline-none transition-colors focus:border-zinc-500 uppercase tracking-wider text-[11px] rounded-none"
             />
           </form>
         </div>
@@ -122,7 +127,7 @@ export function Navbar() {
             onClick={openCart}
             type="button"
             aria-label="Open Cart Drawer"
-            className="flex items-center space-x-2 border border-zinc-800 bg-[#0e0e11] px-3 py-1.5 text-xs text-zinc-300 transition-colors hover:border-zinc-700 hover:text-white cursor-pointer"
+            className="flex items-center space-x-2 border border-zinc-800 bg-[#0e0e11] px-3 py-1.5 text-xs text-zinc-300 transition-colors hover:border-zinc-700 hover:text-white cursor-pointer rounded-none"
           >
             <span className="text-[11px] font-semibold uppercase tracking-wider">Cart</span>
             <span className="border border-zinc-800 bg-zinc-900 px-1.5 py-0.2 text-[10px] font-medium text-zinc-200">
@@ -134,7 +139,7 @@ export function Navbar() {
           <button
             onClick={handleOpenSellModal}
             type="button"
-            className="px-3.5 py-2 bg-zinc-900 hover:bg-zinc-100 text-zinc-300 hover:text-black border border-zinc-700 hover:border-zinc-100 text-[11px] font-semibold uppercase tracking-[0.2em] transition-all duration-200 cursor-pointer"
+            className="px-3.5 py-2 bg-zinc-900 hover:bg-zinc-100 text-zinc-300 hover:text-black border border-zinc-700 hover:border-zinc-100 text-[11px] font-semibold uppercase tracking-[0.2em] transition-all duration-200 cursor-pointer rounded-none"
           >
             Drop a Grail
           </button>
@@ -144,7 +149,7 @@ export function Navbar() {
             <button
               onClick={handleAuth}
               type="button"
-              className="border border-zinc-800 bg-[#0e0e11] px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-zinc-400 transition-colors hover:border-zinc-600 hover:text-white cursor-pointer"
+              className="border border-zinc-800 bg-[#0e0e11] px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-zinc-400 transition-colors hover:border-zinc-600 hover:text-white cursor-pointer rounded-none"
             >
               Sign In
             </button>
@@ -154,7 +159,7 @@ export function Navbar() {
                 <img
                   src={session.user.image}
                   alt={session.user?.name || 'User profile'}
-                  className="w-5 h-5 border border-zinc-700 object-cover shrink-0"
+                  className="w-5 h-5 border border-zinc-700 object-cover shrink-0 rounded-none"
                 />
               ) : (
                 <div className="w-5 h-5 border border-zinc-700 bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-zinc-300 shrink-0">
@@ -168,7 +173,7 @@ export function Navbar() {
                 type="button"
                 onClick={() => signOut()}
                 aria-label="Sign out of OtakuBazaar"
-                className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 hover:text-white px-2 py-0.5 border border-zinc-700 bg-zinc-800 transition-colors cursor-pointer shrink-0 whitespace-nowrap"
+                className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 hover:text-white px-2 py-0.5 border border-zinc-700 bg-zinc-800 transition-colors cursor-pointer shrink-0 whitespace-nowrap rounded-none"
                 title="Sign out of OtakuBazaar"
               >
                 Sign Out
@@ -177,7 +182,68 @@ export function Navbar() {
           )}
         </div>
       </div>
+
+      {/* Sticky Text-Based Filter Pills Bar Beneath Search Bar */}
+      <StickyFilterPillsBar />
     </header>
+  );
+}
+
+const FILTER_PILLS = [
+  { id: 'ALL', label: '[ ALL ARCHIVAL LOTS ]' },
+  { id: 'S_RANK', label: '[ S-RANK ONLY ]' },
+  { id: 'FACTORY_SEALED', label: '[ FACTORY SEALED ]' },
+  { id: 'ESCROW_VERIFIED', label: '[ VERIFIED ESCROW ]' },
+  { id: 'UNDER_30K', label: '[ UNDER ₹30,000 ]' },
+  { id: 'PRIME1', label: '[ PRIME 1 RESIN ]' },
+];
+
+function StickyFilterPillsBar() {
+  const [activePill, setActivePill] = useState<string>('ALL');
+
+  const handlePillClick = (filterId: string) => {
+    setActivePill(filterId);
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(
+        new CustomEvent('otaku_filter_select', {
+          detail: { filter: filterId },
+        })
+      );
+    }
+  };
+
+  return (
+    <div className="w-full border-t border-zinc-800/80 bg-[#0b0b0e] py-1.5 px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl flex items-center justify-between gap-3 overflow-x-auto scrollbar-none">
+        <div className="flex items-center gap-2 shrink-0">
+          <span className="text-[9px] uppercase tracking-[0.2em] text-zinc-500 font-semibold select-none pr-1">
+            CRITERIA:
+          </span>
+          {FILTER_PILLS.map((pill) => {
+            const isActive = activePill === pill.id;
+            return (
+              <button
+                key={pill.id}
+                type="button"
+                onClick={() => handlePillClick(pill.id)}
+                className={`px-2.5 py-1 text-[10px] tracking-[0.16em] uppercase transition-none cursor-pointer whitespace-nowrap rounded-none border ${
+                  isActive
+                    ? 'bg-zinc-100 text-black border-zinc-100 font-bold'
+                    : 'bg-transparent text-zinc-400 border-zinc-800 hover:text-zinc-200 hover:border-zinc-600 font-medium'
+                }`}
+              >
+                {pill.label}
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="hidden md:flex items-center gap-2 text-[9px] uppercase tracking-[0.2em] text-zinc-500 font-medium shrink-0">
+          <span className="inline-block w-1.5 h-1.5 bg-zinc-400 rounded-none" />
+          <span>INDEX ACTIVE: 9 VERIFIED LOTS</span>
+        </div>
+      </div>
+    </div>
   );
 }
 

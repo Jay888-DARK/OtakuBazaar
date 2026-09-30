@@ -4,6 +4,8 @@ import Link from 'next/link';
 import VaultHero from '@/presentation/components/home/VaultHero';
 import FeaturedGrailSpotlight from '@/presentation/components/home/FeaturedGrailSpotlight';
 import { CatalogView } from '@/presentation/components/home/CatalogView';
+import { VisualCategoryBar } from '@/presentation/components/navigation/VisualCategoryBar';
+import { CuratedEditorialCollection } from '@/presentation/components/home/CuratedEditorialCollection';
 
 export const metadata: Metadata = {
   title: 'OtakuBazaar — Authentic Japanese Collectibles & Escrow Marketplace',
@@ -14,13 +16,19 @@ export const metadata: Metadata = {
 export default function HomePage(_props?: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
   return (
     <main className="min-h-screen bg-[#09090b] text-white">
+      {/* 1. Visual Category Navigation: Horizontally scrollable square photography bar directly below sticky header */}
+      <VisualCategoryBar />
+
       {/* 3D Kinetic Vault Exhibition Hero */}
       <VaultHero />
+
+      {/* 3. Curated Editorial Drop: The Berserk Archive (Asymmetrical layout, no Bento, no 3 cards in a row) */}
+      <CuratedEditorialCollection />
 
       {/* Featured Grail Spotlight (3D Depth Card Spotlight with Escrow Bargain Modal) */}
       <FeaturedGrailSpotlight />
 
-      {/* Interactive Marketplace Catalog View (Client Component) */}
+      {/* Interactive Marketplace Catalog View (Client Component with Skeletons & Filter Pills) */}
       <CatalogView />
 
       {/* Escrow Trust Vault Section (#escrow-vault) */}
