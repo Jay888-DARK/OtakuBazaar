@@ -53,89 +53,18 @@ export function HoloCard3D({
   children,
   style,
   className = '',
-  maxTilt = 12,
-  accentColor = '#C9943E',
   collectorGrade,
   hasLicensingSeal = true,
   isLocked = false,
-  isAuraActive = false,
   onClick,
 }: HoloCard3DProps) {
-  const cardRef = useRef<HTMLDivElement | null>(null);
-
-  // Simple tilt transform
-  const [tilt, setTilt] = useState<TiltTransform>({
-    rotateX: 0,
-    rotateY: 0,
-    glareX: 50,
-    glareY: 50,
-    isHovered: false,
-  });
-
-  const handleMouseEnter = useCallback(() => {
-    // hover sound removed
-  }, []);
-
-  const handleMouseMove = useCallback(
-    (e: React.MouseEvent<HTMLDivElement>) => {
-      if (!cardRef.current || isLocked) return;
-
-      const rect = cardRef.current.getBoundingClientRect();
-      const mouseX = e.clientX - rect.left;
-      const mouseY = e.clientY - rect.top;
-
-      // Normalize between -1 and +1
-      const normalizedX = (mouseX / rect.width) * 2 - 1;
-      const normalizedY = (mouseY / rect.height) * 2 - 1;
-
-      // Snappy, gentle 3D tilt
-      const rotateX = -normalizedY * maxTilt;
-      const rotateY = normalizedX * maxTilt;
-
-      const glareX = Math.round((mouseX / rect.width) * 100);
-      const glareY = Math.round((mouseY / rect.height) * 100);
-
-      setTilt({
-        rotateX,
-        rotateY,
-        glareX,
-        glareY,
-        isHovered: true,
-      });
-    },
-    [maxTilt, isLocked]
-  );
-
-  const handleMouseLeave = useCallback(() => {
-    setTilt({
-      rotateX: 0,
-      rotateY: 0,
-      glareX: 50,
-      glareY: 50,
-      isHovered: false,
-    });
-  }, []);
-
-  // Compute transform style
-  const cardTransform = useMemo(() => {
-    if (!tilt.isHovered) {
-      return 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
-    }
-    return `perspective(1000px) rotateX(${tilt.rotateX.toFixed(2)}deg) rotateY(${tilt.rotateY.toFixed(2)}deg) scale3d(1.025, 1.025, 1.025)`;
-  }, [tilt.isHovered, tilt.rotateX, tilt.rotateY]);
-
   return (
     <div
-      ref={cardRef}
-      onMouseEnter={handleMouseEnter}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
       onClick={onClick}
-      className={`border border-zinc-800 ${className}`.trim()}
+      className={`border border-[#27272a] bg-[#0c0c0e] ${className}`.trim()}
       style={{
         position: 'relative',
         borderRadius: '0px',
-        backgroundColor: '#0e0e11',
         border: '1px solid #27272a',
         boxShadow: 'none',
         overflow: 'hidden',
@@ -143,34 +72,7 @@ export function HoloCard3D({
         ...style,
       }}
     >
-      {/* Enhanced Warm Specular Glare Overlay on Hover */}
-      {tilt.isHovered && !isLocked && (
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            background: `radial-gradient(circle at ${tilt.glareX}% ${tilt.glareY}%, rgba(255, 248, 230, 0.25) 0%, rgba(201, 148, 62, 0.05) 30%, transparent 65%)`,
-            pointerEvents: 'none',
-            zIndex: 25,
-            opacity: 0.9,
-            transition: 'opacity 0.2s ease',
-          }}
-        />
-      )}
-
-      {/* Subtle Warm Halftone Screentone */}
-      <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          backgroundImage: 'radial-gradient(rgba(180, 140, 80, 0.03) 1px, transparent 0)',
-          backgroundSize: '12px 12px',
-          pointerEvents: 'none',
-          zIndex: 15,
-        }}
-      />
-
-      {/* Official Authentication Seal — Bronze/Gold */}
+      {/* Official Authentication Seal — Minimal Flat Stamp */}
       {hasLicensingSeal && (
         <div
           style={{
@@ -178,7 +80,6 @@ export function HoloCard3D({
             bottom: '12px',
             right: '12px',
             zIndex: 26,
-            transform: 'translateZ(30px)',
             pointerEvents: 'none',
           }}
           title="Authentic Official Seal"
@@ -187,10 +88,9 @@ export function HoloCard3D({
             style={{
               width: '32px',
               height: '32px',
-              borderRadius: '50%',
-              background: 'linear-gradient(135deg, #1A1410 0%, #2A2118 100%)',
-              border: '1.5px solid #C9943E',
-              boxShadow: '0 2px 6px rgba(0,0,0,0.5), inset 0 1px 2px rgba(201, 148, 62, 0.2)',
+              borderRadius: '0px',
+              background: '#141416',
+              border: '1px solid #C9943E',
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
@@ -199,7 +99,7 @@ export function HoloCard3D({
               fontWeight: 900,
               color: '#F0E8DA',
               lineHeight: 1,
-              letterSpacing: '0.02em',
+              letterSpacing: '0.04em',
             }}
           >
             <span>OFFICIAL</span>
@@ -208,7 +108,7 @@ export function HoloCard3D({
         </div>
       )}
 
-      {/* Collector Grade Badge — Bronze/Gold */}
+      {/* Collector Grade Badge — Minimal Flat Badge */}
       {collectorGrade && (
         <div
           style={{
@@ -216,20 +116,18 @@ export function HoloCard3D({
             top: '10px',
             left: '10px',
             zIndex: 26,
-            transform: 'translateZ(30px)',
           }}
         >
           <span
             style={{
-              background: 'linear-gradient(135deg, #1A1410 0%, #2A2118 100%)',
-              border: '1.5px solid #C9943E',
+              background: '#141416',
+              border: '1px solid #C9943E',
               color: '#E8C36A',
               padding: '2px 8px',
-              borderRadius: '4px',
+              borderRadius: '0px',
               fontSize: '10px',
-              fontWeight: 900,
-              boxShadow: '2px 2px 0px rgba(0,0,0,0.6), inset 0 1px 0 rgba(201, 148, 62, 0.15)',
-              letterSpacing: '0.04em',
+              fontWeight: 800,
+              letterSpacing: '0.06em',
             }}
           >
             {collectorGrade}
@@ -237,14 +135,13 @@ export function HoloCard3D({
         </div>
       )}
 
-      {/* Card Content with 3D Depth */}
+      {/* Card Content */}
       <div
         style={{
           position: 'relative',
           zIndex: 10,
           height: '100%',
           width: '100%',
-          transformStyle: 'preserve-3d',
         }}
       >
         {children}

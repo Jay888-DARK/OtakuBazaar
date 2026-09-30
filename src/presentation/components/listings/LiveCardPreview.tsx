@@ -39,7 +39,7 @@ export function LiveCardPreview({
     <div className="bg-[#0e0e11] border border-zinc-800 p-5 relative flex flex-col justify-between select-none">
       {/* 1. Archival Header / Badges */}
       <div className="flex items-center justify-between text-[10px] font-semibold tracking-wider text-zinc-500 mb-2">
-        <span>LOT #0482 // VAULT ID: JP-TYO</span>
+        <span>LOT #0482 • VAULT ID: JP-TYO</span>
         <span className="text-[9px] font-bold tracking-[0.15em] text-zinc-300 border border-zinc-700 bg-zinc-900 px-2 py-0.5 uppercase">
           {conditionGrade || 'AUTHENTIC'}
         </span>

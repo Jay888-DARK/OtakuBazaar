@@ -181,7 +181,17 @@ export function CheckoutButton({
           </>
         ) : disabled ? (
           <>
-            <span>🔒</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-3.5 w-3.5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={1.5}
+            >
+              <rect x="3" y="11" width="18" height="11" />
+              <path d="M7 11V7a5 5 0 0110 0v4" />
+            </svg>
             <span>Escrow Payment Locked</span>
           </>
         ) : (

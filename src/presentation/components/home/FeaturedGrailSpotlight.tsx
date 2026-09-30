@@ -23,7 +23,7 @@ const FEATURED_GRAILS: FeaturedGrailItem[] = [
   {
     id: 'lot-0482',
     title: 'Guts Berserker Armor Unleashed 1/4',
-    series: 'Berserk // Kentaro Miura Memorial Edition',
+    series: 'Berserk • Kentaro Miura Memorial Edition',
     manufacturer: 'Prime 1 Studio Ultimate Premium Masterline',
     scale: '1/4 Scale Hand-Finished Polystone',
     edition: '042 / 350 Worldwide',
@@ -35,7 +35,7 @@ const FEATURED_GRAILS: FeaturedGrailItem[] = [
   {
     id: 'lot-0484',
     title: 'Saber Altria Pendragon 1/7 Deluxe',
-    series: 'Fate/Stay Night // Type-Moon Archival',
+    series: 'Fate/Stay Night • Type-Moon Archival',
     manufacturer: 'Aniplex+ / Stronger Studio',
     scale: '1/7 Scale Pre-Painted PVC & ABS',
     edition: '118 / 500 Worldwide',
@@ -47,7 +47,7 @@ const FEATURED_GRAILS: FeaturedGrailItem[] = [
   {
     id: 'lot-0485',
     title: 'Satoru Gojo Hollow Purple 1/7 Scramble',
-    series: 'Jujutsu Kaisen // MAPPA Shibuya Special',
+    series: 'Jujutsu Kaisen • MAPPA Shibuya Special',
     manufacturer: 'eStream Shibuya Scramble Figure',
     scale: '1/7 Scale Clear Resin Effect Polystone',
     edition: '089 / 400 Worldwide',
@@ -59,7 +59,7 @@ const FEATURED_GRAILS: FeaturedGrailItem[] = [
   {
     id: 'lot-0486',
     title: 'EVA Unit-01 Test Type Metal Build',
-    series: 'Neon Genesis Evangelion // Khara Studio',
+    series: 'Neon Genesis Evangelion • Khara Studio',
     manufacturer: 'Bandai Spirits Tamashii Nations',
     scale: 'Diecast Metal & Composite ABS/PVC',
     edition: 'First Release Edition',
@@ -93,7 +93,7 @@ export default function FeaturedGrailSpotlight({ onOpenOfferModal }: FeaturedGra
       <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-zinc-800 pb-3 mb-8 gap-4">
         <div>
           <span className="text-[10px] font-semibold tracking-[0.25em] text-zinc-500 uppercase block">
-            SPOTLIGHT LOT // {featuredLot.id.toUpperCase()}
+            SPOTLIGHT LOT • {featuredLot.id.toUpperCase()}
           </span>
           <h2 className="text-lg font-bold text-zinc-100 uppercase tracking-wider mt-1">
             Archival Grail of the Cycle
@@ -146,8 +146,8 @@ export default function FeaturedGrailSpotlight({ onOpenOfferModal }: FeaturedGra
           perspective={1400}
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-            {/* Left Column: Figure Presentation Stage with Loupe Zoom */}
-            <div className="relative h-80 sm:h-96 w-full flex items-center justify-center bg-[#09090b] border border-zinc-800/80 p-6 overflow-hidden group/loupe cursor-crosshair">
+            {/* Left Column: Figure Presentation Stage */}
+            <div className="relative h-80 sm:h-96 w-full flex items-center justify-center bg-[#09090b] border border-zinc-800/80 p-6 overflow-hidden">
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.03)_0%,_transparent_70%)] pointer-events-none" />
               <Image
                 key={featuredLot.id}
@@ -156,7 +156,7 @@ export default function FeaturedGrailSpotlight({ onOpenOfferModal }: FeaturedGra
                 fill
                 priority
                 sizes="(max-width: 768px) 100vw, 50vw"
-                className="relative z-10 object-contain p-4 transition-transform duration-700 ease-out group-hover/loupe:scale-125"
+                className="relative z-10 object-contain p-4"
               />
             </div>
 
@@ -167,7 +167,7 @@ export default function FeaturedGrailSpotlight({ onOpenOfferModal }: FeaturedGra
                   <span className="text-zinc-200 border border-zinc-700 bg-zinc-900 px-2 py-0.5 font-semibold">
                     {featuredLot.condition}
                   </span>
-                  <span className="text-zinc-500 font-medium">// EDITION: {featuredLot.edition}</span>
+                  <span className="text-zinc-500 font-medium">• EDITION: {featuredLot.edition}</span>
                 </div>
 
                 <h3 className="text-xl sm:text-2xl font-extrabold text-zinc-100 uppercase tracking-tight">

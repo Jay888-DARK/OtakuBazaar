@@ -50,7 +50,7 @@ export default function RootLayout({
           minHeight: '100vh',
           display: 'flex',
           flexDirection: 'column',
-          fontFamily: 'var(--font-sans), sans-serif',
+          fontFamily: '"PP Neue Montreal", "Helvetica Now Text", "Helvetica Neue", var(--font-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif',
         }}
       >
         {/* Cinematic Physical Film Noise Overlay */}

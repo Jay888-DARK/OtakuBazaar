@@ -263,7 +263,7 @@ export async function fetchProfileDashboardAction(
       sellerId: userId,
       sellerName: userId === 'user_buyer_tanjiro' ? 'Tanjiro Kamado' : 'Kyojuro Rengoku',
       sellerHandle: userId === 'user_buyer_tanjiro' ? '@tanjiro_slayer' : '@flame_hashira',
-      sellerAvatar: userId === 'user_buyer_tanjiro' ? '🗡️' : '🔥',
+      sellerAvatar: userId === 'user_buyer_tanjiro' ? 'TK' : 'KR',
       hasActiveListings: activeListings.length > 0,
       totalListingsCount: listings.length,
       activeListings,

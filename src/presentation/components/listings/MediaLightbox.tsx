@@ -156,12 +156,15 @@ export function MediaLightbox({
       {/* 1. Header Bar: Title, Inspection Badge, Media Counter & Close Btn */}
       {/* ----------------------------------------------------------------- */}
       <header
-        className="w-full flex items-center justify-between px-4 sm:px-6 py-3.5 border-b border-amber-900/30 bg-[#140F0B]/80 z-20"
+        className="w-full flex items-center justify-between px-4 sm:px-6 py-3.5 border-b border-zinc-800 bg-[#0e0e11] z-20"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center gap-3 overflow-hidden">
-          <div className="flex items-center gap-2 px-2.5 py-1 bg-amber-950/70 border border-amber-600/40 text-amber-300 text-xs font-bold tracking-[0.15em] uppercase">
-            <span className="text-[#F85B1A]">🔍</span>
+          <div className="flex items-center gap-2 px-2.5 py-1 bg-zinc-900 border border-zinc-700 text-zinc-300 text-xs font-bold tracking-[0.15em] uppercase">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
             <span>48H INSPECTION VAULT</span>
           </div>
 
@@ -169,7 +172,7 @@ export function MediaLightbox({
             <h2 className="text-sm sm:text-base font-extrabold text-zinc-100 truncate uppercase tracking-[0.15em]">
               {title}
             </h2>
-            <span className="text-[11px] text-[#A89880] hidden sm:inline">
+            <span className="text-[11px] text-zinc-400 hidden sm:inline">
               Authentic high-resolution zoom & video inspection
             </span>
           </div>
@@ -177,7 +180,7 @@ export function MediaLightbox({
 
         <div className="flex items-center gap-4 shrink-0">
           {/* Media Count Badge */}
-          <span className="text-xs font-bold text-amber-400/90 bg-black/40 px-2.5 py-1 border border-amber-900/40 tracking-wider">
+          <span className="text-xs font-bold text-zinc-300 bg-zinc-900 px-2.5 py-1 border border-zinc-700 tracking-wider">
             {currentIndex + 1} / {normalizedMedia.length}
           </span>
 
@@ -186,12 +189,13 @@ export function MediaLightbox({
             type="button"
             onClick={onClose}
             aria-label="Close inspection lightbox (Esc)"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/40 hover:bg-[#F85B1A]/20 border border-amber-900/40 hover:border-[#F85B1A] text-slate-300 hover:text-white transition-all cursor-pointer group"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-zinc-300 hover:text-white transition-colors cursor-pointer"
           >
-            <span className="text-sm font-bold group-hover:rotate-90 transition-transform duration-200">
-              ✕
-            </span>
-            <span className="text-[10px] text-amber-400/70 uppercase tracking-widest hidden sm:inline">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+            <span className="text-[10px] text-zinc-400 uppercase tracking-widest hidden sm:inline">
               Esc
             </span>
           </button>
@@ -211,7 +215,7 @@ export function MediaLightbox({
             type="button"
             onClick={handlePrev}
             aria-label="Previous media"
-            className="absolute left-2 sm:left-6 z-30 p-3 rounded-full bg-black/60 hover:bg-[#F85B1A] border border-amber-700/40 hover:border-[#F85B1A] text-amber-100 transition-all shadow-xl hover:scale-110 active:scale-95 cursor-pointer"
+            className="absolute left-2 sm:left-6 z-30 p-3 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-zinc-200 transition-colors cursor-pointer"
           >
             <svg
               className="w-5 h-5 sm:w-6 sm:h-6"
@@ -219,7 +223,7 @@ export function MediaLightbox({
               stroke="currentColor"
               viewBox="0 0 24 24"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
         )}
@@ -227,7 +231,7 @@ export function MediaLightbox({
         {/* Media Frame */}
         <div className="relative max-h-[68vh] max-w-[88vw] flex items-center justify-center">
           {isVideo ? (
-            <div className="relative rounded-xl overflow-hidden border border-amber-900/40 bg-black shadow-2xl">
+            <div className="relative overflow-hidden border border-zinc-800 bg-black">
               <video
                 key={activeItem.url}
                 src={activeItem.url}
@@ -239,8 +243,8 @@ export function MediaLightbox({
               >
                 Your browser does not support the video tag.
               </video>
-              <span className="absolute top-3 left-3 px-2 py-0.5 bg-black/80 border border-amber-500/40 text-[10px] font-bold text-amber-300 uppercase tracking-widest">
-                ▶ MP4/WEBM VIDEO
+              <span className="absolute top-3 left-3 px-2 py-0.5 bg-black border border-zinc-700 text-[10px] font-bold text-zinc-300 uppercase tracking-widest">
+                VIDEO INSPECTION
               </span>
             </div>
           ) : (
@@ -250,10 +254,10 @@ export function MediaLightbox({
                 key={activeItem.url}
                 src={activeItem.url}
                 alt={activeItem.alt || title}
-                className="max-h-[66vh] max-w-[86vw] object-contain border border-amber-900/40 bg-black/40 transition-all duration-300"
+                className="max-h-[66vh] max-w-[86vw] object-contain border border-zinc-800 bg-black/40"
               />
-              <span className="absolute top-3 left-3 px-2 py-0.5 bg-black/80 border border-amber-500/40 text-[10px] font-bold text-amber-300 uppercase tracking-widest pointer-events-none">
-                📸 HI-RES MACRO
+              <span className="absolute top-3 left-3 px-2 py-0.5 bg-black border border-zinc-700 text-[10px] font-bold text-zinc-300 uppercase tracking-widest pointer-events-none">
+                HI-RES MACRO
               </span>
             </div>
           )}
@@ -265,7 +269,7 @@ export function MediaLightbox({
             type="button"
             onClick={handleNext}
             aria-label="Next media"
-            className="absolute right-2 sm:right-6 z-30 p-3 rounded-full bg-black/60 hover:bg-[#F85B1A] border border-amber-700/40 hover:border-[#F85B1A] text-amber-100 transition-all shadow-xl hover:scale-110 active:scale-95 cursor-pointer"
+            className="absolute right-2 sm:right-6 z-30 p-3 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-zinc-200 transition-colors cursor-pointer"
           >
             <svg
               className="w-5 h-5 sm:w-6 sm:h-6"
@@ -273,7 +277,7 @@ export function MediaLightbox({
               stroke="currentColor"
               viewBox="0 0 24 24"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
             </svg>
           </button>
         )}
@@ -283,7 +287,7 @@ export function MediaLightbox({
       {/* 3. Bottom Carousel: Scrollable Thumbnails with Vermilion Rings    */}
       {/* ----------------------------------------------------------------- */}
       <footer
-        className="w-full py-3 px-4 bg-[#140F0B]/90 border-t border-amber-900/30 z-20"
+        className="w-full py-3 px-4 bg-[#0e0e11] border-t border-zinc-800 z-20"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="max-w-4xl mx-auto flex items-center justify-center gap-3 overflow-x-auto py-1 px-2 scrollbar-thin">
@@ -297,10 +301,10 @@ export function MediaLightbox({
                 type="button"
                 onClick={() => setCurrentIndex(idx)}
                 aria-label={`View media ${idx + 1}`}
-                className={`relative w-14 h-14 sm:w-16 sm:h-16 shrink-0 rounded-lg overflow-hidden transition-all duration-200 cursor-pointer ${
+                className={`relative w-14 h-14 sm:w-16 sm:h-16 shrink-0 overflow-hidden transition-colors cursor-pointer ${
                   isSelected
-                    ? 'border-2 border-[#F85B1A] ring-2 ring-[#F85B1A]/50 scale-105 opacity-100 shadow-lg'
-                    : 'border border-amber-900/40 opacity-50 hover:opacity-90 hover:border-amber-500/60'
+                    ? 'border-2 border-zinc-200 opacity-100'
+                    : 'border border-zinc-800 opacity-60 hover:opacity-100'
                 }`}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -312,14 +316,14 @@ export function MediaLightbox({
 
                 {itemIsVideo && (
                   <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-white text-xs font-bold">
-                    <span className="w-5 h-5 rounded-full bg-[#F85B1A]/90 flex items-center justify-center text-[9px] shadow">
-                      ▶
+                    <span className="text-[9px] uppercase tracking-widest">
+                      VID
                     </span>
                   </div>
                 )}
 
                 {isSelected && (
-                  <div className="absolute bottom-0 inset-x-0 h-1 bg-[#F85B1A]" />
+                  <div className="absolute bottom-0 inset-x-0 h-1 bg-white" />
                 )}
               </button>
             );

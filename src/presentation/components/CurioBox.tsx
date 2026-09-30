@@ -81,78 +81,13 @@ export function CurioBox({
   imageUrl,
   isLocked = false,
   lockRemainingSeconds,
-  maxTilt = 12,
   className = '',
   style,
-  isPreview = false,
   onClick,
   onBargainClick,
   onInspectClick,
 }: CurioBoxProps): React.JSX.Element {
-  const boxRef = useRef<HTMLDivElement | null>(null);
-
-  // Interactive 3D tilt state
-  const [tilt, setTilt] = useState<TiltTransform>({
-    rotateX: 0,
-    rotateY: 0,
-    glareX: 50,
-    glareY: 50,
-    isHovered: false,
-  });
-
   const [isBargainOpen, setIsBargainOpen] = useState<boolean>(false);
-
-  const handleMouseEnter = useCallback(() => {
-    // hover sound removed
-  }, []);
-
-  const handleMouseMove = useCallback(
-    (e: React.MouseEvent<HTMLDivElement>) => {
-      if (!boxRef.current || isLocked) return;
-
-      const rect = boxRef.current.getBoundingClientRect();
-      const mouseX = e.clientX - rect.left;
-      const mouseY = e.clientY - rect.top;
-
-      // Normalize between -1 and +1
-      const normalizedX = (mouseX / rect.width) * 2 - 1;
-      const normalizedY = (mouseY / rect.height) * 2 - 1;
-
-      // Snappy, realistic 3D perspective tilt
-      const rotateX = -normalizedY * maxTilt;
-      const rotateY = normalizedX * maxTilt;
-
-      const glareX = Math.round((mouseX / rect.width) * 100);
-      const glareY = Math.round((mouseY / rect.height) * 100);
-
-      setTilt({
-        rotateX,
-        rotateY,
-        glareX,
-        glareY,
-        isHovered: true,
-      });
-    },
-    [maxTilt, isLocked]
-  );
-
-  const handleMouseLeave = useCallback(() => {
-    setTilt({
-      rotateX: 0,
-      rotateY: 0,
-      glareX: 50,
-      glareY: 50,
-      isHovered: false,
-    });
-  }, []);
-
-  // Compute transform style for identical 3D movement
-  const boxTransform = useMemo(() => {
-    if (!tilt.isHovered || isLocked) {
-      return 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
-    }
-    return `perspective(1000px) rotateX(${tilt.rotateX.toFixed(2)}deg) rotateY(${tilt.rotateY.toFixed(2)}deg) scale3d(1.025, 1.025, 1.025)`;
-  }, [tilt.isHovered, tilt.rotateX, tilt.rotateY, isLocked]);
 
   // Format lock countdown timer
   const formatTimer = (secs?: number) => {
@@ -169,57 +104,27 @@ export function CurioBox({
 
   return (
     <div
-      ref={boxRef}
-      onMouseEnter={handleMouseEnter}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
       onClick={onClick}
-      className={`curio-bay rounded-lg p-3 flex flex-col justify-between relative group select-none ${
+      className={`p-4 flex flex-col justify-between relative bg-[#0c0c0e] border border-[#27272a] ${
         onClick ? 'cursor-pointer' : 'cursor-default'
       } ${className}`.trim()}
       style={{
-        transform: boxTransform,
-        transition: tilt.isHovered
-          ? 'transform 0.08s ease-out, box-shadow 0.2s ease, border-color 0.2s ease'
-          : 'transform 0.4s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.3s ease, border-color 0.3s ease',
-        transformStyle: 'preserve-3d',
-        willChange: 'transform',
-        borderColor: tilt.isHovered && !isLocked ? 'rgba(201, 148, 62, 0.8)' : undefined,
-        boxShadow:
-          tilt.isHovered && !isLocked
-            ? '0 -10px 25px -10px rgba(201, 148, 62, 0.25), 0 20px 40px -10px rgba(0, 0, 0, 0.85), 0 0 25px rgba(201, 148, 62, 0.35)'
-            : undefined,
+        borderRadius: '0px',
+        boxShadow: 'none',
         ...style,
       }}
     >
-      {/* Specular Light Glare Overlay on Hover */}
-      {tilt.isHovered && !isLocked && (
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            background: `radial-gradient(circle at ${tilt.glareX}% ${tilt.glareY}%, rgba(255, 248, 230, 0.22) 0%, rgba(201, 148, 62, 0.08) 35%, transparent 70%)`,
-            pointerEvents: 'none',
-            zIndex: 25,
-            opacity: 0.9,
-            borderRadius: 'inherit',
-            transition: 'opacity 0.2s ease',
-          }}
-        />
-      )}
-
-      {/* Recessed Top Ambient Glow */}
-      <div className="absolute inset-x-0 top-0 h-20 pointer-events-none opacity-20 bg-gradient-to-b from-amber-200/30 to-transparent blur-sm rounded-t-lg" />
-
       {/* Top Plaque: Condition Rank & Series / Lock Badge */}
-      <div className="flex items-center justify-between z-10 mb-2 px-1">
-        <span className="curio-base-plaque">{rankBadge}</span>
+      <div className="flex items-center justify-between z-10 mb-3 px-0.5">
+        <span className="text-[10px] tracking-[0.16em] uppercase font-bold text-[#E8C36A] px-2 py-0.5 border border-[#3f3f46] bg-[#141416]">
+          {rankBadge}
+        </span>
         {isLocked ? (
-          <span className="text-[10px] font-black uppercase tracking-wider text-amber-400 bg-amber-950/80 border border-amber-600/50 px-2 py-0.5 rounded animate-pulse">
-            🔒 LOCKED ({formatTimer(lockRemainingSeconds)})
+          <span className="text-[9px] font-bold uppercase tracking-[0.16em] text-amber-400 bg-amber-950/40 border border-amber-600/40 px-2 py-0.5">
+            LOCKED [{formatTimer(lockRemainingSeconds)}]
           </span>
         ) : (
-          <span className="text-[9px] font-bold text-[#E8C36A] uppercase tracking-wider">
+          <span className="text-[9px] font-semibold text-[#a1a1aa] uppercase tracking-[0.16em]">
             {series || category || 'COLLECTIBLE'}
           </span>
         )}
@@ -233,19 +138,19 @@ export function CurioBox({
           className="block no-underline cursor-pointer group/thumb"
         >
           {/* Collectible Image Display Bay */}
-          <div className="relative h-64 sm:h-72 w-full rounded overflow-hidden flex items-end justify-center bg-black/25">
+          <div className="relative h-64 sm:h-72 w-full border border-[#27272a] overflow-hidden flex items-end justify-center bg-[#09090b]">
             {imageUrl ? (
               <Image
                 src={imageUrl}
                 alt={title || 'Anime Collectible'}
                 fill
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                className="object-contain object-bottom group-hover/thumb:scale-105 transition-transform duration-500 p-2"
+                className="object-contain object-bottom p-2"
                 unoptimized={true}
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-4xl text-amber-500/50">
-                ⛩️
+              <div className="w-full h-full flex flex-col items-center justify-center text-xs tracking-widest text-zinc-600 uppercase font-mono">
+                [ No Image Available ]
               </div>
             )}
 
@@ -259,21 +164,27 @@ export function CurioBox({
                   onInspectClick();
                 }}
                 aria-label="Inspect media in lightbox"
-                className="absolute top-2 right-2 z-20 px-2 py-1 rounded-md bg-black/75 hover:bg-[#F85B1A] border border-amber-500/40 hover:border-[#F85B1A] text-[10px] font-bold text-amber-200 hover:text-white transition-all shadow-md opacity-0 group-hover/thumb:opacity-100 flex items-center gap-1 cursor-pointer"
+                className="absolute top-2 right-2 z-20 px-2.5 py-1 bg-[#141416] border border-[#3f3f46] hover:border-[#C9943E] text-[10px] font-medium tracking-widest uppercase text-zinc-300 hover:text-white transition-colors flex items-center gap-1.5 cursor-pointer"
               >
-                <span>🔍</span>
-                <span className="hidden sm:inline">Inspect</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <circle cx="11" cy="11" r="8" />
+                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+                <span className="hidden sm:inline">INSPECT</span>
               </button>
             )}
 
             {/* 15-Minute Checkout Lock Screen */}
             {isLocked && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center z-30 bg-black/85">
-                <span className="text-2xl mb-1">🔒</span>
-                <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">
+              <div className="absolute inset-0 flex flex-col items-center justify-center z-30 bg-black/90">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#eab308" strokeWidth="1.5" className="mb-2">
+                  <rect x="3" y="11" width="18" height="11" />
+                  <path d="M7 11V7a5 5 0 0110 0v4" />
+                </svg>
+                <span className="text-[10px] font-bold text-white uppercase tracking-[0.2em]">
                   Checkout Lock Engaged
                 </span>
-                <span className="text-sm font-black text-amber-400 mt-0.5 tracking-wider">
+                <span className="text-xs font-bold text-amber-400 mt-1 tracking-wider">
                   {formatTimer(lockRemainingSeconds)}
                 </span>
               </div>
@@ -281,11 +192,11 @@ export function CurioBox({
           </div>
 
           {/* Title and Collector Attribution */}
-          <div className="mt-2.5 mb-1 z-10 px-1 text-center">
-            <h3 className="text-sm sm:text-base font-extrabold text-[#F0E8DA] group-hover/thumb:text-[#E8C36A] transition-colors m-0 truncate tracking-wide">
+          <div className="mt-3 mb-1 z-10 px-0.5 text-left">
+            <h3 className="text-sm font-semibold text-[#f4f4f5] group-hover/thumb:text-[#C9943E] transition-colors m-0 truncate tracking-wide">
               {title || 'Untitled Collectible'}
             </h3>
-            <p className="text-[10px] text-[#A89880] mt-0.5 m-0 truncate">
+            <p className="text-[10px] text-[#71717a] mt-1 m-0 truncate tracking-wide">
               {manufacturer || 'Authentic Import'} • {sellerName}
             </p>
           </div>
@@ -293,19 +204,19 @@ export function CurioBox({
       ) : (
         <>
           {/* Collectible Image Display Bay */}
-          <div className="relative h-64 sm:h-72 w-full rounded overflow-hidden flex items-end justify-center bg-black/25">
+          <div className="relative h-64 sm:h-72 w-full border border-[#27272a] overflow-hidden flex items-end justify-center bg-[#09090b]">
             {imageUrl ? (
               <Image
                 src={imageUrl}
                 alt={title || 'Anime Collectible'}
                 fill
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                className="object-contain object-bottom group-hover:scale-105 transition-transform duration-500 p-2"
+                className="object-contain object-bottom p-2"
                 unoptimized={true}
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-4xl text-amber-500/50">
-                ⛩️
+              <div className="w-full h-full flex flex-col items-center justify-center text-xs tracking-widest text-zinc-600 uppercase font-mono">
+                [ No Image Available ]
               </div>
             )}
 
@@ -318,21 +229,27 @@ export function CurioBox({
                   onInspectClick();
                 }}
                 aria-label="Inspect media in lightbox"
-                className="absolute top-2 right-2 z-20 px-2 py-1 rounded-md bg-black/75 hover:bg-[#F85B1A] border border-amber-500/40 hover:border-[#F85B1A] text-[10px] font-bold text-amber-200 hover:text-white transition-all shadow-md opacity-0 group-hover:opacity-100 flex items-center gap-1 cursor-pointer"
+                className="absolute top-2 right-2 z-20 px-2.5 py-1 bg-[#141416] border border-[#3f3f46] hover:border-[#C9943E] text-[10px] font-medium tracking-widest uppercase text-zinc-300 hover:text-white transition-colors flex items-center gap-1.5 cursor-pointer"
               >
-                <span>🔍</span>
-                <span className="hidden sm:inline">Inspect</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <circle cx="11" cy="11" r="8" />
+                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+                <span className="hidden sm:inline">INSPECT</span>
               </button>
             )}
 
             {/* 15-Minute Checkout Lock Screen */}
             {isLocked && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center z-30 bg-black/85">
-                <span className="text-2xl mb-1">🔒</span>
-                <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">
+              <div className="absolute inset-0 flex flex-col items-center justify-center z-30 bg-black/90">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#eab308" strokeWidth="1.5" className="mb-2">
+                  <rect x="3" y="11" width="18" height="11" />
+                  <path d="M7 11V7a5 5 0 0110 0v4" />
+                </svg>
+                <span className="text-[10px] font-bold text-white uppercase tracking-[0.2em]">
                   Checkout Lock Engaged
                 </span>
-                <span className="text-sm font-black text-amber-400 mt-0.5 tracking-wider">
+                <span className="text-xs font-bold text-amber-400 mt-1 tracking-wider">
                   {formatTimer(lockRemainingSeconds)}
                 </span>
               </div>
@@ -340,22 +257,22 @@ export function CurioBox({
           </div>
 
           {/* Title and Collector Attribution */}
-          <div className="mt-2.5 mb-1 z-10 px-1 text-center">
-            <h3 className="text-sm sm:text-base font-extrabold text-[#F0E8DA] group-hover:text-[#E8C36A] transition-colors m-0 truncate tracking-wide">
+          <div className="mt-3 mb-1 z-10 px-0.5 text-left">
+            <h3 className="text-sm font-semibold text-[#f4f4f5] m-0 truncate tracking-wide">
               {title || 'Untitled Collectible'}
             </h3>
-            <p className="text-[10px] text-[#A89880] mt-0.5 m-0 truncate">
+            <p className="text-[10px] text-[#71717a] mt-1 m-0 truncate tracking-wide">
               {manufacturer || 'Authentic Import'} • {sellerName}
             </p>
           </div>
         </>
       )}
 
-      {/* Glass Shelf Divider */}
-      <div className="curio-glass-shelf my-2 w-full" />
+      {/* Subtle Horizontal Divider */}
+      <div className="border-t border-[#27272a] my-3 w-full" />
 
       {/* Bottom Shelf Rail: Interactive Price Badge & Adjacent Add to Cart Button */}
-      <div className="flex items-center gap-2 pt-1 z-10 select-none mt-1">
+      <div className="flex items-center gap-2 z-10 select-none">
         <div
           role="button"
           tabIndex={0}
@@ -373,26 +290,26 @@ export function CurioBox({
               setIsBargainOpen(true);
             }
           }}
-          className="flex-1 flex items-center justify-between px-2.5 py-1.5 rounded-lg bg-black/40 border border-stone-800/90 hover:border-[#F85B1A] hover:bg-[#F85B1A]/10 transition-all cursor-pointer group/price"
+          className="flex-1 flex items-center justify-between px-3 py-2 bg-[#141416] border border-[#27272a] hover:border-[#3f3f46] transition-colors cursor-pointer group/price"
         >
           <div className="flex flex-col text-left">
-            <span className="text-[8px] text-[#A89880] uppercase tracking-wider group-hover/price:text-[#F85B1A] transition-colors font-bold">
-              ASKING PRICE: ₹{askingPriceINR ? askingPriceINR.toLocaleString('en-IN') : '0'}
+            <span className="text-[8px] text-[#71717a] uppercase tracking-[0.16em] font-semibold">
+              ASKING PRICE
             </span>
-            <div className="flex items-baseline gap-1.5">
-              <span className="text-xs sm:text-sm font-black text-[#E8C36A] group-hover/price:text-white transition-colors">
+            <div className="flex items-baseline gap-1.5 mt-0.5">
+              <span className="text-xs sm:text-sm font-bold text-[#fafafa]">
                 ₹{askingPriceINR ? askingPriceINR.toLocaleString('en-IN') : '0'}
               </span>
               {originalPriceINR && originalPriceINR > askingPriceINR && (
-                <span className="text-[10px] text-[#A89880]/60 line-through">
+                <span className="text-[10px] text-[#71717a] line-through">
                   ₹{originalPriceINR.toLocaleString('en-IN')}
                 </span>
               )}
             </div>
           </div>
 
-          <span className="curio-price-btn flex items-center gap-1 text-[10px] font-bold text-[#F85B1A] group-hover/price:text-white">
-            <span>Offer 🤝</span>
+          <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#C9943E] hover:text-[#e4a849]">
+            OFFER
           </span>
         </div>
 
@@ -409,9 +326,13 @@ export function CurioBox({
               openCartDrawer();
             }
           }}
-          className="w-8 h-8 rounded-lg bg-black/40 border border-stone-800 hover:border-[#C9943E] hover:bg-[#C9943E]/20 text-stone-300 hover:text-[#E8C36A] flex items-center justify-center text-xs transition-colors shrink-0 cursor-pointer"
+          className="w-9 h-9 bg-[#141416] border border-[#27272a] hover:border-[#3f3f46] text-zinc-300 hover:text-white flex items-center justify-center transition-colors shrink-0 cursor-pointer"
         >
-          🛒
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <path d="M16 10a4 4 0 0 1-8 0" />
+          </svg>
         </button>
       </div>
 

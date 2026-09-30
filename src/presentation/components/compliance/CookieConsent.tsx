@@ -92,7 +92,10 @@ export function CookieConsent(): React.JSX.Element | null {
           aria-label="Close cookie consent banner"
           className="text-zinc-400 hover:text-white p-1 transition-colors cursor-pointer focus-visible:ring-1 focus-visible:ring-zinc-400 focus-visible:outline-none"
         >
-          <span aria-hidden="true" className="text-sm font-bold">✕</span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
         </button>
       </div>
 

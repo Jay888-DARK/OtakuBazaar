@@ -261,7 +261,7 @@ export function BargainModal({
         {/* C. Pusher WebSocket Terminal Log */}
         <div className="bg-[#121214] border border-zinc-800 p-4 h-40 mb-5 overflow-y-auto flex flex-col justify-end">
           <div className="text-center text-[9px] text-zinc-500 uppercase tracking-widest border-b border-zinc-800 pb-2 mb-2 font-medium">
-            WebSocket Live // Awaiting Counterparty
+            WebSocket Live • Awaiting Counterparty
           </div>
 
           <div className="overflow-y-auto space-y-2 pr-1">
@@ -300,7 +300,7 @@ export function BargainModal({
             <div>
               <div className="text-[10px] text-zinc-500 uppercase tracking-wider">OFFER PROTOCOL STATUS</div>
               <div className="text-zinc-200 font-bold uppercase tracking-wide">
-                {dealOffer.status === 'ACCEPTED' ? '✓ COUNTERSIGNED' : dealOffer.status} // ₹{(dealOffer.offeredPrice || Number(offerPrice)).toLocaleString('en-IN')}
+                {dealOffer.status === 'ACCEPTED' ? 'COUNTERSIGNED' : dealOffer.status} • ₹{(dealOffer.offeredPrice || Number(offerPrice)).toLocaleString('en-IN')}
               </div>
             </div>
 

@@ -82,7 +82,7 @@ export default async function CheckoutPage({ searchParams }: CheckoutPageProps):
         <div className="bg-[#111114] border border-zinc-800 p-6 sm:p-8">
           <div className="flex items-center gap-3 mb-3">
             <span className="px-2.5 py-1 bg-zinc-900 text-zinc-300 border border-zinc-700 text-[10px] uppercase tracking-[0.2em] font-medium">
-              🛡️ 48-Hour Escrow Protection
+              48-Hour Escrow Protection
             </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-zinc-100 uppercase tracking-[0.15em]">
@@ -96,7 +96,9 @@ export default async function CheckoutPage({ searchParams }: CheckoutPageProps):
         {/* Offer Status Banners */}
         {isOfferLocked && (
           <div className="p-4 bg-[#111114] border border-amber-500/50 text-amber-200 text-xs flex items-center gap-3">
-            <span className="text-2xl">🔒</span>
+            <span className="text-xs font-bold px-2 py-1 bg-amber-950/60 border border-amber-500/60 uppercase tracking-widest text-amber-300">
+              LOCKED
+            </span>
             <div>
               <span className="font-bold text-sm block mb-1 uppercase tracking-wider">Escrow Payment Locked</span>
               <span className="text-zinc-400">
@@ -108,7 +110,9 @@ export default async function CheckoutPage({ searchParams }: CheckoutPageProps):
 
         {isOfferAccepted && (
           <div className="p-4 bg-[#111114] border border-emerald-500/50 text-emerald-200 text-xs flex items-center gap-3">
-            <span className="text-2xl">✓</span>
+            <span className="text-xs font-bold px-2 py-1 bg-emerald-950/60 border border-emerald-500/60 uppercase tracking-widest text-emerald-300">
+              ACCEPTED
+            </span>
             <div>
               <span className="font-bold text-sm block mb-1 uppercase tracking-wider">Bargain Offer Accepted</span>
               <span className="text-zinc-400">
@@ -156,8 +160,8 @@ export default async function CheckoutPage({ searchParams }: CheckoutPageProps):
               className="w-full max-w-md mx-auto py-3 bg-zinc-900 hover:bg-zinc-100 text-zinc-200 hover:text-black border border-zinc-700 hover:border-zinc-100 text-xs font-bold uppercase tracking-[0.25em] transition-colors duration-200 cursor-pointer flex items-center justify-center space-x-2 disabled:opacity-50 disabled:pointer-events-none"
             />
             {isOfferLocked ? (
-              <p className="text-[11px] text-amber-400/90 text-center max-w-sm tracking-wide">
-                🔒 Button locked until offer is ACCEPTED by seller.
+              <p className="text-[11px] text-amber-400/90 text-center max-w-sm tracking-wide uppercase">
+                Payment locked until offer is accepted by seller.
               </p>
             ) : (
               <p className="text-[11px] text-zinc-500 text-center max-w-sm tracking-wide">

@@ -30,7 +30,7 @@ export default function PrivacyPolicyPage() {
         <div className="mb-8">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-amber-200 hover:text-white bg-[#1A1410] hover:bg-[#F85B1A] border border-amber-900/40 hover:border-[#F85B1A] transition-all shadow-md group cursor-pointer focus-visible:ring-2 focus-visible:ring-[#F85B1A] focus-visible:outline-none"
+            className="inline-flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-bold text-zinc-300 hover:text-white bg-[#111114] hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-600 transition-colors group cursor-pointer focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none"
             aria-label="Return to OtakuBazaar Marketplace"
           >
             <span className="group-hover:-translate-x-1 transition-transform duration-200" aria-hidden="true">
@@ -62,9 +62,11 @@ export default function PrivacyPolicyPage() {
         {/* Policy Content Sections */}
         <div className="space-y-6 text-sm text-stone-200 leading-relaxed">
           {/* Strict Data Sharing Guarantee Banner */}
-          <section className="p-5 sm:p-6 rounded-2xl border-2 border-emerald-500/40 bg-emerald-950/20 shadow-lg">
+          <section className="p-5 sm:p-6 border border-emerald-500/40 bg-emerald-950/20">
             <div className="flex items-center gap-2.5 mb-2">
-              <span className="text-xl" aria-hidden="true">🛡️</span>
+              <span className="text-[10px] font-bold tracking-widest text-emerald-400 uppercase px-2 py-0.5 border border-emerald-500/40 bg-black">
+                SECURE
+              </span>
               <h2 className="text-base sm:text-lg font-black text-emerald-300 m-0">
                 Data Sharing Constraint: We Never Sell Your Data
               </h2>
@@ -75,7 +77,7 @@ export default function PrivacyPolicyPage() {
           </section>
 
           {/* Section 1: Information We Collect */}
-          <section className="p-6 rounded-2xl bg-[#140F0B]/90 border border-amber-900/30">
+          <section className="p-6 bg-[#111114] border border-zinc-800">
             <h2 className="text-base sm:text-lg font-black text-[#E8C36A] mb-3 flex items-center gap-2">
               <span>1.</span> Information We Collect
             </h2>
@@ -101,7 +103,7 @@ export default function PrivacyPolicyPage() {
           </section>
 
           {/* Section 2: Third-Party Service Providers */}
-          <section className="p-6 rounded-2xl bg-[#140F0B]/90 border border-amber-900/30">
+          <section className="p-6 bg-[#111114] border border-zinc-800">
             <h2 className="text-base sm:text-lg font-black text-[#E8C36A] mb-3 flex items-center gap-2">
               <span>2.</span> Integrated Infrastructure: Razorpay & Shiprocket
             </h2>
@@ -110,7 +112,7 @@ export default function PrivacyPolicyPage() {
                 To provide institutional-grade escrow and secure fulfillment, OtakuBazaar integrates with regulated external service partners:
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-                <div className="p-4 rounded-xl bg-[#1A1410] border border-stone-800">
+                <div className="p-4 bg-[#141416] border border-zinc-800">
                   <h3 className="text-xs font-black uppercase text-[#F85B1A] mb-1">
                     Razorpay Payment Aggregator
                   </h3>
@@ -118,7 +120,7 @@ export default function PrivacyPolicyPage() {
                     Payment processing, UPI payouts, and escrow fund holding are handled via PCI-DSS compliant Razorpay APIs. OtakuBazaar never stores raw credit card details or bank account passwords on internal servers.
                   </p>
                 </div>
-                <div className="p-4 rounded-xl bg-[#1A1410] border border-stone-800">
+                <div className="p-4 bg-[#141416] border border-zinc-800">
                   <h3 className="text-xs font-black uppercase text-[#F85B1A] mb-1">
                     Shiprocket Logistics Network
                   </h3>
@@ -131,7 +133,7 @@ export default function PrivacyPolicyPage() {
           </section>
 
           {/* Section 3: Cookies & Consent Architecture */}
-          <section className="p-6 rounded-2xl bg-[#140F0B]/90 border border-amber-900/30">
+          <section className="p-6 bg-[#111114] border border-zinc-800">
             <h2 className="text-base sm:text-lg font-black text-[#E8C36A] mb-3 flex items-center gap-2">
               <span>3.</span> Cookies & Tracking Consent
             </h2>
@@ -141,7 +143,7 @@ export default function PrivacyPolicyPage() {
           </section>
 
           {/* Section 4: User Data Deletion & The Right to be Forgotten */}
-          <section className="p-6 rounded-2xl bg-[#140F0B]/90 border border-amber-900/30">
+          <section className="p-6 bg-[#111114] border border-zinc-800">
             <h2 className="text-base sm:text-lg font-black text-[#E8C36A] mb-3 flex items-center gap-2">
               <span>4.</span> Data Deletion & Permanent Erasure
             </h2>

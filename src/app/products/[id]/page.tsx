@@ -83,7 +83,7 @@ export default function ProductDetailsPage({ params }: ProductDetailsProps) {
                 <span className="text-2xl font-bold uppercase tracking-wider text-zinc-100">₹999.00</span>
               </div>
               <span className="text-xs font-semibold uppercase tracking-wider text-emerald-400">
-                🛡️ 100% Escrow Protected
+                100% Escrow Protected
               </span>
             </div>
 
@@ -94,9 +94,13 @@ export default function ProductDetailsPage({ params }: ProductDetailsProps) {
                   type="button"
                   id="add-to-cart-btn"
                   data-testid="add-to-cart"
-                  className="w-full py-3.5 px-6 font-bold text-sm uppercase tracking-[0.2em] text-white bg-[#F85B1A] hover:brightness-110 active:scale-[0.98] border border-[#F85B1A] transition-all cursor-pointer flex items-center justify-center gap-2"
+                  className="w-full py-3.5 px-6 font-bold text-sm uppercase tracking-[0.2em] text-white bg-[#F85B1A] hover:brightness-110 border border-[#F85B1A] transition-colors cursor-pointer flex items-center justify-center gap-2"
                 >
-                  <span>🛒</span>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+                    <line x1="3" y1="6" x2="21" y2="6" />
+                    <path d="M16 10a4 4 0 0 1-8 0" />
+                  </svg>
                   <span>Add to Cart</span>
                 </button>
               </Link>

@@ -66,7 +66,9 @@ export function CookieBanner(): React.JSX.Element | null {
         {/* Top Bar: Icon + Badge + Close 'X' */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-base">🛡️</span>
+            <span className="text-[10px] font-bold tracking-widest text-[#E8C36A] uppercase px-2 py-0.5 border border-zinc-700 bg-zinc-900">
+              PRIVACY
+            </span>
             <span className="text-xs font-bold tracking-[0.2em] text-zinc-200 uppercase">
               Collector Escrow Privacy
             </span>
@@ -78,7 +80,10 @@ export function CookieBanner(): React.JSX.Element | null {
             aria-label="Close banner without tracking"
             className="text-zinc-400 hover:text-zinc-100 text-sm p-1 transition-colors cursor-pointer"
           >
-            ✕
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
           </button>
         </div>
 

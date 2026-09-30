@@ -56,7 +56,7 @@ export default function VaultHero({ onSelectVaultItem }: VaultHeroProps) {
       {/* Floating Center Telemetry */}
       <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 pointer-events-none z-20">
         <span className="text-[10px] font-semibold tracking-[0.3em] uppercase text-zinc-400 mb-2.5">
-          TOKYO ARCHIVAL VAULT // ESCROW DIRECT
+          TOKYO ARCHIVAL VAULT • ESCROW DIRECT
         </span>
         <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-zinc-100 uppercase">
           Authenticated Grails

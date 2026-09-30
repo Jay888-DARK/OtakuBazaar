@@ -17,16 +17,15 @@ export function LegalSupportFooter(): React.JSX.Element {
     <footer
       role="contentinfo"
       aria-label="Legal and Customer Support Information"
-      className="mt-12 rounded-2xl border border-amber-900/40 bg-[#140F0B]/95 p-6 sm:p-8 backdrop-blur-md shadow-2xl text-[#F0E8DA]"
-      style={{
-        boxShadow: '0 20px 40px -10px rgba(0, 0, 0, 0.85), 0 0 25px rgba(201, 148, 62, 0.15)',
-      }}
+      className="mt-12 border border-zinc-800 bg-[#0e0e11] p-6 sm:p-8 text-zinc-100"
     >
       <div className="flex flex-col lg:flex-row gap-8 justify-between items-start">
         {/* Company & Support Overview */}
         <div className="max-w-md space-y-3">
           <div className="flex items-center gap-2">
-            <span className="text-xl" aria-hidden="true">🛡️</span>
+            <span className="text-[10px] font-bold tracking-widest text-[#E8C36A] uppercase px-2 py-0.5 border border-zinc-700 bg-zinc-900">
+              DESK
+            </span>
             <h2 className="text-base sm:text-lg font-extrabold tracking-[0.15em] text-zinc-100 uppercase m-0">
               OtakuBazaar Support Desk
             </h2>

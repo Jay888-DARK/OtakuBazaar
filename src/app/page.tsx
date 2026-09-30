@@ -29,7 +29,7 @@ export default function HomePage(_props?: { searchParams?: Promise<Record<string
           {/* Editorial Section Masthead */}
           <div className="p-6 sm:p-10 border-b border-zinc-800">
             <span className="text-[10px] font-semibold tracking-[0.25em] text-zinc-500 uppercase block mb-1">
-              Consumer Protection Shield // Protocol Escrow
+              Consumer Protection Shield • Protocol Escrow
             </span>
             <h2 className="text-xl sm:text-2xl font-bold text-zinc-100 uppercase tracking-wider">
               Authenticity Vault &amp; 48-Hour Inspection Escrow
@@ -49,7 +49,7 @@ export default function HomePage(_props?: { searchParams?: Promise<Record<string
                     STEP 01
                   </span>
                   <span className="text-[9px] uppercase tracking-[0.25em] text-zinc-500 font-medium">
-                    Acquisition Gate // Safe Lock
+                    Acquisition Gate • Safe Lock
                   </span>
                 </div>
                 <h3 className="text-base sm:text-lg font-bold uppercase tracking-wider text-zinc-100 mb-2">
@@ -62,15 +62,15 @@ export default function HomePage(_props?: { searchParams?: Promise<Record<string
 
               {/* Protocol Telemetry Indicators */}
               <div className="mt-8 pt-6 border-t border-zinc-800/80 grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div className="border border-zinc-800/90 bg-[#09090b] p-3">
+                <div className="border border-zinc-800 bg-[#09090b] p-3">
                   <span className="block text-[9px] text-zinc-500 uppercase tracking-widest">Lock Duration</span>
                   <span className="text-xs font-semibold text-zinc-200 uppercase tracking-wider">15 Minutes</span>
                 </div>
-                <div className="border border-zinc-800/90 bg-[#09090b] p-3">
+                <div className="border border-zinc-800 bg-[#09090b] p-3">
                   <span className="block text-[9px] text-zinc-500 uppercase tracking-widest">Vault Security</span>
                   <span className="text-xs font-semibold text-zinc-200 uppercase tracking-wider">Double-Entry</span>
                 </div>
-                <div className="border border-zinc-800/90 bg-[#09090b] p-3">
+                <div className="border border-zinc-800 bg-[#09090b] p-3">
                   <span className="block text-[9px] text-zinc-500 uppercase tracking-widest">Reversibility</span>
                   <span className="text-xs font-semibold text-zinc-200 uppercase tracking-wider">100% Guaranteed</span>
                 </div>
@@ -97,7 +97,7 @@ export default function HomePage(_props?: { searchParams?: Promise<Record<string
                     Seller packs with collector-grade bubble wrap and ships via insured express courier with real-time end-to-end telemetry.
                   </p>
                 </div>
-                <div className="mt-4 pt-3 border-t border-zinc-800/60 flex items-center justify-between text-[10px] uppercase tracking-widest text-zinc-500">
+                <div className="mt-4 pt-3 border-t border-zinc-800 flex items-center justify-between text-[10px] uppercase tracking-widest text-zinc-500">
                   <span>Transit Insurance</span>
                   <span className="text-zinc-300 font-medium">Covered In Full</span>
                 </div>
@@ -121,7 +121,7 @@ export default function HomePage(_props?: { searchParams?: Promise<Record<string
                     Inspect manufacturer holographic seals and figure joints. Satisfied? Funds disburse to the seller. Disputed? 100% refund guaranteed.
                   </p>
                 </div>
-                <div className="mt-4 pt-3 border-t border-zinc-800/60 flex items-center justify-between text-[10px] uppercase tracking-widest text-zinc-500">
+                <div className="mt-4 pt-3 border-t border-zinc-800 flex items-center justify-between text-[10px] uppercase tracking-widest text-zinc-500">
                   <span>Inspection Window</span>
                   <span className="text-zinc-300 font-medium">48 Hours Post-Delivery</span>
                 </div>

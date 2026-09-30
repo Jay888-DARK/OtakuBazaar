@@ -131,17 +131,17 @@ export function EscrowChat({
   };
 
   return (
-    <div className="flex flex-col h-[520px] w-full max-w-2xl mx-auto rounded-2xl bg-[#140F0B] border border-[#16120e] shadow-2xl overflow-hidden text-[#F0E8DA]">
+    <div className="flex flex-col h-[520px] w-full max-w-2xl mx-auto bg-[#0c0c0e] border border-zinc-800 text-[#F0E8DA]">
       {/* ----------------------------------------------------------------- */}
       {/* Top Header: Escrow Status, Order Title & Live Indicator           */}
       {/* ----------------------------------------------------------------- */}
-      <header className="p-3.5 sm:p-4 bg-[#1A1410] border-b border-[#16120e] flex items-center justify-between z-10">
+      <header className="p-3.5 sm:p-4 bg-[#141416] border-b border-zinc-800 flex items-center justify-between z-10">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 bg-zinc-900 border border-zinc-700 flex items-center justify-center text-lg">
-            🛡️
+          <div className="w-8 h-8 bg-zinc-900 border border-zinc-700 flex items-center justify-center text-xs font-bold text-[#E8C36A]">
+            ESC
           </div>
           <div className="flex flex-col">
-            <h3 className="text-xs sm:text-sm font-extrabold text-zinc-100 truncate max-w-[220px] sm:max-w-xs uppercase tracking-[0.15em]">
+            <h3 className="text-xs sm:text-sm font-bold text-zinc-100 truncate max-w-[220px] sm:max-w-xs uppercase tracking-[0.15em]">
               {orderTitle}
             </h3>
             <span className="text-[10px] text-zinc-400 flex items-center gap-1.5 uppercase tracking-wider">
@@ -171,7 +171,6 @@ export function EscrowChat({
       <main className="flex-1 overflow-y-auto p-4 space-y-3 bg-[#0c0c0e] border-y border-zinc-800 scrollbar-thin">
         {messages.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center text-center p-6 text-zinc-400">
-            <span className="text-2xl mb-2">💬</span>
             <p className="text-xs font-bold text-zinc-200 mb-1 uppercase tracking-[0.2em]">
               Encrypted Post-Bid Escrow Channel
             </p>

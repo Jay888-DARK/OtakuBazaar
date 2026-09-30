@@ -214,39 +214,27 @@ export function SettingsModal({ isOpen, onClose, isSoundOn, onToggleSound }: Set
       role="dialog"
       aria-modal="true"
       aria-labelledby="settings-title"
-      className="fixed inset-0 z-[100] flex items-center justify-center p-4"
-      style={{
-        background: 'rgba(8, 6, 4, 0.78)',
-        backdropFilter: 'blur(10px)',
-        WebkitBackdropFilter: 'blur(10px)',
-      }}
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/85"
       onClick={onClose}
     >
       <div
-        className="w-full max-w-lg rounded-2xl overflow-hidden shadow-2xl transition-all relative border border-[#B48C50]/30 animate-in fade-in zoom-in-95 duration-200"
+        className="w-full max-w-lg bg-[#0e0e11] border border-zinc-800 text-zinc-100"
         style={{
-          background: 'linear-gradient(165deg, #241A13 0%, #150E09 50%, #0D0906 100%)',
-          color: '#F0E8DA',
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.9), 0 0 25px rgba(201, 148, 62, 0.15)',
+          boxShadow: 'none',
         }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Top Header Bar */}
-        <div
-          className="px-6 py-4 flex items-center justify-between border-b border-[#B48C50]/20"
-          style={{
-            background: 'linear-gradient(90deg, rgba(36,26,19,0.95) 0%, rgba(26,20,16,0.95) 100%)',
-          }}
-        >
+        <div className="px-6 py-4 flex items-center justify-between border-b border-zinc-800 bg-[#141416]">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 bg-zinc-900 border border-zinc-700 flex items-center justify-center text-zinc-300">
-              ⚙
+            <div className="w-8 h-8 bg-zinc-900 border border-zinc-700 flex items-center justify-center text-xs font-bold text-zinc-300">
+              SET
             </div>
             <div>
-              <h2 id="settings-title" className="text-base font-extrabold tracking-[0.15em] m-0 text-zinc-100 uppercase">
+              <h2 id="settings-title" className="text-sm font-bold tracking-[0.15em] m-0 text-zinc-100 uppercase">
                 PREFERENCES & VAULT SETTINGS
               </h2>
-              <p className="text-[10px] font-bold text-zinc-400 tracking-[0.2em] uppercase m-0 mt-0.5">
+              <p className="text-[10px] font-semibold text-zinc-400 tracking-[0.2em] uppercase m-0 mt-0.5">
                 ESCROW DIRECTIVES & AUDIO ATMOSPHERE
               </p>
             </div>
@@ -254,10 +242,13 @@ export function SettingsModal({ isOpen, onClose, isSoundOn, onToggleSound }: Set
           <button
             type="button"
             onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center hover:bg-white/10 text-zinc-400 hover:text-zinc-100 transition-colors border border-zinc-800 cursor-pointer"
+            className="w-8 h-8 flex items-center justify-center bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-zinc-100 transition-colors border border-zinc-800 cursor-pointer"
             aria-label="Close Settings"
           >
-            ✕
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
           </button>
         </div>
 
@@ -267,10 +258,10 @@ export function SettingsModal({ isOpen, onClose, isSoundOn, onToggleSound }: Set
           {/* 1. DISPLAY ATMOSPHERE (Theme Mode) */}
           <div className="space-y-2.5">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-black uppercase tracking-wider text-[#C9943E] flex items-center gap-1.5">
-                <span>🏮</span> Display Atmosphere
+              <span className="text-xs font-bold uppercase tracking-wider text-[#C9943E] flex items-center gap-1.5">
+                Display Atmosphere
               </span>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-black/40 text-[#A89880] border border-stone-800">
+              <span className="text-[10px] font-bold px-2 py-0.5 bg-black text-[#a1a1aa] border border-zinc-800">
                 {theme === 'dark' ? 'Night (Manga Ink)' : 'Day (Washi Light)'}
               </span>
             </div>
@@ -279,61 +270,59 @@ export function SettingsModal({ isOpen, onClose, isSoundOn, onToggleSound }: Set
               <button
                 type="button"
                 onClick={() => setTheme('dark')}
-                className={`p-3 rounded-xl border flex flex-col items-center gap-1.5 transition-all cursor-pointer text-center ${
+                className={`p-3 border flex flex-col items-center gap-1.5 transition-colors cursor-pointer text-center ${
                   theme === 'dark'
-                    ? 'border-[#C9943E] bg-[#C9943E]/15 shadow-[0_0_12px_rgba(201,148,62,0.25)] text-[#E8C36A]'
-                    : 'border-stone-800 bg-black/30 hover:border-stone-700 text-[#A89880]'
+                    ? 'border-[#C9943E] bg-[#141416] text-[#E8C36A]'
+                    : 'border-zinc-800 bg-black/50 hover:border-zinc-700 text-[#a1a1aa]'
                 }`}
               >
-                <span className="text-xl">🌙</span>
-                <span className="text-xs font-black">Night Mode</span>
-                <span className="text-[9px] font-medium opacity-75">Manga ink obsidian & cloud drift</span>
+                <span className="text-xs font-bold uppercase tracking-wider">Night Mode</span>
+                <span className="text-[9px] font-normal text-zinc-400">Manga ink obsidian & cloud drift</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setTheme('light')}
-                className={`p-3 rounded-xl border flex flex-col items-center gap-1.5 transition-all cursor-pointer text-center ${
+                className={`p-3 border flex flex-col items-center gap-1.5 transition-colors cursor-pointer text-center ${
                   theme === 'light'
-                    ? 'border-[#C9943E] bg-[#C9943E]/15 shadow-[0_0_12px_rgba(201,148,62,0.25)] text-[#E8C36A]'
-                    : 'border-stone-800 bg-black/30 hover:border-stone-700 text-[#A89880]'
+                    ? 'border-[#C9943E] bg-[#141416] text-[#E8C36A]'
+                    : 'border-zinc-800 bg-black/50 hover:border-zinc-700 text-[#a1a1aa]'
                 }`}
               >
-                <span className="text-xl">☀️</span>
-                <span className="text-xs font-black">Day Mode</span>
-                <span className="text-[9px] font-medium opacity-75">Sunrise washi paper & cranes</span>
+                <span className="text-xs font-bold uppercase tracking-wider">Day Mode</span>
+                <span className="text-[9px] font-normal text-zinc-400">Sunrise washi paper & cranes</span>
               </button>
             </div>
           </div>
 
           {/* 2. AUDIO & IMMERSION (Katana SFX & Sakura BGM) */}
-          <div className="space-y-3.5 pt-2 border-t border-[#B48C50]/15">
-            <span className="text-xs font-black uppercase tracking-wider text-[#C9943E] flex items-center gap-1.5">
-              <span>⚔️</span> Audio & Sound FX
+          <div className="space-y-3.5 pt-2 border-t border-zinc-800">
+            <span className="text-xs font-bold uppercase tracking-wider text-[#C9943E] flex items-center gap-1.5">
+              Audio & Sound FX
             </span>
 
             {/* Katana Sound Setting */}
             <div
-              className="p-3.5 rounded-xl border border-stone-800/80 bg-black/30 flex items-center justify-between gap-3"
+              className="p-3.5 border border-zinc-800 bg-black/50 flex items-center justify-between gap-3"
             >
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-[#241A13] border border-[#B48C50]/30 flex items-center justify-center shrink-0">
-                  <KatanaSwordIcon active={isSoundOn} size={24} />
+                <div className="w-9 h-9 bg-zinc-900 border border-zinc-700 flex items-center justify-center shrink-0">
+                  <KatanaSwordIcon active={isSoundOn} size={20} />
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-black text-[#F0E8DA]">Katana Slash SFX</span>
+                    <span className="text-xs font-bold text-zinc-200 uppercase tracking-wider">Katana Slash SFX</span>
                     <span
-                      className={`text-[9px] font-black px-1.5 py-0.2 rounded ${
+                      className={`text-[9px] font-bold px-1.5 py-0.5 border ${
                         isSoundOn
-                          ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                          : 'bg-stone-800 text-stone-400'
+                          ? 'bg-amber-500/10 text-amber-300 border-amber-500/30'
+                          : 'bg-zinc-800 text-zinc-400 border-zinc-700'
                       }`}
                     >
                       {isSoundOn ? 'ENABLED' : 'MUTED'}
                     </span>
                   </div>
-                  <p className="text-[10px] text-[#A89880] m-0 mt-0.5 leading-tight">
+                  <p className="text-[10px] text-zinc-400 m-0 mt-0.5 leading-tight">
                     Crisp blade unsheathing feedback on route transitions and grail hovers.
                   </p>
                 </div>
@@ -343,28 +332,28 @@ export function SettingsModal({ isOpen, onClose, isSoundOn, onToggleSound }: Set
                 <button
                   type="button"
                   onClick={handleTestSlash}
-                  className={`px-2.5 py-1 rounded-lg text-[10px] font-black transition-all cursor-pointer border ${
+                  className={`px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer border ${
                     isSlashing
-                      ? 'bg-amber-500 text-stone-950 border-amber-400 scale-95'
-                      : 'bg-black/50 text-[#E8C36A] border-[#C9943E]/40 hover:bg-[#C9943E]/20'
+                      ? 'bg-amber-500 text-stone-950 border-amber-400'
+                      : 'bg-black text-[#E8C36A] border-[#C9943E]/40 hover:bg-[#C9943E]/20'
                   }`}
                   title="Test Katana Slash Audio"
                 >
-                  ⚡ Test Slash
+                  Test Slash
                 </button>
                 <button
                   type="button"
                   onClick={onToggleSound}
-                  className={`w-12 h-6 rounded-full p-0.5 transition-colors cursor-pointer border ${
+                  className={`w-11 h-6 p-0.5 transition-colors cursor-pointer border ${
                     isSoundOn
-                      ? 'bg-gradient-to-r from-amber-600 to-amber-500 border-amber-400'
-                      : 'bg-stone-800 border-stone-700'
+                      ? 'bg-amber-600 border-amber-400'
+                      : 'bg-zinc-800 border-zinc-700'
                   }`}
                   aria-label="Toggle Katana Sound"
                 >
                   <div
-                    className={`w-4.5 h-4.5 rounded-full bg-white transition-transform ${
-                      isSoundOn ? 'translate-x-6' : 'translate-x-0.5'
+                    className={`w-4 h-4 bg-white transition-transform ${
+                      isSoundOn ? 'translate-x-5' : 'translate-x-0'
                     }`}
                   />
                 </button>
@@ -373,27 +362,27 @@ export function SettingsModal({ isOpen, onClose, isSoundOn, onToggleSound }: Set
 
             {/* Sakura Ambient BGM Setting */}
             <div
-              className="p-3.5 rounded-xl border border-stone-800/80 bg-black/30 space-y-2.5"
+              className="p-3.5 border border-zinc-800 bg-black/50 space-y-2.5"
             >
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-[#241A13] border border-[#B48C50]/30 flex items-center justify-center shrink-0 text-base">
-                    🎵
+                  <div className="w-9 h-9 bg-zinc-900 border border-zinc-700 flex items-center justify-center shrink-0 text-xs font-bold text-zinc-300">
+                    BGM
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-black text-[#F0E8DA]">Sakura Ambient Lo-Fi BGM</span>
+                      <span className="text-xs font-bold text-zinc-200 uppercase tracking-wider">Sakura Ambient Lo-Fi BGM</span>
                       <span
-                        className={`text-[9px] font-black px-1.5 py-0.2 rounded ${
+                        className={`text-[9px] font-bold px-1.5 py-0.5 border ${
                           bgmPlaying
-                            ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                            : 'bg-stone-800 text-stone-400'
+                            ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30'
+                            : 'bg-zinc-800 text-zinc-400 border-zinc-700'
                         }`}
                       >
                         {bgmPlaying ? 'PLAYING' : 'PAUSED'}
                       </span>
                     </div>
-                    <p className="text-[10px] text-[#A89880] m-0 mt-0.5 leading-tight">
+                    <p className="text-[10px] text-zinc-400 m-0 mt-0.5 leading-tight">
                       Infinite relaxing background melody for exploring grails (/sakura.mp3).
                     </p>
                   </div>
@@ -402,19 +391,19 @@ export function SettingsModal({ isOpen, onClose, isSoundOn, onToggleSound }: Set
                 <button
                   type="button"
                   onClick={handleToggleBgm}
-                  className={`px-3 py-1 rounded-full text-[10px] font-black tracking-wider transition-all cursor-pointer border ${
+                  className={`px-3 py-1 text-[10px] font-bold tracking-wider uppercase transition-colors cursor-pointer border ${
                     bgmPlaying
                       ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
-                      : 'bg-stone-900 text-stone-300 border-stone-700 hover:border-stone-500'
+                      : 'bg-zinc-900 text-zinc-300 border-zinc-700 hover:border-zinc-500'
                   }`}
                 >
-                  {bgmPlaying ? '⏸ Pause' : '▶ Play'}
+                  {bgmPlaying ? 'Pause' : 'Play'}
                 </button>
               </div>
 
               {/* Volume Slider */}
-              <div className="flex items-center gap-3 pt-1 border-t border-stone-800/60">
-                <span className="text-[10px] text-[#A89880] font-bold shrink-0">Volume: {Math.round(bgmVolume * 100)}%</span>
+              <div className="flex items-center gap-3 pt-1 border-t border-zinc-800">
+                <span className="text-[10px] text-zinc-400 font-bold shrink-0">Volume: {Math.round(bgmVolume * 100)}%</span>
                 <input
                   type="range"
                   min={0}
@@ -422,16 +411,16 @@ export function SettingsModal({ isOpen, onClose, isSoundOn, onToggleSound }: Set
                   step={0.05}
                   value={bgmVolume}
                   onChange={handleVolumeChange}
-                  className="w-full h-1.5 bg-stone-800 rounded-lg appearance-none cursor-pointer accent-[#C9943E]"
+                  className="w-full h-1.5 bg-zinc-800 appearance-none cursor-pointer accent-[#C9943E]"
                 />
               </div>
             </div>
           </div>
 
           {/* 3. COLLECTOR PERSONA SWITCHER */}
-          <div className="space-y-2.5 pt-2 border-t border-[#B48C50]/15">
-            <span className="text-xs font-black uppercase tracking-wider text-[#C9943E] flex items-center gap-1.5">
-              <span>👤</span> Active Vault Persona
+          <div className="space-y-2.5 pt-2 border-t border-zinc-800">
+            <span className="text-xs font-bold uppercase tracking-wider text-[#C9943E] flex items-center gap-1.5">
+              Active Vault Persona
             </span>
 
             <div className="grid grid-cols-3 gap-2">
@@ -443,15 +432,17 @@ export function SettingsModal({ isOpen, onClose, isSoundOn, onToggleSound }: Set
                     key={role}
                     type="button"
                     onClick={() => handleSelectPersona(role)}
-                    className={`p-2.5 rounded-xl border flex flex-col items-center gap-1 transition-all cursor-pointer text-center ${
+                    className={`p-2.5 border flex flex-col items-center gap-1 transition-colors cursor-pointer text-center ${
                       isSelected
-                        ? 'border-[#C9943E] bg-[#C9943E]/15 text-[#E8C36A] shadow-[0_0_10px_rgba(201,148,62,0.2)]'
-                        : 'border-stone-800 bg-black/30 hover:border-stone-700 text-[#A89880]'
+                        ? 'border-[#C9943E] bg-[#141416] text-[#E8C36A]'
+                        : 'border-zinc-800 bg-black/50 hover:border-zinc-700 text-zinc-400'
                     }`}
                   >
-                    <span className="text-xl">{persona.avatar}</span>
-                    <span className="text-[11px] font-black truncate max-w-full">{persona.name.split(' ')[0]}</span>
-                    <span className="text-[8px] font-bold uppercase tracking-wider px-1.5 py-0.2 rounded bg-black/50 text-[#C9943E]">
+                    <span className="text-xs font-bold border border-zinc-700 bg-zinc-900 px-1.5 py-0.5 text-zinc-200">
+                      {persona.avatar}
+                    </span>
+                    <span className="text-[11px] font-bold truncate max-w-full uppercase">{persona.name.split(' ')[0]}</span>
+                    <span className="text-[8px] font-bold uppercase tracking-wider px-1.5 py-0.2 bg-black border border-zinc-800 text-[#C9943E]">
                       {persona.role}
                     </span>
                   </button>
@@ -461,20 +452,20 @@ export function SettingsModal({ isOpen, onClose, isSoundOn, onToggleSound }: Set
           </div>
 
           {/* 4. DANGER ZONE: DATA & ACCOUNT DELETION */}
-          <div className="p-3.5 rounded-xl border border-rose-600/40 bg-rose-950/20 text-xs space-y-2.5">
+          <div className="p-3.5 border border-rose-900/60 bg-rose-950/20 text-xs space-y-2.5">
             <div className="flex items-center justify-between">
-              <span className="font-black uppercase tracking-wider text-rose-400 flex items-center gap-1.5">
-                <span aria-hidden="true">⚠️</span> Privacy &amp; Data Sovereignty
+              <span className="font-bold uppercase tracking-wider text-rose-400 flex items-center gap-1.5">
+                Privacy & Data Sovereignty
               </span>
               <span className="text-[10px] text-rose-300 uppercase tracking-widest font-semibold">Irreversible Action</span>
             </div>
 
-            <p className="text-[11px] text-stone-300 m-0 leading-relaxed">
+            <p className="text-[11px] text-zinc-300 m-0 leading-relaxed">
               Permanently delete your profile, chat messages, active sessions, and transactional history from our database.
             </p>
 
             {deleteStatus && (
-              <div className="p-2 rounded-lg bg-rose-900/40 border border-rose-500/50 text-[11px] font-bold text-rose-200">
+              <div className="p-2 bg-rose-900/40 border border-rose-500/50 text-[11px] font-bold text-rose-200">
                 {deleteStatus}
               </div>
             )}
@@ -484,13 +475,12 @@ export function SettingsModal({ isOpen, onClose, isSoundOn, onToggleSound }: Set
                 type="button"
                 onClick={() => setIsConfirmingDelete(true)}
                 aria-label="Request permanent account and personal data deletion"
-                className="w-full py-2 px-3 rounded-xl bg-rose-900/30 hover:bg-rose-600 text-rose-200 hover:text-white border border-rose-600/50 font-black text-xs transition-all cursor-pointer flex items-center justify-center gap-2 focus-visible:ring-2 focus-visible:ring-[#F85B1A] focus-visible:outline-none"
+                className="w-full py-2 px-3 bg-rose-950/40 hover:bg-rose-900 text-rose-200 hover:text-white border border-rose-800 font-bold text-xs uppercase tracking-wider transition-colors cursor-pointer flex items-center justify-center gap-2"
               >
-                <span aria-hidden="true">🗑️</span>
                 <span>Delete Account Data</span>
               </button>
             ) : (
-              <div className="p-3 rounded-xl bg-black/60 border border-rose-500/60 space-y-2">
+              <div className="p-3 bg-black border border-rose-500/60 space-y-2">
                 <p className="text-[11px] font-bold text-rose-300 m-0 leading-tight">
                   Are you absolutely certain? This will wipe your account, listings, and messages forever.
                 </p>
@@ -500,7 +490,7 @@ export function SettingsModal({ isOpen, onClose, isSoundOn, onToggleSound }: Set
                     disabled={isDeleting}
                     onClick={handleDeleteAccountData}
                     aria-label="Confirm permanent account deletion"
-                    className="flex-1 py-1.5 px-3 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-black text-xs transition-all cursor-pointer shadow-md disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none"
+                    className="flex-1 py-1.5 px-3 bg-rose-700 hover:bg-rose-600 text-white font-bold text-xs uppercase tracking-wider transition-colors cursor-pointer disabled:opacity-50"
                   >
                     {isDeleting ? 'Purging Records...' : 'Yes, Delete Permanently'}
                   </button>
@@ -512,7 +502,7 @@ export function SettingsModal({ isOpen, onClose, isSoundOn, onToggleSound }: Set
                       setDeleteStatus(null);
                     }}
                     aria-label="Cancel account deletion"
-                    className="py-1.5 px-3 rounded-lg bg-stone-800 hover:bg-stone-700 text-stone-200 font-bold text-xs transition-all cursor-pointer focus-visible:ring-2 focus-visible:ring-stone-400 focus-visible:outline-none"
+                    className="py-1.5 px-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-bold text-xs uppercase tracking-wider transition-colors cursor-pointer"
                   >
                     Cancel
                   </button>
@@ -522,9 +512,9 @@ export function SettingsModal({ isOpen, onClose, isSoundOn, onToggleSound }: Set
           </div>
 
           {/* 5. ESCROW DIRECTIVES & SECURITY BANNER */}
-          <div className="p-3 rounded-xl border border-[#C9943E]/20 bg-[#1A1410] text-[10px] space-y-1 text-[#A89880]">
-            <div className="flex items-center gap-1.5 text-[#E8C36A] font-bold">
-              <span>🛡️</span> Escrow Authenticated Marketplace Directives
+          <div className="p-3 border border-zinc-800 bg-[#141416] text-[10px] space-y-1 text-zinc-400">
+            <div className="text-zinc-200 font-bold uppercase tracking-wider">
+              Escrow Authenticated Marketplace Directives
             </div>
             <p className="m-0 leading-relaxed">
               Every checkout is backed by a 48-Hour Double-Escrow Inspection Window and a 15-Minute Concurrency Reservation Lock. Multi-tab BroadcastChannel presence is active.
@@ -534,17 +524,14 @@ export function SettingsModal({ isOpen, onClose, isSoundOn, onToggleSound }: Set
         </div>
 
         {/* Footer */}
-        <div
-          className="px-6 py-3 border-t border-[#B48C50]/20 flex items-center justify-between"
-          style={{ background: 'rgba(20, 14, 10, 0.95)' }}
-        >
-          <span className="text-[10px] text-[#A89880] font-bold">
+        <div className="px-6 py-3 border-t border-zinc-800 flex items-center justify-between bg-[#141416]">
+          <span className="text-[10px] text-zinc-500 font-semibold uppercase tracking-wider">
             OtakuBazaar v0.1.0 • Japanese Craftsman Engine
           </span>
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider text-stone-950 bg-[#C9943E] hover:bg-[#E8C36A] transition-colors cursor-pointer shadow-md"
+            className="px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-black bg-zinc-100 hover:bg-white transition-colors cursor-pointer"
           >
             Done
           </button>

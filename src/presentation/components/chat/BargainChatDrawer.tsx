@@ -244,7 +244,7 @@ export function BargainChatDrawer({
         ...prev,
         {
           id: `msg-${Date.now()}`,
-          text: `⚔️ Kyojuro Rengoku: "Deal agreed at ₹${(
+          text: `Kyojuro Rengoku: "Deal agreed at ₹${(
             res.offer.offeredPrice || offerPrice
           ).toLocaleString('en-IN')}! Secure 24-hr escrow lock engaged."`,
           senderId: 'user_seller_rengoku',
@@ -261,16 +261,18 @@ export function BargainChatDrawer({
       role="dialog"
       aria-modal="true"
       aria-labelledby="bargain-drawer-title"
-      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/85 animate-in fade-in duration-200"
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/85"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="relative w-full max-w-lg bg-[#111114] border border-zinc-800 p-6 sm:p-7 text-zinc-100 max-h-[92vh] overflow-y-auto">
+      <div className="relative w-full max-w-lg bg-[#0e0e11] border border-zinc-800 p-6 sm:p-7 text-zinc-100 max-h-[92vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between pb-4 border-b border-zinc-800">
           <div className="flex items-center gap-2.5">
-            <span className="text-2xl">🤝</span>
+            <span className="text-[10px] font-bold tracking-widest text-[#E8C36A] uppercase px-2 py-0.5 border border-zinc-700 bg-zinc-900">
+              OFFER
+            </span>
             <div>
               <h2 id="bargain-drawer-title" className="text-base font-extrabold text-zinc-100 uppercase tracking-[0.15em]">
                 Collector Price Bargain
@@ -286,7 +288,10 @@ export function BargainChatDrawer({
             aria-label="Close modal"
             className="w-8 h-8 bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-600 flex items-center justify-center text-sm transition-colors cursor-pointer"
           >
-            ✕
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
           </button>
         </div>
 
@@ -294,18 +299,18 @@ export function BargainChatDrawer({
         <div className="my-4 p-3.5 bg-zinc-900 border border-zinc-800 flex items-center justify-between text-xs">
           <div>
             <span className="text-zinc-400 block text-[10px] uppercase tracking-wider font-semibold">Catalog Asking Price</span>
-            <span className="text-sm font-black text-zinc-300 line-through">
+            <span className="text-sm font-bold text-zinc-300 line-through">
               ₹{askingPriceINR.toLocaleString('en-IN')}
             </span>
           </div>
           <div className="text-right">
-            <span className="text-emerald-400 font-bold block text-[11px]">🛡️ 48-Hour Escrow Protection</span>
+            <span className="text-emerald-400 font-bold block text-[11px] uppercase tracking-wider">48-Hour Escrow Protection</span>
             <span className="text-[10px] text-stone-400">Zero bootleg risk guarantee</span>
           </div>
         </div>
 
         {errorMessage && (
-          <div className="mb-4 p-3 rounded-lg bg-red-950/40 border border-red-500/50 text-red-300 text-xs">
+          <div className="mb-4 p-3 bg-red-950/40 border border-red-500/50 text-red-300 text-xs">
             {errorMessage}
           </div>
         )}
@@ -314,7 +319,7 @@ export function BargainChatDrawer({
         {!dealOffer ? (
           <form onSubmit={handleSubmitOffer} className="space-y-4">
             <div>
-              <label htmlFor="offer-amount" className="block text-xs font-bold text-stone-300 mb-1.5">
+              <label htmlFor="offer-amount" className="block text-xs font-bold text-stone-300 mb-1.5 uppercase tracking-wider">
                 Your Offer Amount (INR ₹)
               </label>
               <div className="relative">
@@ -329,14 +334,14 @@ export function BargainChatDrawer({
                   value={offerPrice || ''}
                   onChange={(e) => setOfferPrice(Number(e.target.value))}
                   placeholder="Enter your offer"
-                  className="w-full pl-8 pr-4 py-2.5 rounded-xl bg-black/60 border border-stone-700 text-white font-bold text-base focus:border-[#F85B1A] focus:outline-none transition-colors"
+                  className="w-full pl-8 pr-4 py-2.5 bg-black border border-stone-800 text-white font-bold text-base focus:border-zinc-500 focus:outline-none transition-colors"
                   required
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="offer-message" className="block text-xs font-bold text-stone-300 mb-1.5">
+              <label htmlFor="offer-message" className="block text-xs font-bold text-stone-300 mb-1.5 uppercase tracking-wider">
                 Message to Seller
               </label>
               <textarea
@@ -345,7 +350,7 @@ export function BargainChatDrawer({
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 placeholder="Suggest price terms or inspection conditions..."
-                className="w-full px-3.5 py-2 rounded-xl bg-black/60 border border-stone-700 text-white text-xs focus:border-[#F85B1A] focus:outline-none transition-colors"
+                className="w-full px-3.5 py-2 bg-black border border-stone-800 text-white text-xs focus:border-zinc-500 focus:outline-none transition-colors"
               />
             </div>
 
@@ -353,9 +358,9 @@ export function BargainChatDrawer({
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full py-3 px-4 rounded-xl bg-[#F85B1A] hover:brightness-110 active:scale-[0.98] text-white font-black text-sm uppercase tracking-wider shadow-lg shadow-[#F85B1A]/30 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                className="w-full py-3 px-4 bg-zinc-100 hover:bg-white text-black font-bold text-xs uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
               >
-                <span>{submitting ? 'Submitting Bid...' : 'Submit 24-Hour Bid 🤝'}</span>
+                <span>{submitting ? 'Submitting Bid...' : 'Submit 24-Hour Bid'}</span>
               </button>
             </div>
           </form>
@@ -364,28 +369,28 @@ export function BargainChatDrawer({
           <div className="space-y-4">
             {/* Status Banner with Live 24-Hour Countdown */}
             <div
-              className={`p-3.5 rounded-xl border text-xs flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 ${
+              className={`p-3.5 border text-xs flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 ${
                 currentStatus === 'ACCEPTED'
                   ? 'bg-emerald-950/40 border-emerald-500/60 text-emerald-200'
                   : currentStatus === 'EXPIRED'
                   ? 'bg-stone-900 border-stone-700 text-stone-400'
                   : currentStatus === 'REJECTED' || currentStatus === 'AUTO_REJECTED'
                   ? 'bg-red-950/40 border-red-500/60 text-red-200'
-                  : 'bg-amber-950/40 border-amber-500/60 text-amber-200'
+                  : 'bg-zinc-900 border-zinc-700 text-zinc-200'
               }`}
             >
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="font-bold">
+                  <span className="font-bold uppercase tracking-wider">
                     Status:{' '}
                     {currentStatus === 'ACCEPTED'
-                      ? 'Offer Accepted! 🎉'
+                      ? 'Offer Accepted!'
                       : currentStatus === 'EXPIRED'
                       ? 'Offer Expired'
                       : currentStatus}
                   </span>
-                  <span className="text-[10px] px-2 py-0.5 bg-black/60 border border-zinc-700 uppercase tracking-widest font-semibold">
-                    ⏱️ {timeLeft}
+                  <span className="text-[10px] px-2 py-0.5 bg-black border border-zinc-700 uppercase tracking-widest font-semibold">
+                    {timeLeft}
                   </span>
                 </div>
                 <div className="text-[11px] opacity-90 mt-0.5 flex gap-2">
@@ -401,16 +406,15 @@ export function BargainChatDrawer({
                   className="px-3 py-1.5 text-xs font-bold bg-amber-500/20 hover:bg-amber-500/40 border border-amber-500/40 text-amber-300 transition-colors cursor-pointer self-start sm:self-center flex items-center gap-1 uppercase tracking-wider"
                   title="Simulate seller acceptance for testing"
                 >
-                  <span>⚡</span>
                   <span>Accept Offer (Demo)</span>
                 </button>
               )}
             </div>
 
             {/* Real-time Message Log */}
-            <div className="h-40 rounded-xl bg-black/60 border border-stone-800 p-3 overflow-y-auto space-y-2 text-xs">
+            <div className="h-40 bg-black border border-stone-800 p-3 overflow-y-auto space-y-2 text-xs">
               {chatMessages.length === 0 ? (
-                <p className="text-stone-500 text-center py-7">
+                <p className="text-stone-500 text-center py-7 tracking-wider uppercase text-[11px]">
                   Pusher real-time negotiation channel connected (`deal-{dealOffer.id}`). Awaiting seller response...
                 </p>
               ) : (
@@ -422,10 +426,10 @@ export function BargainChatDrawer({
                       className={`flex flex-col ${isBuyer ? 'items-end' : 'items-start'}`}
                     >
                       <div
-                        className={`max-w-[85%] px-3 py-1.5 rounded-lg text-xs ${
+                        className={`max-w-[85%] px-3 py-1.5 text-xs ${
                           isBuyer
-                            ? 'bg-[#F85B1A] text-white rounded-br-none'
-                            : 'bg-stone-800 text-stone-200 rounded-bl-none border border-stone-700'
+                            ? 'bg-zinc-200 text-black font-medium'
+                            : 'bg-zinc-900 text-zinc-200 border border-stone-800'
                         }`}
                       >
                         {msg.text}
@@ -445,11 +449,11 @@ export function BargainChatDrawer({
                   value={newChatText}
                   onChange={(e) => setNewChatText(e.target.value)}
                   placeholder="Type message to seller..."
-                  className="flex-1 px-3 py-2 text-xs rounded-xl bg-black/60 border border-stone-700 text-white focus:border-[#F85B1A] focus:outline-none"
+                  className="flex-1 px-3 py-2 text-xs bg-black border border-stone-800 text-white focus:border-zinc-500 focus:outline-none"
                 />
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-xl bg-stone-800 hover:bg-stone-700 text-white text-xs font-bold border border-stone-700 transition-colors"
+                  className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-bold uppercase tracking-wider border border-stone-700 transition-colors cursor-pointer"
                 >
                   Send
                 </button>
@@ -462,20 +466,18 @@ export function BargainChatDrawer({
                 <button
                   type="button"
                   disabled
-                  className="w-full py-3.5 px-4 rounded-xl bg-stone-900 border border-stone-800 text-stone-500 font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 cursor-not-allowed"
+                  className="w-full py-3.5 px-4 bg-zinc-900 border border-zinc-800 text-zinc-500 font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 cursor-not-allowed"
                 >
-                  <span>🔒</span>
                   <span>Awaiting Seller Acceptance</span>
                 </button>
               </div>
             ) : currentStatus === 'ACCEPTED' ? (
-              <div className="pt-2 animate-in fade-in duration-300">
+              <div className="pt-2">
                 <button
                   type="button"
                   onClick={handleProceedToCheckout}
-                  className="w-full py-3.5 px-4 rounded-xl bg-[#F85B1A] hover:brightness-110 active:scale-[0.98] text-white font-black text-sm uppercase tracking-wider shadow-xl shadow-[#F85B1A]/40 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full py-3.5 px-4 bg-zinc-100 hover:bg-white text-black font-bold text-xs uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >
-                  <span>🛡️</span>
                   <span>
                     Pay Negotiated Price (₹{(dealOffer.offeredPrice || offerPrice).toLocaleString('en-IN')}) via Escrow
                   </span>
@@ -483,7 +485,7 @@ export function BargainChatDrawer({
               </div>
             ) : currentStatus === 'EXPIRED' ? (
               <div className="pt-2">
-                <div className="p-3 text-center rounded-xl bg-stone-900 border border-stone-800 text-stone-500 text-xs font-bold uppercase tracking-wider">
+                <div className="p-3 text-center bg-stone-900 border border-stone-800 text-stone-500 text-xs font-bold uppercase tracking-wider">
                   Offer Expired after 24 Hours
                 </div>
               </div>

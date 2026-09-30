@@ -210,7 +210,7 @@ export default function SellPage(): React.JSX.Element {
             badge: selectedGrade.rank,
             sellerName: 'Kyojuro Rengoku',
             sellerRating: '5.0 (42 Verified Sales)',
-            sellerAvatar: '🔥',
+            sellerAvatar: 'KR',
           };
 
           // Broadcast cross-tab instant state sync
@@ -271,9 +271,13 @@ export default function SellPage(): React.JSX.Element {
 
       {/* Success Notification */}
       {isPublished && (
-        <div className="bg-[#111114] border border-emerald-500/50 p-8 mb-8 text-center">
-          <span className="text-3xl block mb-2">🛡️</span>
-          <h2 className="text-xl font-bold text-zinc-100 mb-2 uppercase tracking-[0.15em]">
+        <div className="bg-[#0e0e11] border border-emerald-500/40 p-8 mb-10 text-center">
+          <div className="w-10 h-10 mx-auto mb-3 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
+            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            </svg>
+          </div>
+          <h2 className="text-lg font-bold text-zinc-100 mb-2 uppercase tracking-[0.15em]">
             Grail Consigned Successfully
           </h2>
           <p className="text-xs text-zinc-400 max-w-lg mx-auto mb-6 font-normal tracking-wide">
@@ -298,18 +302,23 @@ export default function SellPage(): React.JSX.Element {
       )}
 
       {/* Main Studio Grid: Form Controls on Left, Live Card Preview on Right */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Left Column: Form Controls */}
-        <form onSubmit={handlePublish} className="lg:col-span-7 flex flex-col gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+        {/* Left Column: Streamlined Editorial Form Controls */}
+        <form onSubmit={handlePublish} className="lg:col-span-7 space-y-12">
           {/* Step 1: Item Identity */}
-          <div className="bg-[#111114] border border-zinc-800 p-6 sm:p-8">
-            <h2 className="text-xs font-bold text-zinc-200 uppercase tracking-[0.25em] border-b border-zinc-800 pb-2 mb-6">
-              Item Identity & Franchise
-            </h2>
+          <div className="space-y-6">
+            <div className="border-b border-zinc-800 pb-2">
+              <span className="text-[10px] uppercase tracking-[0.25em] text-zinc-500 font-semibold block mb-1">
+                SECTION 01
+              </span>
+              <h2 className="text-xs font-bold text-zinc-200 uppercase tracking-[0.2em]">
+                Item Identity &amp; Series
+              </h2>
+            </div>
 
-            <div className="space-y-4">
+            <div className="space-y-5">
               <div>
-                <label className="block text-xs uppercase tracking-[0.2em] font-medium text-zinc-400 mb-1.5">
+                <label className="block text-xs uppercase tracking-[0.2em] font-medium text-zinc-400 mb-2">
                   Figure or Collectible Title *
                 </label>
                 <input
@@ -318,22 +327,22 @@ export default function SellPage(): React.JSX.Element {
                   onChange={(e) => setTitle(e.target.value)}
                   required
                   placeholder="e.g., Satoru Gojo - 1/7 Scale Shibuya Scramble"
-                  className="w-full bg-[#0a0a0c] border border-zinc-800 px-4 py-2.5 text-xs text-zinc-100 placeholder-zinc-600 focus:border-zinc-500 outline-none transition-colors"
+                  className="w-full bg-[#0c0c0e] border border-zinc-800 px-4 py-3 text-xs text-zinc-100 placeholder-zinc-600 focus:border-zinc-400 outline-none transition-colors"
                 />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 items-start">
                 <div className="flex flex-col">
-                  <label className="block text-xs uppercase tracking-[0.2em] font-medium text-zinc-400 mb-1.5">
+                  <label className="block text-xs uppercase tracking-[0.2em] font-medium text-zinc-400 mb-2">
                     Anime Franchise *
                   </label>
                   <select
                     value={franchise}
                     onChange={(e) => setFranchise(e.target.value)}
-                    className="w-full bg-[#0a0a0c] border border-zinc-800 px-4 py-2.5 text-xs text-zinc-100 placeholder-zinc-600 focus:border-zinc-500 outline-none transition-colors"
+                    className="w-full bg-[#0c0c0e] border border-zinc-800 px-4 py-3 text-xs text-zinc-100 placeholder-zinc-600 focus:border-zinc-400 outline-none transition-colors"
                   >
                     {FRANCHISES.map((f) => (
-                      <option key={f} value={f} className="bg-[#0a0a0c] text-zinc-100">
+                      <option key={f} value={f} className="bg-[#0c0c0e] text-zinc-100">
                         {f}
                       </option>
                     ))}
@@ -345,22 +354,22 @@ export default function SellPage(): React.JSX.Element {
                       placeholder="Type custom anime franchise..."
                       value={customFranchise}
                       onChange={(e) => setCustomFranchise(e.target.value)}
-                      className="w-full mt-2 bg-[#0a0a0c] border border-zinc-800 px-4 py-2.5 text-xs text-zinc-100 placeholder-zinc-600 focus:border-zinc-500 outline-none transition-colors"
+                      className="w-full mt-3 bg-[#0c0c0e] border border-zinc-800 px-4 py-3 text-xs text-zinc-100 placeholder-zinc-600 focus:border-zinc-400 outline-none transition-colors"
                     />
                   )}
                 </div>
 
                 <div className="flex flex-col">
-                  <label className="block text-xs uppercase tracking-[0.2em] font-medium text-zinc-400 mb-1.5">
+                  <label className="block text-xs uppercase tracking-[0.2em] font-medium text-zinc-400 mb-2">
                     Category *
                   </label>
                   <select
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
-                    className="w-full bg-[#0a0a0c] border border-zinc-800 px-4 py-2.5 text-xs text-zinc-100 placeholder-zinc-600 focus:border-zinc-500 outline-none transition-colors"
+                    className="w-full bg-[#0c0c0e] border border-zinc-800 px-4 py-3 text-xs text-zinc-100 placeholder-zinc-600 focus:border-zinc-400 outline-none transition-colors"
                   >
                     {CATEGORIES.map((c) => (
-                      <option key={c} value={c} className="bg-[#0a0a0c] text-zinc-100">
+                      <option key={c} value={c} className="bg-[#0c0c0e] text-zinc-100">
                         {c}
                       </option>
                     ))}
@@ -368,17 +377,17 @@ export default function SellPage(): React.JSX.Element {
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <label className="block text-xs uppercase tracking-[0.2em] font-medium text-zinc-400 mb-1.5">
+              <div>
+                <label className="block text-xs uppercase tracking-[0.2em] font-medium text-zinc-400 mb-2">
                   Manufacturer or Studio
                 </label>
                 <select
                   value={manufacturer}
                   onChange={(e) => setManufacturer(e.target.value)}
-                  className="w-full bg-[#0a0a0c] border border-zinc-800 px-4 py-2.5 text-xs text-zinc-100 placeholder-zinc-600 focus:border-zinc-500 outline-none transition-colors"
+                  className="w-full bg-[#0c0c0e] border border-zinc-800 px-4 py-3 text-xs text-zinc-100 placeholder-zinc-600 focus:border-zinc-400 outline-none transition-colors"
                 >
                   {MANUFACTURERS.map((m) => (
-                    <option key={m} value={m} className="bg-[#0a0a0c] text-zinc-100">
+                    <option key={m} value={m} className="bg-[#0c0c0e] text-zinc-100">
                       {m}
                     </option>
                   ))}
@@ -390,7 +399,7 @@ export default function SellPage(): React.JSX.Element {
                     placeholder="Type custom manufacturer studio..."
                     value={customManufacturer}
                     onChange={(e) => setCustomManufacturer(e.target.value)}
-                    className="w-full mt-2 bg-[#0a0a0c] border border-zinc-800 px-4 py-2.5 text-xs text-zinc-100 placeholder-zinc-600 focus:border-zinc-500 outline-none transition-colors"
+                    className="w-full mt-3 bg-[#0c0c0e] border border-zinc-800 px-4 py-3 text-xs text-zinc-100 placeholder-zinc-600 focus:border-zinc-400 outline-none transition-colors"
                   />
                 )}
               </div>
@@ -398,11 +407,16 @@ export default function SellPage(): React.JSX.Element {
           </div>
 
           {/* Step 2: Collector Condition Grading */}
-          <div className="bg-[#111114] border border-zinc-800 p-6 sm:p-8">
-            <h2 className="text-xs font-bold text-zinc-200 uppercase tracking-[0.25em] border-b border-zinc-800 pb-2 mb-2">
-              Collector Condition Grading
-            </h2>
-            <p className="text-xs text-zinc-400 mb-4 font-normal tracking-wide">
+          <div className="space-y-6">
+            <div className="border-b border-zinc-800 pb-2">
+              <span className="text-[10px] uppercase tracking-[0.25em] text-zinc-500 font-semibold block mb-1">
+                SECTION 02
+              </span>
+              <h2 className="text-xs font-bold text-zinc-200 uppercase tracking-[0.2em]">
+                Collector Condition Grading
+              </h2>
+            </div>
+            <p className="text-xs text-zinc-400 -mt-2 font-normal tracking-wide">
               Select the authentic collector grade based on seal and packaging integrity:
             </p>
 
@@ -413,10 +427,10 @@ export default function SellPage(): React.JSX.Element {
                   <div
                     key={grade.rank}
                     onClick={() => setSelectedGrade(grade)}
-                    className={`p-4 border cursor-pointer transition-colors ${
+                    className={`p-4 border transition-colors cursor-pointer ${
                       isSelected
-                        ? 'border-zinc-200 ring-1 ring-zinc-200 bg-[#151518]'
-                        : 'border-zinc-800 bg-[#0a0a0c] hover:border-zinc-700'
+                        ? 'border-zinc-300 bg-zinc-900/90'
+                        : 'border-zinc-800 bg-[#0c0c0e] hover:border-zinc-600'
                     }`}
                   >
                     <div className="flex items-center justify-between mb-1.5">
@@ -424,7 +438,9 @@ export default function SellPage(): React.JSX.Element {
                         {grade.rank}
                       </span>
                       {isSelected && (
-                        <span className="text-zinc-100 text-xs font-bold uppercase tracking-wider">✓ Selected</span>
+                        <span className="text-zinc-100 text-[10px] font-bold uppercase tracking-widest border border-zinc-600 px-1.5 py-0.5 bg-zinc-800">
+                          SELECTED
+                        </span>
                       )}
                     </div>
                     <div className="text-xs font-semibold text-zinc-200 mb-1 tracking-wide">
@@ -440,13 +456,18 @@ export default function SellPage(): React.JSX.Element {
           </div>
 
           {/* Step 3: Photo & Hologram Seal Verification */}
-          <div className="bg-[#111114] border border-zinc-800 p-6 sm:p-8">
-            <h2 className="text-xs font-bold text-zinc-200 uppercase tracking-[0.25em] border-b border-zinc-800 pb-2 mb-4">
-              Photo & Verification
-            </h2>
+          <div className="space-y-6">
+            <div className="border-b border-zinc-800 pb-2">
+              <span className="text-[10px] uppercase tracking-[0.25em] text-zinc-500 font-semibold block mb-1">
+                SECTION 03
+              </span>
+              <h2 className="text-xs font-bold text-zinc-200 uppercase tracking-[0.2em]">
+                Photo &amp; Verification
+              </h2>
+            </div>
 
             {/* Standard Upload Modal Tabs */}
-            <div className="flex overflow-x-auto border-b border-zinc-800 mb-6 no-scrollbar">
+            <div className="flex overflow-x-auto border-b border-zinc-800 mb-4 no-scrollbar">
               <button
                 type="button"
                 onClick={() => setActiveUploadTab('UPLOAD')}
@@ -483,13 +504,12 @@ export default function SellPage(): React.JSX.Element {
             </div>
 
             {isUploading ? (
-              <div className="h-56 w-full flex flex-col items-center justify-center bg-[#0a0a0c] border border-zinc-800 overflow-hidden">
-                <div className="relative flex items-center justify-center w-20 h-20">
+              <div className="h-52 w-full flex flex-col items-center justify-center bg-[#0c0c0e] border border-zinc-800 overflow-hidden">
+                <div className="relative flex items-center justify-center w-16 h-16">
                   <div className="absolute inset-0 border border-zinc-700 animate-[spin_4s_linear_infinite]" />
                   <div className="absolute inset-2 border border-dashed border-zinc-400 animate-[spin_2s_linear_infinite_reverse]" />
-                  <div className="w-3 h-3 bg-zinc-100 animate-pulse" />
                 </div>
-                <span className="text-[10px] text-zinc-400 uppercase tracking-[0.25em] font-semibold mt-6 animate-pulse">
+                <span className="text-[10px] text-zinc-400 uppercase tracking-[0.25em] font-semibold mt-4">
                   Digitizing Asset...
                 </span>
               </div>
@@ -497,22 +517,22 @@ export default function SellPage(): React.JSX.Element {
               <div>
                 {/* TAB 1: DEVICE UPLOAD */}
                 {activeUploadTab === 'UPLOAD' && (
-                  <div className="relative w-full h-56 border-2 border-dashed border-zinc-800 hover:border-zinc-600 bg-[#0a0a0c] flex flex-col items-center justify-center transition-colors overflow-hidden">
+                  <div className="relative w-full h-52 border border-dashed border-zinc-800 hover:border-zinc-600 bg-[#0c0c0e] flex flex-col items-center justify-center transition-colors overflow-hidden">
                     {customImageUrl ? (
                       <div className="relative w-full h-full flex flex-col items-center justify-center p-3 z-20">
-                        <div className="relative w-full h-36 overflow-hidden border border-zinc-800 bg-black flex items-center justify-center">
+                        <div className="relative w-full h-32 overflow-hidden border border-zinc-800 bg-black flex items-center justify-center">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
                             src={customImageUrl}
                             alt="Uploaded collectible"
                             className="w-full h-full object-contain"
                           />
-                          <div className="absolute top-2 left-2 px-2.5 py-1 bg-zinc-900 border border-zinc-700 text-zinc-200 text-[10px] uppercase tracking-wider font-semibold flex items-center gap-1">
-                            <span>✓</span> Asset Attached
+                          <div className="absolute top-2 left-2 px-2 py-0.5 bg-zinc-900 border border-zinc-700 text-zinc-200 text-[10px] uppercase tracking-wider font-semibold">
+                            Asset Attached
                           </div>
                         </div>
 
-                        <div className="w-full mt-2.5 flex items-center justify-between px-1">
+                        <div className="w-full mt-2 flex items-center justify-between px-1">
                           <div className="truncate max-w-[220px]">
                             <span className="text-xs text-zinc-200 block truncate font-medium">
                               {imageFile?.name || 'Custom Uploaded Photo'}
@@ -544,10 +564,12 @@ export default function SellPage(): React.JSX.Element {
                           onChange={handleFileUpload}
                           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                         />
-                        <div className="text-center pointer-events-none">
-                          <span className="text-2xl block mb-2">📁</span>
+                        <div className="text-center pointer-events-none p-4">
+                          <svg className="w-6 h-6 mx-auto mb-2 text-zinc-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+                          </svg>
                           <span className="text-xs font-bold text-zinc-300 uppercase tracking-[0.2em] block mb-1">
-                            Drag & Drop Asset or Click to Browse
+                            Drag &amp; Drop Asset or Click to Browse
                           </span>
                           <span className="text-[10px] text-zinc-500 uppercase tracking-wider">
                             JPG, PNG, WEBP, MP4 (Max 50MB)
@@ -589,7 +611,7 @@ export default function SellPage(): React.JSX.Element {
                 {/* TAB 3: CUSTOM URL */}
                 {activeUploadTab === 'LINK' && (
                   <div>
-                    <label className="block text-xs uppercase tracking-[0.2em] font-medium text-zinc-400 mb-1.5">
+                    <label className="block text-xs uppercase tracking-[0.2em] font-medium text-zinc-400 mb-2">
                       Direct Image / Asset URL
                     </label>
                     <input
@@ -597,7 +619,7 @@ export default function SellPage(): React.JSX.Element {
                       value={customImageUrl}
                       onChange={(e) => setCustomImageUrl(e.target.value)}
                       placeholder="https://images.unsplash.com/..."
-                      className="w-full bg-[#0a0a0c] border border-zinc-800 px-4 py-2.5 text-xs text-zinc-100 placeholder-zinc-600 focus:border-zinc-500 outline-none transition-colors"
+                      className="w-full bg-[#0c0c0e] border border-zinc-800 px-4 py-3 text-xs text-zinc-100 placeholder-zinc-600 focus:border-zinc-400 outline-none transition-colors"
                     />
                     <p className="text-[10px] text-zinc-500 mt-2 font-normal">
                       * Ensure asset link ends in .jpg, .png, or .webp for direct embedding.
@@ -608,7 +630,7 @@ export default function SellPage(): React.JSX.Element {
             )}
 
             {/* Extra Gallery Images & Video Attachment Section */}
-            <div className="space-y-4 mt-6 pt-6 border-t border-zinc-800">
+            <div className="space-y-4 pt-4 border-t border-zinc-800">
               <label className="text-xs uppercase tracking-[0.2em] font-bold text-zinc-400 block">
                 Extra Gallery Images (Optional)
               </label>
@@ -635,7 +657,7 @@ export default function SellPage(): React.JSX.Element {
                     readOnly
                     placeholder="Click 'Browse' to upload an image..."
                     value={url}
-                    className="flex-1 bg-[#0a0a0c] border border-zinc-800 px-4 py-2.5 text-xs text-zinc-400 cursor-not-allowed outline-none"
+                    className="flex-1 bg-[#0c0c0e] border border-zinc-800 px-4 py-2.5 text-xs text-zinc-400 cursor-not-allowed outline-none"
                   />
 
                   <button
@@ -666,58 +688,63 @@ export default function SellPage(): React.JSX.Element {
                 placeholder="https://www.youtube.com/watch?v=..."
                 value={videoUrl}
                 onChange={(e) => setVideoUrl(e.target.value)}
-                className="w-full bg-[#0a0a0c] border border-zinc-800 px-4 py-2.5 text-xs text-zinc-100 placeholder-zinc-600 focus:border-zinc-500 outline-none transition-colors"
+                className="w-full bg-[#0c0c0e] border border-zinc-800 px-4 py-3 text-xs text-zinc-100 placeholder-zinc-600 focus:border-zinc-400 outline-none transition-colors"
               />
             </div>
           </div>
 
           {/* Step 4: Pricing & Auto-Bargaining Controls */}
-          <div className="bg-[#111114] border border-zinc-800 p-6 sm:p-8">
-            <h2 className="text-xs font-bold text-zinc-200 uppercase tracking-[0.25em] border-b border-zinc-800 pb-2 mb-2">
-              Pricing & Bargaining Floor
-            </h2>
-            <p className="text-xs text-zinc-400 mb-4 font-normal tracking-wide">
+          <div className="space-y-6">
+            <div className="border-b border-zinc-800 pb-2">
+              <span className="text-[10px] uppercase tracking-[0.25em] text-zinc-500 font-semibold block mb-1">
+                SECTION 04
+              </span>
+              <h2 className="text-xs font-bold text-zinc-200 uppercase tracking-[0.2em]">
+                Pricing &amp; Bargaining Floor
+              </h2>
+            </div>
+            <p className="text-xs text-zinc-400 -mt-2 font-normal tracking-wide">
               Set your public asking price and an optional floor below which buyer offers are auto-rejected.
             </p>
 
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div>
-                  <label className="block text-xs uppercase tracking-[0.2em] font-medium text-zinc-400 mb-1.5">
+                  <label className="block text-xs uppercase tracking-[0.2em] font-medium text-zinc-400 mb-2">
                     Asking Price (INR) *
                   </label>
                   <div className="relative">
-                    <span className="absolute left-3.5 top-2.5 text-xs text-zinc-500 font-bold">₹</span>
+                    <span className="absolute left-3.5 top-3 text-xs text-zinc-500 font-bold">₹</span>
                     <input
                       type="number"
                       value={askingPrice}
                       onChange={(e) => setAskingPrice(e.target.value)}
                       required
                       placeholder="7200"
-                      className="w-full bg-[#0a0a0c] border border-zinc-800 pl-7 pr-4 py-2.5 text-xs text-zinc-100 placeholder-zinc-600 focus:border-zinc-500 outline-none transition-colors"
+                      className="w-full bg-[#0c0c0e] border border-zinc-800 pl-7 pr-4 py-3 text-xs text-zinc-100 placeholder-zinc-600 focus:border-zinc-400 outline-none transition-colors"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs uppercase tracking-[0.2em] font-medium text-zinc-400 mb-1.5">
+                  <label className="block text-xs uppercase tracking-[0.2em] font-medium text-zinc-400 mb-2">
                     Auto-Reject Floor (INR)
                   </label>
                   <div className="relative">
-                    <span className="absolute left-3.5 top-2.5 text-xs text-zinc-500 font-bold">₹</span>
+                    <span className="absolute left-3.5 top-3 text-xs text-zinc-500 font-bold">₹</span>
                     <input
                       type="number"
                       value={minimumPrice}
                       onChange={(e) => setMinimumPrice(e.target.value)}
                       placeholder="6000"
-                      className="w-full bg-[#0a0a0c] border border-zinc-800 pl-7 pr-4 py-2.5 text-xs text-zinc-100 placeholder-zinc-600 focus:border-zinc-500 outline-none transition-colors"
+                      className="w-full bg-[#0c0c0e] border border-zinc-800 pl-7 pr-4 py-3 text-xs text-zinc-100 placeholder-zinc-600 focus:border-zinc-400 outline-none transition-colors"
                     />
                   </div>
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs uppercase tracking-[0.2em] font-medium text-zinc-400 mb-1.5">
+                <label className="block text-xs uppercase tracking-[0.2em] font-medium text-zinc-400 mb-2">
                   Collector Authenticity Notes
                 </label>
                 <textarea
@@ -725,7 +752,7 @@ export default function SellPage(): React.JSX.Element {
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Include details regarding packaging condition, manufacturer authenticity seal, or purchase history..."
-                  className="w-full bg-[#0a0a0c] border border-zinc-800 px-4 py-2.5 text-xs text-zinc-100 placeholder-zinc-600 focus:border-zinc-500 outline-none transition-colors resize-none leading-relaxed"
+                  className="w-full bg-[#0c0c0e] border border-zinc-800 px-4 py-3 text-xs text-zinc-100 placeholder-zinc-600 focus:border-zinc-400 outline-none transition-colors resize-none leading-relaxed"
                 />
               </div>
             </div>
@@ -733,7 +760,7 @@ export default function SellPage(): React.JSX.Element {
 
           {errorMessage && (
             <div className="p-4 bg-red-950/30 border border-red-500/40 text-red-300 text-xs tracking-wide">
-              ⚠️ {errorMessage}
+              {errorMessage}
             </div>
           )}
 
@@ -742,7 +769,7 @@ export default function SellPage(): React.JSX.Element {
             type="submit"
             id="submit-sell-btn"
             disabled={isPending}
-            className="w-full py-3.5 bg-zinc-900 hover:bg-zinc-100 text-zinc-200 hover:text-black border border-zinc-700 hover:border-zinc-100 text-xs font-bold uppercase tracking-[0.25em] transition-colors cursor-pointer mt-6"
+            className="w-full py-3.5 bg-zinc-900 hover:bg-zinc-100 text-zinc-200 hover:text-black border border-zinc-700 hover:border-zinc-100 text-xs font-bold uppercase tracking-[0.25em] transition-colors cursor-pointer mt-4"
           >
             {isPending ? 'Publishing Grail to Vault...' : 'Drop Grail into Marketplace'}
           </button>

@@ -68,7 +68,7 @@ export function ProductCard({ product, className = '' }: ProductCardProps): Reac
     >
       {/* 1. Archival Header (Anti-Truncation LOT Format) */}
       <div className="flex items-center justify-between text-[10px] font-semibold tracking-wider text-zinc-500 mb-2">
-        <span>LOT #{String(product.id).replace(/[^0-9]/g, '').padStart(4, '0').slice(-4) || '0482'} // VAULT ID: JP-TYO</span>
+        <span>LOT #{String(product.id).replace(/[^0-9]/g, '').padStart(4, '0').slice(-4) || '0482'} • VAULT ID: JP-TYO</span>
         <span className="text-[9px] font-bold tracking-[0.15em] text-zinc-300 border border-zinc-700 bg-zinc-900 px-2 py-0.5 uppercase">
           AUTHENTIC
         </span>
@@ -88,7 +88,7 @@ export function ProductCard({ product, className = '' }: ProductCardProps): Reac
             alt={product.title || 'Anime Collectible'}
             fill
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-            className="object-contain p-2 relative z-10 transition-transform duration-700 ease-out group-hover:scale-110"
+            className="object-contain p-2 relative z-10"
             loading="lazy"
           />
         </div>
@@ -141,7 +141,11 @@ export function ProductCard({ product, className = '' }: ProductCardProps): Reac
             }}
             className="w-10 h-10 bg-zinc-900 hover:bg-zinc-100 text-zinc-300 hover:text-black border border-zinc-700 hover:border-zinc-100 flex items-center justify-center text-sm transition-all duration-200 cursor-pointer shrink-0"
           >
-            🛒
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <path d="M16 10a4 4 0 0 1-8 0" />
+            </svg>
           </button>
         </div>
       </div>
