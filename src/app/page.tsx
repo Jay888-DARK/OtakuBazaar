@@ -140,19 +140,27 @@ export default function HomePage(_props?: { searchParams?: Promise<Record<string
       </section>
 
       {/* Marketplace Footer */}
-      <footer className="mt-20 py-10 px-4 sm:px-6 lg:px-8 text-center text-xs border-t border-zinc-800/80 text-zinc-500 bg-[#09090b]">
+      <footer className="mt-20 py-12 px-4 sm:px-6 lg:px-8 text-center text-xs border-t border-zinc-800 text-zinc-500 bg-[#09090b]">
         <p className="text-xs mb-2 font-bold text-zinc-200 uppercase tracking-[0.25em]">
-          OtakuBazaar
+          OtakuBazaar Archival Repository
         </p>
         <p className="mb-4 text-[11px] uppercase tracking-wider text-zinc-500">
           Direct Indian Anime Collectibles Marketplace • Double-Entry Escrow Protected
         </p>
-        <div className="flex items-center justify-center gap-4 text-[11px] font-medium uppercase tracking-wider">
-          <Link href="/privacy" className="hover:text-zinc-300 transition-colors no-underline text-zinc-500">
+        <div className="flex flex-wrap items-center justify-center gap-4 text-[11px] font-medium uppercase tracking-wider">
+          <Link href="/vault" className="hover:text-zinc-300 transition-none no-underline text-zinc-400 brutalist-btn p-0.5">
+            [ Vault Custody ]
+          </Link>
+          <span>•</span>
+          <Link href="/verify" className="hover:text-zinc-300 transition-none no-underline text-zinc-400 brutalist-btn p-0.5">
+            [ Hardware NFC Verify ]
+          </Link>
+          <span>•</span>
+          <Link href="/privacy" className="hover:text-zinc-300 transition-none no-underline text-zinc-500">
             Privacy Policy
           </Link>
           <span>•</span>
-          <Link href="/terms" className="hover:text-zinc-300 transition-colors no-underline text-zinc-500">
+          <Link href="/terms" className="hover:text-zinc-300 transition-none no-underline text-zinc-500">
             Terms of Service
           </Link>
         </div>

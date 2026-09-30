@@ -34,6 +34,8 @@ import { MOCK_PRODUCTS } from '@/infrastructure/data/mockProducts';
 import { ProductDemoGallery } from '@/presentation/components/products/ProductDemoGallery';
 import { ProductDetailSkeleton } from '@/presentation/components/ui/SkeletonLoaders';
 import { openProvenanceManifest } from '@/presentation/components/provenance/ProvenanceManifestModal';
+import { OrderBook } from '@/presentation/components/market/OrderBook';
+import { HistoricalDataTerminal } from '@/presentation/components/market/HistoricalDataTerminal';
 
 interface ProductDetailsProps {
   params: Promise<{ id: string }> | { id: string };
@@ -234,60 +236,19 @@ export default function ProductDetailsPage({ params }: ProductDetailsProps) {
 
             {/* 3. THE CONTEXT COLUMN (RIGHT SIDE, 32% Width / 4 of 12 cols) */}
             <div className="lg:col-span-4 flex flex-col justify-between divide-y divide-[#27272a] bg-[#0e0e11]">
-              {/* Row 1: Acquisition Action Cell */}
-              <div className="p-6 space-y-4 bg-[#0a0a0c]">
-                <div>
-                  <span className="text-[9px] uppercase tracking-[0.25em] text-zinc-500 font-bold block mb-1">
-                    ACQUISITION PROTOCOL
-                  </span>
-                  <div className="flex items-baseline justify-between">
-                    <span className="text-xl font-bold uppercase tracking-wider text-zinc-100">
-                      {formattedPrice}
-                    </span>
-                    <span className="text-[9px] uppercase tracking-wider text-zinc-400 font-semibold border border-zinc-700 bg-zinc-900 px-2 py-0.5">
-                      ESCROW PROTECTED
-                    </span>
-                  </div>
-                </div>
+              {/* Feature 1 & 5: The Two-Sided Order Book (Bids vs. Asks) & Instant Liquidation Cell */}
+              <OrderBook
+                basePrice={currentProduct?.price || 89000}
+                lotId={lotDisplayId}
+                isSRank={currentProduct?.condition === 'NEW'}
+              />
 
-                {/* Primary Safe Lock CTA */}
-                <Link href="/checkout" className="block w-full no-underline">
-                  <button
-                    type="button"
-                    id="add-to-cart-btn"
-                    data-testid="add-to-cart"
-                    className="w-full py-3.5 px-4 font-bold text-xs uppercase tracking-[0.2em] text-black bg-zinc-100 hover:bg-white border border-zinc-100 transition-colors cursor-pointer block rounded-none text-center"
-                  >
-                    Acquire via 15-Min Safe Lock →
-                  </button>
-                </Link>
-
-                {/* Secondary Escrow Checkout */}
-                <Link
-                  href="/checkout"
-                  id="go-to-checkout"
-                  data-testid="checkout-button"
-                  className="w-full py-2.5 px-4 font-semibold text-xs uppercase tracking-[0.18em] text-zinc-400 hover:text-white border border-zinc-800 hover:border-zinc-600 bg-zinc-900/60 text-center transition-colors block no-underline rounded-none"
-                >
-                  Proceed to Escrow Checkout
-                </Link>
-
-                {/* Protection Bulletpoints */}
-                <div className="space-y-1.5 pt-2 border-t border-zinc-800 text-[10px] text-zinc-400 uppercase tracking-wider">
-                  <div className="flex items-center gap-2">
-                    <span className="inline-block w-1.5 h-1.5 bg-zinc-400" />
-                    <span>Funds held in double-entry escrow</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="inline-block w-1.5 h-1.5 bg-zinc-400" />
-                    <span>Courier transit insurance included</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="inline-block w-1.5 h-1.5 bg-zinc-400" />
-                    <span>100% refund if inspection fails</span>
-                  </div>
-                </div>
-              </div>
+              {/* Feature 4: The Data Terminal (Historical Valuation Index) */}
+              <HistoricalDataTerminal
+                basePrice={currentProduct?.price || 89000}
+                lotRef={lotDisplayId}
+                category={currentProduct?.category || 'Scale Figure'}
+              />
 
               {/* Row 2: SUPPORTING SPECIMENS (Stacked cells with smaller thumbnails & refs) */}
               <div className="divide-y divide-[#27272a]">
