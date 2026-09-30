@@ -64,7 +64,7 @@ export function ProductDemoGallery({
   const activeAngle = TURNAROUND_ANGLES[currentAngleIndex] ?? TURNAROUND_ANGLES[0]!;
 
   return (
-    <div className="w-full border border-[#27272a] bg-[#0c0c0e] select-none">
+    <div className="w-full bg-[#0c0c0e] select-none">
       {/* Top Media Masthead & Mode Switcher */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[#27272a] bg-[#09090b] px-4 py-2.5 gap-2">
         <div className="flex items-center gap-2">

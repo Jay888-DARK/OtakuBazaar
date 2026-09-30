@@ -157,7 +157,7 @@ export default function ProductDetailsPage({ params }: ProductDetailsProps) {
             {/* 2. THE HERO CELL (LEFT SIDE, 68% Width / 8 of 12 cols) */}
             <div className="lg:col-span-8 flex flex-col justify-between bg-[#09090b]">
               {/* Primary Interactive Media Stage (Turnaround / 60fps Video / Factory Stills) */}
-              <div className="p-4 sm:p-6 border-b border-[#27272a] bg-[#070709]">
+              <div className="border-b border-[#27272a] bg-[#070709]">
                 <ProductDemoGallery
                   initialTitle={currentProduct?.title}
                   lotId={lotDisplayId}

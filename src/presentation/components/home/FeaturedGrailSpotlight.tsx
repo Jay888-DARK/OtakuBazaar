@@ -1,9 +1,22 @@
 'use client';
 
+/**
+ * @file src/presentation/components/home/FeaturedGrailSpotlight.tsx
+ *
+ * Feature: Archival Grail of the Cycle (Spotlight Lot).
+ * Unified to the strict "Auction Archive" technical grid layout:
+ * - 0px border-radius globally, connected 1px solid borders (#27272a).
+ * - Left Hero Cell (68% width): Single large image stage with main product title,
+ *   subtitle, and primary valuation price anchored to the ABSOLUTE BOTTOM of the cell.
+ * - Right Context Column (32% width): Strict vertical stack of rows spanning the full
+ *   width of the column containing Acquisition CTA, SUPPORTING SPECIMEN data,
+ *   CURATORIAL NOTE provenance text, and integrated cryptographic ledger status.
+ * - Absolutely no floating boxes, rounded containers, or empty negative space.
+ */
+
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { DepthCard } from '../ui/DepthCard';
-import { AuthenticityLedger } from '../ui/AuthenticityLedger';
+import Link from 'next/link';
 import { BargainModal } from '@/presentation/components/BargainModal';
 
 export interface FeaturedGrailItem {
@@ -88,131 +101,164 @@ export default function FeaturedGrailSpotlight({ onOpenOfferModal }: FeaturedGra
   };
 
   return (
-    <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      {/* Section Header with Next Grail Pagination Control */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-zinc-800 pb-3 mb-8 gap-4">
-        <div>
-          <span className="text-[10px] font-semibold tracking-[0.25em] text-zinc-500 uppercase block">
-            SPOTLIGHT LOT • {featuredLot.id.toUpperCase()}
-          </span>
-          <h2 className="text-lg font-bold text-zinc-100 uppercase tracking-wider mt-1">
-            Archival Grail of the Cycle
-          </h2>
-        </div>
-
-        <div className="flex items-center space-x-3 text-xs uppercase tracking-wider">
-          <div className="hidden sm:flex items-center space-x-2">
-            <span className="text-zinc-500 tracking-widest text-[11px]">Closing Window:</span>
-            <span className="border border-zinc-800 bg-[#0e0e11] text-zinc-200 px-2.5 py-1 text-[11px] font-semibold">
-              {featuredLot.timeRemaining}
-            </span>
+    <section
+      aria-label="Spotlight Archival Lot"
+      className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 select-none"
+    >
+      {/* 1. Strict Grid Structure: Connected 1px Borders */}
+      <div className="border border-[#27272a] bg-[#0c0c0e]">
+        {/* Top Masthead Row: Accession, Status & Pagination Stepper */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[#27272a] bg-[#0a0a0c] p-4 sm:p-6 gap-4">
+          <div>
+            <div className="flex items-center gap-3 mb-1.5">
+              <span className="text-[9px] uppercase tracking-[0.25em] text-zinc-400 font-bold border border-zinc-700 bg-zinc-900 px-2 py-0.5">
+                SPOTLIGHT ACCESSION #{featuredLot.id.toUpperCase()}
+              </span>
+              <span className="text-[9px] uppercase tracking-[0.25em] text-zinc-500 font-medium">
+                {featuredLot.condition.toUpperCase()}
+              </span>
+            </div>
+            <h2 className="text-base sm:text-lg font-bold text-zinc-100 uppercase tracking-wider">
+              Archival Grail of the Cycle
+            </h2>
           </div>
 
-          {/* Next Grail Pagination Controls */}
-          <div className="flex items-center space-x-2 pl-2 border-l border-zinc-800">
-            <button
-              type="button"
-              onClick={handlePrev}
-              aria-label="Previous Grail"
-              className="p-1.5 border border-zinc-800 bg-[#0e0e11] hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 transition-colors cursor-pointer"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M15 18l-6-6 6-6" />
-              </svg>
-            </button>
-            <span className="text-[10px] text-zinc-500 px-1 select-none font-semibold tracking-wider">
-              {currentIndex + 1} / {FEATURED_GRAILS.length}
-            </span>
-            <button
-              type="button"
-              onClick={handleNext}
-              aria-label="Next Grail"
-              className="flex items-center space-x-1.5 px-3 py-1.5 border border-zinc-700 bg-zinc-900 hover:bg-zinc-100 text-zinc-300 hover:text-black text-[10px] font-semibold uppercase tracking-[0.2em] transition-all duration-200 cursor-pointer"
-            >
-              <span>Next Grail</span>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M9 18l6-6-6-6" />
-              </svg>
-            </button>
+          <div className="flex items-center space-x-3 text-xs uppercase tracking-wider">
+            <div className="hidden sm:flex items-center space-x-2">
+              <span className="text-zinc-500 tracking-widest text-[10px]">CLOSING WINDOW:</span>
+              <span className="border border-zinc-800 bg-[#0e0e11] text-zinc-200 px-2.5 py-1 text-[10px] font-bold">
+                {featuredLot.timeRemaining}
+              </span>
+            </div>
+
+            {/* Stepper Controls */}
+            <div className="flex items-center space-x-2 pl-2 border-l border-zinc-800">
+              <button
+                type="button"
+                onClick={handlePrev}
+                aria-label="Previous Grail"
+                className="p-1.5 border border-zinc-800 bg-[#0e0e11] hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 transition-none cursor-pointer rounded-none"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M15 18l-6-6 6-6" />
+                </svg>
+              </button>
+              <span className="text-[10px] text-zinc-500 px-1 select-none font-semibold tracking-wider">
+                {currentIndex + 1} / {FEATURED_GRAILS.length}
+              </span>
+              <button
+                type="button"
+                onClick={handleNext}
+                aria-label="Next Grail"
+                className="flex items-center space-x-1.5 px-3 py-1.5 border border-zinc-700 bg-zinc-900 hover:bg-zinc-100 text-zinc-300 hover:text-black text-[10px] font-semibold uppercase tracking-[0.2em] transition-none cursor-pointer rounded-none"
+              >
+                <span>Next Lot</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M9 18l6-6-6-6" />
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Flat Editorial Structural Card Container */}
-      <div className="flex justify-center">
-        <DepthCard
-          className="w-full max-w-5xl bg-[#0e0e11] border border-zinc-800 p-6 sm:p-8 overflow-hidden transition-colors"
-          maxTilt={0}
-          perspective={1400}
-        >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-            {/* Left Column: Figure Presentation Stage */}
-            <div className="relative h-80 sm:h-96 w-full flex items-center justify-center bg-[#09090b] border border-zinc-800/80 p-6 overflow-hidden">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.03)_0%,_transparent_70%)] pointer-events-none" />
+        {/* 2-Column Technical Schematic Grid (68% Left / 32% Right) */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-[#27272a]">
+          {/* RULE 1: HERO CELL (LEFT SIDE, 68% WIDTH) */}
+          <div className="lg:col-span-8 flex flex-col justify-between bg-[#09090b]">
+            {/* Massive Primary Image Display */}
+            <div className="relative w-full aspect-[4/3] sm:aspect-[16/11] bg-[#070709] border-b border-[#27272a] overflow-hidden flex items-center justify-center p-6">
               <Image
                 key={featuredLot.id}
                 src={featuredLot.imageUrl}
                 alt={featuredLot.title}
                 fill
                 priority
-                sizes="(max-width: 768px) 100vw, 50vw"
-                className="relative z-10 object-contain p-4"
+                sizes="(max-width: 1024px) 100vw, 70vw"
+                className="object-contain p-6 contrast-110"
               />
+              <div className="absolute top-4 left-4 bg-[#09090b]/90 border border-zinc-700 px-2.5 py-1 text-[9px] font-bold tracking-[0.2em] uppercase text-zinc-300">
+                {featuredLot.edition}
+              </div>
             </div>
 
-            {/* Right Column: Provenance, Telemetry, COA & Escrow Trigger */}
-            <div className="flex flex-col justify-between h-full py-1">
-              <div>
-                <div className="flex items-center space-x-3 text-[10px] uppercase tracking-wider text-zinc-400 mb-3">
-                  <span className="text-zinc-200 border border-zinc-700 bg-zinc-900 px-2 py-0.5 font-semibold">
-                    {featuredLot.condition}
+            {/* ANCHORED AT THE ABSOLUTE BOTTOM OF THIS HERO CELL: Title, Subtitle, & Primary Valuation */}
+            <div className="p-6 sm:p-8 space-y-6 bg-[#0c0c0e]">
+              <div className="flex flex-col sm:flex-row sm:items-end justify-between border-b border-[#27272a] pb-6 gap-4">
+                <div className="space-y-1">
+                  <span className="text-[9px] uppercase tracking-[0.25em] text-zinc-500 font-bold block">
+                    {featuredLot.series}
                   </span>
-                  <span className="text-zinc-500 font-medium">• EDITION: {featuredLot.edition}</span>
+                  <h3 className="text-xl sm:text-2xl font-extrabold uppercase tracking-tight text-zinc-100">
+                    {featuredLot.title}
+                  </h3>
+                  <span className="text-[11px] text-zinc-400 block pt-1">
+                    {featuredLot.manufacturer} • {featuredLot.scale}
+                  </span>
                 </div>
 
-                <h3 className="text-xl sm:text-2xl font-extrabold text-zinc-100 uppercase tracking-tight">
-                  {featuredLot.title}
-                </h3>
-                <p className="text-xs text-zinc-500 mt-1 uppercase tracking-[0.15em] font-semibold">
-                  {featuredLot.series}
-                </p>
-
-                <div className="mt-5 pt-4 border-t border-zinc-800 space-y-2 text-xs uppercase tracking-wider text-zinc-400">
-                  <div className="flex justify-between">
-                    <span className="text-zinc-500">Fabricator</span>
-                    <span className="text-zinc-200 font-medium">{featuredLot.manufacturer}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-zinc-500">Scale / Material</span>
-                    <span className="text-zinc-200 font-medium">{featuredLot.scale}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-zinc-500">Custody Protocol</span>
-                    <span className="text-zinc-200 font-medium">Double-Vault Escrow Guaranteed</span>
-                  </div>
-                </div>
-
-                {/* Digital Certificate of Authenticity (COA) Component */}
-                <div className="mt-5">
-                  <AuthenticityLedger
-                    lotId={featuredLot.id.toUpperCase()}
-                    grader="Prime Inspection Escrow"
-                    hash="0x8F4A...B99C"
-                  />
+                <div className="sm:text-right shrink-0">
+                  <span className="text-[9px] uppercase tracking-[0.25em] text-zinc-500 font-bold block mb-1">
+                    PRIMARY ARCHIVAL VALUATION
+                  </span>
+                  <span className="text-2xl sm:text-3xl font-extrabold uppercase tracking-wider text-zinc-100 block">
+                    ₹{featuredLot.askingPrice.toLocaleString('en-IN')}
+                  </span>
+                  <span className="text-[9px] uppercase tracking-wider text-zinc-500 font-medium mt-0.5 block">
+                    TAXES &amp; TRANSIT INCLUDED
+                  </span>
                 </div>
               </div>
 
-              {/* Transaction Action */}
-              <div className="mt-6 border-t border-zinc-800 pt-4">
-                <div className="flex items-baseline justify-between mb-4">
-                  <span className="text-[11px] uppercase tracking-[0.2em] font-medium text-zinc-500">
-                    Archival Valuation
-                  </span>
-                  <span className="text-2xl font-bold uppercase tracking-wider text-zinc-100">
-                    ₹{featuredLot.askingPrice.toLocaleString('en-IN')}
+              {/* 4-Cell Specifications Matrix */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                <div className="border border-zinc-800 bg-[#09090b] p-3">
+                  <span className="block text-[8px] uppercase tracking-widest text-zinc-500">Fabricator</span>
+                  <span className="text-[11px] font-bold uppercase text-zinc-300 truncate block">
+                    {featuredLot.manufacturer.split(' ')[0]} Studio
                   </span>
                 </div>
+                <div className="border border-zinc-800 bg-[#09090b] p-3">
+                  <span className="block text-[8px] uppercase tracking-widest text-zinc-500">Scale / Spec</span>
+                  <span className="text-[11px] font-bold uppercase text-zinc-300 truncate block">
+                    {featuredLot.scale.split(' ')[0]} Scale
+                  </span>
+                </div>
+                <div className="border border-zinc-800 bg-[#09090b] p-3">
+                  <span className="block text-[8px] uppercase tracking-widest text-zinc-500">Edition Token</span>
+                  <span className="text-[11px] font-bold uppercase text-zinc-300 font-mono truncate block">
+                    {featuredLot.edition.split(' ')[0]}
+                  </span>
+                </div>
+                <div className="border border-zinc-800 bg-[#09090b] p-3">
+                  <span className="block text-[8px] uppercase tracking-widest text-zinc-500">Custody Protocol</span>
+                  <span className="text-[11px] font-bold uppercase text-zinc-300 truncate block">
+                    Double-Vault Escrow
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
 
+          {/* RULE 2: THE CONTEXT COLUMN (RIGHT SIDE, 32% WIDTH) */}
+          <div className="lg:col-span-4 flex flex-col justify-between divide-y divide-[#27272a] bg-[#0e0e11]">
+            {/* ROW 1: Acquisition Action Cell */}
+            <div className="p-6 space-y-4 bg-[#0a0a0c]">
+              <div>
+                <span className="text-[9px] uppercase tracking-[0.25em] text-zinc-500 font-bold block mb-1">
+                  ACQUISITION PROTOCOL
+                </span>
+                <div className="flex items-baseline justify-between">
+                  <span className="text-xl font-bold uppercase tracking-wider text-zinc-100">
+                    ₹{featuredLot.askingPrice.toLocaleString('en-IN')}
+                  </span>
+                  <span className="text-[9px] uppercase tracking-wider text-zinc-400 font-semibold border border-zinc-700 bg-zinc-900 px-2 py-0.5">
+                    ESCROW PROTECTED
+                  </span>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="space-y-2">
                 <button
                   type="button"
                   onClick={() => {
@@ -222,17 +268,126 @@ export default function FeaturedGrailSpotlight({ onOpenOfferModal }: FeaturedGra
                       setIsOfferModalOpen(true);
                     }
                   }}
-                  className="w-full py-3 bg-zinc-900 hover:bg-zinc-100 text-zinc-200 hover:text-black border border-zinc-700 hover:border-zinc-100 text-[11px] font-semibold uppercase tracking-[0.2em] transition-all duration-200 cursor-pointer"
+                  className="w-full py-3.5 px-4 bg-zinc-100 hover:bg-white text-black text-center text-xs font-bold uppercase tracking-[0.2em] border border-zinc-100 transition-none cursor-pointer block rounded-none"
                 >
-                  Enter Escrow Negotiation Room
+                  Enter Escrow Negotiation Room →
                 </button>
+
+                <Link
+                  href={`/products/${featuredLot.id}`}
+                  className="w-full py-2.5 px-4 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white text-center text-xs font-semibold uppercase tracking-[0.18em] border border-zinc-800 transition-none block no-underline rounded-none"
+                >
+                  Inspect Full Archival Dossier
+                </Link>
+              </div>
+
+              <div className="pt-2 border-t border-zinc-800 space-y-1.5 text-[10px] text-zinc-400 uppercase tracking-wider">
+                <div className="flex items-center gap-2">
+                  <span className="inline-block w-1.5 h-1.5 bg-zinc-400" />
+                  <span>Double-Entry Escrow Vault Active</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="inline-block w-1.5 h-1.5 bg-zinc-400" />
+                  <span>Insured Express Courier Dispatch</span>
+                </div>
+              </div>
+            </div>
+
+            {/* ROW 2: SUPPORTING SPECIMENS */}
+            <div className="divide-y divide-[#27272a]">
+              <div className="px-6 py-3 bg-[#0c0c0e]">
+                <span className="text-[9px] uppercase tracking-[0.25em] text-zinc-400 font-bold block">
+                  SUPPORTING SPECIMEN DATA
+                </span>
+              </div>
+
+              {/* Specimen 01 */}
+              <div className="p-4 sm:p-5 flex items-center gap-4 bg-[#09090b]">
+                <div className="relative w-16 h-16 aspect-square bg-[#0c0c0e] border border-[#27272a] shrink-0 overflow-hidden">
+                  <Image
+                    src="https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=300&h=300&q=85"
+                    alt="Supporting Specimen A-01"
+                    fill
+                    sizes="64px"
+                    className="object-cover grayscale contrast-125"
+                    unoptimized={true}
+                  />
+                </div>
+                <div className="flex-1 space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[9px] uppercase tracking-[0.2em] text-zinc-500 font-semibold">
+                      REF SPEC-01
+                    </span>
+                    <span className="text-[10px] font-bold text-zinc-200">INCLUDED</span>
+                  </div>
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-200 line-clamp-1">
+                    Museum-Grade Display Base &amp; Stand
+                  </h4>
+                  <p className="text-[10px] text-zinc-500 line-clamp-1">
+                    Weighted Acrylic Plaque with Engraved Serial
+                  </p>
+                </div>
+              </div>
+
+              {/* Specimen 02 */}
+              <div className="p-4 sm:p-5 flex items-center gap-4 bg-[#09090b]">
+                <div className="relative w-16 h-16 aspect-square bg-[#0c0c0e] border border-[#27272a] shrink-0 overflow-hidden">
+                  <Image
+                    src="https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=300&h=300&q=85"
+                    alt="Supporting Specimen B-02"
+                    fill
+                    sizes="64px"
+                    className="object-cover grayscale contrast-125"
+                    unoptimized={true}
+                  />
+                </div>
+                <div className="flex-1 space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[9px] uppercase tracking-[0.2em] text-zinc-500 font-semibold">
+                      REF COA-02
+                    </span>
+                    <span className="text-[10px] font-bold text-zinc-200">VERIFIED</span>
+                  </div>
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-200 line-clamp-1">
+                    Cryptographic Ledger Token Card
+                  </h4>
+                  <p className="text-[10px] text-zinc-500 line-clamp-1">
+                    Tamper-Evident RFID Embedded Chip #OKB-0482
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* ROW 3: CURATORIAL NOTE & IMMUTABLE COA RECORD */}
+            <div className="p-6 space-y-3 bg-[#0a0a0c]">
+              <div className="flex items-center justify-between">
+                <span className="text-[9px] uppercase tracking-[0.25em] text-zinc-400 font-bold">
+                  CURATORIAL NOTE &amp; COA LOG
+                </span>
+                <span className="text-[8px] font-mono tracking-widest text-emerald-400 uppercase">
+                  IMMUTABLE RECORD VALID
+                </span>
+              </div>
+
+              <p className="text-xs text-zinc-400 leading-relaxed">
+                Optical calibration check concluded under Leica macro sensors. All factory seals intact with zero joint relaxation. Cryptographic hash recorded on private ledger prior to vault staging:
+              </p>
+
+              <div className="p-2.5 bg-[#070709] border border-zinc-800 text-[9px] font-mono text-zinc-400 flex items-center justify-between">
+                <span className="text-zinc-500">HASH:</span>
+                <span className="text-zinc-300 truncate ml-2">0x8F4A9B23C7E10842B99C</span>
+              </div>
+
+              <div className="pt-2 border-t border-zinc-800 flex items-center justify-between text-[9px] uppercase tracking-widest text-zinc-500">
+                <span>Verification Authority</span>
+                <span className="text-zinc-300 font-semibold">Prime Inspection Escrow</span>
               </div>
             </div>
           </div>
-        </DepthCard>
+        </div>
       </div>
 
-      {/* Internal Live Bargain Modal for Spotlight Grail */}
+      {/* Live Bargain Modal */}
       {isOfferModalOpen && (
         <BargainModal
           productId={featuredLot.id}
