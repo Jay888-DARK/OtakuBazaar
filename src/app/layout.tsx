@@ -10,7 +10,7 @@
  */
 
 import type { Metadata } from 'next';
-import { Plus_Jakarta_Sans, Shojumaru } from 'next/font/google';
+import { Plus_Jakarta_Sans } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/presentation/components/providers/AuthProvider';
 import { SyncProviderWrapper } from '@/presentation/components/providers/SyncProviderWrapper';
@@ -22,13 +22,7 @@ import { CartDrawer } from '@/presentation/components/cart/CartDrawer';
 const jakartaSans = Plus_Jakarta_Sans({
   variable: '--font-sans',
   subsets: ['latin'],
-  display: 'swap',
-});
-
-const shojumaru = Shojumaru({
-  weight: '400',
-  variable: '--font-shojumaru',
-  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700', '800'],
   display: 'swap',
 });
 
@@ -46,7 +40,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${jakartaSans.variable} ${shojumaru.variable} antialiased`}
+      className={`${jakartaSans.variable} antialiased`}
       suppressHydrationWarning
     >
       <body

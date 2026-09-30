@@ -143,7 +143,7 @@ export function CheckoutButton({
   };
 
   const defaultClasses =
-    'w-full max-w-md mx-auto py-3 bg-zinc-900 hover:bg-zinc-100 text-zinc-300 hover:text-black border border-zinc-700 hover:border-zinc-100 font-mono text-xs font-semibold uppercase tracking-[0.2em] rounded-lg transition-all duration-300 cursor-pointer flex items-center justify-center space-x-2 disabled:opacity-50 disabled:pointer-events-none disabled:hover:bg-zinc-900 disabled:hover:text-zinc-300 disabled:hover:border-zinc-700';
+    'w-full max-w-md mx-auto py-3 bg-zinc-900 hover:bg-zinc-100 text-zinc-300 hover:text-black border border-zinc-700 hover:border-zinc-100 text-xs font-semibold uppercase tracking-[0.2em] transition-all duration-200 cursor-pointer flex items-center justify-center space-x-2 disabled:opacity-50 disabled:pointer-events-none disabled:hover:bg-zinc-900 disabled:hover:text-zinc-300 disabled:hover:border-zinc-700';
 
   return (
     <div className="flex flex-col items-center gap-2 w-full">
@@ -206,7 +206,7 @@ export function CheckoutButton({
       </button>
 
       {errorMessage && (
-        <p className="text-xs text-red-400 font-mono max-w-xs text-center">
+        <p className="text-xs text-red-400 uppercase tracking-wider max-w-xs text-center font-medium">
           {errorMessage}
         </p>
       )}

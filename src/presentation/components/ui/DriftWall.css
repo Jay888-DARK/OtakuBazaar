@@ -8,8 +8,8 @@
   --dw-tile-w: 220px;
   --dw-tile-h: 150px;
   --dw-gap: 16px;
-  --dw-radius: 8px;
-  --dw-lift: 48px;
+  --dw-radius: 0px;
+  --dw-lift: 0px;
   --dw-dim: 0.65;
   --dw-gray: 1;
   --dw-overlay: #09090b;
@@ -64,16 +64,16 @@
   position: absolute;
   inset: calc(var(--dw-gap) / 2);
   display: block;
-  border-radius: var(--dw-radius);
+  border-radius: 0px;
+  border: 1px solid #27272a;
   overflow: hidden;
   background: #121214;
   opacity: var(--dw-dim);
   transform: translateZ(0);
   pointer-events: none;
   transition:
-    transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-    opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-    box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    opacity 0.3s ease,
+    border-color 0.3s ease;
 }
 
 .drift-wall__tile img {
@@ -99,8 +99,8 @@
 .drift-wall__tile.is-active .drift-wall__inner,
 .drift-wall__tile:focus-visible .drift-wall__inner {
   opacity: 1;
-  transform: translateZ(var(--dw-lift));
-  box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.95);
+  border-color: #71717a;
+  box-shadow: none;
 }
 
 .drift-wall__tile.is-active img,
@@ -114,9 +114,8 @@
 }
 
 .drift-wall__tile:focus-visible .drift-wall__inner {
-  box-shadow:
-    0 20px 50px -10px rgba(0, 0, 0, 0.95),
-    0 0 0 1px rgba(255, 255, 255, 0.5);
+  box-shadow: none;
+  border-color: #d4d4d8;
 }
 
 @media (prefers-reduced-motion: reduce) {

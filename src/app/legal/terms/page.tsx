@@ -42,22 +42,20 @@ export default function TermsOfServicePage() {
         </div>
 
         {/* Header Plaque */}
-        <header className="p-8 sm:p-10 rounded-2xl bg-[#140F0B]/95 border border-amber-900/40 shadow-2xl backdrop-blur-md mb-8 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-[#C9943E]/10 via-amber-700/5 to-transparent rounded-full blur-2xl pointer-events-none" />
-
+        <header className="p-8 sm:p-10 bg-[#111114] border border-zinc-800 mb-8 relative overflow-hidden">
           <div className="flex items-center gap-2 mb-3">
-            <span className="px-3 py-1 rounded bg-amber-500/20 border border-amber-500/40 text-amber-300 text-xs font-mono font-bold uppercase tracking-wider">
+            <span className="px-3 py-1 bg-zinc-900 border border-zinc-700 text-zinc-300 text-xs font-bold uppercase tracking-[0.2em]">
               Marketplace Charter
             </span>
-            <span className="text-xs text-stone-400 font-mono">
+            <span className="text-xs text-zinc-400 uppercase tracking-wider">
               Effective: March 2026 • Verified Escrow
             </span>
           </div>
 
-          <h1 className="text-2xl sm:text-3xl font-bold font-mono text-zinc-100 uppercase tracking-wider mb-3">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-zinc-100 uppercase tracking-[0.15em] mb-3">
             Terms of Service & Escrow Rules
           </h1>
-          <p className="text-sm sm:text-base text-stone-300 leading-relaxed max-w-2xl">
+          <p className="text-sm sm:text-base text-zinc-300 leading-relaxed max-w-2xl font-normal">
             OtakuBazaar is a peer-to-peer anime collectibles marketplace engineered to eradicate counterfeits through cryptographic escrow locking, insured delivery, and guaranteed unboxing inspection windows.
           </p>
         </header>
@@ -85,18 +83,18 @@ export default function TermsOfServicePage() {
           </section>
 
           {/* Section 2: 15-Minute Checkout Concurrency Lock */}
-          <section className="p-6 rounded-2xl bg-[#140F0B]/90 border border-amber-900/30">
-            <h2 className="text-base sm:text-lg font-black text-[#E8C36A] mb-3 flex items-center gap-2">
+          <section className="p-6 bg-[#111114] border border-zinc-800">
+            <h2 className="text-base sm:text-lg font-bold text-zinc-100 uppercase tracking-wider mb-3 flex items-center gap-2">
               <span>2.</span> 15-Minute Concurrency Reservation Lock
             </h2>
             <p>
-              When a seller accepts a bargain offer or a buyer clicks &apos;Reserve Grail&apos;, the listing enters a locked state (<code className="text-[#F85B1A] bg-stone-900 px-1.5 py-0.5 rounded font-mono text-xs">RESERVED</code>) for precisely 900 seconds (15 minutes). During this window, no other buyer may purchase or counter-bid. If payment is not completed within 15 minutes, the lock expires automatically and the item is restored to public market circulation.
+              When a seller accepts a bargain offer or a buyer clicks &apos;Reserve Grail&apos;, the listing enters a locked state (<code className="text-zinc-100 bg-zinc-900 px-1.5 py-0.5 border border-zinc-700 text-xs uppercase tracking-wider font-semibold">RESERVED</code>) for precisely 900 seconds (15 minutes). During this window, no other buyer may purchase or counter-bid. If payment is not completed within 15 minutes, the lock expires automatically and the item is restored to public market circulation.
             </p>
           </section>
 
           {/* Section 3: Strict Zero-Bootleg & Authenticity Standard */}
-          <section className="p-6 rounded-2xl bg-[#140F0B]/90 border border-amber-900/30">
-            <h2 className="text-base sm:text-lg font-black text-[#E8C36A] mb-3 flex items-center gap-2">
+          <section className="p-6 bg-[#111114] border border-zinc-800">
+            <h2 className="text-base sm:text-lg font-bold text-zinc-100 uppercase tracking-wider mb-3 flex items-center gap-2">
               <span>3.</span> Authenticity Standards & Bootleg Prohibition
             </h2>
             <p>

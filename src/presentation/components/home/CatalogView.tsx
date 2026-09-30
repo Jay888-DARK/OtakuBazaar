@@ -53,7 +53,7 @@ export const CatalogView: React.FC = () => {
   return (
     <div id="catalog" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Minimalist Monochrome Category Tabs */}
-      <div className="flex items-center space-x-8 border-b border-zinc-800/80 mb-8 pb-3 overflow-x-auto scrollbar-none">
+      <div className="flex items-center space-x-8 border-b border-zinc-800 mb-8 pb-3 overflow-x-auto scrollbar-none">
         {CATEGORIES.map((cat) => {
           const isActive = selectedCategory === cat.id;
           return (
@@ -61,10 +61,10 @@ export const CatalogView: React.FC = () => {
               key={cat.id}
               type="button"
               onClick={() => setSelectedCategory(cat.id)}
-              className={`text-xs font-mono uppercase tracking-widest transition-colors cursor-pointer ${
+              className={`text-[11px] uppercase tracking-[0.2em] transition-colors cursor-pointer ${
                 isActive
-                  ? 'text-zinc-100 border-b-2 border-zinc-100 pb-3 -mb-[13px] font-semibold'
-                  : 'text-zinc-500 hover:text-zinc-300 pb-3 -mb-[13px]'
+                  ? 'text-zinc-100 border-b-2 border-zinc-100 pb-3 -mb-[13px] font-bold'
+                  : 'text-zinc-500 hover:text-zinc-300 pb-3 -mb-[13px] font-medium'
               }`}
             >
               {cat.label}
@@ -81,9 +81,9 @@ export const CatalogView: React.FC = () => {
             <div
               key={product.id}
               id={product.id}
-              className={`transition-all duration-500 rounded-xl ${
+              className={`transition-all duration-300 ${
                 isHighlighted
-                  ? 'ring-2 ring-zinc-300 ring-offset-4 ring-offset-[#09090b] shadow-[0_0_30px_rgba(255,255,255,0.2)] scale-[1.02]'
+                  ? 'ring-1 ring-zinc-300 ring-offset-2 ring-offset-[#09090b]'
                   : ''
               }`}
             >

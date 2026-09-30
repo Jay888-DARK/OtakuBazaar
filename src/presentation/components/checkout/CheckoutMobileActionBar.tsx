@@ -21,10 +21,10 @@ export const CheckoutMobileActionBar: React.FC<CheckoutMobileActionBarProps> = (
   };
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-50 md:hidden bg-[#09090b]/80 backdrop-blur-xl border-t border-zinc-800/80 p-4 pb-safe flex items-center justify-between">
+    <div className="fixed inset-x-0 bottom-0 z-50 md:hidden bg-[#09090b] border-t border-zinc-800 p-4 pb-safe flex items-center justify-between">
       <div className="flex flex-col">
-        <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">Total Valuation</span>
-        <span className="text-sm font-mono font-bold text-zinc-100">
+        <span className="text-[10px] text-zinc-500 uppercase tracking-widest font-medium">Total Valuation</span>
+        <span className="text-sm font-bold text-zinc-100 uppercase tracking-wider">
           ₹{finalAmount.toLocaleString('en-IN')}
         </span>
       </div>
@@ -34,7 +34,7 @@ export const CheckoutMobileActionBar: React.FC<CheckoutMobileActionBarProps> = (
         type="button"
         onClick={handleMobilePayClick}
         disabled={isOfferLocked}
-        className="px-6 py-3 bg-zinc-900 hover:bg-zinc-100 text-zinc-300 hover:text-black border border-zinc-700 hover:border-zinc-100 font-mono text-[11px] font-semibold uppercase tracking-[0.2em] rounded-lg transition-all duration-300 cursor-pointer disabled:opacity-50 disabled:pointer-events-none"
+        className="px-6 py-3 bg-zinc-900 hover:bg-zinc-100 text-zinc-300 hover:text-black border border-zinc-700 hover:border-zinc-100 text-[11px] font-semibold uppercase tracking-[0.2em] transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:pointer-events-none"
       >
         {isOfferLocked ? 'Escrow Locked' : 'Lock Escrow'}
       </button>

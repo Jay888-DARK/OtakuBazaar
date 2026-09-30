@@ -160,13 +160,13 @@ export function MediaLightbox({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center gap-3 overflow-hidden">
-          <div className="flex items-center gap-2 px-2.5 py-1 rounded bg-amber-950/70 border border-amber-600/40 text-amber-300 text-xs font-mono font-bold tracking-wide">
+          <div className="flex items-center gap-2 px-2.5 py-1 bg-amber-950/70 border border-amber-600/40 text-amber-300 text-xs font-bold tracking-[0.15em] uppercase">
             <span className="text-[#F85B1A]">🔍</span>
             <span>48H INSPECTION VAULT</span>
           </div>
 
           <div className="flex flex-col truncate">
-            <h2 className="text-sm sm:text-base font-bold text-zinc-100 truncate font-mono uppercase tracking-wider">
+            <h2 className="text-sm sm:text-base font-extrabold text-zinc-100 truncate uppercase tracking-[0.15em]">
               {title}
             </h2>
             <span className="text-[11px] text-[#A89880] hidden sm:inline">
@@ -177,7 +177,7 @@ export function MediaLightbox({
 
         <div className="flex items-center gap-4 shrink-0">
           {/* Media Count Badge */}
-          <span className="text-xs font-mono font-bold text-amber-400/90 bg-black/40 px-2.5 py-1 rounded border border-amber-900/40">
+          <span className="text-xs font-bold text-amber-400/90 bg-black/40 px-2.5 py-1 border border-amber-900/40 tracking-wider">
             {currentIndex + 1} / {normalizedMedia.length}
           </span>
 
@@ -235,11 +235,11 @@ export function MediaLightbox({
                 autoPlay
                 loop
                 playsInline
-                className="max-h-[66vh] max-w-[86vw] object-contain rounded-lg"
+                className="max-h-[66vh] max-w-[86vw] object-contain"
               >
                 Your browser does not support the video tag.
               </video>
-              <span className="absolute top-3 left-3 px-2 py-0.5 rounded bg-black/80 border border-amber-500/40 text-[10px] font-mono font-bold text-amber-300">
+              <span className="absolute top-3 left-3 px-2 py-0.5 bg-black/80 border border-amber-500/40 text-[10px] font-bold text-amber-300 uppercase tracking-widest">
                 ▶ MP4/WEBM VIDEO
               </span>
             </div>
@@ -250,9 +250,9 @@ export function MediaLightbox({
                 key={activeItem.url}
                 src={activeItem.url}
                 alt={activeItem.alt || title}
-                className="max-h-[66vh] max-w-[86vw] object-contain rounded-xl shadow-2xl border border-amber-900/40 bg-black/40 transition-all duration-300"
+                className="max-h-[66vh] max-w-[86vw] object-contain border border-amber-900/40 bg-black/40 transition-all duration-300"
               />
-              <span className="absolute top-3 left-3 px-2 py-0.5 rounded bg-black/80 border border-amber-500/40 text-[10px] font-mono font-bold text-amber-300 pointer-events-none">
+              <span className="absolute top-3 left-3 px-2 py-0.5 bg-black/80 border border-amber-500/40 text-[10px] font-bold text-amber-300 uppercase tracking-widest pointer-events-none">
                 📸 HI-RES MACRO
               </span>
             </div>

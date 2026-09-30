@@ -90,44 +90,44 @@ export default function FeaturedGrailSpotlight({ onOpenOfferModal }: FeaturedGra
   return (
     <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       {/* Section Header with Next Grail Pagination Control */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-zinc-800/80 pb-3 mb-8 gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-zinc-800 pb-3 mb-8 gap-4">
         <div>
-          <span className="text-[10px] font-mono tracking-[0.25em] text-zinc-500 uppercase block">
+          <span className="text-[10px] font-semibold tracking-[0.25em] text-zinc-500 uppercase block">
             SPOTLIGHT LOT // {featuredLot.id.toUpperCase()}
           </span>
-          <h2 className="text-lg font-mono font-bold text-zinc-100 uppercase tracking-wide mt-1">
+          <h2 className="text-lg font-bold text-zinc-100 uppercase tracking-wider mt-1">
             Archival Grail of the Cycle
           </h2>
         </div>
 
-        <div className="flex items-center space-x-3 text-xs font-mono">
+        <div className="flex items-center space-x-3 text-xs uppercase tracking-wider">
           <div className="hidden sm:flex items-center space-x-2">
-            <span className="text-zinc-500 uppercase tracking-widest">Closing Window:</span>
-            <span className="border border-zinc-800 bg-zinc-900/80 text-zinc-200 px-2.5 py-1 rounded">
+            <span className="text-zinc-500 tracking-widest text-[11px]">Closing Window:</span>
+            <span className="border border-zinc-800 bg-[#0e0e11] text-zinc-200 px-2.5 py-1 text-[11px] font-semibold">
               {featuredLot.timeRemaining}
             </span>
           </div>
 
           {/* Next Grail Pagination Controls */}
-          <div className="flex items-center space-x-2 pl-2 border-l border-zinc-800/80">
+          <div className="flex items-center space-x-2 pl-2 border-l border-zinc-800">
             <button
               type="button"
               onClick={handlePrev}
               aria-label="Previous Grail"
-              className="p-1.5 rounded-md border border-zinc-800 bg-zinc-900/60 hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 transition-colors cursor-pointer"
+              className="p-1.5 border border-zinc-800 bg-[#0e0e11] hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 transition-colors cursor-pointer"
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M15 18l-6-6 6-6" />
               </svg>
             </button>
-            <span className="text-[10px] font-mono text-zinc-500 px-1 select-none">
+            <span className="text-[10px] text-zinc-500 px-1 select-none font-semibold tracking-wider">
               {currentIndex + 1} / {FEATURED_GRAILS.length}
             </span>
             <button
               type="button"
               onClick={handleNext}
               aria-label="Next Grail"
-              className="flex items-center space-x-1 px-3 py-1.5 rounded-md border border-zinc-700 bg-zinc-900/90 hover:bg-zinc-100 text-zinc-300 hover:text-black font-mono text-[10px] font-semibold uppercase tracking-wider transition-all duration-200 cursor-pointer"
+              className="flex items-center space-x-1.5 px-3 py-1.5 border border-zinc-700 bg-zinc-900 hover:bg-zinc-100 text-zinc-300 hover:text-black text-[10px] font-semibold uppercase tracking-[0.2em] transition-all duration-200 cursor-pointer"
             >
               <span>Next Grail</span>
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -138,17 +138,17 @@ export default function FeaturedGrailSpotlight({ onOpenOfferModal }: FeaturedGra
         </div>
       </div>
 
-      {/* 3D Depth Card Container */}
+      {/* Flat Editorial Structural Card Container */}
       <div className="flex justify-center">
         <DepthCard
-          className="w-full max-w-5xl bg-[#121214] border border-zinc-800/80 hover:border-zinc-600 rounded-2xl p-6 sm:p-8 overflow-hidden shadow-2xl transition-colors"
-          maxTilt={7}
+          className="w-full max-w-5xl bg-[#0e0e11] border border-zinc-800 p-6 sm:p-8 overflow-hidden transition-colors"
+          maxTilt={0}
           perspective={1400}
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-            {/* Left Column: Figure Presentation Stage with Jeweler's Loupe Image Zoom */}
-            <div className="relative h-80 sm:h-96 w-full flex items-center justify-center bg-[#0a0a0c] rounded-xl border border-zinc-800/60 p-6 overflow-hidden group/loupe cursor-crosshair">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.05)_0%,_transparent_70%)] pointer-events-none" />
+            {/* Left Column: Figure Presentation Stage with Loupe Zoom */}
+            <div className="relative h-80 sm:h-96 w-full flex items-center justify-center bg-[#09090b] border border-zinc-800/80 p-6 overflow-hidden group/loupe cursor-crosshair">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.03)_0%,_transparent_70%)] pointer-events-none" />
               <Image
                 key={featuredLot.id}
                 src={featuredLot.imageUrl}
@@ -156,44 +156,44 @@ export default function FeaturedGrailSpotlight({ onOpenOfferModal }: FeaturedGra
                 fill
                 priority
                 sizes="(max-width: 768px) 100vw, 50vw"
-                className="relative z-10 object-contain p-4 drop-shadow-[0_20px_35px_rgba(0,0,0,0.95)] transition-transform duration-700 ease-out group-hover/loupe:scale-125"
+                className="relative z-10 object-contain p-4 transition-transform duration-700 ease-out group-hover/loupe:scale-125"
               />
             </div>
 
             {/* Right Column: Provenance, Telemetry, COA & Escrow Trigger */}
             <div className="flex flex-col justify-between h-full py-1">
               <div>
-                <div className="flex items-center space-x-3 text-[10px] font-mono text-zinc-400 mb-3">
-                  <span className="text-zinc-200 border border-zinc-700 bg-zinc-800/80 px-2 py-0.5 rounded uppercase font-semibold">
+                <div className="flex items-center space-x-3 text-[10px] uppercase tracking-wider text-zinc-400 mb-3">
+                  <span className="text-zinc-200 border border-zinc-700 bg-zinc-900 px-2 py-0.5 font-semibold">
                     {featuredLot.condition}
                   </span>
-                  <span>// EDITION: {featuredLot.edition}</span>
+                  <span className="text-zinc-500 font-medium">// EDITION: {featuredLot.edition}</span>
                 </div>
 
-                <h3 className="text-xl sm:text-2xl font-mono font-bold text-zinc-100 uppercase tracking-tight">
+                <h3 className="text-xl sm:text-2xl font-extrabold text-zinc-100 uppercase tracking-tight">
                   {featuredLot.title}
                 </h3>
-                <p className="text-xs font-mono text-zinc-500 mt-1 uppercase tracking-wider">
+                <p className="text-xs text-zinc-500 mt-1 uppercase tracking-[0.15em] font-semibold">
                   {featuredLot.series}
                 </p>
 
-                <div className="mt-4 pt-4 border-t border-zinc-800/60 space-y-1.5 text-xs font-mono text-zinc-400">
+                <div className="mt-5 pt-4 border-t border-zinc-800 space-y-2 text-xs uppercase tracking-wider text-zinc-400">
                   <div className="flex justify-between">
                     <span className="text-zinc-500">Fabricator</span>
-                    <span className="text-zinc-300">{featuredLot.manufacturer}</span>
+                    <span className="text-zinc-200 font-medium">{featuredLot.manufacturer}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-zinc-500">Scale / Material</span>
-                    <span className="text-zinc-300">{featuredLot.scale}</span>
+                    <span className="text-zinc-200 font-medium">{featuredLot.scale}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-zinc-500">Custody Protocol</span>
-                    <span className="text-zinc-300">Double-Vault Escrow Guaranteed</span>
+                    <span className="text-zinc-200 font-medium">Double-Vault Escrow Guaranteed</span>
                   </div>
                 </div>
 
                 {/* Digital Certificate of Authenticity (COA) Component */}
-                <div className="mt-4">
+                <div className="mt-5">
                   <AuthenticityLedger
                     lotId={featuredLot.id.toUpperCase()}
                     grader="Prime Inspection Escrow"
@@ -203,12 +203,12 @@ export default function FeaturedGrailSpotlight({ onOpenOfferModal }: FeaturedGra
               </div>
 
               {/* Transaction Action */}
-              <div className="mt-6 border-t border-zinc-800/80 pt-4">
+              <div className="mt-6 border-t border-zinc-800 pt-4">
                 <div className="flex items-baseline justify-between mb-4">
-                  <span className="text-xs font-mono uppercase tracking-widest text-zinc-500">
+                  <span className="text-[11px] uppercase tracking-[0.2em] font-medium text-zinc-500">
                     Archival Valuation
                   </span>
-                  <span className="text-xl font-bold font-mono text-zinc-100">
+                  <span className="text-2xl font-bold uppercase tracking-wider text-zinc-100">
                     ₹{featuredLot.askingPrice.toLocaleString('en-IN')}
                   </span>
                 </div>
@@ -222,7 +222,7 @@ export default function FeaturedGrailSpotlight({ onOpenOfferModal }: FeaturedGra
                       setIsOfferModalOpen(true);
                     }
                   }}
-                  className="w-full py-2.5 bg-zinc-900 hover:bg-zinc-100 text-zinc-300 hover:text-black border border-zinc-700 hover:border-zinc-100 font-mono text-[11px] font-semibold uppercase tracking-[0.2em] rounded-lg transition-all duration-300 cursor-pointer"
+                  className="w-full py-3 bg-zinc-900 hover:bg-zinc-100 text-zinc-200 hover:text-black border border-zinc-700 hover:border-zinc-100 text-[11px] font-semibold uppercase tracking-[0.2em] transition-all duration-200 cursor-pointer"
                 >
                   Enter Escrow Negotiation Room
                 </button>

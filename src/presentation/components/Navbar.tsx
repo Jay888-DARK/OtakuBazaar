@@ -71,17 +71,17 @@ export function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-50 h-16 w-full border-b border-zinc-800/80 bg-[#09090b]/90 backdrop-blur-md">
+    <header className="sticky top-0 z-50 h-16 w-full border-b border-zinc-800 bg-[#09090b]">
       <div className="mx-auto flex h-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Left: Split Luxury Brand Logo */}
         <div className="flex items-center">
           <Link
             href="/"
             aria-label="OtakuBazaar Home — Authentic Anime Collectibles"
-            className="flex items-center space-x-3 cursor-pointer group no-underline focus-visible:ring-2 focus-visible:ring-zinc-600 focus-visible:outline-none rounded-xl p-1"
+            className="flex items-center space-x-3 cursor-pointer group no-underline focus-visible:ring-1 focus-visible:ring-zinc-400 focus-visible:outline-none p-1"
           >
             {/* The Brand Mark (Kitsune Mask) */}
-            <div className="h-8 w-8 relative flex items-center justify-center drop-shadow-[0_2px_8px_rgba(255,255,255,0.05)]">
+            <div className="h-8 w-8 relative flex items-center justify-center">
               <img
                 src="/Firefly.png"
                 alt="OtakuBazaar Icon"
@@ -95,7 +95,7 @@ export function Navbar() {
                 OtakuBazaar
               </span>
               {/* Retain the micro-label underneath */}
-              <span className="text-[8px] font-mono tracking-[0.25em] text-zinc-500 uppercase mt-0.5">
+              <span className="text-[8px] font-semibold tracking-[0.25em] text-zinc-500 uppercase mt-0.5">
                 Escrow Authenticated
               </span>
             </div>
@@ -109,8 +109,8 @@ export function Navbar() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search verified scale figures..."
-              className="w-full rounded-lg border border-zinc-800 bg-zinc-900/60 px-3.5 py-1.5 text-xs text-zinc-200 placeholder-zinc-500 outline-none transition-colors focus:border-zinc-500 font-mono"
+              placeholder="SEARCH VERIFIED SCALE FIGURES..."
+              className="w-full border border-zinc-800 bg-[#0e0e11] px-3.5 py-1.5 text-xs text-zinc-200 placeholder-zinc-500 outline-none transition-colors focus:border-zinc-500 uppercase tracking-wider text-[11px]"
             />
           </form>
         </div>
@@ -122,10 +122,10 @@ export function Navbar() {
             onClick={openCart}
             type="button"
             aria-label="Open Cart Drawer"
-            className="flex items-center space-x-2 rounded-md border border-zinc-800 bg-zinc-900/40 px-3 py-1.5 text-xs text-zinc-300 transition-colors hover:border-zinc-700 hover:text-white cursor-pointer"
+            className="flex items-center space-x-2 border border-zinc-800 bg-[#0e0e11] px-3 py-1.5 text-xs text-zinc-300 transition-colors hover:border-zinc-700 hover:text-white cursor-pointer"
           >
-            <span className="font-mono text-[11px] uppercase tracking-wider">Cart</span>
-            <span className="rounded bg-zinc-800 px-1.5 py-0.2 text-[10px] font-mono text-zinc-200">
+            <span className="text-[11px] font-semibold uppercase tracking-wider">Cart</span>
+            <span className="border border-zinc-800 bg-zinc-900 px-1.5 py-0.2 text-[10px] font-medium text-zinc-200">
               {cartItemCount || 0}
             </span>
           </button>
@@ -134,7 +134,7 @@ export function Navbar() {
           <button
             onClick={handleOpenSellModal}
             type="button"
-            className="px-3.5 py-2 bg-zinc-900 hover:bg-zinc-100 text-zinc-300 hover:text-black border border-zinc-700 hover:border-zinc-100 font-mono text-[11px] font-semibold uppercase tracking-[0.2em] rounded-lg transition-all duration-300 cursor-pointer"
+            className="px-3.5 py-2 bg-zinc-900 hover:bg-zinc-100 text-zinc-300 hover:text-black border border-zinc-700 hover:border-zinc-100 text-[11px] font-semibold uppercase tracking-[0.2em] transition-all duration-200 cursor-pointer"
           >
             Drop a Grail
           </button>
@@ -144,31 +144,31 @@ export function Navbar() {
             <button
               onClick={handleAuth}
               type="button"
-              className="rounded-md border border-zinc-800 px-3 py-1.5 font-mono text-xs text-zinc-400 transition-colors hover:border-zinc-600 hover:text-white cursor-pointer"
+              className="border border-zinc-800 bg-[#0e0e11] px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-zinc-400 transition-colors hover:border-zinc-600 hover:text-white cursor-pointer"
             >
               Sign In
             </button>
           ) : (
-            <div className="flex items-center gap-2 pl-1.5 pr-2 py-1 rounded-full bg-zinc-900 border border-zinc-800 shrink-0">
+            <div className="flex items-center gap-2 pl-2 pr-2 py-1 bg-[#0e0e11] border border-zinc-800 shrink-0">
               {session.user?.image ? (
                 <img
                   src={session.user.image}
                   alt={session.user?.name || 'User profile'}
-                  className="w-5 h-5 rounded-full border border-zinc-700 object-cover shrink-0"
+                  className="w-5 h-5 border border-zinc-700 object-cover shrink-0"
                 />
               ) : (
-                <div className="w-5 h-5 rounded-full border border-zinc-700 bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-zinc-300 shrink-0">
+                <div className="w-5 h-5 border border-zinc-700 bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-zinc-300 shrink-0">
                   {session.user?.name ? session.user.name.charAt(0).toUpperCase() : 'U'}
                 </div>
               )}
-              <span className="hidden lg:inline-block max-w-[80px] truncate text-xs font-mono text-zinc-300">
+              <span className="hidden lg:inline-block max-w-[80px] truncate text-xs font-medium uppercase tracking-wider text-zinc-300">
                 {session.user?.name}
               </span>
               <button
                 type="button"
                 onClick={() => signOut()}
                 aria-label="Sign out of OtakuBazaar"
-                className="text-[10px] font-mono text-zinc-400 hover:text-white px-2 py-0.5 rounded border border-zinc-700 bg-zinc-800 transition-colors cursor-pointer shrink-0 whitespace-nowrap"
+                className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 hover:text-white px-2 py-0.5 border border-zinc-700 bg-zinc-800 transition-colors cursor-pointer shrink-0 whitespace-nowrap"
                 title="Sign out of OtakuBazaar"
               >
                 Sign Out

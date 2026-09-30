@@ -190,23 +190,23 @@ export function BargainModal({
       role="dialog"
       aria-modal="true"
       aria-labelledby="bargain-modal-title"
-      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-200"
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/85 animate-in fade-in duration-200"
       onClick={(e) => {
         if (e.target === e.currentTarget && onClose) onClose();
       }}
     >
       {/* High-End Banking Terminal Container */}
-      <div className="bg-[#0a0a0c] border border-zinc-800 rounded-xl shadow-[0_20px_60px_-15px_rgba(0,0,0,0.9)] max-w-lg w-full p-6 relative overflow-hidden">
+      <div className="bg-[#0a0a0c] border border-zinc-800 max-w-lg w-full p-6 relative overflow-hidden">
         {/* A. Modal Header */}
-        <div className="flex justify-between items-start border-b border-zinc-800/80 pb-4 mb-5">
+        <div className="flex justify-between items-start border-b border-zinc-800 pb-4 mb-5">
           <div>
-            <span className="text-[9px] font-mono tracking-[0.2em] text-zinc-500 uppercase">
+            <span className="text-[9px] font-semibold tracking-[0.2em] text-zinc-500 uppercase">
               Encrypted Escrow Channel
             </span>
-            <h2 id="bargain-modal-title" className="text-base font-mono font-bold text-zinc-100 uppercase tracking-widest mt-1">
+            <h2 id="bargain-modal-title" className="text-base font-bold text-zinc-100 uppercase tracking-widest mt-1">
               Vault Negotiation
             </h2>
-            <div className="text-[10px] font-mono text-zinc-400 mt-0.5 truncate max-w-sm">
+            <div className="text-[10px] text-zinc-400 mt-0.5 truncate max-w-sm uppercase tracking-wider">
               {productTitle}
             </div>
           </div>
@@ -226,20 +226,20 @@ export function BargainModal({
 
         {/* B. Financial Readout Row */}
         <div className="grid grid-cols-2 gap-3 mb-4">
-          <div className="bg-[#121214] border border-zinc-800/50 rounded-lg p-3">
-            <div className="text-[9px] font-mono text-zinc-500 uppercase mb-1 tracking-widest">
+          <div className="bg-[#121214] border border-zinc-800 p-3">
+            <div className="text-[9px] text-zinc-500 uppercase mb-1 tracking-widest font-medium">
               Archival Valuation
             </div>
-            <div className="text-sm font-mono font-bold text-zinc-200">
+            <div className="text-sm font-bold text-zinc-200 uppercase tracking-wider">
               ₹{askingPriceINR.toLocaleString('en-IN')}
             </div>
           </div>
-          <div className="bg-[#121214] border border-zinc-800/50 rounded-lg p-3 flex flex-col justify-center">
-            <div className="flex items-center space-x-2 text-[9px] font-mono text-zinc-300 uppercase mb-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500/80 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span>
+          <div className="bg-[#121214] border border-zinc-800 p-3 flex flex-col justify-center">
+            <div className="flex items-center space-x-2 text-[9px] text-zinc-300 uppercase mb-1 font-semibold tracking-wider">
+              <span className="w-1.5 h-1.5 bg-emerald-500"></span>
               <span>48-H Protection Active</span>
             </div>
-            <div className="text-[10px] font-mono text-zinc-500">Zero bootleg risk guarantee</div>
+            <div className="text-[10px] text-zinc-500 uppercase tracking-wider">Zero bootleg risk guarantee</div>
           </div>
         </div>
 
@@ -253,20 +253,20 @@ export function BargainModal({
         </div>
 
         {errorMessage && (
-          <div className="mb-4 p-2.5 rounded-lg bg-zinc-900 border border-zinc-700 text-zinc-300 text-[11px] font-mono">
+          <div className="mb-4 p-2.5 bg-zinc-900 border border-zinc-700 text-zinc-300 text-[11px] uppercase tracking-wider font-medium">
             {errorMessage}
           </div>
         )}
 
         {/* C. Pusher WebSocket Terminal Log */}
-        <div className="bg-[#121214] border border-zinc-800/50 rounded-lg p-4 h-40 mb-5 overflow-y-auto flex flex-col justify-end">
-          <div className="text-center text-[9px] font-mono text-zinc-600 uppercase tracking-widest border-b border-zinc-800/30 pb-2 mb-2">
+        <div className="bg-[#121214] border border-zinc-800 p-4 h-40 mb-5 overflow-y-auto flex flex-col justify-end">
+          <div className="text-center text-[9px] text-zinc-500 uppercase tracking-widest border-b border-zinc-800 pb-2 mb-2 font-medium">
             WebSocket Live // Awaiting Counterparty
           </div>
 
           <div className="overflow-y-auto space-y-2 pr-1">
             {chatMessages.length === 0 ? (
-              <div className="text-[11px] font-mono text-zinc-500 text-center py-4">
+              <div className="text-[11px] text-zinc-500 text-center py-4 uppercase tracking-wider">
                 Telemetry connected. Enter target offer below to initialize escrow channel.
               </div>
             ) : (
@@ -276,11 +276,11 @@ export function BargainModal({
                 return (
                   <div key={msg.id} className={`flex flex-col ${isBuyer ? 'items-end' : isSystem ? 'items-center' : 'items-start'}`}>
                     <div
-                      className={`max-w-[90%] px-2.5 py-1 rounded text-[11px] font-mono ${
+                      className={`max-w-[90%] px-2.5 py-1 text-[11px] uppercase tracking-wider ${
                         isSystem
-                          ? 'text-zinc-500 text-[10px] border border-zinc-800/60 bg-zinc-900/40 text-center'
+                          ? 'text-zinc-500 text-[10px] border border-zinc-800 bg-zinc-900 text-center'
                           : isBuyer
-                          ? 'bg-zinc-800 text-zinc-100 border border-zinc-700'
+                          ? 'bg-zinc-800 text-zinc-100 border border-zinc-700 font-medium'
                           : 'bg-zinc-900 text-zinc-300 border border-zinc-800'
                       }`}
                     >
@@ -296,7 +296,7 @@ export function BargainModal({
 
         {/* Status Actions (When Offer is Active) */}
         {dealOffer && (
-          <div className="mb-4 p-3 rounded-lg border border-zinc-800 bg-[#121214] flex items-center justify-between font-mono text-xs">
+          <div className="mb-4 p-3 border border-zinc-800 bg-[#121214] flex items-center justify-between text-xs">
             <div>
               <div className="text-[10px] text-zinc-500 uppercase tracking-wider">OFFER PROTOCOL STATUS</div>
               <div className="text-zinc-200 font-bold uppercase tracking-wide">
@@ -308,7 +308,7 @@ export function BargainModal({
               <button
                 type="button"
                 onClick={handleSimulateSellerAccept}
-                className="px-2.5 py-1 text-[10px] font-mono font-semibold uppercase tracking-wider text-zinc-300 hover:text-white border border-zinc-700 hover:border-zinc-500 bg-zinc-800/80 rounded transition-colors cursor-pointer"
+                className="px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-zinc-300 hover:text-white border border-zinc-700 hover:border-zinc-500 bg-zinc-800 transition-colors cursor-pointer"
               >
                 Simulate Seller Accept
               </button>
@@ -322,7 +322,7 @@ export function BargainModal({
             <button
               type="button"
               onClick={handleProceedToCheckout}
-              className="w-full py-2.5 bg-zinc-100 hover:bg-white text-black font-mono text-[11px] font-bold uppercase tracking-[0.2em] rounded-lg transition-all shadow-xl cursor-pointer"
+              className="w-full py-2.5 bg-zinc-100 hover:bg-white text-black text-[11px] font-bold uppercase tracking-[0.2em] transition-all cursor-pointer"
             >
               PROCEED TO ESCROW PAYMENT (₹{(dealOffer.offeredPrice || Number(offerPrice)).toLocaleString('en-IN')})
             </button>
@@ -330,14 +330,14 @@ export function BargainModal({
         ) : (
           <div className="flex items-center space-x-3 mb-4">
             <div className="relative flex-1">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 font-mono text-xs">₹</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 text-xs font-bold">₹</span>
               <input
                 type="number"
                 placeholder="ENTER OFFER..."
                 value={offerPrice}
                 onChange={(e) => setOfferPrice(e.target.value)}
                 disabled={submitting}
-                className="w-full bg-[#121214] border border-zinc-800 hover:border-zinc-600 rounded-lg pl-7 pr-3 py-2 text-xs font-mono text-zinc-100 placeholder-zinc-700 focus:border-zinc-400 outline-none transition-colors"
+                className="w-full bg-[#121214] border border-zinc-800 hover:border-zinc-600 pl-7 pr-3 py-2 text-xs text-zinc-100 placeholder-zinc-700 focus:border-zinc-400 outline-none transition-colors uppercase tracking-wider"
               />
             </div>
 
@@ -351,7 +351,7 @@ export function BargainModal({
                 onHold={() => handleSendOffer()}
                 doneLabel="OFFER SENT"
                 size="sm"
-                className="font-mono text-[10px] tracking-[0.2em] border border-zinc-700 hover:border-zinc-500 w-full"
+                className="text-[10px] tracking-[0.2em] uppercase font-semibold border border-zinc-700 hover:border-zinc-500 w-full"
               >
                 HOLD TO OFFER
               </HoldButton>
@@ -367,18 +367,18 @@ export function BargainModal({
               value={newChatText}
               onChange={(e) => setNewChatText(e.target.value)}
               placeholder="TRANSMIT COUNTER-OFFER REASONING..."
-              className="flex-1 px-3 py-1.5 text-xs font-mono rounded-lg bg-[#121214] border border-zinc-800 text-zinc-200 placeholder-zinc-700 focus:border-zinc-600 outline-none"
+              className="flex-1 px-3 py-1.5 text-xs bg-[#121214] border border-zinc-800 text-zinc-200 placeholder-zinc-700 focus:border-zinc-600 outline-none uppercase tracking-wider"
             />
             <button
               type="submit"
-              className="px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-mono font-semibold uppercase tracking-wider border border-zinc-700 transition-colors cursor-pointer"
+              className="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-semibold uppercase tracking-wider border border-zinc-700 transition-colors cursor-pointer"
             >
               Send
             </button>
           </form>
         )}
 
-        <div className="text-center text-[9px] font-mono text-zinc-600 uppercase tracking-[0.2em]">
+        <div className="text-center text-[9px] text-zinc-600 uppercase tracking-[0.2em] font-medium">
           Razorpay Escrow Vault • Funds locked until verification
         </div>
       </div>

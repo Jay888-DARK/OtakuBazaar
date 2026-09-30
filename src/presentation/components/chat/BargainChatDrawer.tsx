@@ -261,24 +261,21 @@ export function BargainChatDrawer({
       role="dialog"
       aria-modal="true"
       aria-labelledby="bargain-drawer-title"
-      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200"
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/85 animate-in fade-in duration-200"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="relative w-full max-w-lg rounded-2xl bg-[#0a0806] border border-[#C9943E]/50 shadow-2xl p-6 sm:p-7 text-[#F0E8DA] max-h-[92vh] overflow-y-auto">
-        {/* Decorative corner accent */}
-        <div className="absolute top-0 right-0 w-28 h-28 bg-gradient-to-bl from-[#F85B1A]/20 to-transparent pointer-events-none rounded-tr-2xl" />
-
+      <div className="relative w-full max-w-lg bg-[#111114] border border-zinc-800 p-6 sm:p-7 text-zinc-100 max-h-[92vh] overflow-y-auto">
         {/* Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-stone-800">
+        <div className="flex items-center justify-between pb-4 border-b border-zinc-800">
           <div className="flex items-center gap-2.5">
             <span className="text-2xl">🤝</span>
             <div>
-              <h2 id="bargain-drawer-title" className="font-mono text-base font-bold text-zinc-100 uppercase tracking-wider">
+              <h2 id="bargain-drawer-title" className="text-base font-extrabold text-zinc-100 uppercase tracking-[0.15em]">
                 Collector Price Bargain
               </h2>
-              <p className="text-[11px] text-stone-400 m-0 truncate max-w-xs">
+              <p className="text-[11px] text-zinc-400 m-0 truncate max-w-xs font-normal">
                 {productTitle}
               </p>
             </div>
@@ -287,17 +284,17 @@ export function BargainChatDrawer({
             type="button"
             onClick={onClose}
             aria-label="Close modal"
-            className="w-8 h-8 rounded-full bg-stone-900 border border-stone-800 text-stone-400 hover:text-white hover:border-stone-600 flex items-center justify-center text-sm transition-colors cursor-pointer"
+            className="w-8 h-8 bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-600 flex items-center justify-center text-sm transition-colors cursor-pointer"
           >
             ✕
           </button>
         </div>
 
         {/* Asking Price Comparison */}
-        <div className="my-4 p-3.5 rounded-xl bg-[#140F0B] border border-stone-800 flex items-center justify-between text-xs">
+        <div className="my-4 p-3.5 bg-zinc-900 border border-zinc-800 flex items-center justify-between text-xs">
           <div>
-            <span className="text-stone-400 block text-[10px] uppercase tracking-wider">Catalog Asking Price</span>
-            <span className="text-sm font-black text-stone-300 line-through">
+            <span className="text-zinc-400 block text-[10px] uppercase tracking-wider font-semibold">Catalog Asking Price</span>
+            <span className="text-sm font-black text-zinc-300 line-through">
               ₹{askingPriceINR.toLocaleString('en-IN')}
             </span>
           </div>
@@ -387,13 +384,13 @@ export function BargainChatDrawer({
                       ? 'Offer Expired'
                       : currentStatus}
                   </span>
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-black/40 border border-stone-700 font-mono">
+                  <span className="text-[10px] px-2 py-0.5 bg-black/60 border border-zinc-700 uppercase tracking-widest font-semibold">
                     ⏱️ {timeLeft}
                   </span>
                 </div>
                 <div className="text-[11px] opacity-90 mt-0.5 flex gap-2">
                   <span>Offered: ₹{(dealOffer.offeredPrice || offerPrice).toLocaleString('en-IN')}</span>
-                  <span className="text-stone-400">• 24-Hour Bid Window</span>
+                  <span className="text-zinc-400">• 24-Hour Bid Window</span>
                 </div>
               </div>
 
@@ -401,7 +398,7 @@ export function BargainChatDrawer({
                 <button
                   type="button"
                   onClick={handleSimulateSellerAccept}
-                  className="px-3 py-1.5 text-xs font-bold rounded-lg bg-amber-500/20 hover:bg-amber-500/40 border border-amber-500/40 text-amber-300 transition-colors cursor-pointer self-start sm:self-center flex items-center gap-1"
+                  className="px-3 py-1.5 text-xs font-bold bg-amber-500/20 hover:bg-amber-500/40 border border-amber-500/40 text-amber-300 transition-colors cursor-pointer self-start sm:self-center flex items-center gap-1 uppercase tracking-wider"
                   title="Simulate seller acceptance for testing"
                 >
                   <span>⚡</span>

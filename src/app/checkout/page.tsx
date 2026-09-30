@@ -70,35 +70,35 @@ export default async function CheckoutPage({ searchParams }: CheckoutPageProps):
 
       <div className="max-w-3xl mx-auto space-y-8">
         {/* Navigation Breadcrumbs */}
-        <div className="flex items-center gap-2 text-xs font-mono text-zinc-500">
-          <Link href="/" className="hover:text-zinc-300 transition-colors">
+        <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] font-medium text-zinc-500">
+          <Link href="/" className="hover:text-zinc-200 transition-colors">
             Home
           </Link>
           <span>/</span>
-          <span className="text-zinc-300">Checkout</span>
+          <span className="text-zinc-200">Checkout</span>
         </div>
 
         {/* Header Panel */}
-        <div className="bg-[#121214] border border-zinc-800/80 rounded-xl p-6 sm:p-8 shadow-xl">
+        <div className="bg-[#111114] border border-zinc-800 p-6 sm:p-8">
           <div className="flex items-center gap-3 mb-3">
-            <span className="px-2.5 py-1 rounded bg-zinc-800/80 text-zinc-300 border border-zinc-700 font-mono text-[10px] uppercase tracking-wider">
+            <span className="px-2.5 py-1 bg-zinc-900 text-zinc-300 border border-zinc-700 text-[10px] uppercase tracking-[0.2em] font-medium">
               🛡️ 48-Hour Escrow Protection
             </span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-mono font-bold text-zinc-100 uppercase tracking-widest">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-zinc-100 uppercase tracking-[0.15em]">
             Complete Secure Checkout
           </h1>
-          <p className="text-xs font-mono text-zinc-400 mt-2">
+          <p className="text-xs text-zinc-400 mt-2 font-normal tracking-wide">
             Payment is held securely in escrow until physical unboxing inspection concludes.
           </p>
         </div>
 
         {/* Offer Status Banners */}
         {isOfferLocked && (
-          <div className="p-4 rounded-xl bg-[#121214] border border-amber-500/40 text-amber-200 text-xs font-mono flex items-center gap-3 shadow-lg">
+          <div className="p-4 bg-[#111114] border border-amber-500/50 text-amber-200 text-xs flex items-center gap-3">
             <span className="text-2xl">🔒</span>
             <div>
-              <span className="font-bold text-sm block mb-1">Escrow Payment Locked</span>
+              <span className="font-bold text-sm block mb-1 uppercase tracking-wider">Escrow Payment Locked</span>
               <span className="text-zinc-400">
                 Your bargain offer of ₹{finalAmount.toLocaleString('en-IN')} is awaiting seller acceptance (Status: {currentStatus || 'PENDING'}). Razorpay Escrow payment will unlock ONLY when the seller accepts your offer.
               </span>
@@ -107,10 +107,10 @@ export default async function CheckoutPage({ searchParams }: CheckoutPageProps):
         )}
 
         {isOfferAccepted && (
-          <div className="p-4 rounded-xl bg-[#121214] border border-emerald-500/40 text-emerald-200 text-xs font-mono flex items-center gap-3 shadow-lg">
+          <div className="p-4 bg-[#111114] border border-emerald-500/50 text-emerald-200 text-xs flex items-center gap-3">
             <span className="text-2xl">✓</span>
             <div>
-              <span className="font-bold text-sm block mb-1">Bargain Offer Accepted</span>
+              <span className="font-bold text-sm block mb-1 uppercase tracking-wider">Bargain Offer Accepted</span>
               <span className="text-zinc-400">
                 The seller agreed to ₹{finalAmount.toLocaleString('en-IN')}. Razorpay Escrow payment is unlocked and ready for funding.
               </span>
@@ -119,32 +119,32 @@ export default async function CheckoutPage({ searchParams }: CheckoutPageProps):
         )}
 
         {/* Order Summary & Payment Card */}
-        <div className="bg-[#121214] border border-zinc-800/80 rounded-xl p-6 sm:p-8 space-y-6 shadow-xl">
-          <h2 className="text-sm font-mono font-bold text-zinc-100 uppercase tracking-widest border-b border-zinc-800/80 pb-3">
+        <div className="bg-[#111114] border border-zinc-800 p-6 sm:p-8 space-y-6">
+          <h2 className="text-xs font-bold text-zinc-100 uppercase tracking-[0.25em] border-b border-zinc-800 pb-3">
             Order Breakdown
           </h2>
 
-          <div className="space-y-3 font-mono text-xs">
+          <div className="space-y-3 text-xs tracking-wide">
             <div className="flex justify-between items-center text-zinc-300">
-              <span className="truncate max-w-md">{itemTitle}</span>
-              <span className="font-bold text-zinc-100">₹{finalAmount.toFixed(2)}</span>
+              <span className="truncate max-w-md font-medium">{itemTitle}</span>
+              <span className="font-bold text-zinc-100 tracking-wider">₹{finalAmount.toFixed(2)}</span>
             </div>
             <div className="flex justify-between items-center text-zinc-400">
               <span>Escrow Liability Trust Fee</span>
-              <span className="text-emerald-400 font-medium">FREE (₹0)</span>
+              <span className="text-emerald-400 font-semibold tracking-wider">FREE (₹0)</span>
             </div>
             <div className="flex justify-between items-center text-zinc-400">
               <span>Inspected Express Courier Dispatch</span>
-              <span className="text-emerald-400 font-medium">FREE (₹0)</span>
+              <span className="text-emerald-400 font-semibold tracking-wider">FREE (₹0)</span>
             </div>
-            <div className="border-t border-zinc-800/80 pt-3 flex justify-between items-baseline font-mono">
-              <span className="text-sm uppercase tracking-wider text-zinc-300">Total Due (INR):</span>
-              <span className="text-xl font-bold text-zinc-100">₹{finalAmount.toFixed(2)}</span>
+            <div className="border-t border-zinc-800 pt-3 flex justify-between items-baseline">
+              <span className="text-xs uppercase tracking-[0.2em] font-medium text-zinc-300">Total Due (INR):</span>
+              <span className="text-xl font-extrabold text-zinc-100 tracking-wider">₹{finalAmount.toFixed(2)}</span>
             </div>
           </div>
 
           {/* Secure Payment Trigger: Universal Button Token */}
-          <div className="pt-6 border-t border-zinc-800/80 flex flex-col items-center justify-center space-y-3">
+          <div className="pt-6 border-t border-zinc-800 flex flex-col items-center justify-center space-y-3">
             <CheckoutButton
               productId={productId}
               lotId={productId}
@@ -153,14 +153,14 @@ export default async function CheckoutPage({ searchParams }: CheckoutPageProps):
               title={itemTitle}
               description={isOfferAccepted ? 'Accepted Bargain Escrow' : 'Escrow Protected Checkout'}
               disabled={isOfferLocked}
-              className="w-full max-w-md mx-auto py-3 bg-zinc-900 hover:bg-zinc-100 text-zinc-300 hover:text-black border border-zinc-700 hover:border-zinc-100 font-mono text-xs font-semibold uppercase tracking-[0.2em] rounded-lg transition-all duration-300 cursor-pointer flex items-center justify-center space-x-2 disabled:opacity-50 disabled:pointer-events-none"
+              className="w-full max-w-md mx-auto py-3 bg-zinc-900 hover:bg-zinc-100 text-zinc-200 hover:text-black border border-zinc-700 hover:border-zinc-100 text-xs font-bold uppercase tracking-[0.25em] transition-colors duration-200 cursor-pointer flex items-center justify-center space-x-2 disabled:opacity-50 disabled:pointer-events-none"
             />
             {isOfferLocked ? (
-              <p className="text-[11px] font-mono text-amber-400/90 text-center max-w-sm">
+              <p className="text-[11px] text-amber-400/90 text-center max-w-sm tracking-wide">
                 🔒 Button locked until offer is ACCEPTED by seller.
               </p>
             ) : (
-              <p className="text-[11px] font-mono text-zinc-500 text-center max-w-sm">
+              <p className="text-[11px] text-zinc-500 text-center max-w-sm tracking-wide">
                 Secured by 256-bit SSL encryption and backed by Razorpay Escrow.
               </p>
             )}

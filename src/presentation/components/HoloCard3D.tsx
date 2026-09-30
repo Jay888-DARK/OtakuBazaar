@@ -131,37 +131,15 @@ export function HoloCard3D({
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       onClick={onClick}
-      className={`glass-card rounded-3xl ${isAuraActive ? 'energy-aura' : ''} ${className}`.trim()}
+      className={`border border-zinc-800 ${className}`.trim()}
       style={{
         position: 'relative',
-        borderRadius: '24px',
-        backgroundColor: 'var(--surface-glass)',
-        backdropFilter: 'blur(18px) saturate(1.2)',
-        WebkitBackdropFilter: 'blur(18px) saturate(1.2)',
-        border: `1.5px solid ${
-          isAuraActive
-            ? '#F85B1A'
-            : isLocked
-            ? '#FF6584'
-            : tilt.isHovered
-            ? accentColor
-            : 'var(--surface-glass-border)'
-        }`,
-        boxShadow: isAuraActive
-          ? '0 0 35px rgba(248, 91, 26, 0.7), 0 0 50px rgba(201, 148, 62, 0.6)'
-          : isLocked
-          ? '0 20px 40px -15px rgba(255, 101, 132, 0.3)'
-          : tilt.isHovered
-          ? '0 -15px 30px -10px rgba(201, 148, 62, 0.06), 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 8px 24px -4px rgba(0, 0, 0, 0.35)'
-          : 'var(--shelf-shadow)',
-        transform: cardTransform,
-        transition: tilt.isHovered
-          ? 'transform 0.08s ease-out, box-shadow 0.2s ease, border-color 0.2s ease'
-          : 'transform 0.4s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.3s ease, border-color 0.3s ease',
-        transformStyle: 'preserve-3d',
+        borderRadius: '0px',
+        backgroundColor: '#0e0e11',
+        border: '1px solid #27272a',
+        boxShadow: 'none',
         overflow: 'hidden',
         cursor: onClick ? 'pointer' : 'default',
-        willChange: 'transform',
         ...style,
       }}
     >

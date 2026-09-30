@@ -80,7 +80,7 @@ export function CookieConsent(): React.JSX.Element | null {
       role="region"
       aria-label="Cookie & Privacy Consent"
       aria-describedby="cookie-consent-desc"
-      className="fixed bottom-4 right-4 z-50 max-w-lg rounded-xl border border-white/[0.08] bg-[rgba(18,18,22,0.95)] p-5 text-zinc-300 shadow-2xl backdrop-blur-md transition-all duration-300 animate-in fade-in slide-in-from-bottom-5"
+      className="fixed bottom-4 right-4 z-50 max-w-lg border border-zinc-800 bg-[#0e0e11] p-5 text-zinc-300 transition-all duration-200 animate-in fade-in slide-in-from-bottom-5"
     >
       <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
         <span className="text-xs font-bold tracking-widest text-[#EDEDED] uppercase">
@@ -90,7 +90,7 @@ export function CookieConsent(): React.JSX.Element | null {
           type="button"
           onClick={handleDecline}
           aria-label="Close cookie consent banner"
-          className="text-zinc-400 hover:text-white p-1 rounded transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:outline-none"
+          className="text-zinc-400 hover:text-white p-1 transition-colors cursor-pointer focus-visible:ring-1 focus-visible:ring-zinc-400 focus-visible:outline-none"
         >
           <span aria-hidden="true" className="text-sm font-bold">✕</span>
         </button>
@@ -121,14 +121,14 @@ export function CookieConsent(): React.JSX.Element | null {
         <button
           type="button"
           onClick={handleDecline}
-          className="rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-2 text-xs font-medium text-zinc-300 transition hover:bg-zinc-800 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400"
+          className="border border-zinc-700 bg-zinc-900 px-4 py-2 text-xs font-medium uppercase tracking-wider text-zinc-300 transition hover:bg-zinc-800 cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400"
         >
           Decline / Essential Only
         </button>
         <button
           type="button"
           onClick={handleAccept}
-          className="rounded-lg bg-zinc-100 px-4 py-2 text-xs font-semibold text-zinc-950 transition hover:bg-white cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400"
+          className="bg-zinc-100 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-zinc-950 transition hover:bg-white cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400"
         >
           Accept All
         </button>

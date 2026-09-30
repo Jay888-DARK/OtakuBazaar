@@ -76,23 +76,23 @@ export default function LoginPage() {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.02)_0%,_transparent_65%)] pointer-events-none" />
 
       {/* The Vault Authentication Card */}
-      <div className="relative w-full max-w-md bg-[#121214] border border-zinc-800/80 rounded-xl p-8 shadow-2xl z-10">
+      <div className="relative w-full max-w-md bg-[#111114] border border-zinc-800 p-8 z-10">
         {/* Header & Typography */}
         <div className="text-center mb-8">
-          <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-zinc-500 block mb-2">
+          <span className="text-[10px] uppercase tracking-[0.25em] font-semibold text-zinc-500 block mb-2">
             ARCHIVAL ACCESS // VERIFIED IDENTITY
           </span>
-          <h1 className="text-xl font-bold font-mono tracking-wider text-zinc-100 uppercase">
+          <h1 className="text-xl font-extrabold tracking-[0.2em] text-zinc-100 uppercase">
             Collector Vault
           </h1>
-          <p className="text-xs text-zinc-400 font-mono mt-1">
+          <p className="text-xs text-zinc-400 mt-1 font-normal tracking-wide">
             Secure authentication for high-ticket acquisition.
           </p>
         </div>
 
         {/* Error Alert */}
         {errorMessage && (
-          <div className="mb-5 p-3 rounded-lg bg-red-950/60 border border-red-800/80 text-red-200 text-xs text-center font-mono font-medium">
+          <div className="mb-5 p-3 bg-red-950/40 border border-red-800 text-red-200 text-xs text-center font-medium tracking-wide">
             {errorMessage}
           </div>
         )}
@@ -100,7 +100,7 @@ export default function LoginPage() {
         {/* Email & Password Form */}
         <form onSubmit={handleCredentialsLogin}>
           <div>
-            <label className="text-[10px] font-mono uppercase tracking-widest text-zinc-400 block mb-2">
+            <label className="text-[10px] uppercase tracking-[0.2em] font-bold text-zinc-400 block mb-2">
               Collector Email
             </label>
             <input
@@ -109,12 +109,12 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="collector@otakubazaar.com"
-              className="w-full bg-zinc-900/80 border border-zinc-800 rounded-lg px-3.5 py-2.5 text-xs text-zinc-100 placeholder-zinc-600 font-mono focus:border-zinc-400 focus:bg-zinc-900 outline-none transition-colors mb-4"
+              className="w-full bg-zinc-900 border border-zinc-800 px-3.5 py-2.5 text-xs text-zinc-100 placeholder-zinc-600 focus:border-zinc-400 focus:bg-zinc-900 outline-none transition-colors mb-4"
             />
           </div>
 
           <div>
-            <label className="text-[10px] font-mono uppercase tracking-widest text-zinc-400 block mb-2">
+            <label className="text-[10px] uppercase tracking-[0.2em] font-bold text-zinc-400 block mb-2">
               Vault Passphrase
             </label>
             <input
@@ -123,14 +123,14 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••••••"
-              className="w-full bg-zinc-900/80 border border-zinc-800 rounded-lg px-3.5 py-2.5 text-xs text-zinc-100 placeholder-zinc-600 font-mono focus:border-zinc-400 focus:bg-zinc-900 outline-none transition-colors mb-4"
+              className="w-full bg-zinc-900 border border-zinc-800 px-3.5 py-2.5 text-xs text-zinc-100 placeholder-zinc-600 focus:border-zinc-400 focus:bg-zinc-900 outline-none transition-colors mb-4"
             />
           </div>
 
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full py-2.5 bg-zinc-100 hover:bg-white text-black font-mono font-bold text-xs uppercase tracking-wider rounded-lg transition-colors cursor-pointer mt-2 disabled:opacity-50"
+            className="w-full py-2.5 bg-zinc-100 hover:bg-white text-black font-bold text-xs uppercase tracking-[0.2em] transition-colors cursor-pointer mt-2 disabled:opacity-50"
           >
             {isLoading ? 'Authenticating...' : 'Authenticate With Email'}
           </button>
@@ -139,10 +139,10 @@ export default function LoginPage() {
         {/* Understated Hairline Divider */}
         <div className="relative my-6">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-zinc-800/80" />
+            <div className="w-full border-t border-zinc-800" />
           </div>
-          <div className="relative flex justify-center text-[10px] font-mono uppercase tracking-widest">
-            <span className="bg-[#121214] px-3 text-zinc-500">Or continue with</span>
+          <div className="relative flex justify-center text-[10px] uppercase tracking-[0.25em]">
+            <span className="bg-[#111114] px-3 text-zinc-500 font-semibold">Or continue with</span>
           </div>
         </div>
 
@@ -152,7 +152,7 @@ export default function LoginPage() {
           <button
             type="button"
             onClick={() => signIn('google', { callbackUrl: '/' })}
-            className="w-full flex items-center justify-center space-x-3 py-2.5 bg-zinc-900/60 hover:bg-zinc-800/80 border border-zinc-800 hover:border-zinc-700 text-xs font-mono text-zinc-200 rounded-lg transition-colors cursor-pointer"
+            className="w-full flex items-center justify-center space-x-3 py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-700 text-xs font-semibold uppercase tracking-[0.15em] text-zinc-200 transition-colors cursor-pointer"
           >
             <GoogleIcon className="w-4 h-4" />
             <span>Continue with Google</span>
@@ -162,7 +162,7 @@ export default function LoginPage() {
           <button
             type="button"
             onClick={() => signIn('discord', { callbackUrl: '/' })}
-            className="w-full flex items-center justify-center space-x-3 py-2.5 bg-zinc-900/60 hover:bg-zinc-800/80 border border-zinc-800 hover:border-zinc-700 text-xs font-mono text-zinc-200 rounded-lg transition-colors cursor-pointer"
+            className="w-full flex items-center justify-center space-x-3 py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-700 text-xs font-semibold uppercase tracking-[0.15em] text-zinc-200 transition-colors cursor-pointer"
           >
             <DiscordIcon className="w-4 h-4 text-zinc-400" />
             <span>Continue with Discord</span>
@@ -172,7 +172,7 @@ export default function LoginPage() {
           <button
             type="button"
             onClick={() => signIn('facebook', { callbackUrl: '/' })}
-            className="w-full flex items-center justify-center space-x-3 py-2.5 bg-zinc-900/60 hover:bg-zinc-800/80 border border-zinc-800 hover:border-zinc-700 text-xs font-mono text-zinc-200 rounded-lg transition-colors cursor-pointer"
+            className="w-full flex items-center justify-center space-x-3 py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-700 text-xs font-semibold uppercase tracking-[0.15em] text-zinc-200 transition-colors cursor-pointer"
           >
             <FacebookIcon className="w-4 h-4 text-zinc-400" />
             <span>Continue with Facebook</span>
@@ -180,15 +180,15 @@ export default function LoginPage() {
         </div>
 
         {/* Security Micro-Footer */}
-        <p className="text-[10px] font-mono text-zinc-600 text-center tracking-wider mt-6">
+        <p className="text-[10px] text-zinc-600 text-center tracking-[0.2em] font-medium mt-6 uppercase">
           256-BIT ENCRYPTED SESSION • VERIFIED ESCROW PROTOCOL
         </p>
 
         {/* Return to Marketplace Link */}
-        <div className="mt-4 pt-4 border-t border-zinc-800/60 text-center">
+        <div className="mt-4 pt-4 border-t border-zinc-800 text-center">
           <Link
             href="/"
-            className="text-[11px] font-mono text-zinc-500 hover:text-zinc-300 transition-colors no-underline inline-flex items-center gap-1.5"
+            className="text-[11px] uppercase tracking-[0.2em] text-zinc-500 hover:text-zinc-300 transition-colors no-underline inline-flex items-center gap-1.5"
           >
             <span>← Return to Marketplace</span>
           </Link>

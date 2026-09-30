@@ -25,7 +25,7 @@ export function AuthenticityLedger({
 }: AuthenticityLedgerProps): React.JSX.Element {
   return (
     <div
-      className={`w-full bg-[#09090b] border border-zinc-800 rounded-lg p-4 font-mono text-zinc-400 text-[10px] uppercase tracking-widest relative overflow-hidden ${className}`.trim()}
+      className={`w-full bg-[#09090b] border border-zinc-800 p-4 text-zinc-400 text-[10px] uppercase tracking-wider relative overflow-hidden ${className}`.trim()}
     >
       <div className="absolute top-0 right-0 p-2 opacity-10 pointer-events-none">
         <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor">

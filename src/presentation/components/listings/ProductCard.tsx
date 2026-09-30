@@ -64,12 +64,12 @@ export function ProductCard({ product, className = '' }: ProductCardProps): Reac
 
   return (
     <div
-      className={`relative flex flex-col justify-between bg-[#121214] border border-zinc-800/80 hover:border-zinc-600 rounded-xl p-4 transition-all duration-300 shadow-xl group select-none ${className}`.trim()}
+      className={`relative flex flex-col justify-between bg-[#0e0e11] border border-zinc-800 hover:border-zinc-600 p-4 transition-colors group select-none ${className}`.trim()}
     >
       {/* 1. Archival Header (Anti-Truncation LOT Format) */}
-      <div className="flex items-center justify-between text-[10px] font-mono tracking-wider text-zinc-500 mb-2">
+      <div className="flex items-center justify-between text-[10px] font-semibold tracking-wider text-zinc-500 mb-2">
         <span>LOT #{String(product.id).replace(/[^0-9]/g, '').padStart(4, '0').slice(-4) || '0482'} // VAULT ID: JP-TYO</span>
-        <span className="text-[9px] font-mono tracking-wider text-zinc-300 border border-zinc-700 bg-zinc-800/60 px-2 py-0.5 rounded uppercase">
+        <span className="text-[9px] font-bold tracking-[0.15em] text-zinc-300 border border-zinc-700 bg-zinc-900 px-2 py-0.5 uppercase">
           AUTHENTIC
         </span>
       </div>
@@ -81,14 +81,14 @@ export function ProductCard({ product, className = '' }: ProductCardProps): Reac
         className="block no-underline product-thumbnail"
         data-testid="product-thumbnail"
       >
-        <div className="relative w-full aspect-[4/5] overflow-hidden rounded-lg bg-[#0a0a0c] flex items-center justify-center p-3 my-2">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.05)_0%,_transparent_70%)] pointer-events-none" />
+        <div className="relative w-full aspect-[4/5] overflow-hidden bg-[#09090b] border border-zinc-800/80 flex items-center justify-center p-3 my-2">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.03)_0%,_transparent_70%)] pointer-events-none" />
           <Image
             src={imageUrl || '/Firefly_clean.png'}
             alt={product.title || 'Anime Collectible'}
             fill
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-            className="object-contain p-2 relative z-10 drop-shadow-[0_15px_25px_rgba(0,0,0,0.9)] transition-transform duration-700 ease-out group-hover:scale-110"
+            className="object-contain p-2 relative z-10 transition-transform duration-700 ease-out group-hover:scale-110"
             loading="lazy"
           />
         </div>
@@ -97,14 +97,14 @@ export function ProductCard({ product, className = '' }: ProductCardProps): Reac
       {/* 3. Title & Market Intelligence Ticker */}
       <div>
         <Link href={`/products/${product.id}`} className="block no-underline hover:no-underline">
-          <h3 className="text-xs font-bold font-mono tracking-wider text-zinc-100 uppercase truncate mt-2">
+          <h3 className="text-xs font-bold tracking-wider text-zinc-100 uppercase truncate mt-2">
             {product.title}
           </h3>
         </Link>
 
         {/* Secondary Valuation Bar */}
-        <div className="flex items-center justify-between text-[10px] font-mono text-zinc-500 mt-2">
-          <span className="text-emerald-400/90 font-medium">+14.2% (90d)</span>
+        <div className="flex items-center justify-between text-[10px] font-medium tracking-wider text-zinc-500 mt-2">
+          <span className="text-emerald-400 font-semibold">+14.2% (90d)</span>
           <span>{offersCount || 2} ACTIVE BIDS</span>
         </div>
 
@@ -114,12 +114,12 @@ export function ProductCard({ product, className = '' }: ProductCardProps): Reac
             onClick={() => handleOpenBargain(product.id)}
             aria-label={`Tap asking price to make an offer on ${product.title}`}
             data-testid="price-offer-pill"
-            className="flex-1 flex items-center justify-between px-3.5 py-2.5 bg-zinc-900 hover:bg-zinc-100 text-zinc-300 hover:text-black border border-zinc-700 hover:border-zinc-100 font-mono text-[11px] font-semibold uppercase tracking-[0.2em] rounded-lg transition-all duration-300 cursor-pointer group/btn"
+            className="flex-1 flex items-center justify-between px-3.5 py-2.5 bg-zinc-900 hover:bg-zinc-100 text-zinc-300 hover:text-black border border-zinc-700 hover:border-zinc-100 text-[11px] font-semibold uppercase tracking-[0.2em] transition-all duration-200 cursor-pointer group/btn"
           >
-            <span className="text-[10px] uppercase font-mono tracking-widest text-zinc-400 group-hover/btn:text-black">
+            <span className="text-[10px] uppercase font-semibold tracking-widest text-zinc-400 group-hover/btn:text-black">
               Asking / Offer
             </span>
-            <span className="text-sm font-bold font-mono text-zinc-100 group-hover/btn:text-black">
+            <span className="text-sm font-bold uppercase tracking-wider text-zinc-100 group-hover/btn:text-black">
               ₹{displayPrice.toLocaleString('en-IN')}
             </span>
           </button>
@@ -139,7 +139,7 @@ export function ProductCard({ product, className = '' }: ProductCardProps): Reac
                 openCartDrawer();
               }
             }}
-            className="w-10 h-10 rounded-lg bg-zinc-900 hover:bg-zinc-100 text-zinc-300 hover:text-black border border-zinc-700 hover:border-zinc-100 flex items-center justify-center text-sm transition-all duration-300 cursor-pointer shrink-0"
+            className="w-10 h-10 bg-zinc-900 hover:bg-zinc-100 text-zinc-300 hover:text-black border border-zinc-700 hover:border-zinc-100 flex items-center justify-center text-sm transition-all duration-200 cursor-pointer shrink-0"
           >
             🛒
           </button>

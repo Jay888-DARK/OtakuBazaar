@@ -41,22 +41,20 @@ export default function PrivacyPolicyPage() {
         </div>
 
         {/* Header Plaque */}
-        <header className="p-8 sm:p-10 rounded-2xl bg-[#140F0B]/95 border border-amber-900/40 shadow-2xl backdrop-blur-md mb-8 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-[#F85B1A]/10 via-amber-700/5 to-transparent rounded-full blur-2xl pointer-events-none" />
-
+        <header className="p-8 sm:p-10 bg-[#111114] border border-zinc-800 mb-8 relative overflow-hidden">
           <div className="flex items-center gap-2 mb-3">
-            <span className="px-3 py-1 rounded bg-[#F85B1A]/20 border border-[#F85B1A]/40 text-[#F85B1A] text-xs font-mono font-bold uppercase tracking-wider">
+            <span className="px-3 py-1 bg-zinc-900 border border-zinc-700 text-zinc-300 text-xs font-bold uppercase tracking-[0.2em]">
               Legal & Privacy Charter
             </span>
-            <span className="text-xs text-stone-400 font-mono">
+            <span className="text-xs text-zinc-400 uppercase tracking-wider">
               Last Updated: March 2026 • Production Edition
             </span>
           </div>
 
-          <h1 className="text-2xl sm:text-3xl font-bold font-mono text-zinc-100 uppercase tracking-wider mb-3">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-zinc-100 uppercase tracking-[0.15em] mb-3">
             Privacy Policy & Data Sovereignty
           </h1>
-          <p className="text-sm sm:text-base text-stone-300 leading-relaxed max-w-2xl">
+          <p className="text-sm sm:text-base text-zinc-300 leading-relaxed max-w-2xl font-normal">
             OtakuBazaar is engineered to protect collector anonymity and transactional integrity. We uphold the strictest standards of data minimization, transparent processing, and zero third-party data monetization.
           </p>
         </header>

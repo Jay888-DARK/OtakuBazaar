@@ -268,12 +268,12 @@ export function CurioBox({
 
             {/* 15-Minute Checkout Lock Screen */}
             {isLocked && (
-              <div className="absolute inset-0 backdrop-blur-sm flex flex-col items-center justify-center z-30 bg-black/75">
+              <div className="absolute inset-0 flex flex-col items-center justify-center z-30 bg-black/85">
                 <span className="text-2xl mb-1">🔒</span>
-                <span className="text-[10px] font-black text-white uppercase tracking-wider font-mono">
+                <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">
                   Checkout Lock Engaged
                 </span>
-                <span className="text-sm font-black text-amber-400 mt-0.5">
+                <span className="text-sm font-black text-amber-400 mt-0.5 tracking-wider">
                   {formatTimer(lockRemainingSeconds)}
                 </span>
               </div>
@@ -282,7 +282,7 @@ export function CurioBox({
 
           {/* Title and Collector Attribution */}
           <div className="mt-2.5 mb-1 z-10 px-1 text-center">
-            <h3 className="font-mono text-sm sm:text-base font-bold text-[#F0E8DA] group-hover/thumb:text-[#E8C36A] transition-colors m-0 truncate">
+            <h3 className="text-sm sm:text-base font-extrabold text-[#F0E8DA] group-hover/thumb:text-[#E8C36A] transition-colors m-0 truncate tracking-wide">
               {title || 'Untitled Collectible'}
             </h3>
             <p className="text-[10px] text-[#A89880] mt-0.5 m-0 truncate">
@@ -327,12 +327,12 @@ export function CurioBox({
 
             {/* 15-Minute Checkout Lock Screen */}
             {isLocked && (
-              <div className="absolute inset-0 backdrop-blur-sm flex flex-col items-center justify-center z-30 bg-black/75">
+              <div className="absolute inset-0 flex flex-col items-center justify-center z-30 bg-black/85">
                 <span className="text-2xl mb-1">🔒</span>
-                <span className="text-[10px] font-black text-white uppercase tracking-wider font-mono">
+                <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">
                   Checkout Lock Engaged
                 </span>
-                <span className="text-sm font-black text-amber-400 mt-0.5">
+                <span className="text-sm font-black text-amber-400 mt-0.5 tracking-wider">
                   {formatTimer(lockRemainingSeconds)}
                 </span>
               </div>
@@ -341,7 +341,7 @@ export function CurioBox({
 
           {/* Title and Collector Attribution */}
           <div className="mt-2.5 mb-1 z-10 px-1 text-center">
-            <h3 className="font-mono text-sm sm:text-base font-bold text-[#F0E8DA] group-hover:text-[#E8C36A] transition-colors m-0 truncate">
+            <h3 className="text-sm sm:text-base font-extrabold text-[#F0E8DA] group-hover:text-[#E8C36A] transition-colors m-0 truncate tracking-wide">
               {title || 'Untitled Collectible'}
             </h3>
             <p className="text-[10px] text-[#A89880] mt-0.5 m-0 truncate">
@@ -352,7 +352,7 @@ export function CurioBox({
       )}
 
       {/* Glass Shelf Divider */}
-      <div className="curio-glass-shelf my-2 w-full rounded-full" />
+      <div className="curio-glass-shelf my-2 w-full" />
 
       {/* Bottom Shelf Rail: Interactive Price Badge & Adjacent Add to Cart Button */}
       <div className="flex items-center gap-2 pt-1 z-10 select-none mt-1">

@@ -239,14 +239,14 @@ export function SettingsModal({ isOpen, onClose, isSoundOn, onToggleSound }: Set
           }}
         >
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-[#C9943E]/15 border border-[#C9943E]/30 flex items-center justify-center text-[#E8C36A]">
+            <div className="w-8 h-8 bg-zinc-900 border border-zinc-700 flex items-center justify-center text-zinc-300">
               ⚙
             </div>
             <div>
-              <h2 id="settings-title" className="text-base font-bold tracking-wide m-0 text-zinc-100 font-mono uppercase">
+              <h2 id="settings-title" className="text-base font-extrabold tracking-[0.15em] m-0 text-zinc-100 uppercase">
                 PREFERENCES & VAULT SETTINGS
               </h2>
-              <p className="text-[10px] font-bold text-[#A89880] tracking-wider uppercase m-0 mt-0.5">
+              <p className="text-[10px] font-bold text-zinc-400 tracking-[0.2em] uppercase m-0 mt-0.5">
                 ESCROW DIRECTIVES & AUDIO ATMOSPHERE
               </p>
             </div>
@@ -254,7 +254,7 @@ export function SettingsModal({ isOpen, onClose, isSoundOn, onToggleSound }: Set
           <button
             type="button"
             onClick={onClose}
-            className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/10 text-[#A89880] hover:text-[#E8C36A] transition-colors border border-stone-800 cursor-pointer"
+            className="w-8 h-8 flex items-center justify-center hover:bg-white/10 text-zinc-400 hover:text-zinc-100 transition-colors border border-zinc-800 cursor-pointer"
             aria-label="Close Settings"
           >
             ✕
@@ -466,7 +466,7 @@ export function SettingsModal({ isOpen, onClose, isSoundOn, onToggleSound }: Set
               <span className="font-black uppercase tracking-wider text-rose-400 flex items-center gap-1.5">
                 <span aria-hidden="true">⚠️</span> Privacy &amp; Data Sovereignty
               </span>
-              <span className="text-[10px] text-rose-300 font-mono">Irreversible Action</span>
+              <span className="text-[10px] text-rose-300 uppercase tracking-widest font-semibold">Irreversible Action</span>
             </div>
 
             <p className="text-[11px] text-stone-300 m-0 leading-relaxed">

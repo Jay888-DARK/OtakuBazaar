@@ -60,18 +60,14 @@ export function CookieBanner(): React.JSX.Element | null {
     <aside
       role="region"
       aria-label="Cookie Consent & Escrow Privacy Notice"
-      className="z-[999] fixed bottom-4 left-4 right-4 max-w-xl mx-auto p-4 sm:p-5 rounded-2xl bg-[#140F0B]/95 backdrop-blur-md border border-[#C9943E]/40 shadow-2xl transition-all duration-300"
-      style={{
-        boxShadow:
-          '0 20px 40px -10px rgba(0, 0, 0, 0.85), 0 0 25px rgba(201, 148, 62, 0.2)',
-      }}
+      className="z-[999] fixed bottom-4 left-4 right-4 max-w-xl mx-auto p-4 sm:p-5 bg-[#111114] border border-zinc-800 transition-all duration-300"
     >
       <div className="flex flex-col gap-3">
         {/* Top Bar: Icon + Badge + Close 'X' */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-base">⛩️</span>
-            <span className="text-xs font-mono font-bold tracking-wider text-amber-300 uppercase">
+            <span className="text-base">🛡️</span>
+            <span className="text-xs font-bold tracking-[0.2em] text-zinc-200 uppercase">
               Collector Escrow Privacy
             </span>
           </div>
@@ -80,37 +76,37 @@ export function CookieBanner(): React.JSX.Element | null {
             type="button"
             onClick={handleDecline}
             aria-label="Close banner without tracking"
-            className="text-[#A89880] hover:text-[#F0E8DA] text-sm p-1 rounded transition-colors cursor-pointer"
+            className="text-zinc-400 hover:text-zinc-100 text-sm p-1 transition-colors cursor-pointer"
           >
             ✕
           </button>
         </div>
 
         {/* Message & Links */}
-        <p className="text-xs text-[#C4B7A3] leading-relaxed">
+        <p className="text-xs text-zinc-400 leading-relaxed font-normal tracking-wide">
           OtakuBazaar uses essential cryptographic session cookies to power our 15-minute checkout locks and 48-hour inspection escrow vault. Learn more in our{' '}
           <Link
             href="/privacy"
-            className="text-amber-300 hover:text-[#F85B1A] underline font-semibold transition-colors"
+            className="text-zinc-200 hover:text-white underline font-semibold transition-colors"
           >
             Privacy Policy
           </Link>{' '}
           and{' '}
           <Link
             href="/terms"
-            className="text-amber-300 hover:text-[#F85B1A] underline font-semibold transition-colors"
+            className="text-zinc-200 hover:text-white underline font-semibold transition-colors"
           >
             Terms of Service
           </Link>
           .
         </p>
 
-        {/* Action Buttons: Sleek Dark Wood Decline & Vermilion (#F85B1A) Accept */}
+        {/* Action Buttons */}
         <div className="flex items-center justify-end gap-2.5 pt-1">
           <button
             type="button"
             onClick={handleDecline}
-            className="px-3.5 py-1.5 text-xs font-semibold text-[#A89880] hover:text-white bg-[#1A1410] hover:bg-[#2A2118] border border-amber-900/40 rounded-xl transition-all cursor-pointer"
+            className="px-3.5 py-1.5 text-xs font-semibold text-zinc-400 hover:text-white bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 uppercase tracking-widest transition-colors cursor-pointer"
           >
             Essential Only
           </button>
@@ -118,11 +114,9 @@ export function CookieBanner(): React.JSX.Element | null {
           <button
             type="button"
             onClick={handleAccept}
-            className="px-5 py-1.5 text-xs font-bold text-white rounded-xl transition-all shadow-md hover:brightness-110 active:scale-95 cursor-pointer flex items-center gap-1.5"
-            style={{ backgroundColor: '#F85B1A' }}
+            className="px-5 py-1.5 text-xs font-bold text-black bg-zinc-100 hover:bg-white uppercase tracking-widest transition-colors cursor-pointer flex items-center gap-1.5"
           >
             <span>Accept All</span>
-            <span className="text-[10px]">⚔️</span>
           </button>
         </div>
       </div>

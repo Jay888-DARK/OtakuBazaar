@@ -144,16 +144,16 @@ export default function ProfilePage() {
         {/* ============================================================= */}
         <div className="bento-big-box mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div className="flex items-center gap-5">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-[#F85B1A] flex items-center justify-center text-3xl sm:text-4xl shadow-md border border-white/30 text-white">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 bg-zinc-900 flex items-center justify-center text-3xl sm:text-4xl border border-zinc-700 text-zinc-100">
               {dashboardData?.sellerAvatar ?? (activePersona === 'SELLER' ? '🔥' : '🗡️')}
             </div>
 
             <div>
               <div className="flex items-center gap-3">
-                <h1 className="font-mono text-xl sm:text-2xl font-bold tracking-wider uppercase m-0 text-zinc-100">
+                <h1 className="text-xl sm:text-2xl font-extrabold tracking-[0.15em] uppercase m-0 text-zinc-100">
                   {dashboardData?.sellerName ?? (activePersona === 'SELLER' ? 'Kyojuro Rengoku' : 'Tanjiro Kamado')}
                 </h1>
-                <span className="text-[10px] font-black bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                <span className="text-[10px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 px-2.5 py-0.5 uppercase tracking-widest">
                   Verified Collector
                 </span>
               </div>

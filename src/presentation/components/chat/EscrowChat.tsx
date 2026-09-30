@@ -137,45 +137,45 @@ export function EscrowChat({
       {/* ----------------------------------------------------------------- */}
       <header className="p-3.5 sm:p-4 bg-[#1A1410] border-b border-[#16120e] flex items-center justify-between z-10">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-black/40 border border-amber-900/40 flex items-center justify-center text-lg">
-            ⛩️
+          <div className="w-9 h-9 bg-zinc-900 border border-zinc-700 flex items-center justify-center text-lg">
+            🛡️
           </div>
           <div className="flex flex-col">
-            <h3 className="text-xs sm:text-sm font-bold font-mono text-zinc-200 truncate max-w-[220px] sm:max-w-xs uppercase tracking-wider">
+            <h3 className="text-xs sm:text-sm font-extrabold text-zinc-100 truncate max-w-[220px] sm:max-w-xs uppercase tracking-[0.15em]">
               {orderTitle}
             </h3>
-            <span className="text-[10px] text-[#A89880] flex items-center gap-1.5 font-mono">
+            <span className="text-[10px] text-zinc-400 flex items-center gap-1.5 uppercase tracking-wider">
               <span>Order #{orderId.substring(0, 10)}</span>
               <span>•</span>
-              <span className="text-amber-400 font-bold">48H Escrow Active</span>
+              <span className="text-emerald-400 font-bold">48H Escrow Active</span>
             </span>
           </div>
         </div>
 
         {/* Live Pusher Presence Indicator */}
-        <div className="flex items-center gap-2 px-2.5 py-1 rounded-full bg-black/50 border border-amber-900/40">
+        <div className="flex items-center gap-2 px-2.5 py-1 bg-zinc-900 border border-zinc-700">
           <span
-            className={`w-2 h-2 rounded-full ${
+            className={`w-2 h-2 ${
               isLiveConnected ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'
             }`}
           />
-          <span className="text-[10px] font-mono font-bold tracking-wider text-amber-300 uppercase">
+          <span className="text-[10px] font-bold tracking-[0.2em] text-zinc-200 uppercase">
             {isLiveConnected ? 'LIVE SYNC' : 'ESCROW READY'}
           </span>
         </div>
       </header>
 
       {/* ----------------------------------------------------------------- */}
-      {/* Messages Scroll Container: bg-[#0a0806] with #16120e borders       */}
+      {/* Messages Scroll Container                                         */}
       {/* ----------------------------------------------------------------- */}
-      <main className="flex-1 overflow-y-auto p-4 space-y-3 bg-[#0a0806] border-y border-[#16120e] scrollbar-thin">
+      <main className="flex-1 overflow-y-auto p-4 space-y-3 bg-[#0c0c0e] border-y border-zinc-800 scrollbar-thin">
         {messages.length === 0 ? (
-          <div className="h-full flex flex-col items-center justify-center text-center p-6 text-[#A89880]">
+          <div className="h-full flex flex-col items-center justify-center text-center p-6 text-zinc-400">
             <span className="text-2xl mb-2">💬</span>
-            <p className="text-xs font-bold text-zinc-200 font-mono mb-1 uppercase tracking-wider">
+            <p className="text-xs font-bold text-zinc-200 mb-1 uppercase tracking-[0.2em]">
               Encrypted Post-Bid Escrow Channel
             </p>
-            <p className="text-[11px] max-w-xs leading-relaxed">
+            <p className="text-[11px] max-w-xs leading-relaxed font-normal">
               Coordinate collector packaging, unboxing tracking, and physical inspection milestones directly with {counterpartyName}.
             </p>
           </div>
@@ -195,22 +195,22 @@ export function EscrowChat({
                 className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}
               >
                 {/* Sender Tag */}
-                <span className="text-[9px] text-[#A89880] mb-1 px-1 font-mono">
+                <span className="text-[9px] text-zinc-400 mb-1 px-1 uppercase tracking-wider font-medium">
                   {isMe ? 'You (Verified)' : msg.sender?.displayName || msg.sender?.name || counterpartyName}
                 </span>
 
-                {/* Message Bubble: #F85B1A for current user, zinc-800 for other */}
+                {/* Message Bubble */}
                 <div
-                  className={`p-3 rounded-2xl text-xs max-w-[82%] sm:max-w-[75%] break-words leading-relaxed shadow-md ${
+                  className={`p-3 text-xs max-w-[82%] sm:max-w-[75%] break-words leading-relaxed border ${
                     isMe
-                      ? 'bg-[#F85B1A] text-white rounded-tr-none'
-                      : 'bg-zinc-800 text-zinc-100 border border-zinc-700/50 rounded-tl-none'
+                      ? 'bg-zinc-100 text-black border-zinc-100'
+                      : 'bg-zinc-900 text-zinc-100 border-zinc-800'
                   }`}
                 >
                   <p className="whitespace-pre-wrap">{msg.text}</p>
                   <div
-                    className={`text-[9px] mt-1 text-right font-mono ${
-                      isMe ? 'text-orange-200/80' : 'text-zinc-400'
+                    className={`text-[9px] mt-1 text-right uppercase tracking-wider ${
+                      isMe ? 'text-zinc-600' : 'text-zinc-400'
                     }`}
                   >
                     {timeString}
@@ -228,7 +228,7 @@ export function EscrowChat({
       {/* ----------------------------------------------------------------- */}
       <form
         onSubmit={handleSendMessage}
-        className="p-3 sm:p-4 bg-[#140F0B] flex items-center gap-2.5 z-10"
+        className="p-3 sm:p-4 bg-[#111114] flex items-center gap-2.5 z-10 border-t border-zinc-800"
       >
         <input
           type="text"
@@ -236,16 +236,15 @@ export function EscrowChat({
           onChange={(e) => setInputText(e.target.value)}
           placeholder={`Message ${counterpartyName} regarding escrow order...`}
           disabled={isSending}
-          className="flex-1 px-4 py-2.5 rounded-xl bg-black/60 border border-amber-900/40 focus:border-[#F85B1A] focus:outline-none text-xs text-[#F0E8DA] placeholder:text-[#A89880]/60 transition-all"
+          className="flex-1 px-4 py-2.5 bg-zinc-900 border border-zinc-800 focus:border-zinc-500 focus:outline-none text-xs text-zinc-100 placeholder:text-zinc-500 transition-colors"
         />
 
         <button
           type="submit"
           disabled={isSending || inputText.trim().length === 0}
-          className="px-5 py-2.5 rounded-xl bg-[#F85B1A] hover:brightness-110 active:scale-95 text-white font-bold text-xs tracking-wider uppercase shadow-md transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5 cursor-pointer shrink-0"
+          className="px-5 py-2.5 bg-zinc-100 hover:bg-white text-black font-bold text-xs tracking-[0.2em] uppercase transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5 cursor-pointer shrink-0"
         >
           <span>{isSending ? 'Sending...' : 'Send'}</span>
-          <span className="text-[10px]">⚔️</span>
         </button>
       </form>
     </div>

@@ -107,7 +107,7 @@ export function HoldButton({
         }
       }}
       style={{ backgroundColor }}
-      className={`relative overflow-hidden select-none font-semibold uppercase rounded-lg transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${sizeClasses} ${className}`}
+      className={`relative overflow-hidden select-none font-semibold uppercase tracking-wider transition-colors cursor-pointer border border-zinc-700 disabled:opacity-50 disabled:cursor-not-allowed ${sizeClasses} ${className}`}
     >
       {/* Progress Fill Layer */}
       <div

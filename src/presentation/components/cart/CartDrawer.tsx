@@ -191,21 +191,21 @@ export function CartDrawer(): React.JSX.Element | null {
       >
         {/* Backdrop */}
         <div
-          className="absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity duration-300 animate-in fade-in"
+          className="absolute inset-0 bg-black/80 transition-opacity duration-300 animate-in fade-in"
           onClick={() => setIsOpen(false)}
         />
 
         <div className="fixed inset-y-0 right-0 max-w-full flex pl-10">
-          <div className="w-screen max-w-md bg-[#09090b] border-l border-zinc-800 text-zinc-100 shadow-2xl flex flex-col transform transition-transform ease-out duration-300 animate-in slide-in-from-right">
+          <div className="w-screen max-w-md bg-[#09090b] border-l border-zinc-800 text-zinc-100 flex flex-col transform transition-transform ease-out duration-300 animate-in slide-in-from-right">
             {/* Header */}
-            <div className="p-4 border-b border-zinc-800/80 flex items-center justify-between bg-[#121214]">
+            <div className="p-4 border-b border-zinc-800 flex items-center justify-between bg-[#0e0e11]">
               <div className="flex items-center gap-2.5">
                 <span className="text-lg">🛒</span>
                 <div>
-                  <h2 id="cart-drawer-title" className="text-sm font-mono font-bold text-zinc-100 uppercase tracking-widest">
+                  <h2 id="cart-drawer-title" className="text-sm font-bold text-zinc-100 uppercase tracking-widest">
                     Collector Vault Cart
                   </h2>
-                  <p className="text-[10px] font-mono text-zinc-500 m-0">
+                  <p className="text-[10px] text-zinc-500 m-0 uppercase tracking-wider">
                     {cartItems.length} {cartItems.length === 1 ? 'figure' : 'figures'} // 48-Hour Escrow Protected
                   </p>
                 </div>
@@ -214,7 +214,7 @@ export function CartDrawer(): React.JSX.Element | null {
                 type="button"
                 onClick={() => setIsOpen(false)}
                 aria-label="Close cart drawer"
-                className="w-7 h-7 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-600 flex items-center justify-center text-xs transition-colors cursor-pointer"
+                className="w-7 h-7 bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-600 flex items-center justify-center text-xs transition-colors cursor-pointer"
               >
                 ✕
               </button>
@@ -223,18 +223,18 @@ export function CartDrawer(): React.JSX.Element | null {
             {/* Cart Items List */}
             <div className="flex-1 overflow-y-auto p-4 space-y-3">
               {loading ? (
-                <div className="flex flex-col items-center justify-center py-16 text-zinc-500 text-xs font-mono">
-                  <div className="w-5 h-5 border-2 border-zinc-400 border-t-transparent rounded-full animate-spin mb-2" />
+                <div className="flex flex-col items-center justify-center py-16 text-zinc-500 text-xs uppercase tracking-wider">
+                  <div className="w-5 h-5 border-2 border-zinc-400 border-t-transparent animate-spin mb-2" />
                   <span>Loading vault cart...</span>
                 </div>
               ) : cartItems.length === 0 ? (
-                <div className="text-center py-16 space-y-3 font-mono">
+                <div className="text-center py-16 space-y-3">
                   <span className="text-3xl block">🏺</span>
                   <p className="text-zinc-500 text-xs uppercase tracking-wider">Your collector cart is currently empty.</p>
                   <button
                     type="button"
                     onClick={() => setIsOpen(false)}
-                    className="px-4 py-2 rounded-lg bg-zinc-900 border border-zinc-700 text-zinc-300 text-xs font-semibold hover:text-white hover:bg-zinc-800 transition-colors cursor-pointer uppercase tracking-wider"
+                    className="px-4 py-2 bg-zinc-900 border border-zinc-700 text-zinc-300 text-xs font-semibold hover:text-white hover:bg-zinc-800 transition-colors cursor-pointer uppercase tracking-wider"
                   >
                     Browse Market Grails
                   </button>
@@ -249,11 +249,11 @@ export function CartDrawer(): React.JSX.Element | null {
                     <div
                       key={item.id}
                       onClick={() => setActiveNegotiateProduct(item.product)}
-                      className="bg-[#121214] border border-zinc-800/80 rounded-lg p-3 hover:border-zinc-700 transition-colors cursor-pointer group relative"
+                      className="bg-[#0e0e11] border border-zinc-800 p-3 hover:border-zinc-600 transition-colors cursor-pointer group relative"
                     >
                       <div className="flex gap-3 items-start">
                         {/* Thumbnail */}
-                        <div className="relative w-16 h-16 rounded-md bg-[#0a0a0c] border border-zinc-800 shrink-0 overflow-hidden flex items-center justify-center p-1">
+                        <div className="relative w-16 h-16 bg-[#09090b] border border-zinc-800 shrink-0 overflow-hidden flex items-center justify-center p-1">
                           <Image
                             src={item.product.imageUrls || '/Firefly_clean.png'}
                             alt={item.product.title}
@@ -267,22 +267,22 @@ export function CartDrawer(): React.JSX.Element | null {
                         {/* Title & Asking Price */}
                         <div className="flex-1 min-w-0">
                           <div className="flex justify-between items-start">
-                            <h3 className="text-xs font-mono font-bold text-zinc-200 truncate pr-2 group-hover:text-zinc-100 transition-colors">
+                            <h3 className="text-xs font-bold text-zinc-200 truncate pr-2 group-hover:text-zinc-100 transition-colors uppercase tracking-wider">
                               {item.product.title}
                             </h3>
                             <button
                               type="button"
                               onClick={(e) => handleRemove(item.id, e)}
                               aria-label="Remove item"
-                              className="text-[11px] text-zinc-500 hover:text-red-400 p-0.5 transition-colors cursor-pointer font-mono"
+                              className="text-[11px] text-zinc-500 hover:text-red-400 p-0.5 transition-colors cursor-pointer"
                             >
                               ✕
                             </button>
                           </div>
 
                           <div className="flex items-baseline gap-2 mt-1">
-                            <span className="text-[11px] font-mono text-zinc-500">Asking:</span>
-                            <span className="text-xs font-mono font-bold text-zinc-100">
+                            <span className="text-[11px] text-zinc-500 uppercase tracking-wider">Asking:</span>
+                            <span className="text-xs font-bold text-zinc-100 uppercase tracking-wider">
                               ₹{item.product.price.toLocaleString('en-IN')}
                             </span>
                           </div>
@@ -290,12 +290,12 @@ export function CartDrawer(): React.JSX.Element | null {
                           {/* Current Bid Status Pill */}
                           <div className="mt-2">
                             {isAccepted ? (
-                              <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-emerald-950/60 border border-emerald-500/40 text-emerald-300 font-mono text-[10px] uppercase tracking-wider">
+                              <div className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-emerald-950/60 border border-emerald-500/40 text-emerald-300 text-[10px] uppercase tracking-wider font-semibold">
                                 <span>✓</span>
                                 <span>Offer Accepted: ₹{offer.offeredPrice.toLocaleString('en-IN')}</span>
                               </div>
                             ) : isPending ? (
-                              <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-zinc-800/80 border border-zinc-700 text-zinc-300 font-mono text-[10px] uppercase tracking-wider">
+                              <div className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-zinc-900 border border-zinc-700 text-zinc-300 text-[10px] uppercase tracking-wider font-medium">
                                 <span>⏱</span>
                                 <span>
                                   Offer: ₹{offer.offeredPrice.toLocaleString('en-IN')} ({formatCountdown(offer.expiresAt)})
@@ -308,7 +308,7 @@ export function CartDrawer(): React.JSX.Element | null {
                                   e.stopPropagation();
                                   setActiveNegotiateProduct(item.product);
                                 }}
-                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white border border-zinc-700 font-mono text-[10px] uppercase tracking-wider transition-colors cursor-pointer"
+                                className="inline-flex items-center gap-1 px-2.5 py-1 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white border border-zinc-700 text-[10px] uppercase tracking-wider font-semibold transition-colors cursor-pointer"
                               >
                                 <span>🤝</span>
                                 <span>Make Offer / Bargain</span>
@@ -325,26 +325,26 @@ export function CartDrawer(): React.JSX.Element | null {
 
             {/* Subtotal & Escrow Checkout Footer */}
             {cartItems.length > 0 && (
-              <div className="p-4 border-t border-zinc-800/80 bg-[#121214] space-y-3">
-                <div className="flex justify-between items-baseline text-xs font-mono">
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Cart Total</span>
-                  <span className="text-lg font-mono font-bold text-zinc-100">
+              <div className="p-4 border-t border-zinc-800 bg-[#0e0e11] space-y-3">
+                <div className="flex justify-between items-baseline text-xs uppercase tracking-wider">
+                  <span className="text-[10px] uppercase tracking-wider text-zinc-500 font-medium">Cart Total</span>
+                  <span className="text-lg font-bold text-zinc-100 tracking-wider">
                     ₹{subtotal.toLocaleString('en-IN')}
                   </span>
                 </div>
 
-                <div className="p-2.5 rounded-lg bg-[#0a0a0c] border border-zinc-800 flex items-center justify-between text-[10px] font-mono text-zinc-400">
+                <div className="p-2.5 bg-[#09090b] border border-zinc-800 flex items-center justify-between text-[10px] text-zinc-400 uppercase tracking-wider">
                   <span className="flex items-center gap-1.5">
                     <span>🛡️</span>
                     <span>48-Hour Inspection Escrow Protection</span>
                   </span>
-                  <span className="text-emerald-400 font-medium">INCLUDED</span>
+                  <span className="text-emerald-400 font-semibold">INCLUDED</span>
                 </div>
 
                 <button
                   type="button"
                   onClick={handleCheckout}
-                  className="w-full py-2.5 bg-zinc-900 hover:bg-zinc-100 text-zinc-300 hover:text-black border border-zinc-700 hover:border-zinc-100 font-mono text-[11px] font-semibold uppercase tracking-[0.2em] rounded-lg transition-all duration-300 cursor-pointer flex items-center justify-center space-x-2"
+                  className="w-full py-2.5 bg-zinc-900 hover:bg-zinc-100 text-zinc-300 hover:text-black border border-zinc-700 hover:border-zinc-100 text-[11px] font-semibold uppercase tracking-[0.2em] transition-all duration-200 cursor-pointer flex items-center justify-center space-x-2"
                 >
                   <span>Proceed to Escrow Checkout →</span>
                 </button>
