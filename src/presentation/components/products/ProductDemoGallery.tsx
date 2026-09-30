@@ -66,13 +66,13 @@ export function ProductDemoGallery({
   return (
     <div className="w-full border border-[#27272a] bg-[#0c0c0e] select-none">
       {/* Top Media Masthead & Mode Switcher */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[#27272a] bg-[#09090b] px-4 py-3 gap-2">
-        <div className="flex items-center gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[#27272a] bg-[#09090b] px-4 py-2.5 gap-2">
+        <div className="flex items-center gap-2">
           <span className="text-[9px] uppercase tracking-[0.25em] text-zinc-400 font-bold border border-zinc-700 bg-zinc-900 px-2 py-0.5">
-            REAL PHYSICAL DEMO
+            OPTICAL TURNAROUND
           </span>
           <span className="text-[9px] uppercase tracking-[0.2em] text-zinc-500 font-medium">
-            OPTICAL VAULT VERIFICATION • {lotId}
+            360° LAB TELEMETRY • {lotId}
           </span>
         </div>
 
@@ -81,7 +81,7 @@ export function ProductDemoGallery({
           <button
             type="button"
             onClick={() => setActiveMode('360')}
-            className={`px-3 py-1 text-[10px] uppercase tracking-[0.16em] border transition-none cursor-pointer ${
+            className={`px-2.5 py-1 text-[9px] uppercase tracking-[0.16em] border transition-none cursor-pointer rounded-none ${
               activeMode === '360'
                 ? 'bg-zinc-100 text-black border-zinc-100 font-bold'
                 : 'bg-transparent text-zinc-400 border-zinc-800 hover:text-zinc-200 hover:border-zinc-600 font-medium'
@@ -93,19 +93,19 @@ export function ProductDemoGallery({
           <button
             type="button"
             onClick={() => setActiveMode('VIDEO')}
-            className={`px-3 py-1 text-[10px] uppercase tracking-[0.16em] border transition-none cursor-pointer ${
+            className={`px-2.5 py-1 text-[9px] uppercase tracking-[0.16em] border transition-none cursor-pointer rounded-none ${
               activeMode === 'VIDEO'
                 ? 'bg-zinc-100 text-black border-zinc-100 font-bold'
                 : 'bg-transparent text-zinc-400 border-zinc-800 hover:text-zinc-200 hover:border-zinc-600 font-medium'
             }`}
           >
-            [ VIDEO INSPECTION ]
+            [ 60FPS VIDEO ]
           </button>
 
           <button
             type="button"
             onClick={() => setActiveMode('FACTORY')}
-            className={`px-3 py-1 text-[10px] uppercase tracking-[0.16em] border transition-none cursor-pointer ${
+            className={`px-2.5 py-1 text-[9px] uppercase tracking-[0.16em] border transition-none cursor-pointer rounded-none ${
               activeMode === 'FACTORY'
                 ? 'bg-zinc-100 text-black border-zinc-100 font-bold'
                 : 'bg-transparent text-zinc-400 border-zinc-800 hover:text-zinc-200 hover:border-zinc-600 font-medium'

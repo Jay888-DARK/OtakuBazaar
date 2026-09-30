@@ -73,52 +73,82 @@ export function CategoryBarSkeleton(): React.JSX.Element {
   );
 }
 
-/** Detailed Product View Skeleton */
+/** Detailed Product View Skeleton: Strict Auction Archive Grid (70:30 Split) */
 export function ProductDetailSkeleton(): React.JSX.Element {
   return (
-    <div className="border border-[#27272a] bg-[#0e0e11] p-6 sm:p-10 grid grid-cols-1 md:grid-cols-2 gap-8 items-start animate-pulse">
-      {/* Left Column: Media Stage Placeholder */}
-      <div className="space-y-3">
-        <div className="relative h-80 sm:h-96 w-full bg-[#121215] border border-[#27272a] flex items-center justify-center">
-          <div className="w-16 h-16 border border-[#27272a] bg-[#18181c]" />
+    <div className="border border-[#27272a] bg-[#0c0c0e] select-none animate-pulse">
+      {/* Masthead Placeholder */}
+      <div className="border-b border-[#27272a] p-6 bg-[#0a0a0c] flex justify-between items-center">
+        <div className="space-y-2">
+          <div className="h-3 w-40 bg-[#161619]" />
+          <div className="h-6 w-80 bg-[#1c1c20]" />
         </div>
-        {/* Media Thumbnails Row Placeholder */}
-        <div className="flex gap-2">
-          {Array.from({ length: 4 }).map((_, idx) => (
-            <div key={`skeleton-thumb-${idx}`} className="w-14 h-14 bg-[#141418] border border-[#27272a]" />
-          ))}
-        </div>
+        <div className="h-6 w-32 bg-[#161619] border border-[#27272a]" />
       </div>
 
-      {/* Right Column: Provenance & Purchase Box Placeholder */}
-      <div className="space-y-5">
-        <div className="space-y-2">
-          <div className="h-2.5 w-32 bg-[#18181c]" />
-          <div className="h-6 w-5/6 bg-[#1c1c20]" />
-          <div className="h-3 w-full bg-[#141418]" />
-          <div className="h-3 w-4/5 bg-[#141418]" />
-        </div>
+      {/* Strict 2-Column Technical Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-[#27272a]">
+        {/* Left Hero Cell (7-8 cols): Primary Image + Bottom Title & Valuation */}
+        <div className="lg:col-span-8 flex flex-col justify-between bg-[#09090b]">
+          <div className="relative w-full aspect-[4/3] sm:aspect-[16/11] bg-[#070709] border-b border-[#27272a] flex items-center justify-center">
+            <div className="w-20 h-20 bg-[#141418] border border-[#27272a]" />
+          </div>
 
-        {/* Valuation Plaque Placeholder */}
-        <div className="p-4 bg-[#09090b] border border-[#27272a] flex justify-between items-baseline">
-          <div className="h-6 w-24 bg-[#18181c]" />
-          <div className="h-3 w-28 bg-[#18181c]" />
-        </div>
-
-        {/* Specifications Matrix Placeholder */}
-        <div className="border-t border-[#27272a] pt-4 space-y-2.5">
-          {Array.from({ length: 4 }).map((_, idx) => (
-            <div key={`skeleton-spec-${idx}`} className="flex justify-between">
-              <div className="h-2.5 w-20 bg-[#161619]" />
-              <div className="h-2.5 w-32 bg-[#1c1c20]" />
+          {/* Anchored Bottom Title & Valuation */}
+          <div className="p-6 sm:p-8 space-y-4">
+            <div className="flex justify-between items-end">
+              <div className="space-y-2">
+                <div className="h-3 w-44 bg-[#161619]" />
+                <div className="h-7 w-96 bg-[#1c1c20]" />
+              </div>
+              <div className="h-8 w-32 bg-[#161619]" />
             </div>
-          ))}
+            <div className="grid grid-cols-4 gap-2 pt-2 border-t border-[#27272a]">
+              {Array.from({ length: 4 }).map((_, idx) => (
+                <div key={`skel-spec-${idx}`} className="h-10 bg-[#0e0e11] border border-zinc-800" />
+              ))}
+            </div>
+          </div>
         </div>
 
-        {/* Buttons Placeholder */}
-        <div className="pt-2 space-y-2">
-          <div className="h-12 w-full bg-[#18181c] border border-[#27272a]" />
-          <div className="h-10 w-full bg-[#121215] border border-[#27272a]" />
+        {/* Right Stacked Context Column (4-5 cols) */}
+        <div className="lg:col-span-4 flex flex-col divide-y divide-[#27272a] bg-[#0e0e11]">
+          {/* Action Row */}
+          <div className="p-6 space-y-3 bg-[#0a0a0c]">
+            <div className="h-12 w-full bg-[#18181c] border border-zinc-700" />
+            <div className="h-9 w-full bg-[#121215] border border-zinc-800" />
+          </div>
+
+          {/* Supporting Specimen 01 */}
+          <div className="p-6 space-y-2">
+            <div className="h-2.5 w-36 bg-[#161619]" />
+            <div className="flex gap-3">
+              <div className="w-16 h-16 bg-[#09090b] border border-[#27272a] shrink-0" />
+              <div className="space-y-2 flex-1">
+                <div className="h-3 w-full bg-[#161619]" />
+                <div className="h-2.5 w-2/3 bg-[#121215]" />
+              </div>
+            </div>
+          </div>
+
+          {/* Supporting Specimen 02 */}
+          <div className="p-6 space-y-2">
+            <div className="h-2.5 w-36 bg-[#161619]" />
+            <div className="flex gap-3">
+              <div className="w-16 h-16 bg-[#09090b] border border-[#27272a] shrink-0" />
+              <div className="space-y-2 flex-1">
+                <div className="h-3 w-full bg-[#161619]" />
+                <div className="h-2.5 w-2/3 bg-[#121215]" />
+              </div>
+            </div>
+          </div>
+
+          {/* Curatorial Note Cell */}
+          <div className="p-6 space-y-2 bg-[#09090b]">
+            <div className="h-2.5 w-28 bg-[#161619]" />
+            <div className="h-3 w-full bg-[#121215]" />
+            <div className="h-3 w-4/5 bg-[#121215]" />
+          </div>
         </div>
       </div>
     </div>
