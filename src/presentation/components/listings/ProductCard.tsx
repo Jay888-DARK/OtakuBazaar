@@ -82,13 +82,21 @@ export function ProductCard({ product, className = '' }: ProductCardProps): Reac
         data-testid="product-thumbnail"
       >
         <div className="relative w-full aspect-[4/5] overflow-hidden bg-[#09090b] border border-zinc-800/80 flex items-center justify-center p-3 my-2">
+          {/* Feature 4: Marginal Micro-Typography in corners */}
+          <span className="marginal-metadata marginal-tl text-zinc-600">
+            LOT #{String(product.id).replace(/[^0-9]/g, '').padStart(4, '0').slice(-4) || '0482'}
+          </span>
+          <span className="marginal-metadata marginal-br text-zinc-600">
+            TEMP: 18°C
+          </span>
+
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.03)_0%,_transparent_70%)] pointer-events-none" />
           <Image
             src={imageUrl || '/Firefly_clean.png'}
             alt={product.title || 'Anime Collectible'}
             fill
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-            className="object-contain p-2 relative z-10"
+            className="object-contain p-2 relative z-10 contrast-110"
             loading="lazy"
           />
         </div>
@@ -104,8 +112,8 @@ export function ProductCard({ product, className = '' }: ProductCardProps): Reac
 
         {/* Secondary Valuation Bar */}
         <div className="flex items-center justify-between text-[10px] font-medium tracking-wider text-zinc-500 mt-2">
-          <span className="text-emerald-400 font-semibold">+14.2% (90d)</span>
-          <span>{offersCount || 2} ACTIVE BIDS</span>
+          <span className="text-emerald-400 font-semibold font-mono">+14.2% (90D)</span>
+          <span className="font-mono">{offersCount || 2} ACTIVE BIDS</span>
         </div>
 
         {/* Consolidated Price / Offer Pill & Quick Cart (Universal Button Token) */}
@@ -114,19 +122,19 @@ export function ProductCard({ product, className = '' }: ProductCardProps): Reac
             onClick={() => handleOpenBargain(product.id)}
             aria-label={`Tap asking price to make an offer on ${product.title}`}
             data-testid="price-offer-pill"
-            className="flex-1 flex items-center justify-between px-3.5 py-2.5 bg-zinc-900 hover:bg-zinc-100 text-zinc-300 hover:text-black border border-zinc-700 hover:border-zinc-100 text-[11px] font-semibold uppercase tracking-[0.2em] transition-all duration-200 cursor-pointer group/btn"
+            className="flex-1 flex items-center justify-between px-3.5 py-2.5 bg-zinc-900 text-zinc-300 border border-zinc-700 text-[11px] font-semibold uppercase tracking-[0.2em] brutalist-btn cursor-pointer"
           >
-            <span className="text-[10px] uppercase font-semibold tracking-widest text-zinc-400 group-hover/btn:text-black">
+            <span className="text-[10px] uppercase font-semibold tracking-widest text-zinc-400">
               Asking / Offer
             </span>
-            <span className="text-sm font-bold uppercase tracking-wider text-zinc-100 group-hover/btn:text-black">
+            <span className="text-sm font-bold uppercase tracking-wider text-zinc-100">
               ₹{displayPrice.toLocaleString('en-IN')}
             </span>
           </button>
           <button
             type="button"
             aria-label="Quick Cart"
-            title="Add to Vault Cart"
+            title="Open Negotiation Room"
             onClick={async (e) => {
               e.preventDefault();
               e.stopPropagation();
@@ -139,9 +147,9 @@ export function ProductCard({ product, className = '' }: ProductCardProps): Reac
                 openCartDrawer();
               }
             }}
-            className="w-10 h-10 bg-zinc-900 hover:bg-zinc-100 text-zinc-300 hover:text-black border border-zinc-700 hover:border-zinc-100 flex items-center justify-center text-sm transition-all duration-200 cursor-pointer shrink-0"
+            className="p-2.5 border border-zinc-700 bg-zinc-900 text-zinc-300 brutalist-btn cursor-pointer shrink-0"
           >
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
               <line x1="3" y1="6" x2="21" y2="6" />
               <path d="M16 10a4 4 0 0 1-8 0" />

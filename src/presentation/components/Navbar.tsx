@@ -226,10 +226,10 @@ function StickyFilterPillsBar() {
                 key={pill.id}
                 type="button"
                 onClick={() => handlePillClick(pill.id)}
-                className={`px-2.5 py-1 text-[10px] tracking-[0.16em] uppercase transition-none cursor-pointer whitespace-nowrap rounded-none border ${
+                className={`px-2.5 py-1 text-[10px] tracking-[0.16em] uppercase transition-none cursor-pointer whitespace-nowrap rounded-none border brutalist-btn ${
                   isActive
-                    ? 'bg-zinc-100 text-black border-zinc-100 font-bold'
-                    : 'bg-transparent text-zinc-400 border-zinc-800 hover:text-zinc-200 hover:border-zinc-600 font-medium'
+                    ? 'bg-[#f4f4f4] text-black border-[#f4f4f4] font-bold'
+                    : 'bg-transparent text-zinc-400 border-zinc-800 font-medium'
                 }`}
               >
                 {pill.label}

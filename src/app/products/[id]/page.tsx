@@ -33,6 +33,7 @@ import { useRouter } from 'next/navigation';
 import { MOCK_PRODUCTS } from '@/infrastructure/data/mockProducts';
 import { ProductDemoGallery } from '@/presentation/components/products/ProductDemoGallery';
 import { ProductDetailSkeleton } from '@/presentation/components/ui/SkeletonLoaders';
+import { openProvenanceManifest } from '@/presentation/components/provenance/ProvenanceManifestModal';
 
 interface ProductDetailsProps {
   params: Promise<{ id: string }> | { id: string };
@@ -332,7 +333,14 @@ export default function ProductDetailsPage({ params }: ProductDetailsProps) {
               </div>
 
               {/* Row 3: CURATORIAL NOTE (Bottom Cell: Detailed optical inspection log & provenance) */}
-              <div className="p-6 space-y-3 bg-[#0a0a0c]">
+              <div className="p-6 space-y-3 bg-[#0a0a0c] relative">
+                <span className="marginal-metadata marginal-tl text-zinc-600">
+                  PROTOCOL: CUSTODY RELEASE
+                </span>
+                <span className="marginal-metadata marginal-br text-zinc-600">
+                  SEAL: OKB-2026-X
+                </span>
+
                 <div className="flex items-center justify-between">
                   <span className="text-[9px] uppercase tracking-[0.25em] text-zinc-400 font-bold">
                     CURATORIAL NOTE &amp; PROVENANCE LOG
@@ -342,9 +350,26 @@ export default function ProductDetailsPage({ params }: ProductDetailsProps) {
                   </span>
                 </div>
 
-                <p className="text-xs text-zinc-400 leading-relaxed">
+                <p className="text-xs text-zinc-400 leading-relaxed font-sans">
                   Specimen custody verified at Mumbai Staging Terminal Bay 04. Optical calibration checks verified zero paint bleed across facial sculpt contours. Joint torque tolerances measured at 0.02mm deviation from Japanese factory master spec. Micro-fiber packaging sealed under dry nitrogen containment.
                 </p>
+
+                {/* Feature 3: Interactive Trigger for Expanded Provenance Manifest */}
+                <button
+                  type="button"
+                  onClick={() =>
+                    openProvenanceManifest({
+                      lotRef: lotDisplayId,
+                      itemTitle: currentProduct?.title,
+                      series: currentProduct?.category,
+                      fabricator: 'PRIME 1 STUDIO / KADOKAWA',
+                    })
+                  }
+                  className="w-full p-2.5 bg-[#09090b] border border-zinc-800 text-[10px] uppercase tracking-wider text-zinc-300 brutalist-btn cursor-pointer flex items-center justify-between"
+                >
+                  <span className="font-bold">[ VIEW FULL IMMUTABLE COA MANIFEST &amp; LEDGER HASH ]</span>
+                  <span>→</span>
+                </button>
 
                 <div className="pt-2 border-t border-zinc-800 flex items-center justify-between text-[9px] uppercase tracking-widest text-zinc-500">
                   <span>Lead Authenticator</span>

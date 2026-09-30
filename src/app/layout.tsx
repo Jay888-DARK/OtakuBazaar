@@ -18,6 +18,8 @@ import { ThemeProvider } from '@/presentation/components/providers/ThemeProvider
 import { Navbar } from '@/presentation/components/Navbar';
 import { CookieConsent } from '@/presentation/components/compliance/CookieConsent';
 import { CartDrawer } from '@/presentation/components/cart/CartDrawer';
+import { NegotiationRoomModal } from '@/presentation/components/checkout/NegotiationRoomModal';
+import { ProvenanceManifestModal } from '@/presentation/components/provenance/ProvenanceManifestModal';
 
 const jakartaSans = Plus_Jakarta_Sans({
   variable: '--font-sans',
@@ -76,6 +78,12 @@ export default function RootLayout({
 
               {/* Slide-Over Cart Drawer for Item Negotiation */}
               <CartDrawer />
+
+              {/* Feature 1: The Full-Screen 50/50 Escrow Negotiation Room (0ms harsh cut) */}
+              <NegotiationRoomModal />
+
+              {/* Feature 3: Expanded Full-Screen Cryptographic Provenance Manifest */}
+              <ProvenanceManifestModal />
             </SyncProviderWrapper>
           </ThemeProvider>
         </AuthProvider>

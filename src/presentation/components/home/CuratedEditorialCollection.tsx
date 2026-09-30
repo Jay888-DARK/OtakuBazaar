@@ -56,7 +56,15 @@ export function CuratedEditorialCollection(): React.JSX.Element {
         {/* Asymmetrical 2-Column Archival Layout (7:5 Split) */}
         <div className="grid grid-cols-1 lg:grid-cols-12">
           {/* Dominant Hero Col (7 cols): Massive Hero Image with Physical Provenance Plaque */}
-          <div className="lg:col-span-7 border-b lg:border-b-0 lg:border-r border-[#27272a] bg-[#09090b] flex flex-col justify-between">
+          <div className="lg:col-span-7 border-b lg:border-b-0 lg:border-r border-[#27272a] bg-[#09090b] flex flex-col justify-between relative">
+            {/* Feature 4: Marginal Micro-Typography in corners */}
+            <span className="marginal-metadata marginal-tl text-zinc-600">
+              LAST INSPECTED: 2026-09-28
+            </span>
+            <span className="marginal-metadata marginal-br text-zinc-600">
+              VAULT TEMP: 18°C
+            </span>
+
             <div className="relative w-full aspect-[4/3] sm:aspect-[16/11] bg-[#060608] overflow-hidden border-b border-[#27272a]">
               <Image
                 src="/showcase/guts_berserker_statue.jpg"
@@ -185,7 +193,7 @@ export function CuratedEditorialCollection(): React.JSX.Element {
                 <span className="text-[9px] uppercase tracking-[0.25em] text-zinc-500 font-semibold block mb-1">
                   CURATORIAL NOTE
                 </span>
-                <p className="text-xs text-zinc-400 leading-relaxed">
+                <p className="text-xs text-zinc-400 leading-relaxed font-sans">
                   Every specimen in Drop #04 has undergone optical micro-inspection in our Mumbai staging facility. Sculptural tolerances, joint tensile strength, and holographic provenance stamps are logged on our tamper-evident ledger prior to packaging.
                 </p>
               </div>
@@ -194,13 +202,13 @@ export function CuratedEditorialCollection(): React.JSX.Element {
               <div className="flex flex-col sm:flex-row items-center gap-3 pt-2">
                 <Link
                   href="/products/lot-001"
-                  className="w-full sm:flex-1 py-3 px-4 bg-zinc-100 hover:bg-white text-black text-center text-[11px] font-bold uppercase tracking-[0.2em] border border-zinc-100 transition-colors no-underline block"
+                  className="w-full sm:flex-1 py-3 px-4 bg-[#f4f4f4] text-black text-center text-[11px] font-bold uppercase tracking-[0.2em] border border-[#f4f4f4] brutalist-btn no-underline block"
                 >
                   Inspect Berserk Lot →
                 </Link>
                 <a
                   href="#catalog"
-                  className="w-full sm:w-auto py-3 px-4 bg-transparent hover:bg-zinc-900 text-zinc-400 hover:text-white text-center text-[11px] font-semibold uppercase tracking-[0.18em] border border-zinc-800 transition-colors no-underline block whitespace-nowrap"
+                  className="w-full sm:w-auto py-3 px-4 bg-transparent text-zinc-300 text-center text-[11px] font-semibold uppercase tracking-[0.18em] border border-zinc-800 brutalist-btn no-underline block whitespace-nowrap"
                 >
                   View Full Catalog
                 </a>

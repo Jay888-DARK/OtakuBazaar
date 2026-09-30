@@ -188,8 +188,68 @@ h3 {
 }
 
 /* ------------------------------------------------------------------------- */
-/* Flat Structural Button Tokens (Preserved functional callbacks)            */
+/* Feature 2: Brutalist State Inversions (0ms transition time, #f4f4f4 / black) */
 /* ------------------------------------------------------------------------- */
+
+/* Strictly enforce 0ms transition for all interactive state changes */
+button,
+a,
+input,
+select,
+textarea,
+.brutalist-btn,
+.brutalist-invert {
+  transition: none !important;
+  transition-duration: 0ms !important;
+  border-radius: 0px !important;
+}
+
+/* Brutalist inversion: Off-white/light gray (#f4f4f4) background and black text on hover, focus, active */
+.brutalist-btn:hover,
+.brutalist-btn:focus-visible,
+.brutalist-btn:active,
+.brutalist-invert:hover,
+.brutalist-invert:focus-visible,
+.brutalist-invert:active {
+  background-color: #f4f4f4 !important;
+  color: #000000 !important;
+  border-color: #f4f4f4 !important;
+  outline: none !important;
+}
+
+/* Invert all nested text/icons inside inverted containers */
+.brutalist-btn:hover *,
+.brutalist-btn:focus-visible *,
+.brutalist-btn:active *,
+.brutalist-invert:hover *,
+.brutalist-invert:focus-visible *,
+.brutalist-invert:active * {
+  color: #000000 !important;
+}
+
+/* Feature 4: Marginal Metadata Corner Micro-Typography */
+.marginal-metadata {
+  position: absolute;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: #52525b; /* dark gray */
+  font-family: "PP Neue Montreal", "Helvetica Now Text", "Helvetica Neue", var(--font-sans), sans-serif;
+  pointer-events: none;
+  user-select: none;
+  z-index: 20;
+  line-height: 1;
+}
+
+.marginal-tl {
+  top: 6px;
+  left: 6px;
+}
+
+.marginal-br {
+  bottom: 6px;
+  right: 6px;
+}
 
 .btn-goku-primary {
   background-color: #F85B1A !important;
@@ -200,15 +260,15 @@ h3 {
   border-radius: 0px !important;
   border: 1px solid #F85B1A !important;
   box-shadow: none !important;
-  transition: opacity 0.15s ease, background-color 0.15s ease;
+  transition: none !important;
 }
 
-.btn-goku-primary:hover:not(:disabled) {
-  opacity: 0.9;
-}
-
+.btn-goku-primary:hover:not(:disabled),
+.btn-goku-primary:focus-visible:not(:disabled),
 .btn-goku-primary:active:not(:disabled) {
-  opacity: 0.8;
+  background-color: #f4f4f4 !important;
+  color: #000000 !important;
+  border-color: #f4f4f4 !important;
 }
 
 .btn-resolution-secondary {
