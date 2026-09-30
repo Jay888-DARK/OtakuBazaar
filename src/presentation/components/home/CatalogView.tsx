@@ -129,12 +129,12 @@ export const CatalogView: React.FC = () => {
   return (
     <div id="catalog" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 select-none">
       {/* Editorial Catalog Header & Active Telemetry */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between border-b border-zinc-800 pb-4 mb-8 gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between border-b border-[#27272a] pb-4 mb-8 gap-4">
         <div>
           <span className="text-[9px] uppercase tracking-[0.25em] text-zinc-500 font-bold block mb-1">
             ARCHIVAL LOT INVENTORY • CURRENT CATALOGUE
           </span>
-          <h2 className="text-xl sm:text-2xl font-extrabold uppercase tracking-wider text-zinc-100">
+          <h2 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold uppercase tracking-tight text-zinc-100 leading-none">
             Available Verified Lots
           </h2>
         </div>

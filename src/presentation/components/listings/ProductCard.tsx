@@ -111,9 +111,9 @@ export function ProductCard({ product, className = '' }: ProductCardProps): Reac
         </Link>
 
         {/* Secondary Valuation Bar */}
-        <div className="flex items-center justify-between text-[10px] font-medium tracking-wider text-zinc-500 mt-2">
-          <span className="text-emerald-400 font-semibold font-mono">+14.2% (90D)</span>
-          <span className="font-mono">{offersCount || 2} ACTIVE BIDS</span>
+        <div className="flex items-center justify-between text-[10px] font-bold tracking-wider text-zinc-500 mt-2">
+          <span className="text-emerald-400 font-bold tracking-wider">+14.2% (90D)</span>
+          <span className="font-bold tracking-wider text-zinc-400">{offersCount || 2} ACTIVE BIDS</span>
         </div>
 
         {/* Consolidated Price / Offer Pill & Quick Cart (Universal Button Token) */}

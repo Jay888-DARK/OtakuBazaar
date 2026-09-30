@@ -9,7 +9,7 @@ interface VaultHeroProps {
 
 const CURATED_VAULT_GRAILS = [
   { id: 'lot-0484', image: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=800&q=85', title: 'Saber Altria 1/7', href: '#catalog' },
-  { id: 'lot-0482', image: 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&w=800&q=85', title: 'Guts Berserker 1/4', href: '#catalog' },
+  { id: 'lot-0489', image: 'https://images.unsplash.com/photo-1563089145-599997674d42?auto=format&fit=crop&w=800&q=85', title: 'Nichirin Sword 1:1 Prop', href: '#catalog' },
   { id: 'lot-0481', image: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=800&q=85', title: 'Rengoku Flame Breathing', href: '#catalog' },
   { id: 'lot-0483', image: 'https://images.unsplash.com/photo-1563089145-599997674d42?auto=format&fit=crop&w=800&q=85', title: 'Edward Elric GEM', href: '#catalog' },
   { id: 'lot-0485', image: 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=800&q=85', title: 'Satoru Gojo Shibuya Scramble', href: '#catalog' },

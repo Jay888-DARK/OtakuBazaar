@@ -95,7 +95,7 @@ tt {
   letter-spacing: normal;
 }
 
-/* High-End Editorial Typography Hierarchy (Weights, Uppercase, Tracking) */
+/* High-End Editorial Typography Hierarchy (Oversized, Scale-Driven Contrast) */
 h1,
 h2,
 h3,
@@ -104,24 +104,28 @@ h5,
 h6 {
   font-family: "PP Neue Montreal", "Helvetica Now Text", "Helvetica Neue", var(--font-sans), sans-serif;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-weight: 700;
+  letter-spacing: 0.04em;
+  font-weight: 800;
   color: #f4f4f5;
+  line-height: 1.05;
 }
 
 h1 {
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
   font-weight: 800;
+  font-size: clamp(2.25rem, 5vw, 4.5rem);
 }
 
 h2 {
-  letter-spacing: 0.04em;
-  font-weight: 700;
+  letter-spacing: -0.02em;
+  font-weight: 800;
+  font-size: clamp(1.75rem, 3.5vw, 3rem);
 }
 
 h3 {
-  letter-spacing: 0.06em;
-  font-weight: 600;
+  letter-spacing: 0.02em;
+  font-weight: 700;
+  font-size: clamp(1.25rem, 2.5vw, 2rem);
 }
 
 /* Editorial Subheadings & Micro-Labels */
