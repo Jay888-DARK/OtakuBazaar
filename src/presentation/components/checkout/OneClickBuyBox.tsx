@@ -92,7 +92,7 @@ export function OneClickBuyBox({
           productId: targetId,
           dealOfferId,
           price,
-          amount: price,
+          amount: Math.round(Number(price) * 100),
           receipt: `rcpt_1click_${targetId}_${Date.now()}`,
         }),
       });

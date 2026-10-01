@@ -97,7 +97,7 @@ export function CheckoutButton({
           productId: productId || lotId,
           dealOfferId,
           price: amount,
-          amount: amount,
+          amount: Math.round(Number(amount) * 100),
           receipt: receiptId,
         }),
       });

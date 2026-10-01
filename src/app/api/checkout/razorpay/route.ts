@@ -208,7 +208,18 @@ export async function POST(req: Request): Promise<NextResponse> {
       },
     };
 
-    const order = await razorpay.orders.create(orderOptions);
+    let order;
+    try {
+      order = await razorpay.orders.create(orderOptions);
+    } catch (orderError: any) {
+      console.error('[Razorpay Order Creation Error]:', orderError);
+      const errorMessage =
+        orderError?.error?.description ||
+        orderError?.description ||
+        orderError?.message ||
+        (typeof orderError === 'string' ? orderError : 'Razorpay order creation failed.');
+      return NextResponse.json({ error: errorMessage }, { status: 500 });
+    }
 
     return NextResponse.json({
       order_id: order.id,
@@ -221,8 +232,13 @@ export async function POST(req: Request): Promise<NextResponse> {
     });
   } catch (error: any) {
     console.error('[API /api/checkout/razorpay] Error:', error);
+    const errorMessage =
+      error?.error?.description ||
+      error?.description ||
+      error?.message ||
+      'Internal Server Error';
     return NextResponse.json(
-      { error: error?.message || 'Failed to process Razorpay checkout request' },
+      { error: errorMessage },
       { status: 500 }
     );
   }

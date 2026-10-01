@@ -154,7 +154,7 @@ export function InstantCheckoutDrawer({
           lotId: targetId,
           productId: targetId,
           price,
-          amount: price,
+          amount: Math.round(Number(price) * 100),
           receipt: `rcpt_guest_${targetId}_${Date.now()}`,
           phone: phone.trim(),
           name: fullName.trim(),

@@ -15,8 +15,6 @@ import { useSession, signOut } from 'next-auth/react';
 import { openCartDrawer } from '@/presentation/components/cart/CartDrawer';
 import { getCartItems } from '@/app/actions/dealActions';
 
-import { BrandEmblem } from '@/presentation/components/BrandEmblem';
-
 export type UserRole = 'BUYER' | 'SELLER' | 'ADMIN';
 
 export interface UserPersona {
@@ -76,16 +74,27 @@ export function Navbar() {
     <header className="sticky top-0 z-50 w-full border-b border-zinc-800 bg-[#09090b]">
       {/* Primary Navigation Bar (Height: 56px) */}
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        {/* Left: Geometric Vector Brand Logo & Typography */}
+        {/* Left: Mascot Brand Logo & Typography */}
         <div className="flex items-center">
           <Link
             href="/"
             aria-label="OtakuBazaar Home — Authentic Anime Collectibles"
             className="flex items-center space-x-3 cursor-pointer group no-underline focus-visible:outline-none p-1"
           >
-            {/* The High-Resolution Geometric Vector SVG Emblem (Exact 28px height) */}
-            <div className="h-7 w-7 relative flex items-center justify-center shrink-0">
-              <BrandEmblem size={28} />
+            {/* The Original Mascot Logo Mark */}
+            <div
+              className="relative flex items-center justify-center shrink-0 w-10 h-10"
+              style={{ borderRadius: '0px', boxShadow: 'none', background: 'transparent' }}
+            >
+              <Image
+                src="/Firefly.png"
+                alt="OtakuBazaar Mascot"
+                width={40}
+                height={40}
+                priority
+                className="w-10 h-10 object-contain"
+                style={{ borderRadius: '0px', boxShadow: 'none', background: 'transparent' }}
+              />
             </div>
 
             {/* The Logotype ('Clash Display' / 'Syne') */}
