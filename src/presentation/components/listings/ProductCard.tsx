@@ -67,28 +67,27 @@ export function ProductCard({ product, className = '' }: ProductCardProps): Reac
     <div
       className={`relative flex flex-col justify-between bg-[#0e0e11] border border-zinc-800 hover:border-zinc-600 p-4 transition-colors group select-none ${className}`.trim()}
     >
-      {/* 1. Archival Header (Anti-Truncation LOT Format) */}
+      {/* 1. Header (Anti-Truncation Item Format) */}
       <div className="flex items-center justify-between text-[10px] font-semibold tracking-wider text-zinc-500 mb-2">
-        <span>LOT #{String(product.id).replace(/[^0-9]/g, '').padStart(4, '0').slice(-4) || '0482'} • VAULT ID: JP-TYO</span>
+        <span>ITEM #{String(product.id).replace(/[^0-9]/g, '').padStart(4, '0').slice(-4) || '0482'} • TOKYO / MUMBAI</span>
         <span className="text-[9px] font-bold tracking-[0.15em] text-zinc-300 border border-zinc-700 bg-zinc-900 px-2 py-0.5 uppercase">
           AUTHENTIC
         </span>
       </div>
 
-      {/* 2. Jeweler’s Loupe Inspection Stage */}
+      {/* 2. Image Stage */}
       <Link
         href={`/products/${product.id}`}
-        aria-label={`View vault details for ${product.title}`}
+        aria-label={`View details for ${product.title}`}
         className="block no-underline product-thumbnail"
         data-testid="product-thumbnail"
       >
         <div className="relative w-full aspect-[4/5] overflow-hidden bg-[#09090b] border border-zinc-800/80 flex items-center justify-center p-3 my-2">
-          {/* Feature 4: Marginal Micro-Typography in corners */}
           <span className="marginal-metadata marginal-tl text-zinc-600">
-            LOT #{String(product.id).replace(/[^0-9]/g, '').padStart(4, '0').slice(-4) || '0482'}
+            ITEM #{String(product.id).replace(/[^0-9]/g, '').padStart(4, '0').slice(-4) || '0482'}
           </span>
           <span className="marginal-metadata marginal-br text-zinc-600">
-            TEMP: 18°C
+            MINT
           </span>
 
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.03)_0%,_transparent_70%)] pointer-events-none" />
@@ -103,7 +102,7 @@ export function ProductCard({ product, className = '' }: ProductCardProps): Reac
         </div>
       </Link>
 
-      {/* 3. Title & Market Intelligence Ticker */}
+      {/* 3. Title & Price Ticker */}
       <div>
         <Link href={`/products/${product.id}`} className="block no-underline hover:no-underline">
           <h3 className="text-xs font-bold tracking-wider text-zinc-100 uppercase truncate mt-2">
@@ -114,10 +113,10 @@ export function ProductCard({ product, className = '' }: ProductCardProps): Reac
         {/* Secondary Valuation Bar */}
         <div className="flex items-center justify-between text-[10px] font-bold tracking-wider text-zinc-500 mt-2">
           <span className="text-emerald-400 font-bold tracking-wider">+14.2% (90D)</span>
-          <span className="font-bold tracking-wider text-zinc-400">{offersCount || 2} ACTIVE BIDS</span>
+          <span className="font-bold tracking-wider text-zinc-400">{offersCount || 2} ACTIVE OFFERS</span>
         </div>
 
-        {/* Frictionless Premium Buying Flow: Primary CTA */}
+        {/* Buying Flow: Primary CTA */}
         <div className="mt-3 space-y-2">
           {/* Direct Prominent Primary CTA */}
           <CheckoutButton
@@ -125,8 +124,8 @@ export function ProductCard({ product, className = '' }: ProductCardProps): Reac
             lotId={product.id}
             amount={displayPrice}
             title={product.title}
-            description="Direct Escrow Custody Acquisition"
-            buttonText={`ACQUIRE LOT — ₹${displayPrice.toLocaleString('en-IN')}`}
+            description="Direct Purchase with Escrow Protection"
+            buttonText={`BUY NOW — ₹${displayPrice.toLocaleString('en-IN')}`}
             className="w-full py-2.5 px-3 bg-zinc-100 hover:bg-white text-black font-extrabold text-[11px] uppercase tracking-[0.16em] border border-zinc-100 transition-none cursor-pointer flex items-center justify-center gap-2 rounded-none"
           />
 
@@ -134,7 +133,7 @@ export function ProductCard({ product, className = '' }: ProductCardProps): Reac
           <div className="flex items-center justify-between text-[8px] uppercase tracking-wider text-zinc-400 font-medium px-0.5">
             <span className="flex items-center gap-1">
               <span className="w-1 h-1 bg-zinc-500 inline-block" />
-              Insured Express Dispatch
+              Insured Shipping
             </span>
             <span className="flex items-center gap-1">
               <span className="w-1 h-1 bg-zinc-500 inline-block" />
@@ -150,13 +149,13 @@ export function ProductCard({ product, className = '' }: ProductCardProps): Reac
               data-testid="price-offer-pill"
               className="flex-1 flex items-center justify-between px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 border border-zinc-800 text-[10px] font-medium uppercase tracking-[0.14em] cursor-pointer rounded-none"
             >
-              <span>Negotiate Price</span>
+              <span>Make an Offer</span>
               <span className="text-zinc-300 font-bold">Offer →</span>
             </button>
             <button
               type="button"
               aria-label="Quick Cart"
-              title="Open Negotiation Room"
+              title="Add to Cart"
               onClick={async (e) => {
                 e.preventDefault();
                 e.stopPropagation();

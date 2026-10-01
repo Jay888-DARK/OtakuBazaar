@@ -49,8 +49,11 @@ export function Navbar() {
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (searchQuery.trim() && typeof window !== 'undefined') {
-      window.dispatchEvent(new CustomEvent('otaku_search', { detail: searchQuery.trim() }));
+    const query = searchQuery.trim();
+    if (query) {
+      router.push(`/search?q=${encodeURIComponent(query)}`);
+    } else {
+      router.push('/search');
     }
   };
 
@@ -106,7 +109,7 @@ export function Navbar() {
                 OtakuBazaar
               </span>
               <span className="text-[8px] font-semibold tracking-[0.25em] text-zinc-500 uppercase mt-0.5 leading-none">
-                Escrow Authenticated
+                Secure Marketplace
               </span>
             </div>
           </Link>
@@ -118,13 +121,8 @@ export function Navbar() {
             <input
               type="text"
               value={searchQuery}
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                if (typeof window !== 'undefined') {
-                  window.dispatchEvent(new CustomEvent('otaku_search', { detail: e.target.value }));
-                }
-              }}
-              placeholder="SEARCH ARCHIVAL LOTS, SERIES, OR SPEC..."
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="SEARCH PRODUCTS, SERIES, OR CHARACTERS..."
               className="w-full border border-zinc-800 bg-[#0e0e11] px-3.5 py-1.5 text-xs text-zinc-200 placeholder-zinc-500 outline-none transition-colors focus:border-zinc-500 uppercase tracking-wider text-[11px] rounded-none"
             />
           </form>
@@ -151,7 +149,7 @@ export function Navbar() {
             type="button"
             className="px-3.5 py-1.5 bg-zinc-900 hover:bg-zinc-100 text-zinc-300 hover:text-black border border-zinc-700 hover:border-zinc-100 text-[11px] font-semibold uppercase tracking-[0.2em] transition-all duration-200 cursor-pointer rounded-none"
           >
-            Drop a Grail
+            Sell Item
           </button>
 
           {/* Sign In / Profile */}
@@ -201,7 +199,7 @@ export function Navbar() {
 
 // Tier 1: Filter Tabs (Simple text filters with clean 1px solid borders and sharp 0px corners)
 const FILTER_TABS = [
-  { id: 'ALL', label: 'All Lots' },
+  { id: 'ALL', label: 'All Items' },
   { id: 'S_RANK', label: 'S-Rank Only' },
   { id: 'FACTORY_SEALED', label: 'Factory Sealed' },
   { id: 'ESCROW_VERIFIED', label: 'Escrow Verified' },
@@ -273,7 +271,7 @@ function StreamlinedSubNav() {
 
           <div className="hidden md:flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-zinc-500 font-medium shrink-0">
             <span className="inline-block w-1.5 h-1.5 bg-zinc-400 rounded-none" />
-            <span>Index Active: 9 Verified Lots</span>
+            <span>9 Verified Items Available</span>
           </div>
         </div>
       </div>

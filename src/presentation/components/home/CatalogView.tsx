@@ -6,7 +6,7 @@ import { MOCK_PRODUCTS } from '@/infrastructure/data/mockProducts';
 import { ProductFeedSkeleton } from '@/presentation/components/ui/SkeletonLoaders';
 
 const CATEGORIES = [
-  { id: 'ALL', label: 'All Archival Grails' },
+  { id: 'ALL', label: 'All Collectibles' },
   { id: 'Scale Figure', label: 'Scale Figures' },
   { id: 'Nendoroid', label: 'Nendoroids' },
   { id: 'Manga Sets', label: 'Manga Sets' },
@@ -137,14 +137,14 @@ export const CatalogView: React.FC = () => {
 
   return (
     <div id="catalog" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 select-none">
-      {/* Editorial Catalog Header & Active Telemetry */}
+      {/* Catalog Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between border-b border-[#27272a] pb-4 mb-8 gap-4">
         <div>
           <span className="text-[9px] uppercase tracking-[0.25em] text-zinc-500 font-bold block mb-1">
-            ARCHIVAL LOT INVENTORY • CURRENT CATALOGUE
+            VERIFIED INVENTORY • PRODUCT CATALOG
           </span>
           <h2 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold uppercase tracking-tight text-zinc-100 leading-none">
-            Available Verified Lots
+            Available Products
           </h2>
         </div>
 
@@ -176,16 +176,16 @@ export const CatalogView: React.FC = () => {
         </div>
       </div>
 
-      {/* Feature 4: Performance UX Stark Skeleton Loader During Transitions */}
+      {/* Feature: Skeleton Loader During Transitions */}
       {isLoading ? (
         <ProductFeedSkeleton count={6} />
       ) : filteredProducts.length === 0 ? (
         <div className="p-12 border border-zinc-800 bg-[#0e0e11] text-center">
           <p className="text-xs uppercase tracking-[0.2em] text-zinc-400 font-bold mb-2">
-            No Archival Lots Found
+            No Products Found
           </p>
           <p className="text-[11px] text-zinc-500 max-w-sm mx-auto mb-4">
-            No verified specimens match the active search criteria or filter pill.
+            No items match your selected filters. Try choosing a different category or resetting filters.
           </p>
           <button
             type="button"

@@ -16,7 +16,7 @@ export interface CategoryItem {
 }
 
 export const CATEGORIES: CategoryItem[] = [
-  { id: 'ALL', name: 'All Archival Lots', count: 9 },
+  { id: 'ALL', name: 'All Collectibles', count: 9 },
   { id: 'Scale Figure', name: 'Scale Figures', count: 6 },
   { id: 'Statues & Resin', name: 'Statues & Resin', count: 2 },
   { id: 'Manga Sets', name: 'Manga Editions', count: 1 },

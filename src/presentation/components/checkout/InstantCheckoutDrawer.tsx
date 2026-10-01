@@ -288,13 +288,13 @@ export function InstantCheckoutDrawer({
         <div className="p-5 border-b border-[#27272a] bg-[#09090b] flex items-center justify-between">
           <div>
             <span className="text-[9px] uppercase tracking-[0.25em] text-zinc-500 font-bold block mb-0.5">
-              GUEST CUSTODY PROTOCOL • ZERO REGISTRATION
+              GUEST CHECKOUT • NO ACCOUNT REQUIRED
             </span>
             <h2
               style={{ fontFamily: "'Clash Display', 'Syne', sans-serif" }}
               className="text-base font-extrabold uppercase tracking-wider text-zinc-100"
             >
-              [ INSTANT ACQUISITION ]
+              [ FAST CHECKOUT ]
             </h2>
           </div>
 
@@ -319,32 +319,32 @@ export function InstantCheckoutDrawer({
             <div className="space-y-6">
               <div className="border-b border-black/25 pb-4">
                 <span className="text-[10px] uppercase tracking-[0.25em] text-neutral-600 font-bold block mb-1">
-                  SETTLEMENT VERIFIED • SILENT PROFILE PROVISIONED
+                  PAYMENT SUCCESSFUL • ORDER VERIFIED
                 </span>
                 <h3
                   style={{ fontFamily: "'Clash Display', 'Syne', sans-serif" }}
                   className="text-xl font-black uppercase tracking-tight text-black leading-tight"
                 >
-                  [ ACQUISITION SECURED — CUSTODY TRANSFERRED ]
+                  [ ORDER CONFIRMED — PAYMENT RECEIVED ]
                 </h3>
               </div>
 
               <div className="border border-black/15 bg-black/5 divide-y divide-black/10 text-xs font-semibold uppercase tracking-wider">
                 <div className="p-3 flex justify-between">
-                  <span className="text-neutral-600">LOT SPECIMEN</span>
+                  <span className="text-neutral-600">ITEM</span>
                   <span className="text-black font-extrabold truncate max-w-[200px]">{itemTitle}</span>
                 </div>
                 <div className="p-3 flex justify-between">
-                  <span className="text-neutral-600">ORDER TOKEN</span>
+                  <span className="text-neutral-600">ORDER ID</span>
                   <span className="text-black font-extrabold truncate">{confirmationData.orderId}</span>
                 </div>
                 <div className="p-3 flex justify-between">
-                  <span className="text-neutral-600">PAYMENT REFERENCE</span>
+                  <span className="text-neutral-600">PAYMENT ID</span>
                   <span className="text-black font-extrabold truncate">{confirmationData.paymentId}</span>
                 </div>
                 <div className="p-3 flex justify-between">
-                  <span className="text-neutral-600">CUSTODY STATUS</span>
-                  <span className="text-black font-extrabold">DOUBLE-ENTRY ESCROW LOCKED</span>
+                  <span className="text-neutral-600">STATUS</span>
+                  <span className="text-black font-extrabold">SECURE ESCROW ACTIVE</span>
                 </div>
                 <div className="p-3 flex justify-between">
                   <span className="text-neutral-600">INSPECTION WINDOW</span>
@@ -353,8 +353,8 @@ export function InstantCheckoutDrawer({
               </div>
 
               <div className="border border-black/20 p-3.5 bg-black/5 text-[11px] leading-relaxed text-neutral-800">
-                <span className="font-bold block uppercase mb-1">AUTOMATED COLLECTOR PROFILE CREATED</span>
-                A secure cryptographic session has been bound to <span className="font-bold text-black">{phone}</span>. Future orders will automatically bypass input gates for seamless 1-Click acquisition.
+                <span className="font-bold block uppercase mb-1">PROFILE SAVED FOR FUTURE ORDERS</span>
+                Your details have been saved for mobile number <span className="font-bold text-black">{phone}</span>. Future orders will automatically pre-fill for fast, seamless checkout.
               </div>
             </div>
 
@@ -363,7 +363,7 @@ export function InstantCheckoutDrawer({
               onClick={onClose}
               className="w-full py-4 bg-black hover:bg-neutral-900 text-white font-extrabold text-xs uppercase tracking-[0.2em] border border-black cursor-pointer rounded-none transition-none mt-6"
             >
-              [ RETURN TO ARCHIVE ]
+              [ CONTINUE BROWSING ]
             </button>
           </div>
         ) : (
@@ -511,18 +511,18 @@ export function InstantCheckoutDrawer({
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
                     </svg>
-                    <span>TRANSMITTING TO ESCROW GATEWAY...</span>
+                    <span>PROCESSING PAYMENT...</span>
                   </>
                 ) : (
-                  <span>[ EXECUTE PAYMENT — {formattedPrice} ]</span>
+                  <span>[ PAY NOW — {formattedPrice} ]</span>
                 )}
               </button>
 
-              {/* Express Payment Wallets for Instant Biometric Checkout */}
+              {/* Express Payment Wallets for Instant Checkout */}
               <div className="space-y-1.5 pt-1">
                 <div className="flex items-center justify-between text-[8px] uppercase tracking-[0.2em] text-zinc-500 font-semibold">
-                  <span>EXPRESS BIOMETRIC WALLETS</span>
-                  <span>NETWORK PRE-FILL ACTIVE</span>
+                  <span>EXPRESS PAYMENT METHODS</span>
+                  <span>INSTANT CHECKOUT</span>
                 </div>
 
                 <div className="grid grid-cols-3 gap-2">
@@ -553,9 +553,9 @@ export function InstantCheckoutDrawer({
                 </div>
               </div>
 
-              {/* Assurance Telemetry Footer */}
+              {/* Assurance Footer */}
               <div className="pt-3 border-t border-zinc-800 flex items-center justify-between text-[9px] uppercase tracking-widest text-zinc-500 font-medium">
-                <span>INSURED COURIER DISPATCH</span>
+                <span>INSURED SHIPPING</span>
                 <span className="text-zinc-300 font-bold">48H INSPECTION WINDOW</span>
               </div>
             </div>

@@ -246,10 +246,10 @@ export function CartDrawer(): React.JSX.Element | null {
                       Vault Cart Status
                     </span>
                     <h3 className="text-xs uppercase tracking-[0.2em] font-bold text-zinc-300">
-                      No Active Lots Reserved
+                      Your Cart is Empty
                     </h3>
                     <p className="text-zinc-500 text-[11px] leading-relaxed max-w-xs mx-auto mt-1 font-normal">
-                      Your acquisition queue is currently clear. Browse verified archival grails to initiate escrow locks.
+                      Your cart is currently empty. Browse our verified anime figures and manga sets to place an order.
                     </p>
                   </div>
                   <button
@@ -257,7 +257,7 @@ export function CartDrawer(): React.JSX.Element | null {
                     onClick={() => setIsOpen(false)}
                     className="px-5 py-2.5 bg-zinc-900 border border-zinc-700 text-zinc-200 text-xs font-semibold hover:text-white hover:bg-zinc-800 transition-colors cursor-pointer uppercase tracking-[0.2em]"
                   >
-                    Browse Market Grails
+                    Browse Products
                   </button>
                 </div>
               ) : (
@@ -370,7 +370,7 @@ export function CartDrawer(): React.JSX.Element | null {
                   onClick={handleCheckout}
                   className="w-full py-2.5 bg-zinc-900 hover:bg-zinc-100 text-zinc-300 hover:text-black border border-zinc-700 hover:border-zinc-100 text-[11px] font-semibold uppercase tracking-[0.2em] transition-all duration-200 cursor-pointer flex items-center justify-center space-x-2"
                 >
-                  <span>Proceed to Escrow Checkout →</span>
+                  <span>Proceed to Checkout →</span>
                 </button>
               </div>
             )}

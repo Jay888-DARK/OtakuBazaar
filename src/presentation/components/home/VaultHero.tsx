@@ -53,16 +53,16 @@ export default function VaultHero({ onSelectVaultItem }: VaultHeroProps) {
       {/* Deep Bottom Dissolve */}
       <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#09090b] via-[#09090b]/90 to-transparent pointer-events-none z-10" />
 
-      {/* Floating Center Telemetry */}
+      {/* Floating Center Hero Text */}
       <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 pointer-events-none z-20">
         <span className="text-[10px] font-semibold tracking-[0.3em] uppercase text-zinc-400 mb-2.5">
-          TOKYO ARCHIVAL VAULT • ESCROW DIRECT
+          AUTHENTIC JAPANESE COLLECTIBLES • SECURE ESCROW
         </span>
         <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-zinc-100 uppercase">
-          Authenticated Grails
+          Authentic Collectibles
         </h1>
         <p className="max-w-sm text-xs font-normal text-zinc-400 mt-2 mb-6 tracking-wide leading-relaxed">
-          Pre-inspected Japanese scale figures backed by a 24-hour liquidity protocol.
+          Pre-inspected Japanese figures and manga sets with 48-hour buyer inspection protection.
         </p>
       </div>
     </section>
