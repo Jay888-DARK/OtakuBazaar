@@ -112,11 +112,14 @@ export class OrderRepository {
     const record = await prisma.order.create({
       data: {
         id: order.id,
+        userId: order.buyerId,
+        itemLotRef: order.listingId,
         listingId: order.listingId,
         buyerId: order.buyerId,
         sellerId: order.sellerId,
         totalAmount: order.totalAmount,
         currency: order.currency,
+        status: 'ESCROW_LOCKED',
         escrowStatus: order.escrowStatus,
         inspectionEndsAt: order.inspectionEndsAt,
         razorpayOrderId: order.razorpayOrderId,
@@ -185,7 +188,10 @@ export class OrderRepository {
     try {
       const record = await prisma.order.update({
         where: { id },
-        data: updates,
+        data: {
+          ...updates,
+          ...(updates.escrowStatus === 'HELD_IN_ESCROW' ? { status: 'ESCROW_LOCKED' } : {}),
+        },
       });
 
       return {

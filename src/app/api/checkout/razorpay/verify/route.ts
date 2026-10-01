@@ -97,39 +97,96 @@ export async function POST(req: Request): Promise<NextResponse> {
     const buyerName = body.name || 'Verified Collector';
     const buyerEmail = body.email || (buyerPhone ? `${String(buyerPhone).replace(/\D/g, '')}@buyer.otakubazaar.dev` : `collector_${Date.now()}@buyer.otakubazaar.dev`);
 
-    let provisionedUser = null;
+    let provisionedUser: { id: string; name: string | null; email: string | null } | null = null;
     try {
-      provisionedUser = await prisma.user.findFirst({
+      const existingUser = await prisma.user.findFirst({
         where: {
           OR: [
             ...(buyerEmail ? [{ email: buyerEmail }] : []),
-            ...(buyerPhone ? [{ verifiedUpiVpa: buyerPhone }] : []),
+            ...(buyerPhone ? [{ phone: buyerPhone }, { verifiedUpiVpa: buyerPhone }] : []),
           ],
         },
       });
 
-      if (!provisionedUser) {
+      if (!existingUser) {
         provisionedUser = await prisma.user.create({
           data: {
             email: buyerEmail,
             name: buyerName,
             displayName: buyerName,
+            phone: buyerPhone || null,
             verifiedUpiVpa: buyerPhone || null,
             totalPurchases: 1,
           },
         });
       } else {
         provisionedUser = await prisma.user.update({
-          where: { id: provisionedUser.id },
+          where: { id: existingUser.id },
           data: {
             totalPurchases: { increment: 1 },
-            ...(buyerPhone && !provisionedUser.verifiedUpiVpa ? { verifiedUpiVpa: buyerPhone } : {}),
-            ...(buyerName && !provisionedUser.name ? { name: buyerName } : {}),
+            ...(buyerPhone && !existingUser.phone ? { phone: buyerPhone } : {}),
+            ...(buyerPhone && !existingUser.verifiedUpiVpa ? { verifiedUpiVpa: buyerPhone } : {}),
+            ...(buyerName && !existingUser.name ? { name: buyerName } : {}),
           },
         });
       }
+
+      // Synchronize Order with status ESCROW_LOCKED, userId, and itemLotRef
+      const targetLotId = body.lotId || body.productId;
+      const orderRecord = await prisma.order.findFirst({
+        where: {
+          OR: [
+            { id: orderId },
+            { razorpayOrderId: orderId },
+            ...(paymentId ? [{ razorpayPaymentId: paymentId }] : []),
+          ],
+        },
+      });
+
+      if (orderRecord) {
+        await prisma.order.update({
+          where: { id: orderRecord.id },
+          data: {
+            status: 'ESCROW_LOCKED',
+            escrowStatus: 'HELD_IN_ESCROW',
+            razorpayPaymentId: paymentId,
+            ...(provisionedUser && !orderRecord.userId ? { userId: provisionedUser.id } : {}),
+            ...(targetLotId && !orderRecord.itemLotRef ? { itemLotRef: targetLotId } : {}),
+          },
+        });
+      } else {
+        let validListing = targetLotId ? await prisma.listing.findUnique({ where: { id: targetLotId } }) : null;
+        if (!validListing) {
+          validListing = await prisma.listing.findFirst();
+        }
+
+        let sellerId = validListing?.sellerId;
+        if (!sellerId) {
+          const anySeller = await prisma.user.findFirst({ where: { NOT: { id: provisionedUser?.id || '' } } });
+          sellerId = anySeller?.id || provisionedUser?.id || 'user_vault_custody';
+        }
+
+        if (validListing) {
+          await prisma.order.create({
+            data: {
+              id: orderId,
+              userId: provisionedUser ? provisionedUser.id : null,
+              itemLotRef: targetLotId || 'LOT-ARCHIVE',
+              listingId: validListing.id,
+              buyerId: provisionedUser ? provisionedUser.id : sellerId,
+              sellerId,
+              totalAmount: body.amount ? Math.round(Number(body.amount)) : 0,
+              currency: 'INR',
+              status: 'ESCROW_LOCKED',
+              escrowStatus: 'HELD_IN_ESCROW',
+              razorpayOrderId: orderId,
+              razorpayPaymentId: paymentId,
+            },
+          });
+        }
+      }
     } catch (provisionErr) {
-      console.warn('[Razorpay Verify] Silent user provisioning notice:', provisionErr);
+      console.warn('[Razorpay Verify] Silent user provisioning / order notice:', provisionErr);
     }
 
     const response = NextResponse.json({

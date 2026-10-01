@@ -27,6 +27,7 @@ model User {
   image           String?
   displayName     String?         @map("display_name")
   avatarUrl       String?         @map("avatar_url")
+  phone           String?         @unique
   rating          Float           @default(0)
   totalSales      Int             @default(0) @map("total_sales")
   totalPurchases  Int             @default(0) @map("total_purchases")
@@ -43,6 +44,7 @@ model User {
   listings        Listing[]       @relation("SellerListings")
   offersAsBuyer   BargainOffer[]  @relation("BuyerOffers")
   offersAsSeller  BargainOffer[]  @relation("SellerOffers")
+  orders          Order[]
   ordersAsBuyer   Order[]         @relation("BuyerOrders")
   ordersAsSeller  Order[]         @relation("SellerOrders")
   messages        Message[]
@@ -121,11 +123,15 @@ model BargainOffer {
 
 model Order {
   id                   String              @id @default(uuid())
+  userId               String?             @map("user_id")
+  user                 User?               @relation(fields: [userId], references: [id])
+  itemLotRef           String?             @map("item_lot_ref")
   listingId            String              @map("listing_id")
   buyerId              String              @map("buyer_id")
   sellerId             String              @map("seller_id")
   totalAmount          Int                 @map("total_amount") // in smallest currency unit (paise)
   currency             String              @default("INR")
+  status               String              @default("ESCROW_LOCKED")
   escrowStatus         String              @default("PAYMENT_PENDING") @map("escrow_status")
   inspectionEndsAt     DateTime?           @map("inspection_ends_at")
 
@@ -150,8 +156,10 @@ model Order {
   seller               User                @relation("SellerOrders", fields: [sellerId], references: [id])
   ledgerEntries        EscrowLedgerEntry[]
 
+  @@index([userId])
   @@index([buyerId])
   @@index([sellerId])
+  @@index([status])
   @@index([escrowStatus])
   @@index([inspectionEndsAt])
   @@map("orders")
