@@ -14,6 +14,7 @@ import Image from 'next/image';
 import { BargainChatDrawer } from '@/presentation/components/chat/BargainChatDrawer';
 import { addToCart } from '@/app/actions/dealActions';
 import { openCartDrawer } from '@/presentation/components/cart/CartDrawer';
+import { CheckoutButton } from '@/presentation/components/payments/CheckoutButton';
 
 export interface ProductCardProps {
   product: {
@@ -116,45 +117,67 @@ export function ProductCard({ product, className = '' }: ProductCardProps): Reac
           <span className="font-bold tracking-wider text-zinc-400">{offersCount || 2} ACTIVE BIDS</span>
         </div>
 
-        {/* Consolidated Price / Offer Pill & Quick Cart (Universal Button Token) */}
-        <div className="flex items-center gap-2 mt-3">
-          <button
-            onClick={() => handleOpenBargain(product.id)}
-            aria-label={`Tap asking price to make an offer on ${product.title}`}
-            data-testid="price-offer-pill"
-            className="flex-1 flex items-center justify-between px-3.5 py-2.5 bg-zinc-900 text-zinc-300 border border-zinc-700 text-[11px] font-semibold uppercase tracking-[0.2em] brutalist-btn cursor-pointer"
-          >
-            <span className="text-[10px] uppercase font-semibold tracking-widest text-zinc-400">
-              Asking / Offer
+        {/* Frictionless Premium Buying Flow: Primary CTA */}
+        <div className="mt-3 space-y-2">
+          {/* Direct Prominent Primary CTA */}
+          <CheckoutButton
+            productId={product.id}
+            lotId={product.id}
+            amount={displayPrice}
+            title={product.title}
+            description="Direct Escrow Custody Acquisition"
+            buttonText={`ACQUIRE LOT — ₹${displayPrice.toLocaleString('en-IN')}`}
+            className="w-full py-2.5 px-3 bg-zinc-100 hover:bg-white text-black font-extrabold text-[11px] uppercase tracking-[0.16em] border border-zinc-100 transition-none cursor-pointer flex items-center justify-center gap-2 rounded-none"
+          />
+
+          {/* Clear Assurance Badges (Zero Emojis, Sharp 0px borders) */}
+          <div className="flex items-center justify-between text-[8px] uppercase tracking-wider text-zinc-400 font-medium px-0.5">
+            <span className="flex items-center gap-1">
+              <span className="w-1 h-1 bg-zinc-500 inline-block" />
+              Insured Express Dispatch
             </span>
-            <span className="text-sm font-bold uppercase tracking-wider text-zinc-100">
-              ₹{displayPrice.toLocaleString('en-IN')}
+            <span className="flex items-center gap-1">
+              <span className="w-1 h-1 bg-zinc-500 inline-block" />
+              48h Inspection Window
             </span>
-          </button>
-          <button
-            type="button"
-            aria-label="Quick Cart"
-            title="Open Negotiation Room"
-            onClick={async (e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              if (product.id) {
-                try {
-                  await addToCart(product.id);
-                } catch (err) {
-                  console.warn('Error adding to cart:', err);
+          </div>
+
+          {/* Secondary Action: Make an Offer / Quick Cart */}
+          <div className="flex items-center gap-2 pt-1 border-t border-zinc-900">
+            <button
+              onClick={() => handleOpenBargain(product.id)}
+              aria-label={`Make an offer on ${product.title}`}
+              data-testid="price-offer-pill"
+              className="flex-1 flex items-center justify-between px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 border border-zinc-800 text-[10px] font-medium uppercase tracking-[0.14em] cursor-pointer rounded-none"
+            >
+              <span>Negotiate Price</span>
+              <span className="text-zinc-300 font-bold">Offer →</span>
+            </button>
+            <button
+              type="button"
+              aria-label="Quick Cart"
+              title="Open Negotiation Room"
+              onClick={async (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (product.id) {
+                  try {
+                    await addToCart(product.id);
+                  } catch (err) {
+                    console.warn('Error adding to cart:', err);
+                  }
+                  openCartDrawer();
                 }
-                openCartDrawer();
-              }
-            }}
-            className="p-2.5 border border-zinc-700 bg-zinc-900 text-zinc-300 brutalist-btn cursor-pointer shrink-0"
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
-              <line x1="3" y1="6" x2="21" y2="6" />
-              <path d="M16 10a4 4 0 0 1-8 0" />
-            </svg>
-          </button>
+              }}
+              className="p-1.5 border border-zinc-800 bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 cursor-pointer shrink-0 rounded-none"
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <path d="M16 10a4 4 0 0 1-8 0" />
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
 

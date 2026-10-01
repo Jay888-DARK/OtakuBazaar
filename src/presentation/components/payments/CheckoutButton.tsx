@@ -24,6 +24,10 @@ export interface CheckoutButtonProps {
   customerContact?: string;
   /** Optional callback upon successful payment */
   onSuccess?: (paymentId: string, orderId: string) => void;
+  /** Optional custom button label */
+  buttonText?: string;
+  /** Optional custom button children */
+  children?: React.ReactNode;
   /** Optional custom button CSS classes */
   className?: string;
   /** Disable button */
@@ -42,6 +46,8 @@ export function CheckoutButton({
   customerEmail = 'collector@otakubazaar.dev',
   customerContact = '9999999999',
   onSuccess,
+  buttonText,
+  children,
   className = '',
   disabled = false,
 }: CheckoutButtonProps) {
@@ -54,32 +60,54 @@ export function CheckoutButton({
       setLoading(true);
       setErrorMessage(null);
 
-      // Check if Razorpay script has been loaded
-      if (typeof window === 'undefined' || !(window as any).Razorpay) {
-        throw new Error(
-          'Razorpay SDK not loaded yet. Please ensure <RazorpayScript /> is included in your page or layout.'
-        );
+      // Check if Razorpay script has been loaded, or load safely
+      if (typeof window !== 'undefined' && !(window as any).Razorpay) {
+        await new Promise<void>((resolve, reject) => {
+          if ((window as any).Razorpay) {
+            resolve();
+            return;
+          }
+          const existingScript = document.querySelector('script[src*="checkout.razorpay.com"]');
+          if (existingScript) {
+            existingScript.addEventListener('load', () => resolve());
+            setTimeout(() => {
+              if ((window as any).Razorpay) resolve();
+              else reject(new Error('Razorpay SDK loading timed out. Please try again.'));
+            }, 3500);
+          } else {
+            const script = document.createElement('script');
+            script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+            script.async = true;
+            script.onload = () => resolve();
+            script.onerror = () => reject(new Error('Failed to load Razorpay SDK'));
+            document.body.appendChild(script);
+          }
+        });
       }
 
       let orderId: string;
-      let chargeAmountPaise = Math.round(amount * 100);
+      let chargeAmountPaise = Math.round(Number(amount) * 100);
 
-      // Enforce Server-Side Price Authority via /api/orders
-      if (lotId || productId || dealOfferId) {
-        const res = await fetch('/api/orders', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ lotId: lotId || productId, productId, dealOfferId }),
-        });
-        const data = await res.json();
-        if (!res.ok || data.error) {
-          throw new Error(data.error || 'Failed to initialize server-authorized escrow order.');
-        }
-        orderId = data.id;
-        chargeAmountPaise = data.amount;
-      } else {
-        orderId = await createRazorpayOrder(amount, receiptId);
+      // Enforce Server-Side Price Authority via /api/checkout/razorpay
+      const res = await fetch('/api/checkout/razorpay', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          lotId: lotId || productId,
+          productId: productId || lotId,
+          dealOfferId,
+          price: amount,
+          amount: amount,
+          receipt: receiptId,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok || data.error) {
+        throw new Error(data.error || 'Failed to initialize server-authorized escrow order.');
       }
+      orderId = data.order_id || data.id;
+      chargeAmountPaise = data.amount;
 
       if (!orderId) {
         throw new Error('Could not retrieve order ID from server.');
@@ -87,27 +115,55 @@ export function CheckoutButton({
 
       // Step 2: Configure Razorpay Checkout options
       const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_TdBTiCyaOJ95KC',
-        amount: chargeAmountPaise, // authoritative amount in paise
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || data.key_id || 'rzp_test_TdBTiCyaOJ95KC',
+        amount: chargeAmountPaise, // strictly integer in paise
         currency: 'INR',
         name: title,
         description: description,
         order_id: orderId,
-        handler: function (response: {
+        handler: async function (response: {
           razorpay_payment_id: string;
           razorpay_order_id?: string;
           razorpay_signature?: string;
         }) {
-          console.log('Payment Successful! Razorpay Payment ID:', response.razorpay_payment_id);
+          console.log('Payment Successful! Verifying signature server-side...');
 
-          if (onSuccess) {
-            onSuccess(response.razorpay_payment_id, orderId);
-          } else {
-            router.push(
-              `/orders/success?payment_id=${encodeURIComponent(
-                response.razorpay_payment_id
-              )}&order_id=${encodeURIComponent(orderId)}`
-            );
+          try {
+            // Verify payment signature server-side before updating order status
+            const verifyRes = await fetch('/api/checkout/razorpay/verify', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id || orderId,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                lotId: lotId || productId,
+                productId: productId || lotId,
+                dealOfferId,
+                amount: chargeAmountPaise,
+              }),
+            });
+
+            const verifyData = await verifyRes.json();
+            if (!verifyRes.ok || verifyData.error) {
+              throw new Error(verifyData.error || 'Payment signature verification failed.');
+            }
+
+            console.log('Signature verified! Escrow status:', verifyData.escrowStatus);
+
+            if (onSuccess) {
+              onSuccess(response.razorpay_payment_id, orderId);
+            } else {
+              router.push(
+                `/orders/success?payment_id=${encodeURIComponent(
+                  response.razorpay_payment_id
+                )}&order_id=${encodeURIComponent(orderId)}`
+              );
+            }
+          } catch (verifyErr: any) {
+            console.error('Signature verification error:', verifyErr);
+            setErrorMessage(verifyErr.message || 'Signature verification failed. Escrow locked.');
+            setLoading(false);
           }
         },
         prefill: {
@@ -193,6 +249,26 @@ export function CheckoutButton({
               <path d="M7 11V7a5 5 0 0110 0v4" />
             </svg>
             <span>Escrow Payment Locked</span>
+          </>
+        ) : children ? (
+          children
+        ) : buttonText ? (
+          <>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+              />
+            </svg>
+            <span>{buttonText}</span>
           </>
         ) : (
           <>

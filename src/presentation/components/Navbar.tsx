@@ -15,6 +15,8 @@ import { useSession, signOut } from 'next-auth/react';
 import { openCartDrawer } from '@/presentation/components/cart/CartDrawer';
 import { getCartItems } from '@/app/actions/dealActions';
 
+import { BrandEmblem } from '@/presentation/components/BrandEmblem';
+
 export type UserRole = 'BUYER' | 'SELLER' | 'ADMIN';
 
 export interface UserPersona {
@@ -71,31 +73,30 @@ export function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-50 h-16 w-full border-b border-zinc-800 bg-[#09090b]">
-      <div className="mx-auto flex h-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        {/* Left: Split Luxury Brand Logo */}
+    <header className="sticky top-0 z-50 w-full border-b border-zinc-800 bg-[#09090b]">
+      {/* Primary Navigation Bar (Height: 56px) */}
+      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+        {/* Left: Geometric Vector Brand Logo & Typography */}
         <div className="flex items-center">
           <Link
             href="/"
             aria-label="OtakuBazaar Home — Authentic Anime Collectibles"
-            className="flex items-center space-x-3 cursor-pointer group no-underline focus-visible:ring-1 focus-visible:ring-zinc-400 focus-visible:outline-none p-1"
+            className="flex items-center space-x-3 cursor-pointer group no-underline focus-visible:outline-none p-1"
           >
-            {/* The Brand Mark (Kitsune Mask) */}
-            <div className="h-8 w-8 relative flex items-center justify-center">
-              <img
-                src="/Firefly.png"
-                alt="OtakuBazaar Icon"
-                className="h-full w-auto object-contain object-left group-hover:opacity-90 transition-opacity"
-              />
+            {/* The High-Resolution Geometric Vector SVG Emblem (Exact 28px height) */}
+            <div className="h-7 w-7 relative flex items-center justify-center shrink-0">
+              <BrandEmblem size={28} />
             </div>
 
-            {/* The Logotype (Premium Platinum Gradient) */}
+            {/* The Logotype ('Clash Display' / 'Syne') */}
             <div className="flex flex-col">
-              <span className="text-[13px] font-sans font-extrabold tracking-[0.25em] uppercase bg-gradient-to-r from-zinc-100 via-zinc-300 to-zinc-500 bg-clip-text text-transparent group-hover:from-white group-hover:via-zinc-200 group-hover:to-zinc-400 transition-all duration-300">
+              <span
+                style={{ fontFamily: "'Clash Display', 'Syne', sans-serif" }}
+                className="text-sm font-extrabold tracking-[0.25em] uppercase text-zinc-100 group-hover:text-white transition-colors leading-none"
+              >
                 OtakuBazaar
               </span>
-              {/* Retain the micro-label underneath */}
-              <span className="text-[8px] font-semibold tracking-[0.25em] text-zinc-500 uppercase mt-0.5">
+              <span className="text-[8px] font-semibold tracking-[0.25em] text-zinc-500 uppercase mt-0.5 leading-none">
                 Escrow Authenticated
               </span>
             </div>
@@ -120,7 +121,7 @@ export function Navbar() {
           </form>
         </div>
 
-        {/* Right: Simplified Action Cluster */}
+        {/* Right: Action Cluster */}
         <div className="flex items-center space-x-3">
           {/* Cart Drawer Trigger */}
           <button
@@ -139,7 +140,7 @@ export function Navbar() {
           <button
             onClick={handleOpenSellModal}
             type="button"
-            className="px-3.5 py-2 bg-zinc-900 hover:bg-zinc-100 text-zinc-300 hover:text-black border border-zinc-700 hover:border-zinc-100 text-[11px] font-semibold uppercase tracking-[0.2em] transition-all duration-200 cursor-pointer rounded-none"
+            className="px-3.5 py-1.5 bg-zinc-900 hover:bg-zinc-100 text-zinc-300 hover:text-black border border-zinc-700 hover:border-zinc-100 text-[11px] font-semibold uppercase tracking-[0.2em] transition-all duration-200 cursor-pointer rounded-none"
           >
             Drop a Grail
           </button>
@@ -183,26 +184,36 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* Sticky Text-Based Filter Pills Bar Beneath Search Bar */}
-      <StickyFilterPillsBar />
+      {/* Streamlined Sleek Two-Tier Sub-Navigation Bar */}
+      <StreamlinedSubNav />
     </header>
   );
 }
 
-const FILTER_PILLS = [
-  { id: 'ALL', label: '[ ALL ARCHIVAL LOTS ]' },
-  { id: 'S_RANK', label: '[ S-RANK ONLY ]' },
-  { id: 'FACTORY_SEALED', label: '[ FACTORY SEALED ]' },
-  { id: 'ESCROW_VERIFIED', label: '[ VERIFIED ESCROW ]' },
-  { id: 'UNDER_30K', label: '[ UNDER ₹30,000 ]' },
-  { id: 'PRIME1', label: '[ PRIME 1 RESIN ]' },
+// Tier 1: Filter Tabs (Simple text filters with clean 1px solid borders and sharp 0px corners)
+const FILTER_TABS = [
+  { id: 'ALL', label: 'All Lots' },
+  { id: 'S_RANK', label: 'S-Rank Only' },
+  { id: 'FACTORY_SEALED', label: 'Factory Sealed' },
+  { id: 'ESCROW_VERIFIED', label: 'Escrow Verified' },
 ];
 
-function StickyFilterPillsBar() {
-  const [activePill, setActivePill] = useState<string>('ALL');
+// Tier 2: Categories (Text-driven category list with clean letter spacing and subtle active borders)
+const CATEGORY_TABS = [
+  { id: 'ALL', label: 'All Categories' },
+  { id: 'Scale Figure', label: 'Scale Figures' },
+  { id: 'Statues & Resin', label: 'Statues & Resin' },
+  { id: 'Manga Sets', label: 'Manga Editions' },
+  { id: 'Nendoroid', label: 'Nendoroids' },
+  { id: 'Cosplay & Props', label: 'Cosplay & Props' },
+];
 
-  const handlePillClick = (filterId: string) => {
-    setActivePill(filterId);
+function StreamlinedSubNav() {
+  const [activeFilter, setActiveFilter] = useState<string>('ALL');
+  const [activeCategory, setActiveCategory] = useState<string>('ALL');
+
+  const handleFilterClick = (filterId: string) => {
+    setActiveFilter(filterId);
     if (typeof window !== 'undefined') {
       window.dispatchEvent(
         new CustomEvent('otaku_filter_select', {
@@ -212,35 +223,72 @@ function StickyFilterPillsBar() {
     }
   };
 
+  const handleCategoryClick = (catId: string) => {
+    setActiveCategory(catId);
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(
+        new CustomEvent('otaku_category_select', {
+          detail: { category: catId },
+        })
+      );
+    }
+  };
+
   return (
-    <div className="w-full border-t border-zinc-800/80 bg-[#0b0b0e] py-1.5 px-4 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-7xl flex items-center justify-between gap-3 overflow-x-auto scrollbar-none">
-        <div className="flex items-center gap-2 shrink-0">
-          <span className="text-[9px] uppercase tracking-[0.2em] text-zinc-500 font-semibold select-none pr-1">
-            CRITERIA:
-          </span>
-          {FILTER_PILLS.map((pill) => {
-            const isActive = activePill === pill.id;
+    <div className="w-full border-t border-zinc-800 bg-[#0b0b0e]">
+      {/* Tier 1: Simple Text Filters */}
+      <div className="border-b border-zinc-900 px-4 sm:px-6 lg:px-8 py-2">
+        <div className="mx-auto max-w-7xl flex items-center justify-between gap-3 overflow-x-auto scrollbar-none">
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="text-[10px] uppercase tracking-[0.2em] text-zinc-500 font-semibold select-none pr-1">
+              Criteria:
+            </span>
+            {FILTER_TABS.map((tab) => {
+              const isActive = activeFilter === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => handleFilterClick(tab.id)}
+                  className={`px-3 py-1 text-[11px] tracking-[0.14em] uppercase transition-none cursor-pointer whitespace-nowrap rounded-none border ${
+                    isActive
+                      ? 'bg-[#f4f4f4] text-black border-[#f4f4f4] font-bold'
+                      : 'bg-transparent text-zinc-400 border-zinc-800 hover:border-zinc-700 hover:text-zinc-200 font-medium'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="hidden md:flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-zinc-500 font-medium shrink-0">
+            <span className="inline-block w-1.5 h-1.5 bg-zinc-400 rounded-none" />
+            <span>Index Active: 9 Verified Lots</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Tier 2: Text-Driven Categories */}
+      <div className="px-4 sm:px-6 lg:px-8 py-2 bg-[#09090b]">
+        <div className="mx-auto max-w-7xl flex items-center gap-6 overflow-x-auto scrollbar-none">
+          {CATEGORY_TABS.map((cat) => {
+            const isActive = activeCategory === cat.id;
             return (
               <button
-                key={pill.id}
+                key={cat.id}
                 type="button"
-                onClick={() => handlePillClick(pill.id)}
-                className={`px-2.5 py-1 text-[10px] tracking-[0.16em] uppercase transition-none cursor-pointer whitespace-nowrap rounded-none border brutalist-btn ${
+                onClick={() => handleCategoryClick(cat.id)}
+                className={`text-[11px] tracking-[0.18em] uppercase transition-none cursor-pointer whitespace-nowrap pb-1 border-b-2 ${
                   isActive
-                    ? 'bg-[#f4f4f4] text-black border-[#f4f4f4] font-bold'
-                    : 'bg-transparent text-zinc-400 border-zinc-800 font-medium'
+                    ? 'border-zinc-100 text-zinc-100 font-bold'
+                    : 'border-transparent text-zinc-500 hover:text-zinc-300 font-medium'
                 }`}
               >
-                {pill.label}
+                {cat.label}
               </button>
             );
           })}
-        </div>
-
-        <div className="hidden md:flex items-center gap-2 text-[9px] uppercase tracking-[0.2em] text-zinc-500 font-medium shrink-0">
-          <span className="inline-block w-1.5 h-1.5 bg-zinc-400 rounded-none" />
-          <span>INDEX ACTIVE: 9 VERIFIED LOTS</span>
         </div>
       </div>
     </div>

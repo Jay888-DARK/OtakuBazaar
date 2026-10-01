@@ -36,6 +36,7 @@ import { ProductDetailSkeleton } from '@/presentation/components/ui/SkeletonLoad
 import { openProvenanceManifest } from '@/presentation/components/provenance/ProvenanceManifestModal';
 import { OrderBook } from '@/presentation/components/market/OrderBook';
 import { HistoricalDataTerminal } from '@/presentation/components/market/HistoricalDataTerminal';
+import { OneClickBuyBox } from '@/presentation/components/checkout/OneClickBuyBox';
 
 interface ProductDetailsProps {
   params: Promise<{ id: string }> | { id: string };
@@ -170,8 +171,8 @@ export default function ProductDetailsPage({ params }: ProductDetailsProps) {
               {/* ANCHORED AT THE BOTTOM OF THE HERO CELL: Title, Material Details, & Valuation */}
               <div className="p-6 sm:p-8 space-y-6 bg-[#0c0c0e]">
                 {/* Main Product Title & Valuation Row */}
-                <div className="flex flex-col sm:flex-row sm:items-end justify-between border-b border-[#27272a] pb-6 gap-4">
-                  <div className="space-y-1.5">
+                <div className="flex flex-col lg:flex-row lg:items-end justify-between border-b border-[#27272a] pb-6 gap-6">
+                  <div className="space-y-1.5 flex-1">
                     <span className="text-[9px] uppercase tracking-[0.25em] text-zinc-500 font-bold block">
                       MASTER POLYSILICONE CASTING • PRIVATE COLLECTION
                     </span>
@@ -183,16 +184,13 @@ export default function ProductDetailsPage({ params }: ProductDetailsProps) {
                     </p>
                   </div>
 
-                  <div className="sm:text-right shrink-0">
-                    <span className="text-[9px] uppercase tracking-[0.25em] text-zinc-500 font-bold block mb-1">
-                      PRIMARY VALUATION
-                    </span>
-                    <span className="text-2xl sm:text-3xl font-extrabold uppercase tracking-wider text-zinc-100 block">
-                      {formattedPrice}
-                    </span>
-                    <span className="text-[9px] uppercase tracking-wider text-zinc-500 font-medium mt-0.5 block">
-                      TAXES &amp; TRANSIT INCLUDED
-                    </span>
+                  <div className="w-full lg:w-[440px] shrink-0">
+                    <OneClickBuyBox
+                      productId={currentProduct?.id || rawId}
+                      lotId={currentProduct?.id || rawId}
+                      price={currentProduct?.price || 89000}
+                      itemTitle={currentProduct?.title || 'OtakuBazaar Archival Collectible'}
+                    />
                   </div>
                 </div>
 

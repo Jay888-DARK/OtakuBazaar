@@ -104,16 +104,25 @@ export const CatalogView: React.FC = () => {
     }
 
     // 2. Category Filter
-    if (selectedCategory !== 'ALL' && product.category !== selectedCategory) {
-      return false;
+    if (selectedCategory !== 'ALL') {
+      if (
+        product.category !== selectedCategory &&
+        !(selectedCategory === 'Manga Editions' && product.category === 'Manga Sets')
+      ) {
+        return false;
+      }
     }
 
-    // 3. Sticky Filter Pill Criteria
+    // 3. Sticky Filter Criteria
     if (activeFilter === 'S_RANK' && product.condition !== 'NEW') {
       return false;
     }
     if (activeFilter === 'FACTORY_SEALED' && product.condition !== 'NEW') {
       return false;
+    }
+    if (activeFilter === 'ESCROW_VERIFIED') {
+      // All archival specimens in vault are verified with double-entry escrow
+      return true;
     }
     if (activeFilter === 'UNDER_30K' && product.price >= 30000) {
       return false;

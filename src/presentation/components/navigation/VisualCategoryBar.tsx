@@ -1,74 +1,27 @@
-'use client';
-
 /**
  * @file src/presentation/components/navigation/VisualCategoryBar.tsx
  *
- * Horizontally scrollable Visual Category Navigation Bar for OtakuBazaar.
- * Stark, high-contrast photography cropped into perfect squares with 0px border radius
- * and 1px solid dark gray borders. Zero emojis, zero Lucide icons.
+ * Streamlined text-driven category bar for OtakuBazaar.
+ * Clean letter spacing, subtle active borders, zero image squares, and zero brackets.
  */
 
-import React, { useState } from 'react';
-import Image from 'next/image';
+'use client';
 
-export interface VisualCategory {
+import React, { useState, useEffect } from 'react';
+
+export interface CategoryItem {
   id: string;
   name: string;
-  lotCount: number;
-  imageUrl: string;
-  altText: string;
+  count: number;
 }
 
-export const VISUAL_CATEGORIES: VisualCategory[] = [
-  {
-    id: 'ALL',
-    name: 'All Archival Lots',
-    lotCount: 9,
-    imageUrl: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=300&h=300&q=85',
-    altText: 'Full Archival Vault Collection',
-  },
-  {
-    id: 'Scale Figure',
-    name: 'Scale Figures',
-    lotCount: 6,
-    imageUrl: '/showcase/guts_berserker_statue.jpg',
-    altText: 'Japanese Scale Figures Exhibition',
-  },
-  {
-    id: 'Manga Sets',
-    name: 'Manga Sets',
-    lotCount: 1,
-    imageUrl: 'https://images.unsplash.com/photo-1563089145-599997674d42?auto=format&fit=crop&w=300&h=300&q=85',
-    altText: 'Archival Hardcover Manga Collections',
-  },
-  {
-    id: 'Nendoroid',
-    name: 'Nendoroids',
-    lotCount: 1,
-    imageUrl: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=300&h=300&q=85',
-    altText: 'Good Smile Chibi Figures',
-  },
-  {
-    id: 'Statues & Resin',
-    name: 'Statues & Resin',
-    lotCount: 2,
-    imageUrl: 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=300&h=300&q=85',
-    altText: 'Prime 1 Studio Limited Polystone',
-  },
-  {
-    id: 'Mecha & Gunpla',
-    name: 'Mecha & Gunpla',
-    lotCount: 1,
-    imageUrl: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=300&h=300&q=85',
-    altText: 'Bandai Metal Build & Diecast',
-  },
-  {
-    id: 'Cosplay & Props',
-    name: 'Cosplay & Props',
-    lotCount: 1,
-    imageUrl: 'https://images.unsplash.com/photo-1563089145-599997674d42?auto=format&fit=crop&w=300&h=300&q=85',
-    altText: 'Masterwork Nichirin Blade Replicas',
-  },
+export const CATEGORIES: CategoryItem[] = [
+  { id: 'ALL', name: 'All Archival Lots', count: 9 },
+  { id: 'Scale Figure', name: 'Scale Figures', count: 6 },
+  { id: 'Statues & Resin', name: 'Statues & Resin', count: 2 },
+  { id: 'Manga Sets', name: 'Manga Editions', count: 1 },
+  { id: 'Nendoroid', name: 'Nendoroids', count: 1 },
+  { id: 'Cosplay & Props', name: 'Cosplay & Props', count: 1 },
 ];
 
 interface VisualCategoryBarProps {
@@ -81,6 +34,22 @@ export function VisualCategoryBar({
   onSelectCategory,
 }: VisualCategoryBarProps): React.JSX.Element {
   const [selectedId, setSelectedId] = useState<string>(activeCategory);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const handleCategoryEvent = (e: Event) => {
+      const customEvent = e as CustomEvent<{ category?: string }>;
+      if (customEvent.detail?.category) {
+        setSelectedId(customEvent.detail.category);
+      }
+    };
+
+    window.addEventListener('otaku_category_select', handleCategoryEvent);
+    return () => {
+      window.removeEventListener('otaku_category_select', handleCategoryEvent);
+    };
+  }, []);
 
   const handleCategoryClick = (categoryId: string) => {
     setSelectedId(categoryId);
@@ -98,60 +67,41 @@ export function VisualCategoryBar({
 
   return (
     <nav
-      aria-label="Visual Category Navigation"
-      className="w-full border-b border-[#27272a] bg-[#09090b] py-3.5 px-4 sm:px-6 lg:px-8 select-none"
+      aria-label="Archival Category Navigation"
+      className="w-full border-b border-[#27272a] bg-[#0c0c0e] py-2.5 px-4 sm:px-6 lg:px-8 select-none"
     >
-      <div className="max-w-7xl mx-auto flex items-center justify-start gap-4 sm:gap-6 overflow-x-auto scrollbar-none">
-        {VISUAL_CATEGORIES.map((cat) => {
-          const isActive = (onSelectCategory ? activeCategory : selectedId) === cat.id;
+      <div className="max-w-7xl mx-auto flex items-center justify-between gap-4 overflow-x-auto scrollbar-none">
+        <div className="flex items-center gap-6 shrink-0">
+          <span className="text-[10px] uppercase tracking-[0.2em] text-zinc-500 font-semibold pr-2">
+            Categories:
+          </span>
+          {CATEGORIES.map((cat) => {
+            const isActive = (onSelectCategory ? activeCategory : selectedId) === cat.id;
 
-          return (
-            <button
-              key={cat.id}
-              type="button"
-              onClick={() => handleCategoryClick(cat.id)}
-              className="flex flex-col items-center gap-2 shrink-0 group cursor-pointer text-left focus:outline-none"
-            >
-              {/* Stark Square Photographic Frame */}
-              <div
-                className={`relative w-16 h-16 sm:w-18 sm:h-18 aspect-square bg-[#0c0c0e] border transition-colors overflow-hidden ${
+            return (
+              <button
+                key={cat.id}
+                type="button"
+                onClick={() => handleCategoryClick(cat.id)}
+                className={`flex items-baseline gap-1.5 text-[11px] uppercase tracking-[0.18em] transition-none cursor-pointer whitespace-nowrap pb-1 border-b-2 ${
                   isActive
-                    ? 'border-zinc-100 ring-1 ring-zinc-100 ring-offset-1 ring-offset-[#09090b]'
-                    : 'border-[#27272a] group-hover:border-zinc-500'
+                    ? 'border-zinc-100 text-zinc-100 font-bold'
+                    : 'border-transparent text-zinc-400 hover:text-zinc-200 font-medium'
                 }`}
               >
-                <Image
-                  src={cat.imageUrl}
-                  alt={cat.altText}
-                  fill
-                  sizes="72px"
-                  className="object-cover grayscale contrast-125 group-hover:grayscale-0 transition-all duration-300"
-                  unoptimized={true}
-                />
-                {/* Active Monochromatic Overlay Line */}
-                {isActive && (
-                  <div className="absolute inset-x-0 bottom-0 h-1 bg-zinc-100 z-10" />
-                )}
-              </div>
+                <span>{cat.name}</span>
+                <span className="text-[9px] text-zinc-500 font-normal">
+                  {cat.count}
+                </span>
+              </button>
+            );
+          })}
+        </div>
 
-              {/* Text Label & Telemetry Count */}
-              <div className="flex flex-col items-center text-center">
-                <span
-                  className={`text-[10px] uppercase tracking-[0.16em] transition-colors whitespace-nowrap ${
-                    isActive
-                      ? 'text-zinc-100 font-bold'
-                      : 'text-zinc-400 group-hover:text-zinc-200 font-medium'
-                  }`}
-                >
-                  {cat.name}
-                </span>
-                <span className="text-[8px] text-zinc-600 tracking-widest uppercase mt-0.5">
-                  [{cat.lotCount} LOTS]
-                </span>
-              </div>
-            </button>
-          );
-        })}
+        <div className="hidden lg:flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-zinc-500 font-medium shrink-0">
+          <span className="inline-block w-1.5 h-1.5 bg-emerald-500" />
+          <span>Real-time Vault Sync Active</span>
+        </div>
       </div>
     </nav>
   );

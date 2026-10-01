@@ -142,7 +142,48 @@ export async function POST(req: Request): Promise<NextResponse> {
         console.warn('[RazorpayWebhook] Note recording ledger:', ledgerErr);
       }
 
-      // 4. Record Event in IdempotencyLog
+      // 4. Silent Account Provisioning for Guest Buyers
+      const buyerEmail = payment?.email || payment?.notes?.email;
+      const buyerPhone = payment?.contact || payment?.notes?.phone || payment?.notes?.contact;
+      const buyerName = payment?.notes?.name || payment?.notes?.buyer_name || 'Verified Collector';
+
+      if (buyerEmail || buyerPhone) {
+        try {
+          const existingUser = await prisma.user.findFirst({
+            where: {
+              OR: [
+                ...(buyerEmail ? [{ email: buyerEmail }] : []),
+                ...(buyerPhone ? [{ verifiedUpiVpa: buyerPhone }] : []),
+              ],
+            },
+          });
+
+          if (!existingUser) {
+            await prisma.user.create({
+              data: {
+                email: buyerEmail || `${String(buyerPhone).replace(/\D/g, '')}@buyer.otakubazaar.dev`,
+                name: buyerName,
+                displayName: buyerName,
+                verifiedUpiVpa: buyerPhone || null,
+                totalPurchases: 1,
+              },
+            });
+          } else {
+            await prisma.user.update({
+              where: { id: existingUser.id },
+              data: {
+                totalPurchases: { increment: 1 },
+                ...(buyerPhone && !existingUser.verifiedUpiVpa ? { verifiedUpiVpa: buyerPhone } : {}),
+                ...(buyerName && !existingUser.name ? { name: buyerName } : {}),
+              },
+            });
+          }
+        } catch (provErr) {
+          console.warn('[RazorpayWebhook] Silent user provisioning notice:', provErr);
+        }
+      }
+
+      // 5. Record Event in IdempotencyLog
       await IdempotencyService.recordEventProcessed('RAZORPAY', eventId, rawBody);
 
       console.info(`[RazorpayWebhook] Successfully moved Order ${orderId} to HELD_IN_ESCROW.`);

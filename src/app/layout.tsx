@@ -10,7 +10,6 @@
  */
 
 import type { Metadata } from 'next';
-import { Plus_Jakarta_Sans } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/presentation/components/providers/AuthProvider';
 import { SyncProviderWrapper } from '@/presentation/components/providers/SyncProviderWrapper';
@@ -18,15 +17,8 @@ import { ThemeProvider } from '@/presentation/components/providers/ThemeProvider
 import { Navbar } from '@/presentation/components/Navbar';
 import { CookieConsent } from '@/presentation/components/compliance/CookieConsent';
 import { CartDrawer } from '@/presentation/components/cart/CartDrawer';
-import { NegotiationRoomModal } from '@/presentation/components/checkout/NegotiationRoomModal';
 import { ProvenanceManifestModal } from '@/presentation/components/provenance/ProvenanceManifestModal';
-
-const jakartaSans = Plus_Jakarta_Sans({
-  variable: '--font-sans',
-  subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700', '800'],
-  display: 'swap',
-});
+import { RazorpayScript } from '@/presentation/components/payments/RazorpayScript';
 
 export const metadata: Metadata = {
   title: 'OtakuBazaar — Premium Anime Collectibles Marketplace',
@@ -42,7 +34,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${jakartaSans.variable} antialiased`}
+      className="antialiased"
       suppressHydrationWarning
     >
       <body
@@ -52,9 +44,11 @@ export default function RootLayout({
           minHeight: '100vh',
           display: 'flex',
           flexDirection: 'column',
-          fontFamily: '"PP Neue Montreal", "Helvetica Now Text", "Helvetica Neue", var(--font-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif',
+          fontFamily: "'Satoshi', 'Cabinet Grotesk', sans-serif",
         }}
       >
+        {/* Lazy Loaded Razorpay Checkout Script */}
+        <RazorpayScript />
         {/* Cinematic Physical Film Noise Overlay */}
         <div
           className="pointer-events-none fixed inset-0 z-[9999] opacity-[0.02] mix-blend-overlay"
@@ -76,11 +70,8 @@ export default function RootLayout({
               {/* Privacy & Escrow Security Cookie Banner */}
               <CookieConsent />
 
-              {/* Slide-Over Cart Drawer for Item Negotiation */}
+              {/* Slide-Over Cart Drawer */}
               <CartDrawer />
-
-              {/* Feature 1: The Full-Screen 50/50 Escrow Negotiation Room (0ms harsh cut) */}
-              <NegotiationRoomModal />
 
               {/* Feature 3: Expanded Full-Screen Cryptographic Provenance Manifest */}
               <ProvenanceManifestModal />
