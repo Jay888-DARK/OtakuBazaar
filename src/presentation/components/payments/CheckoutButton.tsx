@@ -142,103 +142,72 @@ export function CheckoutButton({
       const recipientPhone = customerContact || '';
       const setIsLoading = setLoading;
 
-      // 1. Strip all spaces and symbols. Must be exactly 10 digits.
-      const cleanPhone = recipientPhone ? recipientPhone.replace(/[^0-9]/g, '').slice(-10) : "";
-
-      // 2. Validate Order ID existence before proceeding
-      if (!orderData?.id || !orderData.id.startsWith('order_')) {
-        console.error("Invalid Order ID received from backend:", orderData);
-        alert("Payment initialization failed. Please try again.");
+      // Ensure orderData exists before proceeding
+      if (!orderData?.id) {
+        console.error("Missing Order ID:", orderData);
         setIsLoading(false);
-        return; // Stop execution to prevent iframe crash
+        return;
       }
 
-      const orderId = orderData.id;
+      // Strip all non-digit characters for Razorpay's strict prefill validation
+      const cleanPhone = recipientPhone ? recipientPhone.replace(/[^0-9]/g, '').slice(-10) : "";
 
-      // Minimal, bulletproof options (omit amount so order_id governs the transaction securely)
       const options = {
-        key: activeKey,
-        order_id: orderId,
-        name: 'OTAKUBAZAAR',
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID?.trim() || activeKey,
+        order_id: orderData.id,
+        name: "OTAKUBAZAAR",
         prefill: {
-          contact: cleanPhone || '9999999999',
+          contact: cleanPhone,
         },
         theme: {
-          color: '#000000',
+          color: "#000000",
         },
-        handler: async function (response: {
-          razorpay_payment_id: string;
-          razorpay_order_id?: string;
-          razorpay_signature?: string;
-        }) {
-          console.log('Payment Successful!', response);
+        modal: {
+          escape: true,
+          ondismiss: function() {
+            setIsLoading(false); // Free the user if they close the window
+          }
+        },
+        handler: async function (response: any) {
           try {
-            setLoading(true);
+            setIsLoading(true);
+            // Execute POST to /api/checkout/verify with response data
             const verifyRes = await fetch('/api/checkout/verify', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_order_id: response.razorpay_order_id || orderId,
-                razorpay_signature: response.razorpay_signature,
+                ...response,
+                razorpay_order_id: response.razorpay_order_id || orderData.id,
                 lotId: lotId || productId || '',
                 productId: productId || lotId || '',
                 dealOfferId: dealOfferId || '',
               }),
             });
-
-            const verifyData = await verifyRes.json();
-
-            if (!verifyRes.ok) {
-              throw new Error(verifyData.error || 'Payment verification failed.');
-            }
-
-            if (onSuccess) {
-              onSuccess(response.razorpay_payment_id, orderId);
+            if (verifyRes.ok) {
+              if (onSuccess) {
+                onSuccess(response.razorpay_payment_id, orderData.id);
+              } else {
+                window.location.href = `/vault-ops/success?order_id=${orderData.id}`;
+              }
             } else {
-              window.location.href = `/vault-ops/success?order_id=${encodeURIComponent(response.razorpay_order_id || orderId)}`;
+              const errData = await verifyRes.json().catch(() => ({}));
+              console.error("Verification failed on server:", errData);
+              setErrorMessage(errData?.error || 'Verification failed');
             }
-          } catch (error: any) {
-            console.error('Verification Error:', error);
-            alert('Payment was processed, but verification failed. Please contact support.');
-            setErrorMessage(error?.message || 'Verification failed.');
+          } catch (err) {
+            console.error("Verification failed", err);
           } finally {
-            setLoading(false);
+            setIsLoading(false);
           }
-        },
-        modal: {
-          ondismiss: function () {
-            console.log('Checkout modal closed by user.');
-            setLoading(false);
-          },
-          onerror: function (err: any) {
-            console.error('Razorpay Modal Error:', err);
-            alert(`Razorpay Error: ${err?.description || 'Check console for details.'}`);
-            setLoading(false);
-          },
         },
       };
 
-      // Strict guardrail before opening the modal
-      if (!options.order_id) {
-        throw new Error('Missing Razorpay Order ID from backend response.');
-      }
-
-      // Step 3: Open Razorpay Checkout modal
-      const razorpayInstance = new (window as any).Razorpay(options);
-
-      razorpayInstance.on('payment.failed', function (resp: any) {
-        console.error('[Razorpay Payment Failed]:', resp?.error || resp);
-        const description =
-          resp?.error?.description ||
-          resp?.error?.reason ||
-          resp?.error?.message ||
-          'Payment failed. Please try again.';
-        setErrorMessage(description);
-        setLoading(false);
+      const rzp = new (window as any).Razorpay(options);
+      rzp.on('payment.failed', function (response: any) {
+        console.error("Razorpay inner failure:", response.error);
+        setIsLoading(false);
       });
-
-      razorpayInstance.open();
+      rzp.open();
     } catch (err: any) {
       console.error('[Razorpay Checkout Initialization Error]:', err);
       setErrorMessage(err?.message || 'An error occurred initiating payment.');
