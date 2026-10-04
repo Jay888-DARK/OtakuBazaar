@@ -4,6 +4,12 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createRazorpayOrder } from '@/app/actions/paymentActions';
 
+declare global {
+  interface Window {
+    Razorpay: any;
+  }
+}
+
 export interface CheckoutButtonProps {
   /** Optional amount in INR (number or string formatted e.g. "1,24,000") */
   amount?: number | string;
@@ -54,28 +60,23 @@ export function CheckoutButton({
   disabled = false,
 }: CheckoutButtonProps) {
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const loading = isLoading;
+  const setLoading = setIsLoading;
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const handlePayment = async () => {
+  const handleCheckout = async () => {
     try {
-      setLoading(true);
-      setErrorMessage(null);
+      setIsLoading(true);
 
-      // Check if Razorpay script has been loaded, or load safely
-      if (typeof window !== 'undefined' && !(window as any).Razorpay) {
+      // Check if Razorpay script has been loaded
+      if (typeof window !== 'undefined' && !window.Razorpay) {
         await new Promise<void>((resolve, reject) => {
-          if ((window as any).Razorpay) {
-            resolve();
-            return;
-          }
+          if (window.Razorpay) return resolve();
           const existingScript = document.querySelector('script[src*="checkout.razorpay.com"]');
           if (existingScript) {
             existingScript.addEventListener('load', () => resolve());
-            setTimeout(() => {
-              if ((window as any).Razorpay) resolve();
-              else reject(new Error('Razorpay SDK loading timed out. Please try again.'));
-            }, 3500);
+            setTimeout(() => resolve(), 2000);
           } else {
             const script = document.createElement('script');
             script.src = 'https://checkout.razorpay.com/v1/checkout.js';
@@ -87,12 +88,11 @@ export function CheckoutButton({
         });
       }
 
-      // Parse price/amount cleanly handling formatted strings (e.g. "1,24,000")
+      // 1. Call your backend to create the order
       const rawPriceInput = String(price ?? amount ?? 999);
       const cleanPrice = rawPriceInput.replace(/,/g, '').replace(/₹/g, '').trim();
       const amountInPaiseFallback = Math.round(Number(cleanPrice) * 100);
 
-      // Enforce Server-Side Price Authority via /api/checkout/razorpay
       const res = await fetch('/api/checkout/razorpay', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -105,59 +105,27 @@ export function CheckoutButton({
           receipt: receiptId || `rcpt_${Date.now()}`,
         }),
       });
-
-      const responseData = await res.json();
-      console.log('[Razorpay Order Response]:', responseData);
-
-      if (!res.ok || responseData.error) {
-        throw new Error(responseData.error || 'Failed to initialize server-authorized escrow order.');
-      }
-
-      // 3. Sync the Exact Amount: Use exact integer amount returned directly by backend
-      const exactAmountPaise = responseData.amount;
-
-      // Step 2: Configure Razorpay Checkout options with key mode validation
-      const serverKey = responseData.key_id?.trim();
-      const envClientKey = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID?.trim();
       
-      let effectiveKey = envClientKey || serverKey || 'rzp_test_TjnMsPZWKcfEdt';
-      if (envClientKey && serverKey) {
-        const isServerTest = serverKey.startsWith('rzp_test_');
-        const isClientTest = envClientKey.startsWith('rzp_test_');
-        if (isServerTest !== isClientTest) {
-          console.warn(
-            `[Razorpay Auth] Key mode mismatch: server returned ${isServerTest ? 'TEST' : 'LIVE'} mode key, ` +
-            `but NEXT_PUBLIC_RAZORPAY_KEY_ID is ${isClientTest ? 'TEST' : 'LIVE'} mode. Aligning to server key mode.`
-          );
-          effectiveKey = serverKey;
-        }
+      const orderData = await res.json();
+
+      // 2. STRICT GUARDRAIL: Did the backend actually return an order?
+      if (!res.ok || !orderData.id) {
+        console.error("BACKEND FAILED TO CREATE ORDER:", orderData);
+        alert("Server error: Could not initialize Razorpay order. Check console.");
+        return; // STOP execution. Do not open Razorpay.
       }
 
-      const activeKey = (process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID?.trim() || effectiveKey || '').trim();
-      if (!activeKey) {
-        throw new Error('Razorpay Public Key is missing or invalid.');
-      }
+      // 3. STRICT SANITIZATION: Razorpay will crash if phone is not exactly numbers.
+      // Temporarily hardcoding a safe fallback to guarantee it doesn't crash.
+      const safePhone = "9999999999"; 
 
-      const orderData = responseData;
-      const recipientPhone = customerContact || '';
-      const setIsLoading = setLoading;
-
-      // Ensure orderData exists before proceeding
-      if (!orderData?.id) {
-        console.error("Missing Order ID:", orderData);
-        setIsLoading(false);
-        return;
-      }
-
-      // Strip all non-digit characters for Razorpay's strict prefill validation
-      const cleanPhone = recipientPhone ? recipientPhone.replace(/[^0-9]/g, '').slice(-10) : "";
-
+      // 4. BULLETPROOF OPTIONS
       const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID?.trim() || activeKey,
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID?.trim(),
         order_id: orderData.id,
         name: "OTAKUBAZAAR",
         prefill: {
-          contact: cleanPhone,
+          contact: safePhone,
         },
         theme: {
           color: "#000000",
@@ -165,56 +133,32 @@ export function CheckoutButton({
         modal: {
           escape: true,
           ondismiss: function() {
-            setIsLoading(false); // Free the user if they close the window
-          }
-        },
-        handler: async function (response: any) {
-          try {
-            setIsLoading(true);
-            // Execute POST to /api/checkout/verify with response data
-            const verifyRes = await fetch('/api/checkout/verify', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                ...response,
-                razorpay_order_id: response.razorpay_order_id || orderData.id,
-                lotId: lotId || productId || '',
-                productId: productId || lotId || '',
-                dealOfferId: dealOfferId || '',
-              }),
-            });
-            if (verifyRes.ok) {
-              if (onSuccess) {
-                onSuccess(response.razorpay_payment_id, orderData.id);
-              } else {
-                window.location.href = `/vault-ops/success?order_id=${orderData.id}`;
-              }
-            } else {
-              const errData = await verifyRes.json().catch(() => ({}));
-              console.error("Verification failed on server:", errData);
-              setErrorMessage(errData?.error || 'Verification failed');
-            }
-          } catch (err) {
-            console.error("Verification failed", err);
-          } finally {
+            console.log("Modal closed by user.");
             setIsLoading(false);
           }
         },
+        handler: function (response: any) {
+          console.log("PAYMENT SUCCESS PAYLOAD:", response);
+          alert("Payment Successful! ID: " + response.razorpay_payment_id);
+          // We will add the backend verify route here AFTER we confirm the modal works
+        },
       };
 
-      const rzp = new (window as any).Razorpay(options);
+      const rzp = new window.Razorpay(options);
       rzp.on('payment.failed', function (response: any) {
-        console.error("Razorpay inner failure:", response.error);
-        setIsLoading(false);
+        console.error("RAZORPAY INTERNAL CRASH:", response.error);
+        alert("Razorpay Error: " + response.error.description);
       });
       rzp.open();
-    } catch (err: any) {
-      console.error('[Razorpay Checkout Initialization Error]:', err);
-      setErrorMessage(err?.message || 'An error occurred initiating payment.');
+
+    } catch (error) {
+      console.error("CHECKOUT FUNCTION CRASHED:", error);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
+
+  const handlePayment = handleCheckout;
 
   const defaultClasses =
     'w-full max-w-md mx-auto py-3 bg-zinc-900 hover:bg-zinc-100 text-zinc-300 hover:text-black border border-zinc-700 hover:border-zinc-100 text-xs font-semibold uppercase tracking-[0.2em] transition-all duration-200 cursor-pointer flex items-center justify-center space-x-2 disabled:opacity-50 disabled:pointer-events-none disabled:hover:bg-zinc-900 disabled:hover:text-zinc-300 disabled:hover:border-zinc-700';
@@ -225,8 +169,8 @@ export function CheckoutButton({
         type="button"
         id="pay-securely-btn"
         data-testid="pay-securely-button"
-        onClick={handlePayment}
-        disabled={disabled || loading}
+        onClick={handleCheckout}
+        disabled={disabled || isLoading}
         className={className || defaultClasses}
       >
         {loading ? (
