@@ -132,7 +132,7 @@ export function CheckoutButton({
       }
 
       const options = {
-        key: effectiveKey,
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID?.trim() || effectiveKey,
         amount: chargeAmountPaise, // strictly integer in paise
         currency: 'INR',
         name: title,
@@ -143,7 +143,7 @@ export function CheckoutButton({
           razorpay_order_id?: string;
           razorpay_signature?: string;
         }) {
-          console.log('Payment Successful! Verifying signature server-side...');
+          console.log('[Razorpay Checkout] Payment interaction received from modal:', response);
 
           try {
             // Verify payment signature server-side before updating order status
@@ -161,12 +161,31 @@ export function CheckoutButton({
               }),
             });
 
-            const verifyData = await verifyRes.json();
-            if (!verifyRes.ok || verifyData.error) {
-              throw new Error(verifyData.error || 'Payment signature verification failed.');
+            const rawText = await verifyRes.text();
+            let verifyData: any = null;
+            try {
+              verifyData = JSON.parse(rawText);
+            } catch {
+              // Server returned non-JSON text or HTML
             }
 
-            console.log('Signature verified! Escrow status:', verifyData.escrowStatus);
+            if (!verifyRes.ok || (verifyData && verifyData.error)) {
+              const errorMessageStr =
+                verifyData?.error ||
+                verifyData?.message ||
+                rawText ||
+                `Payment verification failed with HTTP status ${verifyRes.status}`;
+              const fullErrorObj = {
+                status: verifyRes.status,
+                statusText: verifyRes.statusText,
+                response: verifyData || rawText,
+                razorpay_response: response,
+              };
+              console.error('[Razorpay Checkout] Verification Failed:', fullErrorObj);
+              throw new Error(errorMessageStr);
+            }
+
+            console.log('[Razorpay Checkout] Signature verified! Escrow status:', verifyData?.escrowStatus);
 
             if (onSuccess) {
               onSuccess(response.razorpay_payment_id, orderId);
@@ -178,8 +197,8 @@ export function CheckoutButton({
               );
             }
           } catch (verifyErr: any) {
-            console.error('Signature verification error:', verifyErr);
-            setErrorMessage(verifyErr.message || 'Signature verification failed. Escrow locked.');
+            console.error('[Razorpay Checkout Error]:', verifyErr);
+            setErrorMessage(verifyErr?.message || 'Signature verification failed. Escrow locked.');
             setLoading(false);
           }
         },
@@ -193,6 +212,11 @@ export function CheckoutButton({
         },
         modal: {
           ondismiss: function () {
+            console.info('[Razorpay Checkout] Checkout modal closed by user without paying.');
+            setLoading(false);
+          },
+          on_dismiss: function () {
+            console.info('[Razorpay Checkout] Checkout modal dismissed (on_dismiss).');
             setLoading(false);
           },
         },
@@ -202,15 +226,20 @@ export function CheckoutButton({
       const razorpayInstance = new (window as any).Razorpay(options);
 
       razorpayInstance.on('payment.failed', function (resp: any) {
-        console.error('Razorpay Payment Failed:', resp.error);
-        setErrorMessage(resp.error?.description || 'Payment failed. Please try again.');
+        console.error('[Razorpay Payment Failed]:', resp?.error || resp);
+        const description =
+          resp?.error?.description ||
+          resp?.error?.reason ||
+          resp?.error?.message ||
+          'Payment failed. Please try again.';
+        setErrorMessage(description);
         setLoading(false);
       });
 
       razorpayInstance.open();
     } catch (err: any) {
-      console.error('Checkout error:', err);
-      setErrorMessage(err.message || 'An error occurred initiating payment.');
+      console.error('[Razorpay Checkout Initialization Error]:', err);
+      setErrorMessage(err?.message || 'An error occurred initiating payment.');
       setLoading(false);
     }
   };

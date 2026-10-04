@@ -15,17 +15,17 @@ import { OrderRepository } from '@/infrastructure/database/repositories/OrderRep
 import { EscrowLedgerService } from '@/infrastructure/payment/EscrowLedgerService';
 
 function getRazorpayClient() {
-  const key_id = process.env.RAZORPAY_KEY_ID?.trim() || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID?.trim() || 'rzp_test_TdBTiCyaOJ95KC';
-  const key_secret = process.env.RAZORPAY_KEY_SECRET?.trim() || 'u5wkPbmPedlHMnJH0a5M7FvQ';
+  const key_id = process.env.RAZORPAY_KEY_ID?.trim() || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID?.trim();
+  const key_secret = process.env.RAZORPAY_KEY_SECRET?.trim();
 
   // Validation: If either key is undefined or missing, log a descriptive error to console before executing new Razorpay
-  if (!process.env.RAZORPAY_KEY_ID?.trim() && !process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID?.trim()) {
+  if (!key_id) {
     console.error(
       '[Razorpay Authentication Error] RAZORPAY_KEY_ID is undefined or missing in environment variables. ' +
       'Check that RAZORPAY_KEY_ID or NEXT_PUBLIC_RAZORPAY_KEY_ID is properly configured.'
     );
   }
-  if (!process.env.RAZORPAY_KEY_SECRET?.trim()) {
+  if (!key_secret) {
     console.error(
       '[Razorpay Authentication Error] RAZORPAY_KEY_SECRET is undefined or missing in environment variables. ' +
       'Check that RAZORPAY_KEY_SECRET is properly configured.'
@@ -33,16 +33,23 @@ function getRazorpayClient() {
   }
 
   // Key mode check (test vs live)
-  const isTestKey = key_id.startsWith('rzp_test_');
-  const isLiveKey = key_id.startsWith('rzp_live_');
-  if (!isTestKey && !isLiveKey) {
-    console.warn(`[Razorpay Configuration] Unrecognized Razorpay key format: ${key_id.substring(0, 8)}...`);
+  if (key_id) {
+    const isTestKey = key_id.startsWith('rzp_test_');
+    const isLiveKey = key_id.startsWith('rzp_live_');
+    if (!isTestKey && !isLiveKey) {
+      console.warn(`[Razorpay Configuration] Unrecognized Razorpay key format: ${key_id.substring(0, 8)}...`);
+    }
   }
 
+  const razorpay = new Razorpay({
+    key_id: process.env.RAZORPAY_KEY_ID?.trim(),
+    key_secret: process.env.RAZORPAY_KEY_SECRET?.trim(),
+  });
+
   return {
-    key_id,
-    key_secret,
-    client: new Razorpay({ key_id, key_secret }),
+    key_id: key_id || '',
+    key_secret: key_secret || '',
+    client: razorpay,
   };
 }
 
@@ -62,6 +69,15 @@ export async function POST(req: Request): Promise<NextResponse> {
       const orderId = body.razorpay_order_id || body.orderId;
       const paymentId = body.razorpay_payment_id || body.paymentId;
       const signature = body.razorpay_signature || body.signature;
+      const trimmedSecret = (process.env.RAZORPAY_KEY_SECRET?.trim() || key_secret?.trim());
+
+      if (!trimmedSecret) {
+        console.error('[Razorpay Verification] RAZORPAY_KEY_SECRET is undefined or missing.');
+        return NextResponse.json(
+          { error: 'Server configuration error: RAZORPAY_KEY_SECRET is missing or empty.' },
+          { status: 500 }
+        );
+      }
 
       if (!orderId || !paymentId || !signature) {
         return NextResponse.json(
@@ -71,7 +87,7 @@ export async function POST(req: Request): Promise<NextResponse> {
       }
 
       const generatedSignature = crypto
-        .createHmac('sha256', key_secret)
+        .createHmac('sha256', trimmedSecret)
         .update(`${orderId}|${paymentId}`)
         .digest('hex');
 
@@ -80,6 +96,9 @@ export async function POST(req: Request): Promise<NextResponse> {
         crypto.timingSafeEqual(Buffer.from(generatedSignature), Buffer.from(signature));
 
       if (!isValid) {
+        console.error(
+          `[Razorpay Verification] Invalid signature detected. Payload: "${orderId}|${paymentId}", Expected: "${generatedSignature}", Received: "${signature}"`
+        );
         return NextResponse.json({ error: 'Invalid payment signature' }, { status: 400 });
       }
 
@@ -107,13 +126,44 @@ export async function POST(req: Request): Promise<NextResponse> {
         }
       }
 
+      // Wrap the database update (Prisma Order.update) in a dedicated try/catch block returning explicit 500 if it fails
       try {
-        await OrderRepository.updateEscrowStatus(orderId, {
-          escrowStatus: 'HELD_IN_ESCROW',
-          razorpayPaymentId: paymentId,
+        const orderRecord = await prisma.order.findFirst({
+          where: {
+            OR: [
+              { id: orderId },
+              { razorpayOrderId: orderId },
+              { razorpayPaymentId: paymentId },
+            ],
+          },
         });
-      } catch (orderErr) {
-        console.warn('[Razorpay Verification] Order repository update notice:', orderErr);
+
+        if (orderRecord) {
+          await prisma.order.update({
+            where: { id: orderRecord.id },
+            data: {
+              status: 'ESCROW_LOCKED',
+              escrowStatus: 'HELD_IN_ESCROW',
+              razorpayPaymentId: paymentId,
+            },
+          });
+        } else {
+          await OrderRepository.updateEscrowStatus(orderId, {
+            escrowStatus: 'HELD_IN_ESCROW',
+            razorpayPaymentId: paymentId,
+          });
+        }
+      } catch (orderErr: any) {
+        console.error('[Razorpay Verification] Database Order.update failure:', orderErr);
+        return NextResponse.json(
+          {
+            error: `Database update failed (Prisma Order.update): ${orderErr?.message || 'Database write error'}`,
+            details: String(orderErr),
+            orderId,
+            paymentId,
+          },
+          { status: 500 }
+        );
       }
 
       try {

@@ -25,9 +25,14 @@ export async function POST(req: Request): Promise<NextResponse> {
     const orderId = body.razorpay_order_id || body.orderId;
     const paymentId = body.razorpay_payment_id || body.paymentId;
     const signature = body.razorpay_signature || body.signature;
-    const keySecret = process.env.RAZORPAY_KEY_SECRET?.trim() || 'u5wkPbmPedlHMnJH0a5M7FvQ';
-    if (!process.env.RAZORPAY_KEY_SECRET?.trim()) {
+    const keySecret = process.env.RAZORPAY_KEY_SECRET?.trim();
+
+    if (!keySecret) {
       console.error('[Razorpay Verify] RAZORPAY_KEY_SECRET is undefined or missing in environment variables.');
+      return NextResponse.json(
+        { error: 'Server configuration error: RAZORPAY_KEY_SECRET is missing or empty.' },
+        { status: 500 }
+      );
     }
 
     if (!orderId || !paymentId || !signature) {
@@ -48,8 +53,13 @@ export async function POST(req: Request): Promise<NextResponse> {
       crypto.timingSafeEqual(Buffer.from(generatedSignature), Buffer.from(signature));
 
     if (!isValid) {
-      console.error('[Razorpay Verify] Invalid signature detected.');
-      return NextResponse.json({ error: 'Payment signature verification failed.' }, { status: 400 });
+      console.error(
+        `[Razorpay Verify] Invalid signature detected. Payload: "${payload}", Expected: "${generatedSignature}", Received: "${signature}"`
+      );
+      return NextResponse.json(
+        { error: 'Payment signature verification failed. Cryptographic signature does not match secret.' },
+        { status: 400 }
+      );
     }
 
     // Update product & listing statuses in database
@@ -133,8 +143,12 @@ export async function POST(req: Request): Promise<NextResponse> {
           },
         });
       }
+    } catch (userErr: any) {
+      console.warn('[Razorpay Verify] Silent user provisioning warning:', userErr);
+    }
 
-      // Synchronize Order with status ESCROW_LOCKED, userId, and itemLotRef
+    // Wrap the database update (Prisma Order.update) in a dedicated try/catch block and return explicit 500 error messages if it fails
+    try {
       const targetLotId = body.lotId || body.productId;
       const orderRecord = await prisma.order.findFirst({
         where: {
@@ -188,8 +202,17 @@ export async function POST(req: Request): Promise<NextResponse> {
           });
         }
       }
-    } catch (provisionErr) {
-      console.warn('[Razorpay Verify] Silent user provisioning / order notice:', provisionErr);
+    } catch (orderUpdateErr: any) {
+      console.error('[Razorpay Verify] Database update failed (Prisma Order.update):', orderUpdateErr);
+      return NextResponse.json(
+        {
+          error: `Database update failed (Prisma Order.update): ${orderUpdateErr?.message || 'Database write error'}`,
+          details: String(orderUpdateErr),
+          orderId,
+          paymentId,
+        },
+        { status: 500 }
+      );
     }
 
     const response = NextResponse.json({

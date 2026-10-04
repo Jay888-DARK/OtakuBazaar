@@ -189,7 +189,7 @@ export function InstantCheckoutDrawer({
       }
 
       const options = {
-        key: effectiveKey,
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID?.trim() || effectiveKey,
         amount: chargeAmountPaise,
         currency: 'INR',
         name: 'OtakuBazaar Vault',
@@ -215,6 +215,11 @@ export function InstantCheckoutDrawer({
         },
         modal: {
           ondismiss: function () {
+            console.info('[Instant Checkout] Checkout modal closed by user without paying.');
+            setLoading(false);
+          },
+          on_dismiss: function () {
+            console.info('[Instant Checkout] Checkout modal dismissed (on_dismiss).');
             setLoading(false);
           },
         },
@@ -224,6 +229,7 @@ export function InstantCheckoutDrawer({
           razorpay_signature?: string;
         }) {
           try {
+            console.log('[Instant Checkout] Payment received, verifying signature...', response);
             // Server-side verification & silent account provisioning
             const verifyRes = await fetch('/api/checkout/razorpay/verify', {
               method: 'POST',
@@ -242,9 +248,28 @@ export function InstantCheckoutDrawer({
               }),
             });
 
-            const verifyData = await verifyRes.json();
-            if (!verifyRes.ok || verifyData.error) {
-              throw new Error(verifyData.error || 'Payment signature verification failed.');
+            const rawText = await verifyRes.text();
+            let verifyData: any = null;
+            try {
+              verifyData = JSON.parse(rawText);
+            } catch {
+              // Server returned non-JSON text or HTML
+            }
+
+            if (!verifyRes.ok || (verifyData && verifyData.error)) {
+              const errorMessageStr =
+                verifyData?.error ||
+                verifyData?.message ||
+                rawText ||
+                `Payment verification failed with HTTP status ${verifyRes.status}`;
+              const fullErrorObj = {
+                status: verifyRes.status,
+                statusText: verifyRes.statusText,
+                response: verifyData || rawText,
+                razorpay_response: response,
+              };
+              console.error('[Instant Checkout Verification Failed]:', fullErrorObj);
+              throw new Error(errorMessageStr);
             }
 
             // Execute 0ms brutalist confirmation state inversion
@@ -259,7 +284,7 @@ export function InstantCheckoutDrawer({
             }
           } catch (err: any) {
             console.error('[Instant Checkout Verification Error]:', err);
-            setErrorMessage(err.message || 'Signature verification failure.');
+            setErrorMessage(err?.message || 'Signature verification failure.');
             setLoading(false);
           }
         },
@@ -267,14 +292,20 @@ export function InstantCheckoutDrawer({
 
       const razorpayInstance = new (window as any).Razorpay(options);
       razorpayInstance.on('payment.failed', function (resp: any) {
-        setErrorMessage(resp.error?.description || 'Payment rejected. Please verify details.');
+        console.error('[Instant Checkout Payment Failed]:', resp?.error || resp);
+        const description =
+          resp?.error?.description ||
+          resp?.error?.reason ||
+          resp?.error?.message ||
+          'Payment rejected. Please verify details.';
+        setErrorMessage(description);
         setLoading(false);
       });
 
       razorpayInstance.open();
     } catch (err: any) {
-      console.error('[Instant Checkout Error]:', err);
-      setErrorMessage(err.message || 'Failed to trigger checkout.');
+      console.error('[Instant Checkout Initialization Error]:', err);
+      setErrorMessage(err?.message || 'Failed to trigger checkout.');
       setLoading(false);
     }
   };
