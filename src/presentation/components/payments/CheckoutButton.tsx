@@ -113,9 +113,26 @@ export function CheckoutButton({
         throw new Error('Could not retrieve order ID from server.');
       }
 
-      // Step 2: Configure Razorpay Checkout options
+      // Step 2: Configure Razorpay Checkout options with key mode validation
+      const serverKey = data.key_id?.trim();
+      const envClientKey = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID?.trim();
+      
+      // Ensure key mode (test vs live) matches between server and client
+      let effectiveKey = envClientKey || serverKey || 'rzp_test_TdBTiCyaOJ95KC';
+      if (envClientKey && serverKey) {
+        const isServerTest = serverKey.startsWith('rzp_test_');
+        const isClientTest = envClientKey.startsWith('rzp_test_');
+        if (isServerTest !== isClientTest) {
+          console.warn(
+            `[Razorpay Auth] Key mode mismatch: server returned ${isServerTest ? 'TEST' : 'LIVE'} mode key, ` +
+            `but NEXT_PUBLIC_RAZORPAY_KEY_ID is ${isClientTest ? 'TEST' : 'LIVE'} mode. Aligning to server key mode.`
+          );
+          effectiveKey = serverKey;
+        }
+      }
+
       const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || data.key_id || 'rzp_test_TdBTiCyaOJ95KC',
+        key: effectiveKey,
         amount: chargeAmountPaise, // strictly integer in paise
         currency: 'INR',
         name: title,

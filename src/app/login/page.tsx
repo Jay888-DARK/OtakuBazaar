@@ -79,20 +79,26 @@ export default function LoginPage() {
       <div className="relative w-full max-w-md bg-[#111114] border border-zinc-800 p-8 z-10">
         {/* Header & Typography */}
         <div className="text-center mb-8">
-          <span className="text-[10px] uppercase tracking-[0.25em] font-semibold text-zinc-500 block mb-2">
+          <span
+            className="text-xs uppercase text-zinc-400 font-normal block mb-1.5"
+            style={{ fontFamily: "'Satoshi', 'Cabinet Grotesk', sans-serif", letterSpacing: '0.04em' }}
+          >
             ARCHIVAL ACCESS // VERIFIED IDENTITY
           </span>
-          <h1 className="text-xl font-extrabold tracking-[0.2em] text-zinc-100 uppercase">
+          <h1
+            className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-100"
+            style={{ fontFamily: "'Clash Display', 'Syne', sans-serif" }}
+          >
             Collector Vault
           </h1>
-          <p className="text-xs text-zinc-400 mt-1 font-normal tracking-wide">
+          <p className="text-xs text-zinc-400 mt-2 font-normal">
             Secure authentication for high-ticket acquisition.
           </p>
         </div>
 
         {/* Error Alert */}
         {errorMessage && (
-          <div className="mb-5 p-3 bg-red-950/40 border border-red-800 text-red-200 text-xs text-center font-medium tracking-wide">
+          <div className="mb-5 p-3 bg-red-950/40 border border-red-800 text-red-200 text-xs text-center font-medium">
             {errorMessage}
           </div>
         )}
@@ -100,7 +106,10 @@ export default function LoginPage() {
         {/* Email & Password Form */}
         <form onSubmit={handleCredentialsLogin}>
           <div>
-            <label className="text-[10px] uppercase tracking-[0.2em] font-bold text-zinc-400 block mb-2">
+            <label
+              className="text-xs font-normal text-zinc-400 block mb-1.5"
+              style={{ fontFamily: "'Satoshi', 'Cabinet Grotesk', sans-serif", letterSpacing: '0.02em' }}
+            >
               Collector Email
             </label>
             <input
@@ -114,7 +123,10 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <label className="text-[10px] uppercase tracking-[0.2em] font-bold text-zinc-400 block mb-2">
+            <label
+              className="text-xs font-normal text-zinc-400 block mb-1.5"
+              style={{ fontFamily: "'Satoshi', 'Cabinet Grotesk', sans-serif", letterSpacing: '0.02em' }}
+            >
               Vault Passphrase
             </label>
             <input

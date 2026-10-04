@@ -20,10 +20,14 @@ export async function createRazorpayOrder(
   lotId?: string,
   dealOfferId?: string
 ): Promise<string> {
-  const keyId = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || process.env.RAZORPAY_KEY_ID;
-  const keySecret = process.env.RAZORPAY_KEY_SECRET;
+  const keyId = (process.env.RAZORPAY_KEY_ID || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID)?.trim();
+  const keySecret = process.env.RAZORPAY_KEY_SECRET?.trim();
 
   if (!keyId || !keySecret) {
+    console.error(
+      `[paymentActions] Missing Razorpay credentials: keyId=${keyId ? 'present' : 'MISSING'}, ` +
+      `keySecret=${keySecret ? 'present' : 'MISSING'}.`
+    );
     throw new Error('Razorpay credentials are not configured in environment variables.');
   }
 

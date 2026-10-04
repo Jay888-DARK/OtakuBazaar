@@ -216,7 +216,7 @@ export default function ProductDetailsPage({ params }: ProductDetailsProps) {
                     <span className="block text-[8px] uppercase tracking-widest text-zinc-500">
                       Authenticity Tag
                     </span>
-                    <span className="text-[11px] font-bold uppercase text-zinc-300 font-mono">
+                    <span className="text-xs font-semibold uppercase text-zinc-300">
                       OKB-2026-X
                     </span>
                   </div>

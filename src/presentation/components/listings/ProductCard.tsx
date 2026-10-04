@@ -105,15 +105,21 @@ export function ProductCard({ product, className = '' }: ProductCardProps): Reac
       {/* 3. Title & Price Ticker */}
       <div>
         <Link href={`/products/${product.id}`} className="block no-underline hover:no-underline">
-          <h3 className="text-xs font-bold tracking-wider text-zinc-100 uppercase truncate mt-2">
+          <h3
+            className="product-title text-sm font-semibold text-zinc-100 truncate mt-2 normal-case tracking-normal"
+            style={{ fontFamily: "'Satoshi', 'Cabinet Grotesk', sans-serif" }}
+          >
             {product.title}
           </h3>
         </Link>
 
         {/* Secondary Valuation Bar */}
-        <div className="flex items-center justify-between text-[10px] font-bold tracking-wider text-zinc-500 mt-2">
-          <span className="text-emerald-400 font-bold tracking-wider">+14.2% (90D)</span>
-          <span className="font-bold tracking-wider text-zinc-400">{offersCount || 2} ACTIVE OFFERS</span>
+        <div
+          className="flex items-center justify-between text-xs font-normal text-zinc-500 mt-2"
+          style={{ fontFamily: "'Satoshi', 'Cabinet Grotesk', sans-serif" }}
+        >
+          <span className="text-emerald-400 font-medium">+14.2% (90D)</span>
+          <span className="text-zinc-400 font-normal">{offersCount || 2} Active Offers</span>
         </div>
 
         {/* Buying Flow: Primary CTA */}
@@ -126,17 +132,20 @@ export function ProductCard({ product, className = '' }: ProductCardProps): Reac
             title={product.title}
             description="Direct Purchase with Escrow Protection"
             buttonText={`BUY NOW — ₹${displayPrice.toLocaleString('en-IN')}`}
-            className="w-full py-2.5 px-3 bg-zinc-100 hover:bg-white text-black font-extrabold text-[11px] uppercase tracking-[0.16em] border border-zinc-100 transition-none cursor-pointer flex items-center justify-center gap-2 rounded-none"
+            className="w-full py-2.5 px-3 bg-zinc-100 hover:bg-white text-black font-semibold text-xs uppercase tracking-wider border border-zinc-100 transition-none cursor-pointer flex items-center justify-center gap-2 rounded-none"
           />
 
           {/* Clear Assurance Badges (Zero Emojis, Sharp 0px borders) */}
-          <div className="flex items-center justify-between text-[8px] uppercase tracking-wider text-zinc-400 font-medium px-0.5">
-            <span className="flex items-center gap-1">
-              <span className="w-1 h-1 bg-zinc-500 inline-block" />
+          <div
+            className="flex items-center justify-between text-[11px] text-zinc-400 font-normal px-0.5"
+            style={{ fontFamily: "'Satoshi', 'Cabinet Grotesk', sans-serif" }}
+          >
+            <span className="flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 bg-zinc-500 inline-block" />
               Insured Shipping
             </span>
-            <span className="flex items-center gap-1">
-              <span className="w-1 h-1 bg-zinc-500 inline-block" />
+            <span className="flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 bg-zinc-500 inline-block" />
               48h Inspection Window
             </span>
           </div>
@@ -147,10 +156,11 @@ export function ProductCard({ product, className = '' }: ProductCardProps): Reac
               onClick={() => handleOpenBargain(product.id)}
               aria-label={`Make an offer on ${product.title}`}
               data-testid="price-offer-pill"
-              className="flex-1 flex items-center justify-between px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 border border-zinc-800 text-[10px] font-medium uppercase tracking-[0.14em] cursor-pointer rounded-none"
+              className="filter-pill flex-1 flex items-center justify-between px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white border border-zinc-800 text-xs font-normal cursor-pointer rounded-none"
+              style={{ fontFamily: "'Satoshi', 'Cabinet Grotesk', sans-serif" }}
             >
               <span>Make an Offer</span>
-              <span className="text-zinc-300 font-bold">Offer →</span>
+              <span className="text-zinc-400 font-medium">Offer →</span>
             </button>
             <button
               type="button"

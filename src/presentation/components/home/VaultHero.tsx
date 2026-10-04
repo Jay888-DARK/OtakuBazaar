@@ -55,13 +55,26 @@ export default function VaultHero({ onSelectVaultItem }: VaultHeroProps) {
 
       {/* Floating Center Hero Text */}
       <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 pointer-events-none z-20">
-        <span className="text-[10px] font-semibold tracking-[0.3em] uppercase text-zinc-400 mb-2.5">
+        <span
+          className="text-xs uppercase text-zinc-400 mb-2 font-normal"
+          style={{ fontFamily: "'Satoshi', 'Cabinet Grotesk', sans-serif", letterSpacing: '0.04em' }}
+        >
           AUTHENTIC JAPANESE COLLECTIBLES • SECURE ESCROW
         </span>
-        <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-zinc-100 uppercase">
+        <h1
+          className="font-bold tracking-tight text-zinc-100 uppercase leading-none"
+          style={{
+            fontFamily: "'Clash Display', 'Syne', sans-serif",
+            fontSize: 'clamp(2rem, 4vw, 3.5rem)',
+            letterSpacing: '-0.025em',
+          }}
+        >
           Authentic Collectibles
         </h1>
-        <p className="max-w-sm text-xs font-normal text-zinc-400 mt-2 mb-6 tracking-wide leading-relaxed">
+        <p
+          className="max-w-md text-xs font-normal text-zinc-400 mt-3 mb-6 leading-relaxed"
+          style={{ fontFamily: "'Satoshi', 'Cabinet Grotesk', sans-serif" }}
+        >
           Pre-inspected Japanese figures and manga sets with 48-hour buyer inspection protection.
         </p>
       </div>

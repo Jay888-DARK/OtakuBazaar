@@ -87,7 +87,6 @@ body {
 
 /* Enforce Satoshi / Cabinet Grotesk for specs, tables, code elements, body copy */
 /* STRICT CONSTRAINT: Do not use Inter, Geist, Space Grotesk, or monospaced/coding fonts */
-.font-mono,
 code,
 pre,
 kbd,
@@ -99,60 +98,80 @@ td,
 input,
 select,
 textarea,
-button {
+button,
+label,
+.font-mono {
   font-family: 'Satoshi', 'Cabinet Grotesk', sans-serif !important;
 }
 
-/* High-End Editorial Typography Hierarchy (Oversized, Scale-Driven Contrast) */
-/* Bold headers: 'Clash Display' or 'Syne' */
+/* ========================================================================= */
+/* Luxury Editorial Typography Hierarchy                                      */
+/* Major display headers: 'Clash Display' or 'Syne' with tracking-tight       */
+/* ========================================================================= */
 h1,
 h2,
 h3,
 h4,
 h5,
-h6 {
+h6,
+.display-header {
   font-family: 'Clash Display', 'Syne', sans-serif;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: -0.025em; /* tracking-tight */
   font-weight: 700;
   color: #f4f4f5;
-  line-height: 1.05;
+  line-height: 1.1;
 }
 
 h1 {
-  letter-spacing: -0.02em;
-  font-weight: 800;
-  font-size: clamp(2.25rem, 5vw, 4.5rem);
+  letter-spacing: -0.025em;
+  font-weight: 700;
+  font-size: clamp(2rem, 4vw, 3.5rem);
 }
 
 h2 {
-  letter-spacing: -0.01em;
-  font-weight: 800;
-  font-size: clamp(1.75rem, 3.5vw, 3rem);
+  letter-spacing: -0.02em;
+  font-weight: 700;
+  font-size: clamp(1.5rem, 3vw, 2.5rem);
 }
 
 h3 {
-  letter-spacing: 0.02em;
-  font-weight: 700;
-  font-size: clamp(1.25rem, 2.5vw, 2rem);
+  letter-spacing: -0.015em;
+  font-weight: 600;
+  font-size: clamp(1.15rem, 2vw, 1.75rem);
 }
 
-/* Editorial Subheadings & Micro-Labels */
+/* Product Titles: Elegant, proportional, standard casing, Satoshi/Cabinet Grotesk */
+.product-title,
+[data-testid="product-title"],
+.product-card h3 {
+  font-family: 'Satoshi', 'Cabinet Grotesk', sans-serif !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.01em !important;
+  text-transform: none !important;
+  line-height: 1.3 !important;
+}
+
+/* Metadata, Filter Pills, Specs, and Form Labels: Regular weight, clean letter spacing, standard casing */
+label,
+.form-label,
+.filter-pill,
+.editorial-kicker,
+.editorial-spec,
+.metadata-label,
+.badge-spec {
+  font-family: 'Satoshi', 'Cabinet Grotesk', sans-serif !important;
+  font-weight: 400 !important;
+  letter-spacing: 0.02em !important;
+  text-transform: none;
+}
+
 .editorial-kicker {
-  font-family: 'Satoshi', 'Cabinet Grotesk', sans-serif;
-  font-size: 10px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.25em;
-  color: #71717a;
+  font-size: 11px;
+  color: #a1a1aa;
 }
 
 .editorial-spec {
-  font-family: 'Satoshi', 'Cabinet Grotesk', sans-serif;
   font-size: 11px;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
   color: #a1a1aa;
 }
 

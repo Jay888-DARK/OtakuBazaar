@@ -120,7 +120,10 @@ export function ProvenanceManifestModal(): React.JSX.Element | null {
         </div>
 
         {/* Raw Printed Receipt / Structured Data Manifest Format */}
-        <div className="space-y-8 font-mono text-xs uppercase leading-relaxed tracking-wider text-zinc-300">
+        <div
+          className="space-y-8 text-xs uppercase leading-relaxed tracking-wider text-zinc-300"
+          style={{ fontFamily: "'Satoshi', 'Cabinet Grotesk', sans-serif" }}
+        >
           {/* Section 01: Specimen Identification */}
           <div>
             <div className="text-zinc-500 text-[10px] tracking-[0.25em] mb-3">

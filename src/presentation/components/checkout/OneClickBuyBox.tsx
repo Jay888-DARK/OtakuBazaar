@@ -109,9 +109,25 @@ export function OneClickBuyBox({
         throw new Error('Could not obtain server order token.');
       }
 
-      // 3. Configure Razorpay Overlay with 1-Click parameters
+      // 3. Configure Razorpay Overlay with key mode validation
+      const serverKey = orderData.key_id?.trim();
+      const envClientKey = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID?.trim();
+
+      let effectiveKey = envClientKey || serverKey || 'rzp_test_TdBTiCyaOJ95KC';
+      if (envClientKey && serverKey) {
+        const isServerTest = serverKey.startsWith('rzp_test_');
+        const isClientTest = envClientKey.startsWith('rzp_test_');
+        if (isServerTest !== isClientTest) {
+          console.warn(
+            `[Razorpay Auth] Key mode mismatch: server returned ${isServerTest ? 'TEST' : 'LIVE'} mode key, ` +
+            `but NEXT_PUBLIC_RAZORPAY_KEY_ID is ${isClientTest ? 'TEST' : 'LIVE'} mode. Aligning to server key mode.`
+          );
+          effectiveKey = serverKey;
+        }
+      }
+
       const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || orderData.key_id || 'rzp_test_TdBTiCyaOJ95KC',
+        key: effectiveKey,
         amount: chargeAmountPaise,
         currency: 'INR',
         name: 'OtakuBazaar Vault',

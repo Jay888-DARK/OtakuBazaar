@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import VaultHero from '@/presentation/components/home/VaultHero';
 import { CatalogView } from '@/presentation/components/home/CatalogView';
-import { VisualCategoryBar } from '@/presentation/components/navigation/VisualCategoryBar';
+import { MarketplaceFilterNav } from '@/presentation/components/navigation/MarketplaceFilterNav';
 import { CuratedEditorialCollection } from '@/presentation/components/home/CuratedEditorialCollection';
 
 export const metadata: Metadata = {
@@ -27,8 +27,8 @@ export default async function HomePage(props?: { searchParams?: Promise<Record<s
 
   return (
     <main className="min-h-screen bg-[#09090b] text-white">
-      {/* 1. Visual Category Navigation */}
-      <VisualCategoryBar />
+      {/* 1. Route-Level Isolated Marketplace Filters & Categories */}
+      <MarketplaceFilterNav />
 
       {/* 2. Hero Exhibition */}
       <VaultHero />

@@ -76,7 +76,10 @@ export function OrderBook({
   };
 
   return (
-    <div className="w-full border-b border-[#27272a] bg-[#0c0c0e] select-none text-xs font-mono uppercase">
+    <div
+      className="w-full border-b border-[#27272a] bg-[#0c0c0e] select-none text-xs uppercase"
+      style={{ fontFamily: "'Satoshi', 'Cabinet Grotesk', sans-serif" }}
+    >
       {/* Order Book Header Cell */}
       <div className="p-4 sm:p-5 border-b border-[#27272a] bg-[#0a0a0c] flex items-center justify-between">
         <div>
@@ -198,7 +201,7 @@ export function OrderBook({
               type="number"
               value={limitBidInput}
               onChange={(e) => setLimitBidInput(e.target.value)}
-              className="w-full bg-[#0c0c0e] border border-zinc-800 p-2.5 text-xs text-white uppercase font-mono rounded-none outline-none focus:border-zinc-500"
+              className="w-full bg-[#0c0c0e] border border-zinc-800 p-2.5 text-xs text-white uppercase rounded-none outline-none focus:border-zinc-500"
             />
           </div>
           <button
@@ -220,7 +223,7 @@ export function OrderBook({
                 AUTOMATED LIQUIDITY GUARANTEE // S-RANK
               </span>
             </div>
-            <span className="text-[9px] text-zinc-500 font-mono">
+            <span className="text-[9px] text-zinc-500">
               ESCROW POOL: ₹14.8M ACTIVE
             </span>
           </div>
@@ -238,7 +241,7 @@ export function OrderBook({
               className="w-full py-3.5 px-4 bg-zinc-900 hover:bg-[#f4f4f4] text-zinc-200 hover:text-black border border-zinc-700 hover:border-[#f4f4f4] text-xs font-bold uppercase tracking-[0.22em] transition-none rounded-none brutalist-btn cursor-pointer flex items-center justify-between"
             >
               <span>INSTANT LIQUIDATION (T+0 SETTLEMENT)</span>
-              <span className="font-mono">₹{instantLiquidationPrice.toLocaleString('en-IN')} →</span>
+              <span>₹{instantLiquidationPrice.toLocaleString('en-IN')} →</span>
             </button>
           </Link>
         </div>

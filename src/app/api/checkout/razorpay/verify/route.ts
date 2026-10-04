@@ -25,7 +25,10 @@ export async function POST(req: Request): Promise<NextResponse> {
     const orderId = body.razorpay_order_id || body.orderId;
     const paymentId = body.razorpay_payment_id || body.paymentId;
     const signature = body.razorpay_signature || body.signature;
-    const keySecret = process.env.RAZORPAY_KEY_SECRET || 'u5wkPbmPedlHMnJH0a5M7FvQ';
+    const keySecret = process.env.RAZORPAY_KEY_SECRET?.trim() || 'u5wkPbmPedlHMnJH0a5M7FvQ';
+    if (!process.env.RAZORPAY_KEY_SECRET?.trim()) {
+      console.error('[Razorpay Verify] RAZORPAY_KEY_SECRET is undefined or missing in environment variables.');
+    }
 
     if (!orderId || !paymentId || !signature) {
       return NextResponse.json(

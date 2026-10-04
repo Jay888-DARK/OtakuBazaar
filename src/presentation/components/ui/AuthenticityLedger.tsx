@@ -46,7 +46,7 @@ export function AuthenticityLedger({
         >
           [ Immutable COA Record ] ↗
         </button>
-        <span className="text-emerald-400/90 font-semibold font-mono">Valid (Grade S)</span>
+        <span className="text-emerald-400/90 font-semibold">Valid (Grade S)</span>
       </div>
 
       <div className="grid grid-cols-2 gap-y-2 mt-3">
@@ -63,7 +63,7 @@ export function AuthenticityLedger({
           <button
             type="button"
             onClick={handleOpenManifest}
-            className="text-zinc-400 hover:text-white truncate font-mono text-left cursor-pointer brutalist-btn p-0.5 mt-0.5"
+            className="text-zinc-400 hover:text-white truncate text-left cursor-pointer brutalist-btn p-0.5 mt-0.5 text-xs"
           >
             {hash} ↗
           </button>

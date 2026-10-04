@@ -76,7 +76,10 @@ export default function HardwareVerificationPage(): React.JSX.Element {
   };
 
   return (
-    <div className="min-h-screen bg-[#09090b] text-[#f4f4f5] py-12 px-4 sm:px-6 lg:px-8 select-none font-mono">
+    <div
+      className="min-h-screen bg-[#09090b] text-[#f4f4f5] py-12 px-4 sm:px-6 lg:px-8 select-none"
+      style={{ fontFamily: "'Satoshi', 'Cabinet Grotesk', sans-serif" }}
+    >
       <div className="max-w-4xl mx-auto space-y-8">
         {/* Navigation Breadcrumbs */}
         <div className="flex items-center justify-between border-b border-[#27272a] pb-3 text-[10px] uppercase tracking-[0.2em] text-zinc-500">
@@ -134,7 +137,7 @@ export default function HardwareVerificationPage(): React.JSX.Element {
             <span className="text-[10px] uppercase tracking-[0.25em] text-zinc-400 font-bold">
               CRYPTOGRAPHIC HARDWARE CREDENTIALS
             </span>
-            <span className="text-[9px] uppercase tracking-wider text-zinc-500 font-mono">
+            <span className="text-[9px] uppercase tracking-wider text-zinc-500">
               HASH ALGORITHM: SHA-256 / ED25519
             </span>
           </div>
@@ -182,7 +185,7 @@ export default function HardwareVerificationPage(): React.JSX.Element {
                     </span>
                     <span className="text-zinc-300 font-bold uppercase">{evt.stage}</span>
                   </div>
-                  <span className="font-mono">{evt.timestamp}</span>
+                  <span>{evt.timestamp}</span>
                 </div>
 
                 <div className="pl-4 border-l border-zinc-800 space-y-1 text-xs">

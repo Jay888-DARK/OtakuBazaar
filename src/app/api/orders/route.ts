@@ -16,9 +16,19 @@ import { prisma } from '@/lib/prismaClient';
 import { MOCK_GRAILS } from '@/lib/mockProducts';
 
 // Initialize Razorpay SDK with environment secrets
+const key_id = (process.env.RAZORPAY_KEY_ID || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID)?.trim() || 'rzp_test_TdBTiCyaOJ95KC';
+const key_secret = process.env.RAZORPAY_KEY_SECRET?.trim() || 'u5wkPbmPedlHMnJH0a5M7FvQ';
+
+if (!process.env.RAZORPAY_KEY_ID?.trim() && !process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID?.trim()) {
+  console.error('[Orders API] RAZORPAY_KEY_ID is undefined or missing in environment variables.');
+}
+if (!process.env.RAZORPAY_KEY_SECRET?.trim()) {
+  console.error('[Orders API] RAZORPAY_KEY_SECRET is undefined or missing in environment variables.');
+}
+
 const razorpay = new Razorpay({
-  key_id: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || process.env.RAZORPAY_KEY_ID || 'rzp_test_TdBTiCyaOJ95KC',
-  key_secret: process.env.RAZORPAY_KEY_SECRET || 'u5wkPbmPedlHMnJH0a5M7FvQ',
+  key_id,
+  key_secret,
 });
 
 export async function POST(req: Request): Promise<NextResponse> {

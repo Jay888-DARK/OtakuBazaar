@@ -88,7 +88,10 @@ export default function VaultCustodyDashboardPage(): React.JSX.Element {
   };
 
   return (
-    <div className="min-h-screen bg-[#09090b] text-[#f4f4f5] py-10 px-4 sm:px-6 lg:px-8 select-none font-mono">
+    <div
+      className="min-h-screen bg-[#09090b] text-[#f4f4f5] py-10 px-4 sm:px-6 lg:px-8 select-none"
+      style={{ fontFamily: "'Satoshi', 'Cabinet Grotesk', sans-serif" }}
+    >
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Navigation Breadcrumbs & Portfolio System ID */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[#27272a] pb-3 gap-2 text-[10px] uppercase tracking-[0.2em] text-zinc-500">
@@ -157,7 +160,7 @@ export default function VaultCustodyDashboardPage(): React.JSX.Element {
             <span className="text-[10px] uppercase tracking-[0.25em] text-zinc-400 font-bold font-sans">
               ACTIVE CUSTODIAL POSITIONS
             </span>
-            <span className="text-[9px] uppercase tracking-wider text-zinc-500 font-mono">
+            <span className="text-[9px] uppercase tracking-wider text-zinc-500">
               SETTLEMENT: FRICTIONLESS SECONDARY TRADING ENABLED
             </span>
           </div>
@@ -209,7 +212,7 @@ export default function VaultCustodyDashboardPage(): React.JSX.Element {
                     <span className="block text-[8px] uppercase tracking-widest text-zinc-500 font-sans">
                       MARK-TO-MARKET VALUATION
                     </span>
-                    <span className="text-lg font-extrabold uppercase text-zinc-100 font-mono">
+                    <span className="text-lg font-bold uppercase text-zinc-100">
                       ₹{asset.currentValuation.toLocaleString('en-IN')}
                     </span>
                   </div>

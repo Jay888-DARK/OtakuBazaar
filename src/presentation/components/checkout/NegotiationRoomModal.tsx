@@ -130,10 +130,10 @@ export function NegotiationRoomModal(): React.JSX.Element | null {
         {/* LEFT HALF (50%): Product Grid Data, Image & Details */}
         <div className="flex flex-col justify-between p-6 sm:p-10 lg:p-12 bg-[#09090b]">
           <div className="relative border border-[#27272a] bg-[#070709] p-6 mb-8">
-            <span className="absolute top-2 left-2 text-[9px] uppercase tracking-[0.2em] text-zinc-600 font-mono">
+            <span className="absolute top-2 left-2 text-[9px] uppercase tracking-[0.2em] text-zinc-600">
               ITEM ID // {roomItem.lotRef}
             </span>
-            <span className="absolute bottom-2 right-2 text-[9px] uppercase tracking-[0.2em] text-zinc-600 font-mono">
+            <span className="absolute bottom-2 right-2 text-[9px] uppercase tracking-[0.2em] text-zinc-600">
               VERIFIED AUTHENTIC
             </span>
 
@@ -173,7 +173,7 @@ export function NegotiationRoomModal(): React.JSX.Element | null {
               </div>
               <div className="border border-zinc-800 bg-[#0e0e11] p-3">
                 <span className="block text-[8px] uppercase tracking-widest text-zinc-500">Item Ref</span>
-                <span className="text-[11px] font-bold uppercase text-zinc-300 font-mono">{roomItem.lotRef}</span>
+                <span className="text-[11px] font-bold uppercase text-zinc-300">{roomItem.lotRef}</span>
               </div>
               <div className="border border-zinc-800 bg-[#0e0e11] p-3">
                 <span className="block text-[8px] uppercase tracking-widest text-zinc-500">Inspection</span>
@@ -215,7 +215,7 @@ export function NegotiationRoomModal(): React.JSX.Element | null {
             </div>
 
             {/* Document Clauses */}
-            <div className="space-y-4 text-xs font-mono uppercase tracking-wider text-zinc-400 leading-relaxed max-h-[320px] overflow-y-auto pr-2 border-l border-zinc-800 pl-4">
+            <div className="space-y-4 text-xs uppercase tracking-wider text-zinc-400 leading-relaxed max-h-[320px] overflow-y-auto pr-2 border-l border-zinc-800 pl-4">
               <div>
                 <span className="text-zinc-200 font-bold block mb-1">1. 15-MINUTE RESERVATION LOCK</span>
                 <p className="text-[11px] text-zinc-500">
@@ -291,7 +291,7 @@ export function NegotiationRoomModal(): React.JSX.Element | null {
                 : `BUY NOW (₹${roomItem.price.toLocaleString('en-IN')}) →`}
             </button>
 
-            <div className="flex items-center justify-between text-[9px] uppercase tracking-widest text-zinc-500 font-mono">
+            <div className="flex items-center justify-between text-[9px] uppercase tracking-widest text-zinc-500">
               <span>GATEWAY: RAZORPAY ESCROW / UPI DIRECT</span>
               <span>256-BIT ENCRYPTION</span>
             </div>

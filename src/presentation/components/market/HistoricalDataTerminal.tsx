@@ -44,7 +44,7 @@ export function HistoricalDataTerminal({
           </h3>
         </div>
 
-        <div className="flex items-center gap-2 text-[9px] uppercase tracking-wider text-emerald-400 font-mono">
+        <div className="flex items-center gap-2 text-[9px] uppercase tracking-wider text-emerald-400">
           <span className="w-1.5 h-1.5 bg-emerald-400 inline-block" />
           <span>INDEX ACTIVE (MUMBAI/TYO)</span>
         </div>
@@ -55,7 +55,7 @@ export function HistoricalDataTerminal({
         {/* Metric Row 1: 52-Week Range */}
         <div className="p-4 flex items-center justify-between text-[11px]">
           <span className="text-zinc-500 uppercase tracking-wider">52-WEEK HIGH / LOW</span>
-          <div className="text-right font-mono font-bold text-zinc-200">
+          <div className="text-right font-bold text-zinc-200">
             <span>₹{high52.toLocaleString('en-IN')}</span>
             <span className="text-zinc-600 mx-2">/</span>
             <span className="text-zinc-400">₹{low52.toLocaleString('en-IN')}</span>
@@ -65,7 +65,7 @@ export function HistoricalDataTerminal({
         {/* Metric Row 2: Appreciation Curves */}
         <div className="p-4 flex items-center justify-between text-[11px]">
           <span className="text-zinc-500 uppercase tracking-wider">ANNUALIZED APPRECIATION</span>
-          <div className="flex items-center gap-3 font-mono font-bold">
+          <div className="flex items-center gap-3 font-bold">
             <span className="text-emerald-400">{appreciation1y} (1Y)</span>
             <span className="text-zinc-600">•</span>
             <span className="text-emerald-400">{appreciation30d} (30D)</span>
@@ -75,7 +75,7 @@ export function HistoricalDataTerminal({
         {/* Metric Row 3: Daily Trading Volume */}
         <div className="p-4 flex items-center justify-between text-[11px]">
           <span className="text-zinc-500 uppercase tracking-wider">24H SECONDARY LIQUIDITY</span>
-          <span className="font-mono font-bold text-zinc-200">
+          <span className="font-bold text-zinc-200">
             ₹{dailyVolume.toLocaleString('en-IN')} (3 TRANSACTIONS)
           </span>
         </div>
@@ -83,7 +83,7 @@ export function HistoricalDataTerminal({
         {/* Metric Row 4: Volatility & Sharpe Index */}
         <div className="p-4 flex items-center justify-between text-[11px]">
           <span className="text-zinc-500 uppercase tracking-wider">BETA / VOLATILITY COEFFICIENT</span>
-          <span className="font-mono font-bold text-zinc-300">
+          <span className="font-bold text-zinc-300">
             0.42 (LOW CORRELATION ASSET)
           </span>
         </div>
@@ -91,7 +91,7 @@ export function HistoricalDataTerminal({
         {/* Metric Row 5: Archival Vault Index Comparison */}
         <div className="p-4 flex items-center justify-between text-[11px]">
           <span className="text-zinc-500 uppercase tracking-wider">OTAKU-100 BENCHMARK</span>
-          <span className="font-mono font-bold text-zinc-300">
+          <span className="font-bold text-zinc-300">
             OUTPERFORMING BY +8.6%
           </span>
         </div>

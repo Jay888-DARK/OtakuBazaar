@@ -149,7 +149,7 @@ export function CurioBox({
                 unoptimized={true}
               />
             ) : (
-              <div className="w-full h-full flex flex-col items-center justify-center text-xs tracking-widest text-zinc-600 uppercase font-mono">
+              <div className="w-full h-full flex flex-col items-center justify-center text-xs tracking-widest text-zinc-600 uppercase">
                 [ No Image Available ]
               </div>
             )}
@@ -215,7 +215,7 @@ export function CurioBox({
                 unoptimized={true}
               />
             ) : (
-              <div className="w-full h-full flex flex-col items-center justify-center text-xs tracking-widest text-zinc-600 uppercase font-mono">
+              <div className="w-full h-full flex flex-col items-center justify-center text-xs tracking-widest text-zinc-600 uppercase">
                 [ No Image Available ]
               </div>
             )}

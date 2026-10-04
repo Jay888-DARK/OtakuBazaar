@@ -15,8 +15,29 @@ import { OrderRepository } from '@/infrastructure/database/repositories/OrderRep
 import { EscrowLedgerService } from '@/infrastructure/payment/EscrowLedgerService';
 
 function getRazorpayClient() {
-  const key_id = process.env.RAZORPAY_KEY_ID || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_TdBTiCyaOJ95KC';
-  const key_secret = process.env.RAZORPAY_KEY_SECRET || 'u5wkPbmPedlHMnJH0a5M7FvQ';
+  const key_id = process.env.RAZORPAY_KEY_ID?.trim() || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID?.trim() || 'rzp_test_TdBTiCyaOJ95KC';
+  const key_secret = process.env.RAZORPAY_KEY_SECRET?.trim() || 'u5wkPbmPedlHMnJH0a5M7FvQ';
+
+  // Validation: If either key is undefined or missing, log a descriptive error to console before executing new Razorpay
+  if (!process.env.RAZORPAY_KEY_ID?.trim() && !process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID?.trim()) {
+    console.error(
+      '[Razorpay Authentication Error] RAZORPAY_KEY_ID is undefined or missing in environment variables. ' +
+      'Check that RAZORPAY_KEY_ID or NEXT_PUBLIC_RAZORPAY_KEY_ID is properly configured.'
+    );
+  }
+  if (!process.env.RAZORPAY_KEY_SECRET?.trim()) {
+    console.error(
+      '[Razorpay Authentication Error] RAZORPAY_KEY_SECRET is undefined or missing in environment variables. ' +
+      'Check that RAZORPAY_KEY_SECRET is properly configured.'
+    );
+  }
+
+  // Key mode check (test vs live)
+  const isTestKey = key_id.startsWith('rzp_test_');
+  const isLiveKey = key_id.startsWith('rzp_live_');
+  if (!isTestKey && !isLiveKey) {
+    console.warn(`[Razorpay Configuration] Unrecognized Razorpay key format: ${key_id.substring(0, 8)}...`);
+  }
 
   return {
     key_id,

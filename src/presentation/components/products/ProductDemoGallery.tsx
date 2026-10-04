@@ -290,7 +290,7 @@ export function ProductDemoGallery({
           <span className="text-[8px] uppercase tracking-widest text-zinc-500 block">
             TAMPER SEAL SERIAL
           </span>
-          <span className="font-bold uppercase tracking-wider text-zinc-200 font-mono">
+          <span className="font-bold uppercase tracking-wider text-zinc-200">
             OKB-2026-9941-X
           </span>
         </div>
