@@ -173,9 +173,6 @@ export function InstantCheckoutDrawer({
         throw new Error(responseData.error || 'Server rejected instant order initialization.');
       }
 
-      // 2. Fix the Order ID Mismatch: Razorpay returns order id as `id`
-      const orderId = responseData.id || responseData.orderId || responseData.order_id;
-
       // 3. Sync the Exact Amount: Use exact integer amount returned directly by backend
       const exactAmountPaise = responseData.amount;
 
@@ -201,9 +198,22 @@ export function InstantCheckoutDrawer({
         throw new Error('Razorpay Public Key is missing or invalid.');
       }
 
-      const recipientName = (fullName || 'Verified Collector').trim();
-      const rawPhone = phone || '';
-      const cleanPhone = rawPhone.replace(/[^0-9]/g, '').slice(-10);
+      const orderData = responseData;
+      const recipientPhone = phone || '';
+      const setIsLoading = setLoading;
+
+      // 1. Strip all spaces and symbols. Must be exactly 10 digits.
+      const cleanPhone = recipientPhone ? recipientPhone.replace(/[^0-9]/g, '').slice(-10) : "";
+
+      // 2. Validate Order ID existence before proceeding
+      if (!orderData?.id || !orderData.id.startsWith('order_')) {
+        console.error("Invalid Order ID received from backend:", orderData);
+        alert("Payment initialization failed. Please try again.");
+        setIsLoading(false);
+        return; // Stop execution to prevent iframe crash
+      }
+
+      const orderId = orderData.id;
 
       // Minimal, bulletproof options (omit amount so order_id governs the transaction securely)
       const options = {
@@ -359,9 +369,14 @@ export function InstantCheckoutDrawer({
           <button
             type="button"
             onClick={onClose}
-            className="px-3 py-1.5 bg-[#141418] hover:bg-zinc-800 text-zinc-400 hover:text-zinc-100 text-[10px] font-bold uppercase tracking-widest border border-zinc-800 cursor-pointer rounded-none transition-none"
+            aria-label="Close checkout"
+            data-testid="close-checkout-button"
+            className="w-8 h-8 bg-[#141418] hover:bg-zinc-800 text-zinc-400 hover:text-zinc-100 flex items-center justify-center border border-zinc-800 cursor-pointer rounded-none transition-colors"
           >
-            [ CLOSE ]
+            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
           </button>
         </div>
 

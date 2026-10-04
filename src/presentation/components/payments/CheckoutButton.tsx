@@ -113,9 +113,6 @@ export function CheckoutButton({
         throw new Error(responseData.error || 'Failed to initialize server-authorized escrow order.');
       }
 
-      // 2. Fix the Order ID Mismatch: Razorpay returns order id as `id`
-      const orderId = responseData.id || responseData.orderId || responseData.order_id;
-
       // 3. Sync the Exact Amount: Use exact integer amount returned directly by backend
       const exactAmountPaise = responseData.amount;
 
@@ -141,8 +138,22 @@ export function CheckoutButton({
         throw new Error('Razorpay Public Key is missing or invalid.');
       }
 
-      const rawPhone = customerContact || '';
-      const cleanPhone = rawPhone.replace(/[^0-9]/g, '').slice(-10);
+      const orderData = responseData;
+      const recipientPhone = customerContact || '';
+      const setIsLoading = setLoading;
+
+      // 1. Strip all spaces and symbols. Must be exactly 10 digits.
+      const cleanPhone = recipientPhone ? recipientPhone.replace(/[^0-9]/g, '').slice(-10) : "";
+
+      // 2. Validate Order ID existence before proceeding
+      if (!orderData?.id || !orderData.id.startsWith('order_')) {
+        console.error("Invalid Order ID received from backend:", orderData);
+        alert("Payment initialization failed. Please try again.");
+        setIsLoading(false);
+        return; // Stop execution to prevent iframe crash
+      }
+
+      const orderId = orderData.id;
 
       // Minimal, bulletproof options (omit amount so order_id governs the transaction securely)
       const options = {

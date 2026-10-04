@@ -72,13 +72,27 @@ export default async function CheckoutPage({ searchParams }: CheckoutPageProps):
       <RazorpayScript />
 
       <div className="max-w-3xl mx-auto space-y-8">
-        {/* Navigation Breadcrumbs */}
-        <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] font-medium text-zinc-500">
-          <Link href="/" className="hover:text-zinc-200 transition-colors">
-            Home
+        {/* Navigation Breadcrumbs & Close Action */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] font-medium text-zinc-500">
+            <Link href="/" className="hover:text-zinc-200 transition-colors">
+              Home
+            </Link>
+            <span>/</span>
+            <span className="text-zinc-200">Checkout</span>
+          </div>
+
+          <Link
+            href="/"
+            aria-label="Close checkout"
+            data-testid="close-checkout-btn"
+            className="w-8 h-8 bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-600 flex items-center justify-center transition-colors cursor-pointer"
+          >
+            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
           </Link>
-          <span>/</span>
-          <span className="text-zinc-200">Checkout</span>
         </div>
 
         {/* Header Panel */}
