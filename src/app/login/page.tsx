@@ -80,18 +80,21 @@ export default function LoginPage() {
         {/* Header & Typography */}
         <div className="text-center mb-8">
           <span
-            className="text-xs uppercase text-zinc-400 font-normal block mb-1.5"
-            style={{ fontFamily: "'Satoshi', 'Cabinet Grotesk', sans-serif", letterSpacing: '0.04em' }}
+            className="text-[11px] sm:text-xs uppercase tracking-[0.15em] text-[#A3A3A3] font-medium block mb-1.5"
+            style={{ fontFamily: "'Satoshi', sans-serif" }}
           >
             ARCHIVAL ACCESS // VERIFIED IDENTITY
           </span>
           <h1
-            className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-100"
-            style={{ fontFamily: "'Clash Display', 'Syne', sans-serif" }}
+            className="text-xl sm:text-2xl font-semibold tracking-tight text-white uppercase"
+            style={{ fontFamily: "'Clash Display', 'Cabinet Grotesk', sans-serif", letterSpacing: '-0.02em' }}
           >
             Collector Vault
           </h1>
-          <p className="text-xs text-zinc-400 mt-2 font-normal">
+          <p
+            className="text-xs text-zinc-400 mt-2 font-normal"
+            style={{ fontFamily: "'Satoshi', sans-serif" }}
+          >
             Secure authentication for high-ticket acquisition.
           </p>
         </div>

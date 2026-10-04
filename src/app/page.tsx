@@ -44,13 +44,22 @@ export default async function HomePage(props?: { searchParams?: Promise<Record<s
         <div className="bg-[#0c0c0e] border border-[#27272a]">
           {/* Section Masthead */}
           <div className="p-6 sm:p-10 border-b border-[#27272a] bg-[#0a0a0c]">
-            <span className="text-[10px] font-bold tracking-[0.25em] text-zinc-500 uppercase block mb-1">
+            <span
+              style={{ fontFamily: "'Satoshi', sans-serif" }}
+              className="text-[11px] sm:text-xs font-medium tracking-[0.15em] text-[#A3A3A3] uppercase block mb-1"
+            >
               Buyer Protection • Secure Escrow
             </span>
-            <h2 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold text-zinc-100 uppercase tracking-tight leading-none">
+            <h2
+              style={{ fontFamily: "'Clash Display', 'Cabinet Grotesk', sans-serif", letterSpacing: '-0.02em' }}
+              className="text-xl sm:text-2xl font-semibold text-white uppercase tracking-tight leading-tight"
+            >
               Authenticity Guarantee &amp; 48-Hour Inspection Period
             </h2>
-            <p className="text-xs text-zinc-400 mt-2 max-w-2xl leading-relaxed font-sans">
+            <p
+              style={{ fontFamily: "'Satoshi', sans-serif" }}
+              className="text-xs text-zinc-400 mt-2 max-w-2xl leading-relaxed font-normal"
+            >
               100% authentic guaranteed. Your payment is held safely in escrow until you receive and inspect your item.
             </p>
           </div>
@@ -61,17 +70,29 @@ export default async function HomePage(props?: { searchParams?: Promise<Record<s
             <div className="lg:col-span-7 p-6 sm:p-8 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-[#27272a] bg-[#09090b]">
               <div>
                 <div className="flex items-center justify-between gap-4 mb-4">
-                  <span className="text-[10px] uppercase tracking-[0.2em] text-zinc-300 border border-[#27272a] bg-[#111114] px-2.5 py-1 font-bold">
+                  <span
+                    style={{ fontFamily: "'Satoshi', sans-serif" }}
+                    className="text-[11px] sm:text-xs uppercase tracking-[0.15em] text-[#A3A3A3] border border-[#27272a] bg-[#111114] px-2.5 py-1 font-medium"
+                  >
                     STEP 01
                   </span>
-                  <span className="text-[9px] uppercase tracking-[0.25em] text-zinc-500 font-bold">
+                  <span
+                    style={{ fontFamily: "'Satoshi', sans-serif" }}
+                    className="text-[11px] sm:text-xs uppercase tracking-[0.15em] text-[#A3A3A3] font-medium"
+                  >
                     Order Protection • Reserve Lock
                   </span>
                 </div>
-                <h3 className="text-xl sm:text-2xl font-extrabold uppercase tracking-tight text-zinc-100 mb-2">
+                <h3
+                  style={{ fontFamily: "'Clash Display', 'Cabinet Grotesk', sans-serif", letterSpacing: '-0.02em' }}
+                  className="text-lg sm:text-xl font-semibold uppercase tracking-tight text-white mb-2"
+                >
                   15-Minute Reservation Lock
                 </h3>
-                <p className="text-xs text-zinc-300 leading-relaxed max-w-xl font-sans">
+                <p
+                  style={{ fontFamily: "'Satoshi', sans-serif" }}
+                  className="text-xs text-zinc-300 leading-relaxed max-w-xl font-normal"
+                >
                   When your order begins, the item is reserved exclusively for you for 15 minutes while you complete payment into secure escrow.
                 </p>
               </div>
@@ -79,16 +100,46 @@ export default async function HomePage(props?: { searchParams?: Promise<Record<s
               {/* Protection Indicators */}
               <div className="mt-8 pt-6 border-t border-[#27272a] grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="border border-[#27272a] bg-[#0c0c0e] p-3">
-                  <span className="block text-[9px] text-zinc-500 uppercase tracking-widest font-bold">Lock Duration</span>
-                  <span className="text-xs font-bold text-zinc-200 uppercase tracking-wider block mt-0.5">15 Minutes</span>
+                  <span
+                    style={{ fontFamily: "'Satoshi', sans-serif" }}
+                    className="block text-[11px] text-[#A3A3A3] uppercase tracking-[0.15em] font-medium"
+                  >
+                    Lock Duration
+                  </span>
+                  <span
+                    style={{ fontFamily: "'Satoshi', sans-serif" }}
+                    className="text-xs font-semibold text-zinc-200 uppercase tracking-wider block mt-0.5"
+                  >
+                    15 Minutes
+                  </span>
                 </div>
                 <div className="border border-[#27272a] bg-[#0c0c0e] p-3">
-                  <span className="block text-[9px] text-zinc-500 uppercase tracking-widest font-bold">Payment Security</span>
-                  <span className="text-xs font-bold text-zinc-200 uppercase tracking-wider block mt-0.5">Escrow Protected</span>
+                  <span
+                    style={{ fontFamily: "'Satoshi', sans-serif" }}
+                    className="block text-[11px] text-[#A3A3A3] uppercase tracking-[0.15em] font-medium"
+                  >
+                    Payment Security
+                  </span>
+                  <span
+                    style={{ fontFamily: "'Satoshi', sans-serif" }}
+                    className="text-xs font-semibold text-zinc-200 uppercase tracking-wider block mt-0.5"
+                  >
+                    Escrow Protected
+                  </span>
                 </div>
                 <div className="border border-[#27272a] bg-[#0c0c0e] p-3">
-                  <span className="block text-[9px] text-zinc-500 uppercase tracking-widest font-bold">Refund Policy</span>
-                  <span className="text-xs font-bold text-zinc-200 uppercase tracking-wider block mt-0.5">100% Refundable</span>
+                  <span
+                    style={{ fontFamily: "'Satoshi', sans-serif" }}
+                    className="block text-[11px] text-[#A3A3A3] uppercase tracking-[0.15em] font-medium"
+                  >
+                    Refund Policy
+                  </span>
+                  <span
+                    style={{ fontFamily: "'Satoshi', sans-serif" }}
+                    className="text-xs font-semibold text-zinc-200 uppercase tracking-wider block mt-0.5"
+                  >
+                    100% Refundable
+                  </span>
                 </div>
               </div>
             </div>
@@ -99,23 +150,38 @@ export default async function HomePage(props?: { searchParams?: Promise<Record<s
               <div className="p-6 sm:p-8 flex flex-col justify-between flex-1">
                 <div>
                   <div className="flex items-center justify-between gap-4 mb-3">
-                    <span className="text-[10px] uppercase tracking-[0.2em] text-zinc-400 border border-[#27272a] bg-[#111114] px-2 py-0.5 font-bold">
+                    <span
+                      style={{ fontFamily: "'Satoshi', sans-serif" }}
+                      className="text-[11px] sm:text-xs uppercase tracking-[0.15em] text-[#A3A3A3] border border-[#27272a] bg-[#111114] px-2 py-0.5 font-medium"
+                    >
                       STEP 02
                     </span>
-                    <span className="text-[9px] uppercase tracking-[0.2em] text-zinc-500 font-bold">
+                    <span
+                      style={{ fontFamily: "'Satoshi', sans-serif" }}
+                      className="text-[11px] sm:text-xs uppercase tracking-[0.15em] text-[#A3A3A3] font-medium"
+                    >
                       Insured Shipping
                     </span>
                   </div>
-                  <h3 className="text-base font-extrabold uppercase tracking-tight text-zinc-200 mb-1.5">
+                  <h3
+                    style={{ fontFamily: "'Clash Display', 'Cabinet Grotesk', sans-serif", letterSpacing: '-0.02em' }}
+                    className="text-base font-semibold uppercase tracking-tight text-white mb-1.5"
+                  >
                     Tracked Express Delivery
                   </h3>
-                  <p className="text-xs text-zinc-400 leading-relaxed font-sans">
+                  <p
+                    style={{ fontFamily: "'Satoshi', sans-serif" }}
+                    className="text-xs text-zinc-400 leading-relaxed font-normal"
+                  >
                     Packed securely with collector-grade bubble wrap and shipped via insured express courier with real-time end-to-end tracking.
                   </p>
                 </div>
-                <div className="mt-4 pt-3 border-t border-[#27272a] flex items-center justify-between text-[10px] uppercase tracking-widest text-zinc-500 font-bold">
+                <div
+                  style={{ fontFamily: "'Satoshi', sans-serif" }}
+                  className="mt-4 pt-3 border-t border-[#27272a] flex items-center justify-between text-[11px] uppercase tracking-[0.15em] text-[#A3A3A3] font-medium"
+                >
                   <span>Transit Insurance</span>
-                  <span className="text-zinc-300 font-bold">Covered In Full</span>
+                  <span className="text-zinc-300 font-semibold">Covered In Full</span>
                 </div>
               </div>
 
@@ -123,23 +189,38 @@ export default async function HomePage(props?: { searchParams?: Promise<Record<s
               <div className="p-6 sm:p-8 flex flex-col justify-between flex-1">
                 <div>
                   <div className="flex items-center justify-between gap-4 mb-3">
-                    <span className="text-[10px] uppercase tracking-[0.2em] text-zinc-400 border border-[#27272a] bg-[#111114] px-2 py-0.5 font-bold">
+                    <span
+                      style={{ fontFamily: "'Satoshi', sans-serif" }}
+                      className="text-[11px] sm:text-xs uppercase tracking-[0.15em] text-[#A3A3A3] border border-[#27272a] bg-[#111114] px-2 py-0.5 font-medium"
+                    >
                       STEP 03
                     </span>
-                    <span className="text-[9px] uppercase tracking-[0.2em] text-zinc-500 font-bold">
+                    <span
+                      style={{ fontFamily: "'Satoshi', sans-serif" }}
+                      className="text-[11px] sm:text-xs uppercase tracking-[0.15em] text-[#A3A3A3] font-medium"
+                    >
                       Delivery &amp; Approval
                     </span>
                   </div>
-                  <h3 className="text-base font-extrabold uppercase tracking-tight text-zinc-200 mb-1.5">
+                  <h3
+                    style={{ fontFamily: "'Clash Display', 'Cabinet Grotesk', sans-serif", letterSpacing: '-0.02em' }}
+                    className="text-base font-semibold uppercase tracking-tight text-white mb-1.5"
+                  >
                     48-Hour Inspection Window
                   </h3>
-                  <p className="text-xs text-zinc-400 leading-relaxed font-sans">
+                  <p
+                    style={{ fontFamily: "'Satoshi', sans-serif" }}
+                    className="text-xs text-zinc-400 leading-relaxed font-normal"
+                  >
                     Inspect your collectible when it arrives. Satisfied? Funds are released to the seller. Disputed? Get a 100% refund.
                   </p>
                 </div>
-                <div className="mt-4 pt-3 border-t border-[#27272a] flex items-center justify-between text-[10px] uppercase tracking-widest text-zinc-500 font-bold">
+                <div
+                  style={{ fontFamily: "'Satoshi', sans-serif" }}
+                  className="mt-4 pt-3 border-t border-[#27272a] flex items-center justify-between text-[11px] uppercase tracking-[0.15em] text-[#A3A3A3] font-medium"
+                >
                   <span>Inspection Window</span>
-                  <span className="text-zinc-300 font-bold">48 Hours Post-Delivery</span>
+                  <span className="text-zinc-300 font-semibold">48 Hours Post-Delivery</span>
                 </div>
               </div>
             </div>
@@ -149,13 +230,22 @@ export default async function HomePage(props?: { searchParams?: Promise<Record<s
 
       {/* Marketplace Footer */}
       <footer className="mt-20 py-12 px-4 sm:px-6 lg:px-8 text-center text-xs border-t border-zinc-800 text-zinc-500 bg-[#09090b]">
-        <p className="text-xs mb-2 font-bold text-zinc-200 uppercase tracking-[0.25em]">
+        <p
+          style={{ fontFamily: "'Satoshi', sans-serif" }}
+          className="text-xs mb-2 font-bold text-zinc-200 uppercase tracking-[0.15em]"
+        >
           OtakuBazaar Collectibles
         </p>
-        <p className="mb-4 text-[11px] uppercase tracking-wider text-zinc-500">
+        <p
+          style={{ fontFamily: "'Satoshi', sans-serif" }}
+          className="mb-4 text-[11px] uppercase tracking-[0.15em] text-[#A3A3A3] font-medium"
+        >
           Direct Indian Anime Collectibles Marketplace • Secure Payment Protected
         </p>
-        <div className="flex flex-wrap items-center justify-center gap-4 text-[11px] font-medium uppercase tracking-wider">
+        <div
+          style={{ fontFamily: "'Satoshi', sans-serif" }}
+          className="flex flex-wrap items-center justify-center gap-4 text-[11px] font-medium uppercase tracking-[0.15em]"
+        >
           <Link href="/vault" className="hover:text-zinc-300 transition-none no-underline text-zinc-400 brutalist-btn p-0.5">
             [ Collection ]
           </Link>

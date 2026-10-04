@@ -70,17 +70,23 @@ export default function CartPage(): React.JSX.Element {
         {/* Page Header */}
         <div className="border border-zinc-800 bg-[#111114] p-6 sm:p-8">
           <div className="flex items-center gap-3 mb-2">
-            <span className="px-2.5 py-1 bg-zinc-900 text-zinc-400 border border-zinc-700 text-xs uppercase tracking-wider font-normal">
+            <span
+              style={{ fontFamily: "'Satoshi', sans-serif" }}
+              className="px-2.5 py-1 bg-zinc-900 text-[#A3A3A3] border border-zinc-700 text-[11px] uppercase tracking-[0.15em] font-medium"
+            >
               48-Hour Escrow Protection
             </span>
           </div>
           <h1
-            className="text-2xl sm:text-3xl font-bold text-zinc-100 tracking-tight"
-            style={{ fontFamily: "'Clash Display', 'Syne', sans-serif" }}
+            className="text-xl sm:text-2xl font-semibold text-white tracking-tight uppercase"
+            style={{ fontFamily: "'Clash Display', 'Cabinet Grotesk', sans-serif", letterSpacing: '-0.02em' }}
           >
             Collector Vault Cart
           </h1>
-          <p className="text-xs text-zinc-400 mt-2 font-normal">
+          <p
+            style={{ fontFamily: "'Satoshi', sans-serif" }}
+            className="text-xs text-zinc-400 mt-2 font-normal"
+          >
             Your reserved lots are backed by physical inspection before fund release.
           </p>
         </div>
@@ -160,8 +166,8 @@ export default function CartPage(): React.JSX.Element {
             <div className="lg:col-span-4">
               <div className="border border-zinc-800 bg-[#111114] p-6 space-y-4">
                 <h2
-                  className="text-sm font-bold text-zinc-100 uppercase tracking-tight border-b border-zinc-800 pb-3"
-                  style={{ fontFamily: "'Clash Display', 'Syne', sans-serif" }}
+                  className="text-sm font-semibold text-white uppercase tracking-tight border-b border-zinc-800 pb-3"
+                  style={{ fontFamily: "'Clash Display', 'Cabinet Grotesk', sans-serif", letterSpacing: '-0.02em' }}
                 >
                   Order Summary
                 </h2>

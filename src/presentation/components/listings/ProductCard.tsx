@@ -68,9 +68,12 @@ export function ProductCard({ product, className = '' }: ProductCardProps): Reac
       className={`relative flex flex-col justify-between bg-[#0e0e11] border border-zinc-800 hover:border-zinc-600 p-4 transition-colors group select-none ${className}`.trim()}
     >
       {/* 1. Header (Anti-Truncation Item Format) */}
-      <div className="flex items-center justify-between text-[10px] font-semibold tracking-wider text-zinc-500 mb-2">
+      <div
+        style={{ fontFamily: "'Satoshi', sans-serif" }}
+        className="flex items-center justify-between text-[11px] font-medium tracking-[0.15em] text-[#A3A3A3] mb-2 uppercase"
+      >
         <span>ITEM #{String(product.id).replace(/[^0-9]/g, '').padStart(4, '0').slice(-4) || '0482'} • TOKYO / MUMBAI</span>
-        <span className="text-[9px] font-bold tracking-[0.15em] text-zinc-300 border border-zinc-700 bg-zinc-900 px-2 py-0.5 uppercase">
+        <span className="text-[11px] font-medium tracking-[0.15em] text-[#A3A3A3] border border-zinc-800 bg-[#111114] px-2 py-0.5 uppercase">
           AUTHENTIC
         </span>
       </div>
@@ -83,10 +86,16 @@ export function ProductCard({ product, className = '' }: ProductCardProps): Reac
         data-testid="product-thumbnail"
       >
         <div className="relative w-full aspect-[4/5] overflow-hidden bg-[#09090b] border border-zinc-800/80 flex items-center justify-center p-3 my-2">
-          <span className="marginal-metadata marginal-tl text-zinc-600">
+          <span
+            style={{ fontFamily: "'Satoshi', sans-serif" }}
+            className="marginal-metadata marginal-tl text-[11px] uppercase tracking-[0.15em] text-[#A3A3A3]"
+          >
             ITEM #{String(product.id).replace(/[^0-9]/g, '').padStart(4, '0').slice(-4) || '0482'}
           </span>
-          <span className="marginal-metadata marginal-br text-zinc-600">
+          <span
+            style={{ fontFamily: "'Satoshi', sans-serif" }}
+            className="marginal-metadata marginal-br text-[11px] uppercase tracking-[0.15em] text-[#A3A3A3]"
+          >
             MINT
           </span>
 
@@ -107,7 +116,7 @@ export function ProductCard({ product, className = '' }: ProductCardProps): Reac
         <Link href={`/products/${product.id}`} className="block no-underline hover:no-underline">
           <h3
             className="product-title text-sm font-semibold text-zinc-100 truncate mt-2 normal-case tracking-normal"
-            style={{ fontFamily: "'Satoshi', 'Cabinet Grotesk', sans-serif" }}
+            style={{ fontFamily: "'Satoshi', sans-serif" }}
           >
             {product.title}
           </h3>
@@ -115,8 +124,8 @@ export function ProductCard({ product, className = '' }: ProductCardProps): Reac
 
         {/* Secondary Valuation Bar */}
         <div
-          className="flex items-center justify-between text-xs font-normal text-zinc-500 mt-2"
-          style={{ fontFamily: "'Satoshi', 'Cabinet Grotesk', sans-serif" }}
+          className="flex items-center justify-between text-xs font-normal text-zinc-400 mt-2"
+          style={{ fontFamily: "'Satoshi', sans-serif" }}
         >
           <span className="text-emerald-400 font-medium">+14.2% (90D)</span>
           <span className="text-zinc-400 font-normal">{offersCount || 2} Active Offers</span>
@@ -132,20 +141,20 @@ export function ProductCard({ product, className = '' }: ProductCardProps): Reac
             title={product.title}
             description="Direct Purchase with Escrow Protection"
             buttonText={`BUY NOW — ₹${displayPrice.toLocaleString('en-IN')}`}
-            className="w-full py-2.5 px-3 bg-zinc-100 hover:bg-white text-black font-semibold text-xs uppercase tracking-wider border border-zinc-100 transition-none cursor-pointer flex items-center justify-center gap-2 rounded-none"
+            className="w-full py-2.5 px-3 bg-zinc-100 hover:bg-white text-black font-bold text-xs uppercase tracking-[0.15em] border border-zinc-100 transition-none cursor-pointer flex items-center justify-center gap-2 rounded-none"
           />
 
           {/* Clear Assurance Badges (Zero Emojis, Sharp 0px borders) */}
           <div
-            className="flex items-center justify-between text-[11px] text-zinc-400 font-normal px-0.5"
-            style={{ fontFamily: "'Satoshi', 'Cabinet Grotesk', sans-serif" }}
+            className="flex items-center justify-between text-[11px] text-[#A3A3A3] font-medium px-0.5 uppercase tracking-[0.15em]"
+            style={{ fontFamily: "'Satoshi', sans-serif" }}
           >
             <span className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 bg-zinc-500 inline-block" />
+              <span className="w-1.5 h-1.5 bg-[#A3A3A3] inline-block" />
               Insured Shipping
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 bg-zinc-500 inline-block" />
+              <span className="w-1.5 h-1.5 bg-[#A3A3A3] inline-block" />
               48h Inspection Window
             </span>
           </div>
@@ -157,7 +166,7 @@ export function ProductCard({ product, className = '' }: ProductCardProps): Reac
               aria-label={`Make an offer on ${product.title}`}
               data-testid="price-offer-pill"
               className="filter-pill flex-1 flex items-center justify-between px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white border border-zinc-800 text-xs font-normal cursor-pointer rounded-none"
-              style={{ fontFamily: "'Satoshi', 'Cabinet Grotesk', sans-serif" }}
+              style={{ fontFamily: "'Satoshi', sans-serif" }}
             >
               <span>Make an Offer</span>
               <span className="text-zinc-400 font-medium">Offer →</span>

@@ -208,14 +208,14 @@ export function CartDrawer(): React.JSX.Element | null {
                 <div>
                   <h2
                     id="cart-drawer-title"
-                    className="text-sm font-bold text-zinc-100 tracking-tight"
-                    style={{ fontFamily: "'Clash Display', 'Syne', sans-serif" }}
+                    className="text-sm font-semibold text-white tracking-tight"
+                    style={{ fontFamily: "'Clash Display', 'Cabinet Grotesk', sans-serif", letterSpacing: '-0.02em' }}
                   >
                     Collector Vault Cart
                   </h2>
                   <p
                     className="text-xs text-zinc-500 m-0 font-normal"
-                    style={{ fontFamily: "'Satoshi', 'Cabinet Grotesk', sans-serif" }}
+                    style={{ fontFamily: "'Satoshi', sans-serif" }}
                   >
                     {cartItems.length} {cartItems.length === 1 ? 'lot' : 'lots'} • 48-Hour Escrow Protected
                   </p>

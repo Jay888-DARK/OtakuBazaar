@@ -173,13 +173,22 @@ export default function ProductDetailsPage({ params }: ProductDetailsProps) {
                 {/* Main Product Title & Valuation Row */}
                 <div className="flex flex-col lg:flex-row lg:items-end justify-between border-b border-[#27272a] pb-6 gap-6">
                   <div className="space-y-1.5 flex-1">
-                    <span className="text-[9px] uppercase tracking-[0.25em] text-zinc-500 font-bold block">
+                    <span
+                      style={{ fontFamily: "'Satoshi', sans-serif" }}
+                      className="text-[11px] sm:text-xs uppercase tracking-[0.15em] text-[#A3A3A3] font-medium block"
+                    >
                       PRE-PAINTED POLYSTONE STATUE • COLLECTOR EDITION
                     </span>
-                    <h1 className="text-2xl sm:text-3xl font-extrabold uppercase tracking-tight text-zinc-100">
+                    <h1
+                      style={{ fontFamily: "'Clash Display', 'Cabinet Grotesk', sans-serif", letterSpacing: '-0.02em' }}
+                      className="text-2xl sm:text-3xl font-semibold uppercase tracking-tight text-white"
+                    >
                       {currentProduct?.title || 'Guts Berserker Armor Unleashed 1/4 Scale'}
                     </h1>
-                    <p className="text-xs text-zinc-400 max-w-xl leading-relaxed pt-1">
+                    <p
+                      style={{ fontFamily: "'Satoshi', sans-serif" }}
+                      className="text-xs text-zinc-400 max-w-xl leading-relaxed pt-1 font-normal"
+                    >
                       Factory sealed direct import. Backed by 48-hour inspection escrow, holographic authenticity verification, and insured express shipping.
                     </p>
                   </div>

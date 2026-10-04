@@ -100,16 +100,19 @@ export function Navbar() {
               />
             </div>
 
-            {/* The Logotype ('Clash Display' / 'Syne') */}
-            <div className="flex flex-col">
+            {/* The Logotype */}
+            <div className="flex flex-col justify-center">
               <span
-                style={{ fontFamily: "'Clash Display', 'Syne', sans-serif" }}
-                className="text-sm font-extrabold tracking-[0.25em] uppercase text-zinc-100 group-hover:text-white transition-colors leading-none"
+                style={{ fontFamily: "'Clash Display', 'Cabinet Grotesk', sans-serif" }}
+                className="text-sm font-bold tracking-[0.22em] uppercase text-zinc-100 group-hover:text-white transition-colors leading-none"
               >
-                OtakuBazaar
+                OTAKUBAZAAR
               </span>
-              <span className="text-[8px] font-semibold tracking-[0.25em] text-zinc-500 uppercase mt-0.5 leading-none">
-                Secure Marketplace
+              <span
+                style={{ fontFamily: "'Satoshi', sans-serif" }}
+                className="text-[10px] uppercase tracking-[0.28em] text-[#737373] mt-1 leading-none font-normal"
+              >
+                ESCROW AUTHENTICATED
               </span>
             </div>
           </Link>

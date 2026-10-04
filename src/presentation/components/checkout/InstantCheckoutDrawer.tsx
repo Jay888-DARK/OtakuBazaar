@@ -307,8 +307,8 @@ export function InstantCheckoutDrawer({
               GUEST CHECKOUT • NO ACCOUNT REQUIRED
             </span>
             <h2
-              style={{ fontFamily: "'Clash Display', 'Syne', sans-serif" }}
-              className="text-base font-extrabold uppercase tracking-wider text-zinc-100"
+              style={{ fontFamily: "'Clash Display', 'Cabinet Grotesk', sans-serif", letterSpacing: '-0.02em' }}
+              className="text-base font-semibold uppercase tracking-tight text-white"
             >
               [ FAST CHECKOUT ]
             </h2>
@@ -338,8 +338,8 @@ export function InstantCheckoutDrawer({
                   PAYMENT SUCCESSFUL • ORDER VERIFIED
                 </span>
                 <h3
-                  style={{ fontFamily: "'Clash Display', 'Syne', sans-serif" }}
-                  className="text-xl font-black uppercase tracking-tight text-black leading-tight"
+                  style={{ fontFamily: "'Clash Display', 'Cabinet Grotesk', sans-serif", letterSpacing: '-0.02em' }}
+                  className="text-lg sm:text-xl font-semibold uppercase tracking-tight text-black leading-tight"
                 >
                   [ ORDER CONFIRMED — PAYMENT RECEIVED ]
                 </h3>
@@ -412,8 +412,8 @@ export function InstantCheckoutDrawer({
                 <div className="flex justify-between items-center p-3 bg-[#111114] text-zinc-100 font-bold border-t border-[#27272a]">
                   <span className="text-xs uppercase tracking-[0.15em]">Total Due (INR):</span>
                   <span
-                    style={{ fontFamily: "'Clash Display', 'Syne', sans-serif" }}
-                    className="text-base font-extrabold tracking-wider text-zinc-100"
+                    style={{ fontFamily: "'Satoshi', sans-serif" }}
+                    className="text-xl font-bold tracking-tight text-white"
                   >
                     {formattedPrice}
                   </span>
@@ -513,8 +513,8 @@ export function InstantCheckoutDrawer({
                 id="instant-pay-trigger"
                 onClick={() => handleInstantPay()}
                 disabled={loading}
-                style={{ fontFamily: "'Clash Display', 'Syne', sans-serif" }}
-                className="w-full py-4 bg-[#f4f4f4] hover:bg-white text-black font-extrabold text-xs sm:text-sm uppercase tracking-[0.2em] border border-[#f4f4f4] cursor-pointer rounded-none transition-none flex items-center justify-center gap-2 disabled:opacity-50 disabled:pointer-events-none"
+                style={{ fontFamily: "'Satoshi', sans-serif" }}
+                className="w-full py-4 bg-[#f4f4f4] hover:bg-white text-black font-bold text-xs sm:text-sm uppercase tracking-[0.15em] border border-[#f4f4f4] cursor-pointer rounded-none transition-none flex items-center justify-center gap-2 disabled:opacity-50 disabled:pointer-events-none"
               >
                 {loading ? (
                   <>

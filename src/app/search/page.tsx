@@ -43,16 +43,22 @@ export default async function SearchPage({ searchParams }: SearchPageProps): Pro
         {/* Search Header Banner */}
         <div className="p-6 sm:p-8 bg-[#0c0c0e] border border-[#27272a] flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           <div>
-            <span className="text-[9px] uppercase tracking-[0.25em] text-zinc-500 font-bold block mb-1">
+            <span
+              style={{ fontFamily: "'Satoshi', sans-serif" }}
+              className="text-[11px] sm:text-xs uppercase tracking-[0.15em] text-[#A3A3A3] font-medium block mb-1"
+            >
               SEARCH INVENTORY
             </span>
             <h1
-              style={{ fontFamily: "'Clash Display', 'Syne', sans-serif" }}
-              className="text-2xl sm:text-4xl font-extrabold uppercase tracking-tight text-zinc-100"
+              style={{ fontFamily: "'Clash Display', 'Cabinet Grotesk', sans-serif", letterSpacing: '-0.02em' }}
+              className="text-xl sm:text-2xl font-semibold uppercase tracking-tight text-white"
             >
               {query ? `Search Results for: "${query}"` : 'All Products'}
             </h1>
-            <p className="text-xs text-zinc-400 mt-1">
+            <p
+              style={{ fontFamily: "'Satoshi', sans-serif" }}
+              className="text-xs text-zinc-400 mt-1 font-normal"
+            >
               Showing {matchingProducts.length} verified {matchingProducts.length === 1 ? 'item' : 'items'}
             </p>
           </div>

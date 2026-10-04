@@ -84,32 +84,35 @@ const config: Config = {
       fontFamily: {
         sans: [
           '"Satoshi"',
+          'sans-serif',
+        ],
+        display: [
+          '"Clash Display"',
           '"Cabinet Grotesk"',
           'sans-serif',
         ],
         heading: [
           '"Clash Display"',
-          '"Syne"',
+          '"Cabinet Grotesk"',
           'sans-serif',
         ],
         editorial: [
           '"Clash Display"',
-          '"Syne"',
+          '"Cabinet Grotesk"',
           'sans-serif',
         ],
         serif: [
           '"Clash Display"',
-          '"Syne"',
+          '"Cabinet Grotesk"',
           'sans-serif',
         ],
         mono: [
           '"Satoshi"',
-          '"Cabinet Grotesk"',
           'sans-serif',
         ],
         shojumaru: [
           '"Clash Display"',
-          '"Syne"',
+          '"Cabinet Grotesk"',
           'sans-serif',
         ],
       },

@@ -140,10 +140,16 @@ export const CatalogView: React.FC = () => {
       {/* Catalog Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between border-b border-[#27272a] pb-4 mb-8 gap-4">
         <div>
-          <span className="text-[9px] uppercase tracking-[0.25em] text-zinc-500 font-bold block mb-1">
+          <span
+            style={{ fontFamily: "'Satoshi', sans-serif" }}
+            className="text-[11px] sm:text-xs uppercase tracking-[0.15em] text-[#A3A3A3] font-medium block mb-1"
+          >
             VERIFIED INVENTORY • PRODUCT CATALOG
           </span>
-          <h2 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold uppercase tracking-tight text-zinc-100 leading-none">
+          <h2
+            style={{ fontFamily: "'Clash Display', 'Cabinet Grotesk', sans-serif", letterSpacing: '-0.02em' }}
+            className="text-xl sm:text-2xl font-semibold uppercase tracking-tight text-white leading-tight"
+          >
             Available Products
           </h2>
         </div>
@@ -163,10 +169,11 @@ export const CatalogView: React.FC = () => {
                     setIsLoading(false);
                   }, 120);
                 }}
-                className={`text-[11px] uppercase tracking-[0.18em] transition-none cursor-pointer whitespace-nowrap ${
+                style={{ fontFamily: "'Satoshi', sans-serif" }}
+                className={`text-[11px] uppercase tracking-[0.15em] transition-none cursor-pointer whitespace-nowrap ${
                   isActive
-                    ? 'text-zinc-100 border-b border-zinc-100 pb-1 font-bold'
-                    : 'text-zinc-500 hover:text-zinc-300 pb-1 font-medium'
+                    ? 'text-zinc-100 border-b border-zinc-100 pb-1 font-semibold'
+                    : 'text-zinc-500 hover:text-zinc-300 pb-1 font-normal'
                 }`}
               >
                 {cat.label}

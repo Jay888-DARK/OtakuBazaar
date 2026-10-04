@@ -225,8 +225,8 @@ export function OneClickBuyBox({
               ORDER PLACED SUCCESSFULLY
             </span>
             <h3
-              style={{ fontFamily: "'Clash Display', 'Syne', sans-serif" }}
-              className="text-base sm:text-lg font-black uppercase tracking-[0.08em] text-black leading-tight"
+              style={{ fontFamily: "'Clash Display', 'Cabinet Grotesk', sans-serif", letterSpacing: '-0.02em' }}
+              className="text-base sm:text-lg font-semibold uppercase tracking-tight text-black leading-tight"
             >
               [ ORDER CONFIRMED — PAYMENT RECEIVED ]
             </h3>
@@ -298,10 +298,10 @@ export function OneClickBuyBox({
             <span className="text-emerald-400 font-semibold tracking-wider">₹0 (INCLUDED)</span>
           </div>
           <div className="flex justify-between items-center px-3 py-2 bg-[#111114] text-zinc-100 font-bold border-t border-[#27272a]">
-            <span className="text-xs uppercase tracking-[0.16em]">Total Due</span>
+            <span className="text-xs uppercase tracking-[0.15em] text-[#A3A3A3]">Total Due</span>
             <span
-              style={{ fontFamily: "'Clash Display', 'Syne', sans-serif" }}
-              className="text-base font-extrabold tracking-wider text-zinc-100"
+              style={{ fontFamily: "'Satoshi', sans-serif" }}
+              className="text-xl font-bold tracking-tight text-white"
             >
               {formattedPrice}
             </span>
@@ -318,8 +318,8 @@ export function OneClickBuyBox({
           aria-label="Buy Now"
           onClick={() => setIsDrawerOpen(true)}
           disabled={loading}
-          style={{ fontFamily: "'Clash Display', 'Syne', sans-serif" }}
-          className="w-full py-3.5 px-4 bg-[#f4f4f4] hover:bg-white text-black font-extrabold text-xs sm:text-sm uppercase tracking-[0.2em] border border-[#f4f4f4] transition-none cursor-pointer flex items-center justify-center gap-2 rounded-none disabled:opacity-50 disabled:pointer-events-none"
+          style={{ fontFamily: "'Satoshi', sans-serif" }}
+          className="w-full py-3.5 px-4 bg-[#f4f4f4] hover:bg-white text-black font-bold text-xs sm:text-sm uppercase tracking-[0.15em] border border-[#f4f4f4] transition-none cursor-pointer flex items-center justify-center gap-2 rounded-none disabled:opacity-50 disabled:pointer-events-none"
         >
           {loading ? (
             <>

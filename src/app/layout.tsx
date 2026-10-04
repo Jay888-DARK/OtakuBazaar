@@ -44,7 +44,7 @@ export default function RootLayout({
           minHeight: '100vh',
           display: 'flex',
           flexDirection: 'column',
-          fontFamily: "'Satoshi', 'Cabinet Grotesk', sans-serif",
+          fontFamily: "'Satoshi', sans-serif",
         }}
       >
         {/* Lazy Loaded Razorpay Checkout Script */}
