@@ -106,31 +106,21 @@ export function CheckoutButton({
         }),
       });
 
-      const data = await res.json();
-      if (!res.ok || data.error) {
-        throw new Error(data.error || 'Failed to initialize server-authorized escrow order.');
+      const responseData = await res.json();
+      console.log('[Razorpay Order Response]:', responseData);
+
+      if (!res.ok || responseData.error) {
+        throw new Error(responseData.error || 'Failed to initialize server-authorized escrow order.');
       }
 
-      // Ensure order_id is valid and securely fetched from backend order creation response
-      const orderId = (data.order_id || data.id)?.trim();
-      if (!orderId || typeof orderId !== 'string' || !orderId.startsWith('order_')) {
-        throw new Error(`Valid Razorpay order_id was not returned from backend (received: "${orderId || ''}")`);
-      }
+      // 2. Fix the Order ID Mismatch: Razorpay returns order id as `id`
+      const orderId = responseData.id || responseData.orderId || responseData.order_id;
 
-      // CRITICAL: Ensure the amount passed to options is strictly an integer in paise
-      let chargeAmountPaise: number;
-      if (data.amount !== undefined && data.amount !== null && !isNaN(Number(data.amount))) {
-        chargeAmountPaise = Math.round(Number(data.amount));
-      } else {
-        chargeAmountPaise = Math.round(Number(cleanPrice) * 100);
-      }
-
-      if (!Number.isInteger(chargeAmountPaise) || chargeAmountPaise <= 0) {
-        throw new Error(`Invalid charge amount in paise: ${chargeAmountPaise}`);
-      }
+      // 3. Sync the Exact Amount: Use exact integer amount returned directly by backend
+      const exactAmountPaise = responseData.amount;
 
       // Step 2: Configure Razorpay Checkout options with key mode validation
-      const serverKey = data.key_id?.trim();
+      const serverKey = responseData.key_id?.trim();
       const envClientKey = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID?.trim();
       
       let effectiveKey = envClientKey || serverKey || 'rzp_test_TjnMsPZWKcfEdt';
@@ -154,7 +144,7 @@ export function CheckoutButton({
       // Ensure no fields in the options object are undefined or null
       const options = {
         key: activeKey,
-        amount: chargeAmountPaise, // strictly integer in paise
+        amount: exactAmountPaise, // strictly integer in paise direct from backend
         currency: 'INR',
         name: (title || 'OtakuBazaar Collectibles').trim(),
         description: (description || 'Secure Escrow Checkout').trim(),
@@ -167,6 +157,7 @@ export function CheckoutButton({
           console.log('[Razorpay Checkout] Payment interaction received from modal:', response);
 
           try {
+            setLoading(true);
             // Verify payment signature server-side before updating order status
             const verifyRes = await fetch('/api/checkout/razorpay/verify', {
               method: 'POST',
@@ -178,7 +169,7 @@ export function CheckoutButton({
                 lotId: lotId || productId || '',
                 productId: productId || lotId || '',
                 dealOfferId: dealOfferId || '',
-                amount: chargeAmountPaise,
+                amount: exactAmountPaise,
               }),
             });
 
@@ -220,6 +211,7 @@ export function CheckoutButton({
           } catch (verifyErr: any) {
             console.error('[Razorpay Checkout Error]:', verifyErr);
             setErrorMessage(verifyErr?.message || 'Signature verification failed. Escrow locked.');
+          } finally {
             setLoading(false);
           }
         },
@@ -244,6 +236,11 @@ export function CheckoutButton({
         },
       };
 
+      // Strict guardrail before opening the modal
+      if (!options.order_id) {
+        throw new Error('Missing Razorpay Order ID from backend response.');
+      }
+
       // Step 3: Open Razorpay Checkout modal
       const razorpayInstance = new (window as any).Razorpay(options);
 
@@ -262,6 +259,7 @@ export function CheckoutButton({
     } catch (err: any) {
       console.error('[Razorpay Checkout Initialization Error]:', err);
       setErrorMessage(err?.message || 'An error occurred initiating payment.');
+    } finally {
       setLoading(false);
     }
   };

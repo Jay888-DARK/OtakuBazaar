@@ -100,30 +100,21 @@ export function OneClickBuyBox({
         }),
       });
 
-      const orderData = await res.json();
-      if (!res.ok || orderData.error) {
-        throw new Error(orderData.error || 'Failed to initialize 1-Click order.');
+      const responseData = await res.json();
+      console.log('[Razorpay Order Response]:', responseData);
+
+      if (!res.ok || responseData.error) {
+        throw new Error(responseData.error || 'Failed to initialize 1-Click order.');
       }
 
-      const orderId = (orderData.order_id || orderData.id)?.trim();
-      if (!orderId || typeof orderId !== 'string' || !orderId.startsWith('order_')) {
-        throw new Error(`Valid Razorpay order_id was not returned from backend (received: "${orderId || ''}")`);
-      }
+      // 2. Fix the Order ID Mismatch: Razorpay returns order id as `id`
+      const orderId = responseData.id || responseData.orderId || responseData.order_id;
 
-      // CRITICAL: Ensure the amount passed to options is strictly an integer in paise
-      let chargeAmountPaise: number;
-      if (orderData.amount !== undefined && orderData.amount !== null && !isNaN(Number(orderData.amount))) {
-        chargeAmountPaise = Math.round(Number(orderData.amount));
-      } else {
-        chargeAmountPaise = Math.round(Number(cleanPrice) * 100);
-      }
-
-      if (!Number.isInteger(chargeAmountPaise) || chargeAmountPaise <= 0) {
-        throw new Error(`Invalid charge amount in paise: ${chargeAmountPaise}`);
-      }
+      // 3. Sync the Exact Amount: Use exact integer amount returned directly by backend
+      const exactAmountPaise = responseData.amount;
 
       // 3. Configure Razorpay Overlay with key mode validation
-      const serverKey = orderData.key_id?.trim();
+      const serverKey = responseData.key_id?.trim();
       const envClientKey = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID?.trim();
 
       let effectiveKey = envClientKey || serverKey || 'rzp_test_TjnMsPZWKcfEdt';
@@ -146,7 +137,7 @@ export function OneClickBuyBox({
 
       const options = {
         key: activeKey,
-        amount: chargeAmountPaise, // strictly integer in paise
+        amount: exactAmountPaise, // strictly integer in paise direct from backend
         currency: 'INR',
         name: 'OtakuBazaar Vault',
         description: `1-Click Escrow: ${itemTitle}`,
@@ -177,6 +168,7 @@ export function OneClickBuyBox({
           razorpay_signature?: string;
         }) {
           try {
+            setLoading(true);
             console.log('[1-Click Checkout] Payment received, verifying signature...', response);
             // Verify payment signature server-side
             const verifyRes = await fetch('/api/checkout/razorpay/verify', {
@@ -189,7 +181,7 @@ export function OneClickBuyBox({
                 lotId: targetId,
                 productId: targetId,
                 dealOfferId,
-                amount: chargeAmountPaise,
+                amount: exactAmountPaise,
               }),
             });
 
@@ -222,14 +214,19 @@ export function OneClickBuyBox({
               orderId,
               paymentId: response.razorpay_payment_id,
             });
-            setLoading(false);
           } catch (err: any) {
             console.error('[1-Click Checkout Error]:', err);
             setErrorMessage(err?.message || 'Signature verification error.');
+          } finally {
             setLoading(false);
           }
         },
       };
+
+      // Strict guardrail before opening the modal
+      if (!options.order_id) {
+        throw new Error('Missing Razorpay Order ID from backend response.');
+      }
 
       const razorpayInstance = new (window as any).Razorpay(options);
       razorpayInstance.on('payment.failed', function (resp: any) {
@@ -247,6 +244,7 @@ export function OneClickBuyBox({
     } catch (err: any) {
       console.error('[1-Click Checkout Initialization Error]:', err);
       setErrorMessage(err?.message || 'Failed to trigger 1-Click acquisition overlay.');
+    } finally {
       setLoading(false);
     }
   };

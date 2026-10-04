@@ -174,6 +174,12 @@ export function useWebSocketSync(
    */
   const connect = useCallback(() => {
     if (typeof window === 'undefined') return;
+    if (!config.url || !config.url.trim()) {
+      queueMicrotask(() => {
+        setConnectionState('disconnected');
+      });
+      return;
+    }
 
     // Clean up any existing connection
     if (wsRef.current) {

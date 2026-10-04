@@ -62,10 +62,10 @@ export default function VaultHero({ onSelectVaultItem }: VaultHeroProps) {
           AUTHENTIC JAPANESE COLLECTIBLES • SECURE ESCROW
         </span>
         <h1
-          className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-white uppercase leading-tight"
+          className="text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight text-white uppercase leading-none"
           style={{
-            fontFamily: "'Clash Display', 'Cabinet Grotesk', sans-serif",
-            letterSpacing: '-0.02em',
+            fontFamily: "'Cinzel', 'Cormorant Garamond', serif",
+            letterSpacing: '-0.025em',
           }}
         >
           Authentic Collectibles

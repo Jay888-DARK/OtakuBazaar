@@ -166,30 +166,21 @@ export function InstantCheckoutDrawer({
         }),
       });
 
-      const orderData = await res.json();
-      if (!res.ok || orderData.error) {
-        throw new Error(orderData.error || 'Server rejected instant order initialization.');
+      const responseData = await res.json();
+      console.log('[Razorpay Order Response]:', responseData);
+
+      if (!res.ok || responseData.error) {
+        throw new Error(responseData.error || 'Server rejected instant order initialization.');
       }
 
-      const orderId = (orderData.order_id || orderData.id)?.trim();
-      if (!orderId || typeof orderId !== 'string' || !orderId.startsWith('order_')) {
-        throw new Error(`Valid Razorpay order_id was not returned from backend (received: "${orderId || ''}")`);
-      }
+      // 2. Fix the Order ID Mismatch: Razorpay returns order id as `id`
+      const orderId = responseData.id || responseData.orderId || responseData.order_id;
 
-      // CRITICAL: Ensure the amount passed to options is strictly an integer in paise
-      let chargeAmountPaise: number;
-      if (orderData.amount !== undefined && orderData.amount !== null && !isNaN(Number(orderData.amount))) {
-        chargeAmountPaise = Math.round(Number(orderData.amount));
-      } else {
-        chargeAmountPaise = Math.round(Number(cleanPrice) * 100);
-      }
-
-      if (!Number.isInteger(chargeAmountPaise) || chargeAmountPaise <= 0) {
-        throw new Error(`Invalid charge amount in paise: ${chargeAmountPaise}`);
-      }
+      // 3. Sync the Exact Amount: Use exact integer amount returned directly by backend
+      const exactAmountPaise = responseData.amount;
 
       // 3. Configure Razorpay with key mode validation
-      const serverKey = orderData.key_id?.trim();
+      const serverKey = responseData.key_id?.trim();
       const envClientKey = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID?.trim();
 
       let effectiveKey = envClientKey || serverKey || 'rzp_test_TjnMsPZWKcfEdt';
@@ -212,7 +203,7 @@ export function InstantCheckoutDrawer({
 
       const options = {
         key: activeKey,
-        amount: chargeAmountPaise, // strictly integer in paise
+        amount: exactAmountPaise, // strictly integer in paise direct from backend
         currency: 'INR',
         name: 'OtakuBazaar Vault',
         description: `Instant Guest Escrow: ${itemTitle}`,
@@ -252,6 +243,7 @@ export function InstantCheckoutDrawer({
           razorpay_signature?: string;
         }) {
           try {
+            setLoading(true);
             console.log('[Instant Checkout] Payment received, verifying signature...', response);
             // Server-side verification & silent account provisioning
             const verifyRes = await fetch('/api/checkout/razorpay/verify', {
@@ -263,7 +255,7 @@ export function InstantCheckoutDrawer({
                 razorpay_signature: response.razorpay_signature,
                 lotId: targetId,
                 productId: targetId,
-                amount: chargeAmountPaise,
+                amount: exactAmountPaise,
                 name: fullName.trim(),
                 phone: phone.trim(),
                 address: address.trim(),
@@ -300,7 +292,6 @@ export function InstantCheckoutDrawer({
               orderId,
               paymentId: response.razorpay_payment_id,
             });
-            setLoading(false);
 
             if (onSuccess) {
               onSuccess(response.razorpay_payment_id, orderId);
@@ -308,10 +299,16 @@ export function InstantCheckoutDrawer({
           } catch (err: any) {
             console.error('[Instant Checkout Verification Error]:', err);
             setErrorMessage(err?.message || 'Signature verification failure.');
+          } finally {
             setLoading(false);
           }
         },
       };
+
+      // Strict guardrail before opening the modal
+      if (!options.order_id) {
+        throw new Error('Missing Razorpay Order ID from backend response.');
+      }
 
       const razorpayInstance = new (window as any).Razorpay(options);
       razorpayInstance.on('payment.failed', function (resp: any) {
@@ -329,6 +326,7 @@ export function InstantCheckoutDrawer({
     } catch (err: any) {
       console.error('[Instant Checkout Initialization Error]:', err);
       setErrorMessage(err?.message || 'Failed to trigger checkout.');
+    } finally {
       setLoading(false);
     }
   };

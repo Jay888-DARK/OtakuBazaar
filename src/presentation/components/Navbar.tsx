@@ -103,14 +103,14 @@ export function Navbar() {
             {/* The Logotype */}
             <div className="flex flex-col justify-center">
               <span
-                style={{ fontFamily: "'Clash Display', 'Cabinet Grotesk', sans-serif" }}
-                className="text-sm font-bold tracking-[0.22em] uppercase text-zinc-100 group-hover:text-white transition-colors leading-none"
+                style={{ fontFamily: "'Satoshi', sans-serif" }}
+                className="text-sm sm:text-base font-bold tracking-[0.25em] uppercase text-zinc-100 group-hover:text-white transition-colors leading-tight"
               >
                 OTAKUBAZAAR
               </span>
               <span
                 style={{ fontFamily: "'Satoshi', sans-serif" }}
-                className="text-[10px] uppercase tracking-[0.28em] text-[#737373] mt-1 leading-none font-normal"
+                className="text-[9px] font-medium uppercase tracking-[0.3em] text-[#737373] leading-tight"
               >
                 ESCROW AUTHENTICATED
               </span>

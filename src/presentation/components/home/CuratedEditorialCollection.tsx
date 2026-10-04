@@ -45,10 +45,10 @@ export function CuratedEditorialCollection(): React.JSX.Element {
                 ITEM NO. BK-1989-M
               </span>
             </div>
-            {/* Proportional Section Header */}
+            {/* Cinematic Movie Poster Section Header */}
             <h2
-              style={{ fontFamily: "'Clash Display', 'Cabinet Grotesk', sans-serif", letterSpacing: '-0.02em' }}
-              className="text-xl sm:text-2xl font-semibold text-white uppercase tracking-tight leading-tight"
+              style={{ fontFamily: "'Cinzel', 'Cormorant Garamond', serif", letterSpacing: '-0.025em' }}
+              className="text-3xl sm:text-5xl md:text-6xl font-bold text-white uppercase tracking-tight leading-none"
             >
               The Berserk Collection
             </h2>

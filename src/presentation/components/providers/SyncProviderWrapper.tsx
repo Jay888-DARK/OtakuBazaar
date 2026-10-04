@@ -18,7 +18,7 @@ import { SyncProvider } from '@/presentation/components/providers/SyncProvider';
  * In production, source these from environment variables.
  */
 const DEFAULT_WS_CONFIG = {
-  url: process.env['NEXT_PUBLIC_WS_URL'] ?? 'ws://localhost:3001/ws',
+  url: process.env.NEXT_PUBLIC_WS_URL || (typeof window !== 'undefined' && window.location.hostname === 'localhost' ? 'ws://localhost:3001/ws' : ''),
   authToken: 'dev-token-placeholder', // Replace with real auth in production
 } as const;
 
