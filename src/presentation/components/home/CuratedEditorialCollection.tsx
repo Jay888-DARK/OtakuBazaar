@@ -18,6 +18,7 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { InstantCheckoutDrawer } from '@/presentation/components/checkout/InstantCheckoutDrawer';
+import { InteractiveProductImage } from '@/presentation/components/ui/InteractiveProductImage';
 
 export function CuratedEditorialCollection(): React.JSX.Element {
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
@@ -93,7 +94,7 @@ export function CuratedEditorialCollection(): React.JSX.Element {
               CONDITION: S-RANK (MINT)
             </span>
 
-            <div className="relative w-full aspect-[4/3] sm:aspect-[16/11] bg-[#060608] overflow-hidden border-b border-[#27272a]">
+            <InteractiveProductImage className="w-full aspect-[4/3] sm:aspect-[16/11] bg-[#060608] border-b border-[#27272a]">
               <Image
                 src="/showcase/guts_berserker_statue.jpg"
                 alt="Prime 1 Studio Berserk Guts in Berserker Armor Masterpiece"
@@ -104,17 +105,17 @@ export function CuratedEditorialCollection(): React.JSX.Element {
               />
               <div
                 style={{ fontFamily: "'Satoshi', sans-serif" }}
-                className="absolute top-4 left-4 bg-[#09090b] border border-[#27272a] px-3 py-1.5 text-[11px] font-medium tracking-[0.15em] uppercase text-[#A3A3A3]"
+                className="absolute top-4 left-4 bg-[#09090b] border border-[#27272a] px-3 py-1.5 text-[11px] font-medium tracking-[0.15em] uppercase text-[#A3A3A3] z-20"
               >
                 ITEM ID: BK-001 • PRIME 1 STUDIO
               </div>
               <div
                 style={{ fontFamily: "'Satoshi', sans-serif" }}
-                className="absolute bottom-4 right-4 bg-[#09090b] border border-[#27272a] px-3 py-1.5 text-[11px] font-medium tracking-[0.15em] text-[#A3A3A3] uppercase"
+                className="absolute bottom-4 right-4 bg-[#09090b] border border-[#27272a] px-3 py-1.5 text-[11px] font-medium tracking-[0.15em] text-[#A3A3A3] uppercase z-20"
               >
                 EDITION: 042 / 350
               </div>
-            </div>
+            </InteractiveProductImage>
 
             {/* Main Product Info & Specs */}
             <div className="p-6 sm:p-8 space-y-4 bg-[#0c0c0e]">

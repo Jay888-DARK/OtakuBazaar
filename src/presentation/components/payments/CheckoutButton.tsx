@@ -141,13 +141,17 @@ export function CheckoutButton({
         throw new Error('Razorpay Public Key is missing or invalid.');
       }
 
+      const recipientName = (customerName || 'Verified Collector').trim();
+      const rawPhone = customerContact || '';
+      const cleanPhone = rawPhone.replace(/[^0-9]/g, '').slice(-10);
+
       // Ensure no fields in the options object are undefined or null
       const options = {
         key: activeKey,
-        amount: exactAmountPaise, // strictly integer in paise direct from backend
+        amount: exactAmountPaise, // strictly integer in paise direct from backend order
         currency: 'INR',
-        name: (title || 'OtakuBazaar Collectibles').trim(),
-        description: (description || 'Secure Escrow Checkout').trim(),
+        name: 'OTAKUBAZAAR',
+        description: (description || 'Authentic Collectible Acquisition').trim(),
         order_id: orderId,
         handler: async function (response: {
           razorpay_payment_id: string;
@@ -216,12 +220,12 @@ export function CheckoutButton({
           }
         },
         prefill: {
-          name: (customerName?.trim() || 'Verified Collector'),
-          email: (customerEmail?.trim() || 'collector@otakubazaar.dev'),
-          contact: (customerContact?.replace(/\D/g, '') || '9999999999'),
+          name: recipientName,
+          email: (customerEmail?.trim() || `${cleanPhone || 'collector'}@otakubazaar.dev`),
+          contact: cleanPhone || '9999999999',
         },
         theme: {
-          color: '#09090b',
+          color: '#0a0a0a',
         },
         modal: {
           ondismiss: function () {

@@ -139,8 +139,8 @@ export function OneClickBuyBox({
         key: activeKey,
         amount: exactAmountPaise, // strictly integer in paise direct from backend
         currency: 'INR',
-        name: 'OtakuBazaar Vault',
-        description: `1-Click Escrow: ${itemTitle}`,
+        name: 'OTAKUBAZAAR',
+        description: 'Authentic Collectible Acquisition',
         order_id: orderId,
         prefill: {
           name: 'Verified Collector',
@@ -149,7 +149,7 @@ export function OneClickBuyBox({
           ...(preferredMethod ? { method: preferredMethod } : {}),
         },
         theme: {
-          color: '#09090b',
+          color: '#0a0a0a',
         },
         modal: {
           ondismiss: function () {

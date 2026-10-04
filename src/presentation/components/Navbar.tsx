@@ -104,7 +104,7 @@ export function Navbar() {
             <div className="flex flex-col justify-center">
               <span
                 style={{ fontFamily: "'Satoshi', sans-serif" }}
-                className="text-sm sm:text-base font-bold tracking-[0.25em] uppercase text-zinc-100 group-hover:text-white transition-colors leading-tight"
+                className="text-sm sm:text-base font-bold tracking-[0.24em] uppercase text-white group-hover:text-white transition-colors leading-tight"
               >
                 OTAKUBAZAAR
               </span>

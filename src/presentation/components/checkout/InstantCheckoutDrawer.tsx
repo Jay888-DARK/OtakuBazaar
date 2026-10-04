@@ -201,18 +201,22 @@ export function InstantCheckoutDrawer({
         throw new Error('Razorpay Public Key is missing or invalid.');
       }
 
+      const recipientName = (fullName || 'Verified Collector').trim();
+      const rawPhone = phone || '';
+      const cleanPhone = rawPhone.replace(/[^0-9]/g, '').slice(-10);
+
       const options = {
         key: activeKey,
         amount: exactAmountPaise, // strictly integer in paise direct from backend
         currency: 'INR',
-        name: 'OtakuBazaar Vault',
-        description: `Instant Guest Escrow: ${itemTitle}`,
+        name: 'OTAKUBAZAAR',
+        description: 'Authentic Collectible Acquisition',
         order_id: orderId,
         // Razorpay Magic Contact & Address Pre-fill
         prefill: {
-          name: fullName?.trim() || 'Verified Collector',
-          contact: phone?.replace(/\D/g, '') || '9999999999',
-          email: `${phone?.replace(/\D/g, '') || 'collector'}@buyer.otakubazaar.dev`,
+          name: recipientName,
+          contact: cleanPhone || '9999999999',
+          email: `${cleanPhone || 'collector'}@buyer.otakubazaar.dev`,
           ...((preferredWallet || initialWallet) ? { method: preferredWallet || initialWallet } : {}),
         },
         send_sms_hash: true,
@@ -220,11 +224,11 @@ export function InstantCheckoutDrawer({
           lotId: targetId,
           shipping_address: address?.trim() || '',
           pincode: pinCode?.trim() || '',
-          buyer_name: fullName?.trim() || 'Verified Collector',
-          phone: phone?.trim() || '',
+          buyer_name: recipientName,
+          phone: cleanPhone || '',
         },
         theme: {
-          color: '#09090b',
+          color: '#0a0a0a',
         },
         modal: {
           ondismiss: function () {

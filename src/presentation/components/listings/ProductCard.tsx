@@ -15,6 +15,7 @@ import { BargainChatDrawer } from '@/presentation/components/chat/BargainChatDra
 import { addToCart } from '@/app/actions/dealActions';
 import { openCartDrawer } from '@/presentation/components/cart/CartDrawer';
 import { CheckoutButton } from '@/presentation/components/payments/CheckoutButton';
+import { InteractiveProductImage } from '@/presentation/components/ui/InteractiveProductImage';
 
 export interface ProductCardProps {
   product: {
@@ -78,23 +79,23 @@ export function ProductCard({ product, className = '' }: ProductCardProps): Reac
         </span>
       </div>
 
-      {/* 2. Image Stage */}
+      {/* 2. Image Stage with 3D Tilt & Specular Shine */}
       <Link
         href={`/products/${product.id}`}
         aria-label={`View details for ${product.title}`}
         className="block no-underline product-thumbnail"
         data-testid="product-thumbnail"
       >
-        <div className="relative w-full aspect-[4/5] overflow-hidden bg-[#09090b] border border-zinc-800/80 flex items-center justify-center p-3 my-2">
+        <InteractiveProductImage className="w-full aspect-[4/5] bg-[#09090b] border border-zinc-800/80 flex items-center justify-center p-3 my-2">
           <span
             style={{ fontFamily: "'Satoshi', sans-serif" }}
-            className="marginal-metadata marginal-tl text-[11px] uppercase tracking-[0.15em] text-[#A3A3A3]"
+            className="marginal-metadata marginal-tl text-[11px] uppercase tracking-[0.15em] text-[#A3A3A3] z-20"
           >
             ITEM #{String(product.id).replace(/[^0-9]/g, '').padStart(4, '0').slice(-4) || '0482'}
           </span>
           <span
             style={{ fontFamily: "'Satoshi', sans-serif" }}
-            className="marginal-metadata marginal-br text-[11px] uppercase tracking-[0.15em] text-[#A3A3A3]"
+            className="marginal-metadata marginal-br text-[11px] uppercase tracking-[0.15em] text-[#A3A3A3] z-20"
           >
             MINT
           </span>
@@ -105,10 +106,10 @@ export function ProductCard({ product, className = '' }: ProductCardProps): Reac
             alt={product.title || 'Anime Collectible'}
             fill
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-            className="object-contain p-2 relative z-10 contrast-110"
+            className="object-contain p-2 relative z-10"
             loading="lazy"
           />
-        </div>
+        </InteractiveProductImage>
       </Link>
 
       {/* 3. Title & Price Ticker */}
