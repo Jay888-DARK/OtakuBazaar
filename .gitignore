@@ -37,6 +37,9 @@ yarn-error.log*
 .env*.local
 .env*
 
+# credentials & data
+*.csv
+
 # databases
 *.db
 *.db-journal
