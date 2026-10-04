@@ -18,7 +18,6 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { InstantCheckoutDrawer } from '@/presentation/components/checkout/InstantCheckoutDrawer';
-import { InteractiveProductImage } from '@/presentation/components/ui/InteractiveProductImage';
 
 export function CuratedEditorialCollection(): React.JSX.Element {
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
@@ -46,9 +45,9 @@ export function CuratedEditorialCollection(): React.JSX.Element {
                 ITEM NO. BK-1989-M
               </span>
             </div>
-            {/* Cinematic Movie Poster Section Header */}
+            {/* Synchronized Section Header (Logo Font Satoshi) */}
             <h2
-              style={{ fontFamily: "'Cinzel', 'Cormorant Garamond', serif", letterSpacing: '-0.025em' }}
+              style={{ fontFamily: "'Satoshi', sans-serif", letterSpacing: '-0.025em' }}
               className="text-3xl sm:text-5xl md:text-6xl font-bold text-white uppercase tracking-tight leading-none"
             >
               The Berserk Collection
@@ -94,28 +93,29 @@ export function CuratedEditorialCollection(): React.JSX.Element {
               CONDITION: S-RANK (MINT)
             </span>
 
-            <InteractiveProductImage className="w-full aspect-[4/3] sm:aspect-[16/11] bg-[#060608] border-b border-[#27272a]">
+            {/* Static Luxury Brutalist Showcase Image */}
+            <div className="relative w-full aspect-[4/3] sm:aspect-[16/11] bg-[#060608] overflow-hidden border-b border-[#27272a]">
               <Image
                 src="/showcase/guts_berserker_statue.jpg"
                 alt="Prime 1 Studio Berserk Guts in Berserker Armor Masterpiece"
                 fill
                 sizes="(max-width: 1024px) 100vw, 60vw"
-                className="object-cover contrast-115 grayscale"
+                className="object-cover contrast-110"
                 priority
               />
               <div
                 style={{ fontFamily: "'Satoshi', sans-serif" }}
-                className="absolute top-4 left-4 bg-[#09090b] border border-[#27272a] px-3 py-1.5 text-[11px] font-medium tracking-[0.15em] uppercase text-[#A3A3A3] z-20"
+                className="absolute top-4 left-4 bg-[#09090b] border border-[#27272a] px-3 py-1.5 text-[11px] font-medium tracking-[0.15em] uppercase text-[#A3A3A3]"
               >
                 ITEM ID: BK-001 • PRIME 1 STUDIO
               </div>
               <div
                 style={{ fontFamily: "'Satoshi', sans-serif" }}
-                className="absolute bottom-4 right-4 bg-[#09090b] border border-[#27272a] px-3 py-1.5 text-[11px] font-medium tracking-[0.15em] text-[#A3A3A3] uppercase z-20"
+                className="absolute bottom-4 right-4 bg-[#09090b] border border-[#27272a] px-3 py-1.5 text-[11px] font-medium tracking-[0.15em] text-[#A3A3A3] uppercase"
               >
                 EDITION: 042 / 350
               </div>
-            </InteractiveProductImage>
+            </div>
 
             {/* Main Product Info & Specs */}
             <div className="p-6 sm:p-8 space-y-4 bg-[#0c0c0e]">

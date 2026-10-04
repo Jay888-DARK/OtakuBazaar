@@ -205,30 +205,16 @@ export function InstantCheckoutDrawer({
       const rawPhone = phone || '';
       const cleanPhone = rawPhone.replace(/[^0-9]/g, '').slice(-10);
 
+      // Minimal, bulletproof options (omit amount so order_id governs the transaction securely)
       const options = {
         key: activeKey,
-        amount: exactAmountPaise, // strictly integer in paise direct from backend
-        currency: 'INR',
-        name: 'OTAKUBAZAAR',
-        description: 'Authentic Collectible Acquisition',
         order_id: orderId,
-        // Razorpay Magic Contact & Address Pre-fill
+        name: 'OTAKUBAZAAR',
         prefill: {
-          name: recipientName,
           contact: cleanPhone || '9999999999',
-          email: `${cleanPhone || 'collector'}@buyer.otakubazaar.dev`,
-          ...((preferredWallet || initialWallet) ? { method: preferredWallet || initialWallet } : {}),
-        },
-        send_sms_hash: true,
-        notes: {
-          lotId: targetId,
-          shipping_address: address?.trim() || '',
-          pincode: pinCode?.trim() || '',
-          buyer_name: recipientName,
-          phone: cleanPhone || '',
         },
         theme: {
-          color: '#0a0a0a',
+          color: '#000000',
         },
         modal: {
           ondismiss: function () {

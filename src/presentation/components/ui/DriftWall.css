@@ -10,8 +10,8 @@
   --dw-gap: 16px;
   --dw-radius: 0px;
   --dw-lift: 0px;
-  --dw-dim: 0.65;
-  --dw-gray: 1;
+  --dw-dim: 0.85;
+  --dw-gray: 0;
   --dw-overlay: #09090b;
   -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 18%, black 72%, transparent 100%),
                       radial-gradient(ellipse 85% 75% at 50% 50%, black 40%, transparent 100%);
@@ -81,7 +81,7 @@
   height: 100%;
   object-fit: cover;
   display: block;
-  filter: grayscale(var(--dw-gray)) contrast(1.05);
+  filter: contrast(1.05);
   transition: filter 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   user-select: none;
   -webkit-user-drag: none;
@@ -91,7 +91,7 @@
   position: absolute;
   inset: 0;
   background: var(--dw-overlay);
-  opacity: 0.55;
+  opacity: 0.25;
   pointer-events: none;
   transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }

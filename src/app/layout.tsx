@@ -19,7 +19,6 @@ import { CookieConsent } from '@/presentation/components/compliance/CookieConsen
 import { CartDrawer } from '@/presentation/components/cart/CartDrawer';
 import { ProvenanceManifestModal } from '@/presentation/components/provenance/ProvenanceManifestModal';
 import { RazorpayScript } from '@/presentation/components/payments/RazorpayScript';
-import { CustomCursor } from '@/presentation/components/ui/CustomCursor';
 
 export const metadata: Metadata = {
   title: 'OtakuBazaar — Premium Anime Collectibles Marketplace',
@@ -50,8 +49,6 @@ export default function RootLayout({
       >
         {/* Lazy Loaded Razorpay Checkout Script */}
         <RazorpayScript />
-        {/* Monochromatic Custom Cursor and Ambient Spotlight */}
-        <CustomCursor />
         {/* Cinematic Physical Film Noise Overlay */}
         <div
           className="pointer-events-none fixed inset-0 z-[9999] opacity-[0.02] mix-blend-overlay"

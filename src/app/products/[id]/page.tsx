@@ -180,8 +180,8 @@ export default function ProductDetailsPage({ params }: ProductDetailsProps) {
                       PRE-PAINTED POLYSTONE STATUE • COLLECTOR EDITION
                     </span>
                     <h1
-                      style={{ fontFamily: "'Clash Display', 'Cabinet Grotesk', sans-serif", letterSpacing: '-0.02em' }}
-                      className="text-2xl sm:text-3xl font-semibold uppercase tracking-tight text-white"
+                      style={{ fontFamily: "'Satoshi', sans-serif", letterSpacing: '-0.025em' }}
+                      className="text-2xl sm:text-3xl font-bold uppercase tracking-tight text-white"
                     >
                       {currentProduct?.title || 'Guts Berserker Armor Unleashed 1/4 Scale'}
                     </h1>

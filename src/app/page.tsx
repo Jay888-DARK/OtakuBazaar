@@ -51,8 +51,8 @@ export default async function HomePage(props?: { searchParams?: Promise<Record<s
               Buyer Protection • Secure Escrow
             </span>
             <h2
-              style={{ fontFamily: "'Clash Display', 'Cabinet Grotesk', sans-serif", letterSpacing: '-0.02em' }}
-              className="text-xl sm:text-2xl font-semibold text-white uppercase tracking-tight leading-tight"
+              style={{ fontFamily: "'Satoshi', sans-serif", letterSpacing: '-0.025em' }}
+              className="text-xl sm:text-2xl font-bold text-white uppercase tracking-tight leading-tight"
             >
               Authenticity Guarantee &amp; 48-Hour Inspection Period
             </h2>
@@ -84,8 +84,8 @@ export default async function HomePage(props?: { searchParams?: Promise<Record<s
                   </span>
                 </div>
                 <h3
-                  style={{ fontFamily: "'Clash Display', 'Cabinet Grotesk', sans-serif", letterSpacing: '-0.02em' }}
-                  className="text-lg sm:text-xl font-semibold uppercase tracking-tight text-white mb-2"
+                  style={{ fontFamily: "'Satoshi', sans-serif", letterSpacing: '-0.025em' }}
+                  className="text-lg sm:text-xl font-bold uppercase tracking-tight text-white mb-2"
                 >
                   15-Minute Reservation Lock
                 </h3>
@@ -164,8 +164,8 @@ export default async function HomePage(props?: { searchParams?: Promise<Record<s
                     </span>
                   </div>
                   <h3
-                    style={{ fontFamily: "'Clash Display', 'Cabinet Grotesk', sans-serif", letterSpacing: '-0.02em' }}
-                    className="text-base font-semibold uppercase tracking-tight text-white mb-1.5"
+                    style={{ fontFamily: "'Satoshi', sans-serif", letterSpacing: '-0.025em' }}
+                    className="text-base font-bold uppercase tracking-tight text-white mb-1.5"
                   >
                     Tracked Express Delivery
                   </h3>
@@ -203,8 +203,8 @@ export default async function HomePage(props?: { searchParams?: Promise<Record<s
                     </span>
                   </div>
                   <h3
-                    style={{ fontFamily: "'Clash Display', 'Cabinet Grotesk', sans-serif", letterSpacing: '-0.02em' }}
-                    className="text-base font-semibold uppercase tracking-tight text-white mb-1.5"
+                    style={{ fontFamily: "'Satoshi', sans-serif", letterSpacing: '-0.025em' }}
+                    className="text-base font-bold uppercase tracking-tight text-white mb-1.5"
                   >
                     48-Hour Inspection Window
                   </h3>

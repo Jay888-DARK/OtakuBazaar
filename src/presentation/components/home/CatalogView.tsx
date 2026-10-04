@@ -147,8 +147,8 @@ export const CatalogView: React.FC = () => {
             VERIFIED INVENTORY • PRODUCT CATALOG
           </span>
           <h2
-            style={{ fontFamily: "'Clash Display', 'Cabinet Grotesk', sans-serif", letterSpacing: '-0.02em' }}
-            className="text-xl sm:text-2xl font-semibold uppercase tracking-tight text-white leading-tight"
+            style={{ fontFamily: "'Satoshi', sans-serif", letterSpacing: '-0.025em' }}
+            className="text-xl sm:text-2xl font-bold uppercase tracking-tight text-white leading-tight"
           >
             Available Products
           </h2>

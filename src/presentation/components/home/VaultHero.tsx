@@ -31,7 +31,7 @@ export default function VaultHero({ onSelectVaultItem }: VaultHeroProps) {
           tileHeight={150}
           gap={16}
           speed={18}
-          grayscale={true}
+          grayscale={false}
           overlayColor="#09090b"
           pauseOnHover={true}
           onItemClick={(item) => {
@@ -62,10 +62,10 @@ export default function VaultHero({ onSelectVaultItem }: VaultHeroProps) {
           TOKYO ARCHIVAL VAULT • ESCROW DIRECT
         </span>
         <h1
-          className="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-white uppercase leading-none"
+          className="text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight text-white uppercase leading-none"
           style={{
-            fontFamily: "'Syne', sans-serif",
-            letterSpacing: '-0.02em',
+            fontFamily: "'Satoshi', sans-serif",
+            letterSpacing: '-0.025em',
           }}
         >
           AUTHENTICATED GRAILS

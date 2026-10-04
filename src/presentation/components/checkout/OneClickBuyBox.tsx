@@ -135,30 +135,20 @@ export function OneClickBuyBox({
         throw new Error('Razorpay Public Key is missing or invalid.');
       }
 
+      // Minimal, bulletproof options (omit amount so order_id governs the transaction securely)
       const options = {
         key: activeKey,
-        amount: exactAmountPaise, // strictly integer in paise direct from backend
-        currency: 'INR',
-        name: 'OTAKUBAZAAR',
-        description: 'Authentic Collectible Acquisition',
         order_id: orderId,
+        name: 'OTAKUBAZAAR',
         prefill: {
-          name: 'Verified Collector',
-          email: 'collector@otakubazaar.dev',
           contact: '9999999999',
-          ...(preferredMethod ? { method: preferredMethod } : {}),
         },
         theme: {
-          color: '#0a0a0a',
+          color: '#000000',
         },
         modal: {
           ondismiss: function () {
             console.log('Checkout modal closed by user.');
-            setLoading(false);
-          },
-          onerror: function (err: any) {
-            console.error('Razorpay Modal Error:', err);
-            alert(`Razorpay Error: ${err?.description || 'Check console for details.'}`);
             setLoading(false);
           },
         },
