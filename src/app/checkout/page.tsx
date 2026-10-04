@@ -57,8 +57,11 @@ export default async function CheckoutPage({ searchParams }: CheckoutPageProps):
   let finalAmount = 999;
   if (dealOffer?.offeredPrice) {
     finalAmount = dealOffer.offeredPrice;
-  } else if (amount && !isNaN(Number(amount))) {
-    finalAmount = Number(amount);
+  } else if (amount) {
+    const cleaned = String(amount).replace(/,/g, '').replace(/₹/g, '').trim();
+    if (!isNaN(Number(cleaned)) && Number(cleaned) > 0) {
+      finalAmount = Number(cleaned);
+    }
   }
 
   const itemTitle = dealOffer?.product?.title || 'OtakuBazaar Authentic Collectible';

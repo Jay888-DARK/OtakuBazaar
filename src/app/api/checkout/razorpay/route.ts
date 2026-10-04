@@ -250,7 +250,11 @@ export async function POST(req: Request): Promise<NextResponse> {
 
     // C. Fallback to client-provided price or amount if no entity ID resolved
     if (authoritativePriceINR <= 0) {
-      const numericPrice = Number(price ?? amount);
+      const rawPrice = price ?? amount;
+      const cleanPrice = typeof rawPrice === 'string'
+        ? rawPrice.replace(/,/g, '').replace(/₹/g, '').trim()
+        : rawPrice;
+      const numericPrice = Number(cleanPrice);
       if (!isNaN(numericPrice) && numericPrice > 0) {
         authoritativePriceINR = numericPrice;
       } else {

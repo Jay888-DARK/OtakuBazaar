@@ -84,6 +84,9 @@ export function OneClickBuyBox({
       }
 
       // 2. Authoritative server order generation
+      const cleanPrice = String(price || 999).replace(/,/g, '').replace(/₹/g, '').trim();
+      const amountInPaiseFallback = Math.round(Number(cleanPrice) * 100);
+
       const res = await fetch('/api/checkout/razorpay', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -91,8 +94,8 @@ export function OneClickBuyBox({
           lotId: targetId,
           productId: targetId,
           dealOfferId,
-          price,
-          amount: Math.round(Number(price) * 100),
+          price: Number(cleanPrice) || 999,
+          amount: !isNaN(amountInPaiseFallback) && amountInPaiseFallback > 0 ? amountInPaiseFallback : 99900,
           receipt: `rcpt_1click_${targetId}_${Date.now()}`,
         }),
       });
@@ -102,18 +105,28 @@ export function OneClickBuyBox({
         throw new Error(orderData.error || 'Failed to initialize 1-Click order.');
       }
 
-      const orderId = orderData.order_id || orderData.id;
-      const chargeAmountPaise = orderData.amount;
+      const orderId = (orderData.order_id || orderData.id)?.trim();
+      if (!orderId || typeof orderId !== 'string' || !orderId.startsWith('order_')) {
+        throw new Error(`Valid Razorpay order_id was not returned from backend (received: "${orderId || ''}")`);
+      }
 
-      if (!orderId) {
-        throw new Error('Could not obtain server order token.');
+      // CRITICAL: Ensure the amount passed to options is strictly an integer in paise
+      let chargeAmountPaise: number;
+      if (orderData.amount !== undefined && orderData.amount !== null && !isNaN(Number(orderData.amount))) {
+        chargeAmountPaise = Math.round(Number(orderData.amount));
+      } else {
+        chargeAmountPaise = Math.round(Number(cleanPrice) * 100);
+      }
+
+      if (!Number.isInteger(chargeAmountPaise) || chargeAmountPaise <= 0) {
+        throw new Error(`Invalid charge amount in paise: ${chargeAmountPaise}`);
       }
 
       // 3. Configure Razorpay Overlay with key mode validation
       const serverKey = orderData.key_id?.trim();
       const envClientKey = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID?.trim();
 
-      let effectiveKey = envClientKey || serverKey || 'rzp_test_TdBTiCyaOJ95KC';
+      let effectiveKey = envClientKey || serverKey || 'rzp_test_TjnMsPZWKcfEdt';
       if (envClientKey && serverKey) {
         const isServerTest = serverKey.startsWith('rzp_test_');
         const isClientTest = envClientKey.startsWith('rzp_test_');
@@ -126,9 +139,14 @@ export function OneClickBuyBox({
         }
       }
 
+      const activeKey = (process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID?.trim() || effectiveKey || '').trim();
+      if (!activeKey) {
+        throw new Error('Razorpay Public Key is missing or invalid.');
+      }
+
       const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID?.trim() || effectiveKey,
-        amount: chargeAmountPaise,
+        key: activeKey,
+        amount: chargeAmountPaise, // strictly integer in paise
         currency: 'INR',
         name: 'OtakuBazaar Vault',
         description: `1-Click Escrow: ${itemTitle}`,
@@ -137,18 +155,19 @@ export function OneClickBuyBox({
           name: 'Verified Collector',
           email: 'collector@otakubazaar.dev',
           contact: '9999999999',
-          method: preferredMethod || undefined,
+          ...(preferredMethod ? { method: preferredMethod } : {}),
         },
         theme: {
           color: '#09090b',
         },
         modal: {
           ondismiss: function () {
-            console.info('[1-Click Checkout] Checkout modal closed by user without paying.');
+            console.log('Checkout modal closed by user.');
             setLoading(false);
           },
-          on_dismiss: function () {
-            console.info('[1-Click Checkout] Checkout modal dismissed (on_dismiss).');
+          onerror: function (err: any) {
+            console.error('Razorpay Modal Error:', err);
+            alert(`Razorpay Error: ${err?.description || 'Check console for details.'}`);
             setLoading(false);
           },
         },

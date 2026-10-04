@@ -5,8 +5,9 @@ import { useRouter } from 'next/navigation';
 import { createRazorpayOrder } from '@/app/actions/paymentActions';
 
 export interface CheckoutButtonProps {
-  /** Optional amount in INR (fallback only; server overrides with authoritative price) */
-  amount?: number;
+  /** Optional amount in INR (number or string formatted e.g. "1,24,000") */
+  amount?: number | string;
+  price?: number | string;
   /** Product or Lot ID for server-side price lookup */
   lotId?: string;
   productId?: string;
@@ -36,6 +37,7 @@ export interface CheckoutButtonProps {
 
 export function CheckoutButton({
   amount = 999,
+  price,
   lotId,
   productId,
   dealOfferId,
@@ -85,20 +87,22 @@ export function CheckoutButton({
         });
       }
 
-      let orderId: string;
-      let chargeAmountPaise = Math.round(Number(amount) * 100);
+      // Parse price/amount cleanly handling formatted strings (e.g. "1,24,000")
+      const rawPriceInput = String(price ?? amount ?? 999);
+      const cleanPrice = rawPriceInput.replace(/,/g, '').replace(/₹/g, '').trim();
+      const amountInPaiseFallback = Math.round(Number(cleanPrice) * 100);
 
       // Enforce Server-Side Price Authority via /api/checkout/razorpay
       const res = await fetch('/api/checkout/razorpay', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          lotId: lotId || productId,
-          productId: productId || lotId,
-          dealOfferId,
-          price: amount,
-          amount: Math.round(Number(amount) * 100),
-          receipt: receiptId,
+          lotId: lotId || productId || '',
+          productId: productId || lotId || '',
+          dealOfferId: dealOfferId || '',
+          price: Number(cleanPrice) || 999,
+          amount: !isNaN(amountInPaiseFallback) && amountInPaiseFallback > 0 ? amountInPaiseFallback : 99900,
+          receipt: receiptId || `rcpt_${Date.now()}`,
         }),
       });
 
@@ -106,19 +110,30 @@ export function CheckoutButton({
       if (!res.ok || data.error) {
         throw new Error(data.error || 'Failed to initialize server-authorized escrow order.');
       }
-      orderId = data.order_id || data.id;
-      chargeAmountPaise = data.amount;
 
-      if (!orderId) {
-        throw new Error('Could not retrieve order ID from server.');
+      // Ensure order_id is valid and securely fetched from backend order creation response
+      const orderId = (data.order_id || data.id)?.trim();
+      if (!orderId || typeof orderId !== 'string' || !orderId.startsWith('order_')) {
+        throw new Error(`Valid Razorpay order_id was not returned from backend (received: "${orderId || ''}")`);
+      }
+
+      // CRITICAL: Ensure the amount passed to options is strictly an integer in paise
+      let chargeAmountPaise: number;
+      if (data.amount !== undefined && data.amount !== null && !isNaN(Number(data.amount))) {
+        chargeAmountPaise = Math.round(Number(data.amount));
+      } else {
+        chargeAmountPaise = Math.round(Number(cleanPrice) * 100);
+      }
+
+      if (!Number.isInteger(chargeAmountPaise) || chargeAmountPaise <= 0) {
+        throw new Error(`Invalid charge amount in paise: ${chargeAmountPaise}`);
       }
 
       // Step 2: Configure Razorpay Checkout options with key mode validation
       const serverKey = data.key_id?.trim();
       const envClientKey = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID?.trim();
       
-      // Ensure key mode (test vs live) matches between server and client
-      let effectiveKey = envClientKey || serverKey || 'rzp_test_TdBTiCyaOJ95KC';
+      let effectiveKey = envClientKey || serverKey || 'rzp_test_TjnMsPZWKcfEdt';
       if (envClientKey && serverKey) {
         const isServerTest = serverKey.startsWith('rzp_test_');
         const isClientTest = envClientKey.startsWith('rzp_test_');
@@ -131,12 +146,18 @@ export function CheckoutButton({
         }
       }
 
+      const activeKey = (process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID?.trim() || effectiveKey || '').trim();
+      if (!activeKey) {
+        throw new Error('Razorpay Public Key is missing or invalid.');
+      }
+
+      // Ensure no fields in the options object are undefined or null
       const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID?.trim() || effectiveKey,
+        key: activeKey,
         amount: chargeAmountPaise, // strictly integer in paise
         currency: 'INR',
-        name: title,
-        description: description,
+        name: (title || 'OtakuBazaar Collectibles').trim(),
+        description: (description || 'Secure Escrow Checkout').trim(),
         order_id: orderId,
         handler: async function (response: {
           razorpay_payment_id: string;
@@ -154,9 +175,9 @@ export function CheckoutButton({
                 razorpay_order_id: response.razorpay_order_id || orderId,
                 razorpay_payment_id: response.razorpay_payment_id,
                 razorpay_signature: response.razorpay_signature,
-                lotId: lotId || productId,
-                productId: productId || lotId,
-                dealOfferId,
+                lotId: lotId || productId || '',
+                productId: productId || lotId || '',
+                dealOfferId: dealOfferId || '',
                 amount: chargeAmountPaise,
               }),
             });
@@ -203,20 +224,21 @@ export function CheckoutButton({
           }
         },
         prefill: {
-          name: customerName,
-          email: customerEmail,
-          contact: customerContact,
+          name: (customerName?.trim() || 'Verified Collector'),
+          email: (customerEmail?.trim() || 'collector@otakubazaar.dev'),
+          contact: (customerContact?.replace(/\D/g, '') || '9999999999'),
         },
         theme: {
           color: '#09090b',
         },
         modal: {
           ondismiss: function () {
-            console.info('[Razorpay Checkout] Checkout modal closed by user without paying.');
+            console.log('Checkout modal closed by user.');
             setLoading(false);
           },
-          on_dismiss: function () {
-            console.info('[Razorpay Checkout] Checkout modal dismissed (on_dismiss).');
+          onerror: function (err: any) {
+            console.error('Razorpay Modal Error:', err);
+            alert(`Razorpay Error: ${err?.description || 'Check console for details.'}`);
             setLoading(false);
           },
         },

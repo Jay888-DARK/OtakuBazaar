@@ -147,14 +147,17 @@ export function InstantCheckoutDrawer({
       }
 
       // 2. Authoritative server order generation
+      const cleanPrice = String(price || 999).replace(/,/g, '').replace(/₹/g, '').trim();
+      const amountInPaiseFallback = Math.round(Number(cleanPrice) * 100);
+
       const res = await fetch('/api/checkout/razorpay', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           lotId: targetId,
           productId: targetId,
-          price,
-          amount: Math.round(Number(price) * 100),
+          price: Number(cleanPrice) || 999,
+          amount: !isNaN(amountInPaiseFallback) && amountInPaiseFallback > 0 ? amountInPaiseFallback : 99900,
           receipt: `rcpt_guest_${targetId}_${Date.now()}`,
           phone: phone.trim(),
           name: fullName.trim(),
@@ -168,14 +171,28 @@ export function InstantCheckoutDrawer({
         throw new Error(orderData.error || 'Server rejected instant order initialization.');
       }
 
-      const orderId = orderData.order_id || orderData.id;
-      const chargeAmountPaise = orderData.amount;
+      const orderId = (orderData.order_id || orderData.id)?.trim();
+      if (!orderId || typeof orderId !== 'string' || !orderId.startsWith('order_')) {
+        throw new Error(`Valid Razorpay order_id was not returned from backend (received: "${orderId || ''}")`);
+      }
+
+      // CRITICAL: Ensure the amount passed to options is strictly an integer in paise
+      let chargeAmountPaise: number;
+      if (orderData.amount !== undefined && orderData.amount !== null && !isNaN(Number(orderData.amount))) {
+        chargeAmountPaise = Math.round(Number(orderData.amount));
+      } else {
+        chargeAmountPaise = Math.round(Number(cleanPrice) * 100);
+      }
+
+      if (!Number.isInteger(chargeAmountPaise) || chargeAmountPaise <= 0) {
+        throw new Error(`Invalid charge amount in paise: ${chargeAmountPaise}`);
+      }
 
       // 3. Configure Razorpay with key mode validation
       const serverKey = orderData.key_id?.trim();
       const envClientKey = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID?.trim();
 
-      let effectiveKey = envClientKey || serverKey || 'rzp_test_TdBTiCyaOJ95KC';
+      let effectiveKey = envClientKey || serverKey || 'rzp_test_TjnMsPZWKcfEdt';
       if (envClientKey && serverKey) {
         const isServerTest = serverKey.startsWith('rzp_test_');
         const isClientTest = envClientKey.startsWith('rzp_test_');
@@ -188,38 +205,44 @@ export function InstantCheckoutDrawer({
         }
       }
 
+      const activeKey = (process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID?.trim() || effectiveKey || '').trim();
+      if (!activeKey) {
+        throw new Error('Razorpay Public Key is missing or invalid.');
+      }
+
       const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID?.trim() || effectiveKey,
-        amount: chargeAmountPaise,
+        key: activeKey,
+        amount: chargeAmountPaise, // strictly integer in paise
         currency: 'INR',
         name: 'OtakuBazaar Vault',
         description: `Instant Guest Escrow: ${itemTitle}`,
         order_id: orderId,
         // Razorpay Magic Contact & Address Pre-fill
         prefill: {
-          name: fullName.trim(),
-          contact: phone.replace(/\D/g, ''),
-          email: `${phone.replace(/\D/g, '')}@buyer.otakubazaar.dev`,
-          method: preferredWallet || initialWallet || undefined,
+          name: fullName?.trim() || 'Verified Collector',
+          contact: phone?.replace(/\D/g, '') || '9999999999',
+          email: `${phone?.replace(/\D/g, '') || 'collector'}@buyer.otakubazaar.dev`,
+          ...((preferredWallet || initialWallet) ? { method: preferredWallet || initialWallet } : {}),
         },
         send_sms_hash: true,
         notes: {
           lotId: targetId,
-          shipping_address: address.trim(),
-          pincode: pinCode.trim(),
-          buyer_name: fullName.trim(),
-          phone: phone.trim(),
+          shipping_address: address?.trim() || '',
+          pincode: pinCode?.trim() || '',
+          buyer_name: fullName?.trim() || 'Verified Collector',
+          phone: phone?.trim() || '',
         },
         theme: {
           color: '#09090b',
         },
         modal: {
           ondismiss: function () {
-            console.info('[Instant Checkout] Checkout modal closed by user without paying.');
+            console.log('Checkout modal closed by user.');
             setLoading(false);
           },
-          on_dismiss: function () {
-            console.info('[Instant Checkout] Checkout modal dismissed (on_dismiss).');
+          onerror: function (err: any) {
+            console.error('Razorpay Modal Error:', err);
+            alert(`Razorpay Error: ${err?.description || 'Check console for details.'}`);
             setLoading(false);
           },
         },
