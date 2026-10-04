@@ -236,7 +236,7 @@ export function InstantCheckoutDrawer({
             setLoading(true);
             console.log('[Instant Checkout] Payment received, verifying signature...', response);
             // Server-side verification & silent account provisioning
-            const verifyRes = await fetch('/api/checkout/razorpay/verify', {
+            const verifyRes = await fetch('/api/checkout/verify', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({

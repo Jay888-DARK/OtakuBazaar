@@ -86,8 +86,22 @@ export async function POST(req: Request): Promise<NextResponse> {
       }
     }
 
-    // Update order repository escrowStatus to HELD_IN_ESCROW
+    // Update order repository & Prisma directly to reflect ESCROW_LOCKED
     try {
+      await prisma.order.updateMany({
+        where: {
+          OR: [
+            { razorpayOrderId: orderId },
+            { id: orderId },
+          ],
+        },
+        data: {
+          status: 'ESCROW_LOCKED',
+          escrowStatus: 'HELD_IN_ESCROW',
+          razorpayPaymentId: paymentId,
+        },
+      });
+
       await OrderRepository.updateEscrowStatus(orderId, {
         escrowStatus: 'HELD_IN_ESCROW',
         razorpayPaymentId: paymentId,

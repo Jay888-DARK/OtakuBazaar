@@ -161,62 +161,36 @@ export function CheckoutButton({
           razorpay_signature?: string;
         }) {
           console.log('Payment Successful!', response);
-
           try {
             setLoading(true);
-            // Verify payment signature server-side before updating order status
-            const verifyRes = await fetch('/api/checkout/razorpay/verify', {
+            const verifyRes = await fetch('/api/checkout/verify', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
-                razorpay_order_id: response.razorpay_order_id || orderId,
                 razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_order_id: response.razorpay_order_id || orderId,
                 razorpay_signature: response.razorpay_signature,
                 lotId: lotId || productId || '',
                 productId: productId || lotId || '',
                 dealOfferId: dealOfferId || '',
-                amount: exactAmountPaise,
               }),
             });
 
-            const rawText = await verifyRes.text();
-            let verifyData: any = null;
-            try {
-              verifyData = JSON.parse(rawText);
-            } catch {
-              // Server returned non-JSON text or HTML
-            }
+            const verifyData = await verifyRes.json();
 
-            if (!verifyRes.ok || (verifyData && verifyData.error)) {
-              const errorMessageStr =
-                verifyData?.error ||
-                verifyData?.message ||
-                rawText ||
-                `Payment verification failed with HTTP status ${verifyRes.status}`;
-              const fullErrorObj = {
-                status: verifyRes.status,
-                statusText: verifyRes.statusText,
-                response: verifyData || rawText,
-                razorpay_response: response,
-              };
-              console.error('[Razorpay Checkout] Verification Failed:', fullErrorObj);
-              throw new Error(errorMessageStr);
+            if (!verifyRes.ok) {
+              throw new Error(verifyData.error || 'Payment verification failed.');
             }
-
-            console.log('[Razorpay Checkout] Signature verified! Escrow status:', verifyData?.escrowStatus);
 
             if (onSuccess) {
               onSuccess(response.razorpay_payment_id, orderId);
             } else {
-              router.push(
-                `/orders/success?payment_id=${encodeURIComponent(
-                  response.razorpay_payment_id
-                )}&order_id=${encodeURIComponent(orderId)}`
-              );
+              window.location.href = `/vault-ops/success?order_id=${encodeURIComponent(response.razorpay_order_id || orderId)}`;
             }
-          } catch (verifyErr: any) {
-            console.error('[Razorpay Checkout Error]:', verifyErr);
-            setErrorMessage(verifyErr?.message || 'Signature verification failed. Escrow locked.');
+          } catch (error: any) {
+            console.error('Verification Error:', error);
+            alert('Payment was processed, but verification failed. Please contact support.');
+            setErrorMessage(error?.message || 'Verification failed.');
           } finally {
             setLoading(false);
           }

@@ -161,7 +161,7 @@ export function OneClickBuyBox({
             setLoading(true);
             console.log('[1-Click Checkout] Payment received, verifying signature...', response);
             // Verify payment signature server-side
-            const verifyRes = await fetch('/api/checkout/razorpay/verify', {
+            const verifyRes = await fetch('/api/checkout/verify', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
