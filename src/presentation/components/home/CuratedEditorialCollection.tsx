@@ -33,13 +33,13 @@ export function CuratedEditorialCollection(): React.JSX.Element {
           <div>
             <div className="flex items-center gap-3 mb-2">
               <span
-                style={{ fontFamily: "'Satoshi', sans-serif" }}
+                style={{ fontFamily: "var(--font-sans), 'Plus Jakarta Sans', sans-serif" }}
                 className="text-[11px] sm:text-xs uppercase tracking-[0.15em] text-[#A3A3A3] font-medium border border-[#27272a] bg-[#111114] px-2.5 py-1"
               >
                 FEATURED COLLECTION
               </span>
               <span
-                style={{ fontFamily: "'Satoshi', sans-serif" }}
+                style={{ fontFamily: "var(--font-sans), 'Plus Jakarta Sans', sans-serif" }}
                 className="text-[11px] sm:text-xs uppercase tracking-[0.15em] text-[#A3A3A3] font-medium"
               >
                 ITEM NO. BK-1989-M
@@ -47,13 +47,13 @@ export function CuratedEditorialCollection(): React.JSX.Element {
             </div>
             {/* Synchronized Section Header (Logo Font Satoshi) */}
             <h2
-              style={{ fontFamily: "'Satoshi', sans-serif", letterSpacing: '-0.025em' }}
+              style={{ fontFamily: "var(--font-sans), 'Plus Jakarta Sans', sans-serif", letterSpacing: '-0.025em' }}
               className="text-3xl sm:text-5xl md:text-6xl font-bold text-white uppercase tracking-tight leading-none"
             >
               The Berserk Collection
             </h2>
             <p
-              style={{ fontFamily: "'Satoshi', sans-serif" }}
+              style={{ fontFamily: "var(--font-sans), 'Plus Jakarta Sans', sans-serif" }}
               className="text-xs text-zinc-400 mt-2 max-w-xl leading-relaxed font-normal"
             >
               Kentaro Miura’s dark fantasy masterpiece in high-grade polystone, forged steel, and hardcover volumes.
@@ -62,13 +62,13 @@ export function CuratedEditorialCollection(): React.JSX.Element {
 
           <div className="flex items-center gap-3 shrink-0">
             <span
-              style={{ fontFamily: "'Satoshi', sans-serif" }}
+              style={{ fontFamily: "var(--font-sans), 'Plus Jakarta Sans', sans-serif" }}
               className="text-[11px] sm:text-xs text-[#A3A3A3] uppercase tracking-[0.15em] font-medium"
             >
               STATUS:
             </span>
             <span
-              style={{ fontFamily: "'Satoshi', sans-serif" }}
+              style={{ fontFamily: "var(--font-sans), 'Plus Jakarta Sans', sans-serif" }}
               className="border border-[#27272a] bg-[#09090b] px-3 py-1.5 text-[11px] sm:text-xs font-medium text-white tracking-[0.15em] uppercase"
             >
               IN STOCK (1 OF 1)
@@ -81,13 +81,13 @@ export function CuratedEditorialCollection(): React.JSX.Element {
           {/* Dominant Hero Column (Left Side, 7 cols): Main Image with Details */}
           <div className="lg:col-span-7 border-b lg:border-b-0 lg:border-r border-[#27272a] bg-[#09090b] flex flex-col justify-between relative">
             <span
-              style={{ fontFamily: "'Satoshi', sans-serif" }}
+              style={{ fontFamily: "var(--font-sans), 'Plus Jakarta Sans', sans-serif" }}
               className="marginal-metadata marginal-tl text-[11px] uppercase tracking-[0.15em] text-[#A3A3A3]"
             >
               INSPECTED: 2026-09-28
             </span>
             <span
-              style={{ fontFamily: "'Satoshi', sans-serif" }}
+              style={{ fontFamily: "var(--font-sans), 'Plus Jakarta Sans', sans-serif" }}
               className="marginal-metadata marginal-br text-[11px] uppercase tracking-[0.15em] text-[#A3A3A3]"
             >
               CONDITION: S-RANK (MINT)
@@ -104,13 +104,13 @@ export function CuratedEditorialCollection(): React.JSX.Element {
                 priority
               />
               <div
-                style={{ fontFamily: "'Satoshi', sans-serif" }}
+                style={{ fontFamily: "var(--font-sans), 'Plus Jakarta Sans', sans-serif" }}
                 className="absolute top-4 left-4 bg-[#09090b] border border-[#27272a] px-3 py-1.5 text-[11px] font-medium tracking-[0.15em] uppercase text-[#A3A3A3]"
               >
                 ITEM ID: BK-001 • PRIME 1 STUDIO
               </div>
               <div
-                style={{ fontFamily: "'Satoshi', sans-serif" }}
+                style={{ fontFamily: "var(--font-sans), 'Plus Jakarta Sans', sans-serif" }}
                 className="absolute bottom-4 right-4 bg-[#09090b] border border-[#27272a] px-3 py-1.5 text-[11px] font-medium tracking-[0.15em] text-[#A3A3A3] uppercase"
               >
                 EDITION: 042 / 350
@@ -122,7 +122,7 @@ export function CuratedEditorialCollection(): React.JSX.Element {
               <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-[#27272a] pb-4">
                 <div>
                   <span
-                    style={{ fontFamily: "'Satoshi', sans-serif" }}
+                    style={{ fontFamily: "var(--font-sans), 'Plus Jakarta Sans', sans-serif" }}
                     className="text-[11px] uppercase tracking-[0.15em] text-[#A3A3A3] font-medium block mb-1"
                   >
                     PRE-PAINTED POLYSTONE STATUE
@@ -136,13 +136,13 @@ export function CuratedEditorialCollection(): React.JSX.Element {
                 </div>
                 <div className="sm:text-right shrink-0">
                   <span
-                    style={{ fontFamily: "'Satoshi', sans-serif" }}
+                    style={{ fontFamily: "var(--font-sans), 'Plus Jakarta Sans', sans-serif" }}
                     className="text-[11px] uppercase tracking-[0.15em] text-[#A3A3A3] font-medium block mb-1"
                   >
                     PRICE
                   </span>
                   <span
-                    style={{ fontFamily: "'Satoshi', sans-serif" }}
+                    style={{ fontFamily: "var(--font-sans), 'Plus Jakarta Sans', sans-serif" }}
                     className="text-xl font-bold tracking-tight text-white uppercase block"
                   >
                     ₹1,24,000
@@ -153,7 +153,7 @@ export function CuratedEditorialCollection(): React.JSX.Element {
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2">
                 <div className="border border-[#27272a] bg-[#09090b] p-3">
                   <span
-                    style={{ fontFamily: "'Satoshi', sans-serif" }}
+                    style={{ fontFamily: "var(--font-sans), 'Plus Jakarta Sans', sans-serif" }}
                     className="block text-[11px] uppercase tracking-[0.15em] text-[#A3A3A3] font-medium"
                   >
                     Weight
@@ -162,7 +162,7 @@ export function CuratedEditorialCollection(): React.JSX.Element {
                 </div>
                 <div className="border border-[#27272a] bg-[#09090b] p-3">
                   <span
-                    style={{ fontFamily: "'Satoshi', sans-serif" }}
+                    style={{ fontFamily: "var(--font-sans), 'Plus Jakarta Sans', sans-serif" }}
                     className="block text-[11px] uppercase tracking-[0.15em] text-[#A3A3A3] font-medium"
                   >
                     Authenticity Seal
@@ -171,7 +171,7 @@ export function CuratedEditorialCollection(): React.JSX.Element {
                 </div>
                 <div className="border border-[#27272a] bg-[#09090b] p-3">
                   <span
-                    style={{ fontFamily: "'Satoshi', sans-serif" }}
+                    style={{ fontFamily: "var(--font-sans), 'Plus Jakarta Sans', sans-serif" }}
                     className="block text-[11px] uppercase tracking-[0.15em] text-[#A3A3A3] font-medium"
                   >
                     Origin
@@ -180,7 +180,7 @@ export function CuratedEditorialCollection(): React.JSX.Element {
                 </div>
                 <div className="border border-[#27272a] bg-[#09090b] p-3">
                   <span
-                    style={{ fontFamily: "'Satoshi', sans-serif" }}
+                    style={{ fontFamily: "var(--font-sans), 'Plus Jakarta Sans', sans-serif" }}
                     className="block text-[11px] uppercase tracking-[0.15em] text-[#A3A3A3] font-medium"
                   >
                     Condition
@@ -196,7 +196,7 @@ export function CuratedEditorialCollection(): React.JSX.Element {
             {/* Included Item 01 */}
             <div className="p-6 sm:p-8 flex flex-col gap-4">
               <span
-                style={{ fontFamily: "'Satoshi', sans-serif" }}
+                style={{ fontFamily: "var(--font-sans), 'Plus Jakarta Sans', sans-serif" }}
                 className="text-[11px] sm:text-xs uppercase tracking-[0.15em] text-[#A3A3A3] font-medium"
               >
                 INCLUDED ACCESSORY • ITEM A-01
@@ -214,19 +214,19 @@ export function CuratedEditorialCollection(): React.JSX.Element {
                 </div>
                 <div className="col-span-2 space-y-1">
                   <h4
-                    style={{ fontFamily: "'Satoshi', sans-serif" }}
+                    style={{ fontFamily: "var(--font-sans), 'Plus Jakarta Sans', sans-serif" }}
                     className="text-xs font-semibold uppercase tracking-wider text-zinc-100"
                   >
                     Hand-Forged Dragon Slayer 1:6 Diecast Replica
                   </h4>
                   <p
-                    style={{ fontFamily: "'Satoshi', sans-serif" }}
+                    style={{ fontFamily: "var(--font-sans), 'Plus Jakarta Sans', sans-serif" }}
                     className="text-xs text-zinc-400 leading-normal font-normal"
                   >
                     Includes weighted display base and detailed weathered battle finish by Prime 1 artisans.
                   </p>
                   <span
-                    style={{ fontFamily: "'Satoshi', sans-serif" }}
+                    style={{ fontFamily: "var(--font-sans), 'Plus Jakarta Sans', sans-serif" }}
                     className="text-[11px] font-semibold text-zinc-300 block pt-1"
                   >
                     INR ₹28,500 • ITEM REF #BK-042
@@ -238,7 +238,7 @@ export function CuratedEditorialCollection(): React.JSX.Element {
             {/* Included Item 02 */}
             <div className="p-6 sm:p-8 flex flex-col gap-4">
               <span
-                style={{ fontFamily: "'Satoshi', sans-serif" }}
+                style={{ fontFamily: "var(--font-sans), 'Plus Jakarta Sans', sans-serif" }}
                 className="text-[11px] sm:text-xs uppercase tracking-[0.15em] text-[#A3A3A3] font-medium"
               >
                 INCLUDED ACCESSORY • ITEM B-02
@@ -256,19 +256,19 @@ export function CuratedEditorialCollection(): React.JSX.Element {
                 </div>
                 <div className="col-span-2 space-y-1">
                   <h4
-                    style={{ fontFamily: "'Satoshi', sans-serif" }}
+                    style={{ fontFamily: "var(--font-sans), 'Plus Jakarta Sans', sans-serif" }}
                     className="text-xs font-semibold uppercase tracking-wider text-zinc-100"
                   >
                     Berserk Deluxe Vol. 1–14 Complete Leatherbound Set
                   </h4>
                   <p
-                    style={{ fontFamily: "'Satoshi', sans-serif" }}
+                    style={{ fontFamily: "var(--font-sans), 'Plus Jakarta Sans', sans-serif" }}
                     className="text-xs text-zinc-400 leading-normal font-normal"
                   >
                     Foil-embossed black leatherette covers, oversized 7x10 format, archival acid-free paper.
                   </p>
                   <span
-                    style={{ fontFamily: "'Satoshi', sans-serif" }}
+                    style={{ fontFamily: "var(--font-sans), 'Plus Jakarta Sans', sans-serif" }}
                     className="text-[11px] font-semibold text-zinc-300 block pt-1"
                   >
                     INR ₹42,000 • ITEM REF #BK-089
@@ -281,13 +281,13 @@ export function CuratedEditorialCollection(): React.JSX.Element {
             <div className="p-6 sm:p-8 space-y-4 bg-[#0a0a0c]">
               <div>
                 <span
-                  style={{ fontFamily: "'Satoshi', sans-serif" }}
+                  style={{ fontFamily: "var(--font-sans), 'Plus Jakarta Sans', sans-serif" }}
                   className="text-[11px] sm:text-xs uppercase tracking-[0.15em] text-[#A3A3A3] font-medium block mb-1"
                 >
                   PRODUCT NOTE
                 </span>
                 <p
-                  style={{ fontFamily: "'Satoshi', sans-serif" }}
+                  style={{ fontFamily: "var(--font-sans), 'Plus Jakarta Sans', sans-serif" }}
                   className="text-xs text-zinc-400 leading-relaxed font-normal"
                 >
                   Every item in this collection has been inspected in our staging facility. Sculptural tolerances, joint stability, and official holographic authenticity stamps are verified before packaging.
@@ -300,7 +300,7 @@ export function CuratedEditorialCollection(): React.JSX.Element {
                 <button
                   type="button"
                   onClick={() => setIsCheckoutOpen(true)}
-                  style={{ fontFamily: "'Satoshi', sans-serif" }}
+                  style={{ fontFamily: "var(--font-sans), 'Plus Jakarta Sans', sans-serif" }}
                   className="w-full py-4 px-6 bg-[#f4f4f4] hover:bg-white text-black text-center text-xs sm:text-sm font-bold uppercase tracking-[0.15em] border border-[#f4f4f4] cursor-pointer block rounded-none transition-none"
                 >
                   [ BUY NOW — ₹1,24,000 ]
@@ -309,14 +309,14 @@ export function CuratedEditorialCollection(): React.JSX.Element {
                 <div className="flex flex-col sm:flex-row items-center gap-2">
                   <Link
                     href="/products/lot-0482"
-                    style={{ fontFamily: "'Satoshi', sans-serif" }}
+                    style={{ fontFamily: "var(--font-sans), 'Plus Jakarta Sans', sans-serif" }}
                     className="w-full sm:flex-1 py-3 px-4 bg-transparent hover:bg-[#18181b] text-zinc-300 hover:text-white text-center text-xs font-semibold uppercase tracking-[0.15em] border border-[#27272a] transition-none no-underline block rounded-none"
                   >
                     [ VIEW DETAILS ]
                   </Link>
                   <a
                     href="#catalog"
-                    style={{ fontFamily: "'Satoshi', sans-serif" }}
+                    style={{ fontFamily: "var(--font-sans), 'Plus Jakarta Sans', sans-serif" }}
                     className="w-full sm:w-auto py-3 px-4 bg-transparent hover:bg-[#18181b] text-zinc-400 hover:text-white text-center text-xs font-semibold uppercase tracking-[0.15em] border border-[#27272a] transition-none no-underline block whitespace-nowrap rounded-none"
                   >
                     [ VIEW CATALOG ]
@@ -326,7 +326,7 @@ export function CuratedEditorialCollection(): React.JSX.Element {
 
               {/* Trust Indicators */}
               <div
-                style={{ fontFamily: "'Satoshi', sans-serif" }}
+                style={{ fontFamily: "var(--font-sans), 'Plus Jakarta Sans', sans-serif" }}
                 className="pt-3 border-t border-[#27272a] flex items-center justify-between text-[11px] text-[#A3A3A3] uppercase tracking-[0.15em] font-medium"
               >
                 <div className="flex items-center gap-1.5">

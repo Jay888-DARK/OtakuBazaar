@@ -82,39 +82,15 @@ const config: Config = {
         anime: '0px',
       },
       fontFamily: {
-        sans: [
-          '"Satoshi"',
-          'sans-serif',
-        ],
-        display: [
-          '"Clash Display"',
-          '"Cabinet Grotesk"',
-          'sans-serif',
-        ],
-        heading: [
-          '"Clash Display"',
-          '"Cabinet Grotesk"',
-          'sans-serif',
-        ],
-        editorial: [
-          '"Clash Display"',
-          '"Cabinet Grotesk"',
-          'sans-serif',
-        ],
-        serif: [
-          '"Clash Display"',
-          '"Cabinet Grotesk"',
-          'sans-serif',
-        ],
-        mono: [
-          '"Satoshi"',
-          'sans-serif',
-        ],
-        shojumaru: [
-          '"Clash Display"',
-          '"Cabinet Grotesk"',
-          'sans-serif',
-        ],
+        brand: ['var(--font-brand)', 'sans-serif'],
+        headline: ['var(--font-headline)', 'sans-serif'],
+        mechanical: ['var(--font-mechanical)', 'sans-serif'],
+        swiss: ['var(--font-swiss)', 'sans-serif'],
+        gta: ['var(--font-gta)', 'sans-serif'],
+        sans: ['var(--font-swiss)', 'sans-serif'],
+        display: ['var(--font-headline)', 'sans-serif'],
+        telemetry: ['var(--font-swiss)', 'sans-serif'],
+        mono: ['var(--font-swiss)', 'sans-serif'],
       },
     },
   },

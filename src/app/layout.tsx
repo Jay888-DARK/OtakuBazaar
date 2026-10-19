@@ -2,14 +2,13 @@
  * @file src/app/layout.tsx
  *
  * Root layout for OtakuBazaar.
- * - Loads Plus Jakarta Sans (premium geometric body font) and Shojumaru (logo & hero heading font).
+ * - Imports luxury archival font stack: Syne, Plus Jakarta Sans, and Chakra Petch.
  * - Wraps application in AuthProvider, ThemeProvider and SyncProviderWrapper.
- * - Renders dynamic ambient SVG backgrounds (birds for light mode, anime clouds for dark mode).
- * - Embeds persistent Navbar, route change sound effect, and footer BGM player.
- * - Zero Japanese characters.
+ * - Embeds persistent Navbar, slide-over CartDrawer, and compliance banners.
  */
 
 import type { Metadata } from 'next';
+import { Michroma, Archivo, Chakra_Petch, Titillium_Web } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/presentation/components/providers/AuthProvider';
 import { SyncProviderWrapper } from '@/presentation/components/providers/SyncProviderWrapper';
@@ -19,6 +18,34 @@ import { CookieConsent } from '@/presentation/components/compliance/CookieConsen
 import { CartDrawer } from '@/presentation/components/cart/CartDrawer';
 import { ProvenanceManifestModal } from '@/presentation/components/provenance/ProvenanceManifestModal';
 import { RazorpayScript } from '@/presentation/components/payments/RazorpayScript';
+
+const michroma = Michroma({
+  subsets: ['latin'],
+  weight: '400',
+  variable: '--font-brand',
+  display: 'swap',
+});
+
+const archivo = Archivo({
+  subsets: ['latin'],
+  weight: ['600', '700', '800'],
+  variable: '--font-headline',
+  display: 'swap',
+});
+
+const chakraPetch = Chakra_Petch({
+  subsets: ['latin'],
+  weight: ['600', '700'],
+  variable: '--font-mechanical',
+  display: 'swap',
+});
+
+const titilliumWeb = Titillium_Web({
+  subsets: ['latin'],
+  weight: ['400', '600', '700'],
+  variable: '--font-swiss',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: 'OtakuBazaar — Premium Anime Collectibles Marketplace',
@@ -34,17 +61,17 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className="antialiased"
+      className={`antialiased ${michroma.variable} ${archivo.variable} ${chakraPetch.variable} ${titilliumWeb.variable}`}
       suppressHydrationWarning
     >
       <body
         suppressHydrationWarning
-        className="bg-[#09090b] text-white selection:bg-[#F85B1A] selection:text-white"
+        className={`${titilliumWeb.className} bg-[#0a0a0a] text-white selection:bg-[#F85B1A] selection:text-white`}
         style={{
           minHeight: '100vh',
           display: 'flex',
           flexDirection: 'column',
-          fontFamily: "'Satoshi', sans-serif",
+          fontFamily: 'var(--font-swiss), sans-serif',
         }}
       >
         {/* Lazy Loaded Razorpay Checkout Script */}

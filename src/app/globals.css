@@ -1,4 +1,5 @@
-@import url('https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,800,900&display=swap');
+@import url('https://fonts.cdnfonts.com/css/pricedown');
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Chakra+Petch:wght@600;700&family=Michroma&family=Titillium+Web:wght@400;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -10,6 +11,18 @@
 /* ========================================================================= */
 
 :root {
+  /* Swiss Horological & Aerospace Luxury Typography System */
+  --font-brand: var(--font-brand, 'Michroma', sans-serif);
+  --font-headline: var(--font-headline, 'Archivo', sans-serif);
+  --font-mechanical: var(--font-mechanical, 'Chakra Petch', sans-serif);
+  --font-swiss: var(--font-swiss, 'Titillium Web', sans-serif);
+  --font-gta: 'Pricedown Bl', 'Pricedown', sans-serif;
+
+  /* Backward Compatibility Aliases */
+  --font-display: var(--font-headline);
+  --font-sans: var(--font-swiss);
+  --font-telemetry: var(--font-swiss);
+
   /* Editorial Palette Tokens */
   --goku-orange: #F85B1A;
   --resolution-blue: #072083;
@@ -20,38 +33,38 @@
   --sapphire: #18181B;
 
   /* Master Flat Canvas — Muted Charcoal & Deep Obsidian */
-  --bg-primary: #09090b;
+  --bg-primary: #0a0a0a;
   --bg-secondary: #0c0c0e;
-  --surface-flat: #111114;
-  --surface-border: #27272a;
+  --surface-flat: #141414;
+  --surface-border: #262626;
   --surface-border-subtle: #1f1f23;
-  --surface-glass: #111114;
-  --surface-glass-border: #27272a;
+  --surface-glass: #141414;
+  --surface-glass-border: #262626;
   --accent-primary: #F85B1A;
   --accent-secondary: #072083;
   --accent-sakura: #F85B1A;
-  --text-primary: #f4f4f5;
+  --text-primary: #ffffff;
   --text-secondary: #a1a1aa;
-  --text-muted: #71717a;
+  --text-muted: #888888;
   --shadow-diffused: none;
   --glass-blur: none;
   --shelf-shadow: none;
 }
 
 [data-theme='dark'], .dark {
-  --bg-primary: #09090b;
+  --bg-primary: #0a0a0a;
   --bg-secondary: #0c0c0e;
-  --surface-flat: #111114;
-  --surface-border: #27272a;
+  --surface-flat: #141414;
+  --surface-border: #262626;
   --surface-border-subtle: #1f1f23;
-  --surface-glass: #111114;
-  --surface-glass-border: #27272a;
+  --surface-glass: #141414;
+  --surface-glass-border: #262626;
   --accent-primary: #F85B1A;
   --accent-secondary: #072083;
   --accent-sakura: #F85B1A;
-  --text-primary: #f4f4f5;
+  --text-primary: #ffffff;
   --text-secondary: #a1a1aa;
-  --text-muted: #71717a;
+  --text-muted: #888888;
   --shadow-diffused: none;
   --glass-blur: none;
   --shelf-shadow: none;
@@ -76,16 +89,15 @@ html,
 body {
   margin: 0;
   padding: 0;
-  background-color: #09090b;
-  color: #f4f4f5;
-  font-family: 'Satoshi', sans-serif;
+  background-color: #0a0a0a;
+  color: #ffffff;
+  font-family: var(--font-swiss), sans-serif;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Enforce Satoshi for specs, tables, code elements, body copy */
-/* STRICT CONSTRAINT: Do not use Inter, Geist, Space Grotesk, or monospaced/coding fonts */
+/* Enforce Swiss Technical font for specs, tables, code, and form elements */
 code,
 pre,
 kbd,
@@ -99,33 +111,56 @@ select,
 textarea,
 button,
 label,
-.font-mono {
-  font-family: 'Satoshi', sans-serif !important;
+.font-mono,
+.font-telemetry,
+.font-swiss {
+  font-family: var(--font-swiss), sans-serif !important;
+}
+
+.font-gta {
+  font-family: var(--font-gta) !important;
+}
+
+.font-brand {
+  font-family: var(--font-brand) !important;
+}
+
+.font-headline,
+.font-display {
+  font-family: var(--font-headline) !important;
+}
+
+.font-mechanical {
+  font-family: var(--font-mechanical) !important;
+}
+
+.font-swiss,
+.font-sans {
+  font-family: var(--font-swiss) !important;
 }
 
 /* ========================================================================= */
-/* Luxury Editorial & Brutalist Typography Hierarchy                          */
-/* Major display headers: Synchronized to Logo Font ('Satoshi', sans-serif)   */
+/* Luxury Architectural & Swiss Horological Typography Hierarchy              */
 /* ========================================================================= */
 h1,
 h2,
 .cinematic-header,
 .display-header {
-  font-family: 'Satoshi', sans-serif !important;
-  letter-spacing: -0.025em; /* tracking-tight */
-  font-weight: 700;
+  font-family: var(--font-headline), sans-serif;
+  letter-spacing: -0.01em;
+  font-weight: 800;
   color: #ffffff;
   line-height: 1.05;
   text-transform: uppercase;
 }
 
 h1 {
-  font-size: clamp(2.5rem, 6vw, 4.5rem); /* text-4xl sm:text-6xl md:text-7xl */
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
   text-transform: uppercase;
 }
 
 h2 {
-  font-size: clamp(1.75rem, 4vw, 3.25rem); /* text-3xl sm:text-4xl md:text-5xl */
+  font-size: clamp(2rem, 3.5vw, 3rem);
   text-transform: uppercase;
 }
 
@@ -133,23 +168,24 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: 'Satoshi', sans-serif;
-  letter-spacing: -0.02em;
+  font-family: var(--font-mechanical), sans-serif;
+  letter-spacing: 0.05em;
   font-weight: 700;
 }
 
-/* Product Titles: Elegant, proportional, standard casing, Satoshi */
+/* Product Card Titles: Bold tight Neo-Grotesque uppercase */
 .product-title,
 [data-testid="product-title"],
 .product-card h3 {
-  font-family: 'Satoshi', sans-serif !important;
-  font-weight: 600 !important;
-  letter-spacing: -0.01em !important;
-  text-transform: none !important;
-  line-height: 1.3 !important;
+  font-family: var(--font-headline), sans-serif !important;
+  font-size: 1rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.01em !important;
+  line-height: 1.25 !important;
+  text-transform: uppercase !important;
 }
 
-/* Metadata, Filter Pills, Specs, and Form Labels: Regular/Medium weight, 0.15em tracking, #A3A3A3 */
+/* Metadata, Filter Pills, Specs, and Form Labels: Swiss Technical font */
 label,
 .form-label,
 .filter-pill,
@@ -157,21 +193,21 @@ label,
 .editorial-spec,
 .metadata-label,
 .badge-spec {
-  font-family: 'Satoshi', sans-serif !important;
-  font-weight: 500 !important;
+  font-family: var(--font-swiss), sans-serif !important;
+  font-weight: 600 !important;
   font-size: 11px !important;
   letter-spacing: 0.15em !important;
   text-transform: uppercase !important;
-  color: #A3A3A3 !important;
+  color: #8a8a8a !important;
 }
 
-/* Pricing: Clear, un-distorted numeric styling */
+/* Pricing: Clear, tabular numerals */
 .price-display,
 [data-testid="price-display"] {
-  font-family: 'Satoshi', sans-serif !important;
-  font-size: 1.25rem; /* text-xl */
-  font-weight: 700;
-  letter-spacing: -0.025em; /* tracking-tight */
+  font-family: var(--font-swiss), sans-serif !important;
+  font-variant-numeric: tabular-nums !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.08em !important;
   color: #ffffff;
 }
 
@@ -267,8 +303,8 @@ textarea,
   font-size: 9px;
   text-transform: uppercase;
   letter-spacing: 0.2em;
-  color: #52525b; /* dark gray */
-  font-family: "PP Neue Montreal", "Helvetica Now Text", "Helvetica Neue", var(--font-sans), sans-serif;
+  color: #8a8a8a;
+  font-family: var(--font-swiss), sans-serif;
   pointer-events: none;
   user-select: none;
   z-index: 20;

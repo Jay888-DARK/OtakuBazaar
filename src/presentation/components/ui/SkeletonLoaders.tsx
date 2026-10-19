@@ -47,9 +47,9 @@ export function ProductCardSkeleton(): React.JSX.Element {
 }
 
 /** Product Feed Grid Skeleton */
-export function ProductFeedSkeleton({ count = 6 }: { count?: number }): React.JSX.Element {
+export function ProductFeedSkeleton({ count = 8 }: { count?: number }): React.JSX.Element {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       {Array.from({ length: count }).map((_, idx) => (
         <ProductCardSkeleton key={`skeleton-card-${idx}`} />
       ))}
