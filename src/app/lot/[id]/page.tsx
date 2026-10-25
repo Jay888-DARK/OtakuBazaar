@@ -27,6 +27,7 @@ import Image from 'next/image';
 import { MOCK_PRODUCTS, MockProduct, MacroSlotItem } from '@/lib/mockProducts';
 import { addToCart } from '@/app/actions/dealActions';
 import { openCartDrawer } from '@/presentation/components/cart/CartDrawer';
+import { showVaultCartToast } from '@/presentation/components/cart/VaultCartToast';
 import { ArchivalFooter } from '@/presentation/components/footer/ArchivalFooter';
 
 interface LotPageProps {
@@ -120,19 +121,23 @@ export default function LotDetailPage({ params }: LotPageProps) {
     setZoomCoords({ x: Math.max(0, Math.min(100, x)), y: Math.max(0, Math.min(100, y)) });
   };
 
-  // Direct acquisition at asking price
-  const handleAcquireDirect = async () => {
-    setIsAddingDirect(true);
-    try {
-      await addToCart(product.id);
-    } catch {
-      // fallback
-    }
+  // Direct acquisition at asking price with 0ms instant optimistic UI
+  const handleAcquireDirect = (openDrawerDirectly = false) => {
     if (typeof window !== 'undefined') {
+      showVaultCartToast({
+        lotNumber: product.lotNumber,
+        title: product.title,
+        price: product.price,
+      });
       window.dispatchEvent(new CustomEvent('otaku_cart_updated'));
-      openCartDrawer();
+      if (openDrawerDirectly) {
+        openCartDrawer();
+      }
     }
-    setIsAddingDirect(false);
+    // Asynchronous background persistence
+    addToCart(product.id).catch((err) => {
+      console.warn('[lot] Background addToCart error:', err);
+    });
   };
 
   // Percentage discount calculation for quick presets
@@ -169,13 +174,17 @@ export default function LotDetailPage({ params }: LotPageProps) {
         // ignore
       }
 
-      // Add to cart with pending offer state
-      addToCart(product.id).catch(() => {});
+      // 0ms instant optimistic state updates
+      showVaultCartToast({
+        lotNumber: product.lotNumber,
+        title: product.title,
+        price: offerNum,
+      });
       window.dispatchEvent(new CustomEvent('otaku_cart_updated'));
       setIsOfferSubmitted(true);
-      setTimeout(() => {
-        openCartDrawer();
-      }, 300);
+
+      // Add to cart with pending offer state asynchronously in background
+      addToCart(product.id).catch(() => {});
     }
   };
 
@@ -435,17 +444,23 @@ export default function LotDetailPage({ params }: LotPageProps) {
                   </span>
                 </div>
 
-                {/* Direct Acquisition Button */}
-                <button
-                  type="button"
-                  onClick={handleAcquireDirect}
-                  disabled={isAddingDirect}
-                  className="w-full py-3.5 bg-[#F2EFE9] hover:bg-white text-[#080808] border border-[#F2EFE9] font-sans text-[12px] font-semibold uppercase tracking-[0.18em] transition-colors cursor-pointer rounded-none"
-                >
-                  {isAddingDirect
-                    ? '[ LOCKING ESCROW CUSTODY... ]'
-                    : `[ ACQUIRE AT ASKING — ₹${product.price.toLocaleString('en-IN')} ]`}
-                </button>
+                {/* Direct Acquisition & Cart Addition Buttons */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleAcquireDirect(false)}
+                    className="w-full py-3.5 bg-[#0C0C0C] hover:bg-[#161616] text-[#F2EFE9] border border-[#1F1F1F] hover:border-[#3A3A3A] font-sans text-[11px] font-semibold uppercase tracking-[0.16em] transition-colors duration-75 cursor-pointer rounded-none text-center"
+                  >
+                    [ ADD TO CART ]
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleAcquireDirect(true)}
+                    className="w-full py-3.5 bg-[#F2EFE9] hover:bg-white text-[#080808] border border-[#F2EFE9] font-sans text-[11px] font-semibold uppercase tracking-[0.16em] transition-colors duration-75 cursor-pointer rounded-none text-center"
+                  >
+                    [ ACQUIRE NOW — ₹{product.price.toLocaleString('en-IN')} ]
+                  </button>
+                </div>
 
                 {/* Make Escrow Offer Section */}
                 <form onSubmit={handleSubmitOffer} className="space-y-3 pt-2 border-t border-[#161616]">
@@ -461,7 +476,7 @@ export default function LotDetailPage({ params }: LotPageProps) {
                         key={pct}
                         type="button"
                         onClick={() => applyDiscountPreset(pct)}
-                        className="py-1.5 border border-[#1F1F1F] bg-[#080808] hover:border-[#F2EFE9] text-[#CCCCCC] hover:text-white font-sans text-[10px] uppercase tracking-[0.14em] transition-colors cursor-pointer rounded-none"
+                        className="py-1.5 border border-[#1F1F1F] bg-[#080808] hover:border-[#F2EFE9] text-[#CCCCCC] hover:text-white font-sans text-[10px] uppercase tracking-[0.14em] transition-colors duration-75 cursor-pointer rounded-none"
                       >
                         [ -{pct}% (₹{Math.round(product.price * (1 - pct / 100)).toLocaleString('en-IN')}) ]
                       </button>
@@ -487,7 +502,7 @@ export default function LotDetailPage({ params }: LotPageProps) {
                     <button
                       type="submit"
                       disabled={!offerInput}
-                      className="px-4 py-2.5 border border-[#1F1F1F] bg-[#080808] hover:bg-[#F2EFE9] hover:text-[#080808] hover:border-[#F2EFE9] disabled:opacity-40 disabled:hover:bg-[#080808] disabled:hover:text-[#777777] disabled:hover:border-[#1F1F1F] text-[#F2EFE9] font-sans text-[11px] font-semibold uppercase tracking-[0.14em] transition-colors cursor-pointer rounded-none"
+                      className="px-4 py-2.5 border border-[#1F1F1F] bg-[#080808] hover:bg-[#F2EFE9] hover:text-[#080808] hover:border-[#F2EFE9] disabled:opacity-40 disabled:hover:bg-[#080808] disabled:hover:text-[#777777] disabled:hover:border-[#1F1F1F] text-[#F2EFE9] font-sans text-[11px] font-semibold uppercase tracking-[0.14em] transition-colors duration-75 cursor-pointer rounded-none"
                     >
                       [ SUBMIT 24H ESCROW OFFER ]
                     </button>

@@ -65,14 +65,14 @@ export default function VaultHero({ onSelectVaultItem }: VaultHeroProps) {
 
       {/* Floating Center Hero Text */}
       <div className="relative z-20 flex flex-col items-center justify-center text-center px-4 max-w-4xl mx-auto pointer-events-none">
-        <span className="uppercase mb-4 border border-[#1F1F1F] bg-[#0C0C0C] px-3.5 py-1.5 font-sans text-[10px] tracking-[0.2em] text-[#777777] font-semibold">
-          TOKYO ARCHIVAL VAULT • ESCROW CUSTODY DIRECT
+        <span className="font-mono text-[10px] tracking-[0.25em] text-[#888888] uppercase mb-4">
+          TOKYO ARCHIVAL VAULT // ESCROW DIRECT
         </span>
-        <h1 className="font-serif text-[42px] sm:text-[64px] lg:text-[76px] font-bold text-[#F2EFE9] uppercase tracking-[0.08em] leading-[0.95] max-w-4xl">
-          AUTHENTICATED GRAILS
+        <h1 className="font-serif text-[42px] md:text-[56px] text-[#F2EFE9] tracking-[0.04em] uppercase font-normal leading-[1.05]">
+          Authenticated Grails
         </h1>
-        <p className="max-w-xl mt-5 font-sans text-[14px] font-normal leading-relaxed text-[#8E8E8E]">
-          Pre-inspected Japanese scale figures and authenticated anime grails backed by double-entry escrow custody with a guaranteed 48-hour physical inspection window.
+        <p className="font-sans text-[13px] text-[#8E8E8E] max-w-xl mx-auto font-normal leading-relaxed mt-4">
+          Pre-inspected Japanese scale figures backed by a 24-hour liquidity protocol. Double-entry escrow custody with 48-hour inspection protection.
         </p>
       </div>
 
@@ -81,9 +81,9 @@ export default function VaultHero({ onSelectVaultItem }: VaultHeroProps) {
         onClick={handleScrollToStage2}
         type="button"
         aria-label="Scroll to access archival index"
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 cursor-pointer flex flex-col items-center gap-1.5 border border-[#1F1F1F] bg-[#0C0C0C] hover:bg-[#F2EFE9] hover:border-[#F2EFE9] px-5 py-2.5 transition-colors rounded-none group"
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 cursor-pointer flex flex-col items-center gap-1.5 border border-[#1F1F1F] bg-[#0C0C0C] hover:bg-[#F2EFE9] hover:border-[#F2EFE9] px-5 py-2.5 transition-colors duration-75 rounded-none group"
       >
-        <span className="font-sans text-[10px] font-semibold tracking-[0.16em] uppercase text-[#888888] group-hover:text-[#080808] transition-colors">
+        <span className="font-sans text-[10px] font-semibold tracking-[0.16em] uppercase text-[#888888] group-hover:text-[#080808] transition-colors duration-75">
           [ ACCESS ARCHIVAL INDEX ]
         </span>
       </button>

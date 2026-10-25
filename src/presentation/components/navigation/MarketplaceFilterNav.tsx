@@ -132,7 +132,7 @@ export function MarketplaceFilterNav(): React.JSX.Element {
                   key={tab.id}
                   type="button"
                   onClick={() => handleFilterClick(tab.id)}
-                  className={`px-3 py-1.5 uppercase border transition-colors shrink-0 cursor-pointer rounded-none font-sans text-[10px] tracking-[0.14em] ${
+                  className={`px-3 py-1.5 uppercase border transition-colors duration-75 shrink-0 cursor-pointer rounded-none font-sans text-[10px] tracking-[0.14em] ${
                     isActive
                       ? 'border-[#F2EFE9] bg-[#F2EFE9] text-[#080808] font-semibold'
                       : 'border-[#1F1F1F] bg-[#0C0C0C] text-[#888888] hover:border-[#333333] hover:text-[#F2EFE9]'
@@ -164,7 +164,7 @@ export function MarketplaceFilterNav(): React.JSX.Element {
                 key={cat.id}
                 type="button"
                 onClick={() => handleCategoryClick(cat.id)}
-                className={`flex items-center gap-2 px-4 py-2.5 border transition-colors shrink-0 cursor-pointer rounded-none uppercase font-sans text-[11px] tracking-[0.14em] ${
+                className={`flex items-center gap-2 px-4 py-2.5 border transition-colors duration-75 shrink-0 cursor-pointer rounded-none uppercase font-sans text-[11px] tracking-[0.14em] ${
                   isActive
                     ? 'border-[#F2EFE9] bg-[#F2EFE9] text-[#080808] font-semibold'
                     : 'border-[#1F1F1F] bg-[#0C0C0C] text-[#888888] hover:border-[#333333] hover:text-[#F2EFE9]'

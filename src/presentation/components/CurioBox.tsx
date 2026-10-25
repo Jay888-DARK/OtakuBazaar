@@ -15,6 +15,7 @@ import Link from 'next/link';
 import { BargainModal } from '@/presentation/components/BargainModal';
 import { addToCart } from '@/app/actions/dealActions';
 import { openCartDrawer } from '@/presentation/components/cart/CartDrawer';
+import { showVaultCartToast } from '@/presentation/components/cart/VaultCartToast';
 
 export interface CurioBoxProps {
   /** Unique listing or preview ID */
@@ -318,15 +319,22 @@ export function CurioBox({
           type="button"
           aria-label="Quick Cart"
           title="Add to Vault Cart"
-          onClick={async (e) => {
+          onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
             if (id) {
-              await addToCart(id);
-              openCartDrawer();
+              if (typeof window !== 'undefined') {
+                showVaultCartToast({
+                  lotNumber: id.replace(/[^0-9]/g, '').padStart(4, '0').slice(-4) || '0482',
+                  title,
+                  price: askingPriceINR,
+                });
+                window.dispatchEvent(new CustomEvent('otaku_cart_updated'));
+              }
+              addToCart(id).catch(() => {});
             }
           }}
-          className="w-9 h-9 bg-[#141416] border border-[#27272a] hover:border-[#3f3f46] text-zinc-300 hover:text-white flex items-center justify-center transition-colors shrink-0 cursor-pointer"
+          className="w-9 h-9 bg-[#141416] border border-[#27272a] hover:border-[#3f3f46] text-zinc-300 hover:text-white flex items-center justify-center transition-colors duration-75 shrink-0 cursor-pointer rounded-none"
         >
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
             <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />

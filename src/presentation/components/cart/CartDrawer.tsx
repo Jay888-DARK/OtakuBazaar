@@ -97,6 +97,8 @@ export function CartDrawer(): React.JSX.Element | null {
     try {
       setLoading(true);
       const items = await getCartItems('user_buyer_tanjiro');
+      const isCleared = typeof window !== 'undefined' && localStorage.getItem('otaku_cart_cleared') === 'true';
+
       if (items && items.length > 0) {
         setCartItems(
           items.map((i: any) => {
@@ -133,11 +135,14 @@ export function CartDrawer(): React.JSX.Element | null {
             };
           })
         );
-      } else {
+      } else if (!isCleared) {
         setCartItems(DEMO_CART_ITEMS);
+      } else {
+        setCartItems([]);
       }
     } catch {
-      setCartItems(DEMO_CART_ITEMS);
+      const isCleared = typeof window !== 'undefined' && localStorage.getItem('otaku_cart_cleared') === 'true';
+      setCartItems(isCleared ? [] : DEMO_CART_ITEMS);
     } finally {
       setLoading(false);
     }
@@ -166,7 +171,21 @@ export function CartDrawer(): React.JSX.Element | null {
 
   const handleRemove = async (itemId: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    setCartItems((prev) => prev.filter((i) => i.id !== itemId));
+    const updated = cartItems.filter((i) => i.id !== itemId);
+    setCartItems(updated);
+
+    // 0ms instant optimistic update for cart badge
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(
+        new CustomEvent('otaku_cart_updated', { detail: { count: updated.length } })
+      );
+      try {
+        if (updated.length === 0) {
+          localStorage.setItem('otaku_cart_cleared', 'true');
+        }
+      } catch {}
+    }
+
     try {
       await removeFromCart(itemId);
     } catch (err) {
@@ -223,7 +242,7 @@ export function CartDrawer(): React.JSX.Element | null {
                 type="button"
                 onClick={() => setIsOpen(false)}
                 aria-label="Close cart drawer"
-                className="w-8 h-8 bg-[#080808] border border-[#1F1F1F] text-[#888888] hover:text-white hover:border-[#F2EFE9] flex items-center justify-center text-xs transition-colors cursor-pointer rounded-none"
+                className="w-8 h-8 bg-[#080808] border border-[#1F1F1F] text-[#888888] hover:text-white hover:border-[#F2EFE9] flex items-center justify-center text-xs transition-colors duration-75 cursor-pointer rounded-none"
               >
                 ✕
               </button>
@@ -263,7 +282,7 @@ export function CartDrawer(): React.JSX.Element | null {
                   <button
                     type="button"
                     onClick={() => setIsOpen(false)}
-                    className="px-5 py-2.5 bg-[#0C0C0C] border border-[#1F1F1F] text-[#F2EFE9] text-[11px] hover:bg-[#F2EFE9] hover:text-[#080808] transition-colors cursor-pointer uppercase tracking-[0.14em] font-sans"
+                    className="px-5 py-2.5 bg-[#0C0C0C] border border-[#1F1F1F] text-[#F2EFE9] text-[11px] hover:bg-[#F2EFE9] hover:text-[#080808] transition-colors duration-75 cursor-pointer uppercase tracking-[0.14em] font-sans rounded-none"
                   >
                     [ BROWSE ARCHIVAL LOTS ]
                   </button>
@@ -278,7 +297,7 @@ export function CartDrawer(): React.JSX.Element | null {
                     <div
                       key={item.id}
                       onClick={() => setActiveNegotiateProduct(item.product)}
-                      className="bg-[#0C0C0C] border border-[#1F1F1F] p-4 hover:border-[#333333] transition-colors cursor-pointer group relative rounded-none"
+                      className="bg-[#0C0C0C] border border-[#1F1F1F] p-4 hover:border-[#333333] transition-colors duration-75 cursor-pointer group relative rounded-none"
                     >
                       <div className="flex gap-3.5 items-start">
                         {/* 48px x 48px Item Thumbnail inside #1A1A1A frame */}
@@ -305,7 +324,7 @@ export function CartDrawer(): React.JSX.Element | null {
                               type="button"
                               onClick={(e) => handleRemove(item.id, e)}
                               aria-label="Remove item"
-                              className="text-[#777777] hover:text-[#F2EFE9] p-0.5 transition-colors cursor-pointer"
+                              className="text-[#777777] hover:text-[#F2EFE9] p-0.5 transition-colors duration-75 cursor-pointer"
                             >
                               ✕
                             </button>
@@ -341,7 +360,7 @@ export function CartDrawer(): React.JSX.Element | null {
                                   e.stopPropagation();
                                   setActiveNegotiateProduct(item.product);
                                 }}
-                                className="inline-flex items-center gap-1 px-2.5 py-1 bg-[#080808] hover:bg-[#F2EFE9] hover:text-[#080808] text-[#888888] border border-[#1F1F1F] text-[10px] uppercase tracking-wider font-semibold transition-colors cursor-pointer font-sans"
+                                className="inline-flex items-center gap-1 px-2.5 py-1 bg-[#080808] hover:bg-[#F2EFE9] hover:text-[#080808] text-[#888888] border border-[#1F1F1F] text-[10px] uppercase tracking-wider font-semibold transition-colors duration-75 cursor-pointer font-sans"
                               >
                                 <span>[ BARGAIN / MAKE OFFER ]</span>
                               </button>
@@ -377,7 +396,7 @@ export function CartDrawer(): React.JSX.Element | null {
                 <button
                   type="button"
                   onClick={handleCheckout}
-                  className="w-full py-3 bg-[#F2EFE9] hover:bg-white text-[#080808] border border-[#F2EFE9] text-[11px] font-semibold uppercase tracking-[0.2em] transition-colors cursor-pointer flex items-center justify-center font-sans"
+                  className="w-full py-3 bg-[#F2EFE9] hover:bg-white text-[#080808] border border-[#F2EFE9] text-[11px] font-semibold uppercase tracking-[0.2em] transition-colors duration-75 cursor-pointer flex items-center justify-center font-sans rounded-none"
                 >
                   <span>[ PROCEED TO ESCROW CHECKOUT ]</span>
                 </button>

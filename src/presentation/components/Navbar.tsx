@@ -179,7 +179,7 @@ export function Navbar() {
               letterSpacing: '0.12em',
               textTransform: 'uppercase',
             }}
-            className="flex items-center border border-[#1F1F1F] bg-[#0C0C0C] px-3.5 py-2 uppercase text-[#888888] hover:border-[#F2EFE9] hover:bg-[#F2EFE9] hover:text-[#080808] transition-colors cursor-pointer rounded-none font-sans"
+            className="flex items-center border border-[#1F1F1F] bg-[#0C0C0C] px-3.5 py-2 uppercase text-[#888888] hover:border-[#F2EFE9] hover:bg-[#F2EFE9] hover:text-[#080808] transition-colors duration-75 cursor-pointer rounded-none font-sans"
           >
             <span>[ CART {cartItemCount} ]</span>
           </button>
@@ -195,7 +195,7 @@ export function Navbar() {
               letterSpacing: '0.12em',
               textTransform: 'uppercase',
             }}
-            className="hidden sm:inline-flex border border-[#1F1F1F] bg-[#0C0C0C] px-3.5 py-2 uppercase text-[#888888] hover:border-[#F2EFE9] hover:bg-[#F2EFE9] hover:text-[#080808] transition-colors cursor-pointer rounded-none font-sans"
+            className="hidden sm:inline-flex border border-[#1F1F1F] bg-[#0C0C0C] px-3.5 py-2 uppercase text-[#888888] hover:border-[#F2EFE9] hover:bg-[#F2EFE9] hover:text-[#080808] transition-colors duration-75 cursor-pointer rounded-none font-sans"
           >
             [ SELL ITEM ]
           </button>
@@ -212,7 +212,7 @@ export function Navbar() {
                 letterSpacing: '0.12em',
                 textTransform: 'uppercase',
               }}
-              className="border border-[#1F1F1F] bg-[#0C0C0C] px-3.5 py-2 uppercase text-[#888888] hover:border-[#F2EFE9] hover:bg-[#F2EFE9] hover:text-[#080808] transition-colors cursor-pointer rounded-none font-sans"
+              className="border border-[#1F1F1F] bg-[#0C0C0C] px-3.5 py-2 uppercase text-[#888888] hover:border-[#F2EFE9] hover:bg-[#F2EFE9] hover:text-[#080808] transition-colors duration-75 cursor-pointer rounded-none font-sans"
             >
               [ SIGN IN ]
             </button>
@@ -255,7 +255,7 @@ export function Navbar() {
                   letterSpacing: '0.12em',
                   textTransform: 'uppercase',
                 }}
-                className="uppercase text-[#888888] hover:text-[#080808] px-2 py-0.5 border border-[#1F1F1F] bg-[#080808] hover:bg-[#F2EFE9] hover:border-[#F2EFE9] transition-colors cursor-pointer shrink-0 whitespace-nowrap rounded-none font-sans"
+                className="uppercase text-[#888888] hover:text-[#080808] px-2 py-0.5 border border-[#1F1F1F] bg-[#080808] hover:bg-[#F2EFE9] hover:border-[#F2EFE9] transition-colors duration-75 cursor-pointer shrink-0 whitespace-nowrap rounded-none font-sans"
                 title="Sign out of OtakuBazaar"
               >
                 [ SIGN OUT ]

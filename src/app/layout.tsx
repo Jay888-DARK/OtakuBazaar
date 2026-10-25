@@ -16,6 +16,7 @@ import { ThemeProvider } from '@/presentation/components/providers/ThemeProvider
 import { Navbar } from '@/presentation/components/Navbar';
 import { CookieConsent } from '@/presentation/components/compliance/CookieConsent';
 import { CartDrawer } from '@/presentation/components/cart/CartDrawer';
+import { VaultCartToast } from '@/presentation/components/cart/VaultCartToast';
 import { ProvenanceManifestModal } from '@/presentation/components/provenance/ProvenanceManifestModal';
 import { RazorpayScript } from '@/presentation/components/payments/RazorpayScript';
 
@@ -113,6 +114,9 @@ export default function RootLayout({
 
               {/* Slide-Over Cart Drawer */}
               <CartDrawer />
+
+              {/* Seamless Dark Archival Cart Notification Toast */}
+              <VaultCartToast />
 
               {/* Feature 3: Expanded Full-Screen Cryptographic Provenance Manifest */}
               <ProvenanceManifestModal />

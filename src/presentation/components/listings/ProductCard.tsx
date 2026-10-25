@@ -16,6 +16,8 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { showVaultCartToast } from '@/presentation/components/cart/VaultCartToast';
+import { addToCart } from '@/app/actions/dealActions';
 
 export interface ProductCardProps {
   product: {
@@ -204,13 +206,32 @@ export function ProductCard({ product, className = '' }: ProductCardProps): Reac
         </div>
       </div>
 
-      {/* 5. Consistent Inspect Lot Action Across Every Card */}
-      <div className="mt-3">
+      {/* 5. Consistent Actions: Instant [ ADD TO CART ] & [ INSPECT ] */}
+      <div className="mt-3 grid grid-cols-2 gap-2">
+        <button
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (typeof window !== 'undefined') {
+              showVaultCartToast({
+                lotNumber,
+                title: product.title,
+                price: displayPrice,
+              });
+              window.dispatchEvent(new CustomEvent('otaku_cart_updated'));
+            }
+            addToCart(product.id).catch(() => {});
+          }}
+          className="w-full py-2.5 text-center border border-[#1F1F1F] bg-[#080808] hover:bg-[#161616] hover:border-[#3A3A3A] text-[#E5E5E5] text-[10px] tracking-[0.14em] uppercase transition-colors duration-75 block font-sans cursor-pointer rounded-none"
+        >
+          [ ADD TO CART ]
+        </button>
         <Link
           href={lotRoute}
-          className="w-full py-2.5 text-center border border-[#1F1F1F] bg-[#080808] hover:bg-[#F2EFE9] hover:text-[#080808] hover:border-[#F2EFE9] text-[#888888] text-[11px] tracking-[0.14em] uppercase transition-colors block no-underline font-sans cursor-pointer"
+          className="w-full py-2.5 text-center border border-[#1F1F1F] bg-[#080808] hover:bg-[#F2EFE9] hover:text-[#080808] hover:border-[#F2EFE9] text-[#888888] text-[10px] tracking-[0.14em] uppercase transition-colors duration-75 block no-underline font-sans cursor-pointer rounded-none"
         >
-          [ INSPECT LOT DETAILS ]
+          [ INSPECT ]
         </Link>
       </div>
     </div>
