@@ -1,5 +1,5 @@
 @import url('https://fonts.cdnfonts.com/css/pricedown');
-@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Chakra+Petch:wght@600;700&family=Michroma&family=Titillium+Web:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Chakra+Petch:wght@600;700&family=Michroma&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Titillium+Web:wght@400;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -7,11 +7,13 @@
 
 /* ========================================================================= */
 /* OtakuBazaar — Premium High-End Editorial Design System                    */
-/* Stark Architectural Obsidian, Ultra-Thin 1px Charcoal Borders, 0px Radius */
+/* Deep Matte Obsidian (#080808), Hairline (#1F1F1F / #161616), 0px Radius   */
 /* ========================================================================= */
 
 :root {
-  /* Swiss Horological & Aerospace Luxury Typography System */
+  /* Editorial & Archival Typography System */
+  --font-serif: var(--font-serif, 'Playfair Display', serif);
+  --font-sans: var(--font-sans, 'Plus Jakarta Sans', sans-serif);
   --font-brand: var(--font-brand, 'Michroma', sans-serif);
   --font-headline: var(--font-headline, 'Archivo', sans-serif);
   --font-mechanical: var(--font-mechanical, 'Chakra Petch', sans-serif);
@@ -19,52 +21,49 @@
   --font-gta: 'Pricedown Bl', 'Pricedown', sans-serif;
 
   /* Backward Compatibility Aliases */
-  --font-display: var(--font-headline);
-  --font-sans: var(--font-swiss);
+  --font-display: var(--font-serif);
   --font-telemetry: var(--font-swiss);
 
   /* Editorial Palette Tokens */
   --goku-orange: #F85B1A;
   --resolution-blue: #072083;
-  --bronze: #A1A1AA;
-  --bronze-light: #D4D4D8;
-  --bronze-dark: #71717A;
-  --gold-accent: #F4F4F5;
-  --sapphire: #18181B;
+  --text-bone: #F2EFE9;
+  --text-body: #8E8E8E;
+  --text-meta: #777777;
 
-  /* Master Flat Canvas — Muted Charcoal & Deep Obsidian */
-  --bg-primary: #0a0a0a;
-  --bg-secondary: #0c0c0e;
-  --surface-flat: #141414;
-  --surface-border: #262626;
-  --surface-border-subtle: #1f1f23;
-  --surface-glass: #141414;
-  --surface-glass-border: #262626;
-  --accent-primary: #F85B1A;
-  --accent-secondary: #072083;
-  --accent-sakura: #F85B1A;
-  --text-primary: #ffffff;
-  --text-secondary: #a1a1aa;
-  --text-muted: #888888;
+  /* Master Flat Canvas — Deep Matte Obsidian & Elevated Surfaces */
+  --bg-primary: #080808;
+  --bg-secondary: #0c0c0c;
+  --surface-flat: #0c0c0c;
+  --surface-well: #111111;
+  --surface-border: #1f1f1f;
+  --surface-border-subtle: #161616;
+  --surface-glass: #0c0c0c;
+  --surface-glass-border: #1f1f1f;
+  --accent-primary: #F2EFE9;
+  --accent-emerald: #10B981;
+  --text-primary: #F2EFE9;
+  --text-secondary: #8E8E8E;
+  --text-muted: #777777;
   --shadow-diffused: none;
   --glass-blur: none;
   --shelf-shadow: none;
 }
 
 [data-theme='dark'], .dark {
-  --bg-primary: #0a0a0a;
-  --bg-secondary: #0c0c0e;
-  --surface-flat: #141414;
-  --surface-border: #262626;
-  --surface-border-subtle: #1f1f23;
-  --surface-glass: #141414;
-  --surface-glass-border: #262626;
-  --accent-primary: #F85B1A;
-  --accent-secondary: #072083;
-  --accent-sakura: #F85B1A;
-  --text-primary: #ffffff;
-  --text-secondary: #a1a1aa;
-  --text-muted: #888888;
+  --bg-primary: #080808;
+  --bg-secondary: #0c0c0c;
+  --surface-flat: #0c0c0c;
+  --surface-well: #111111;
+  --surface-border: #1f1f1f;
+  --surface-border-subtle: #161616;
+  --surface-glass: #0c0c0c;
+  --surface-glass-border: #1f1f1f;
+  --accent-primary: #F2EFE9;
+  --accent-emerald: #10B981;
+  --text-primary: #F2EFE9;
+  --text-secondary: #8E8E8E;
+  --text-muted: #777777;
   --shadow-diffused: none;
   --glass-blur: none;
   --shelf-shadow: none;
@@ -89,15 +88,23 @@ html,
 body {
   margin: 0;
   padding: 0;
-  background-color: #0a0a0a;
-  color: #ffffff;
-  font-family: var(--font-swiss), sans-serif;
+  background-color: #080808;
+  color: #F2EFE9;
+  font-family: var(--font-sans), sans-serif;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Enforce Swiss Technical font for specs, tables, code, and form elements */
+.font-serif {
+  font-family: var(--font-serif), 'Playfair Display', 'Cinzel', serif !important;
+}
+
+.font-sans {
+  font-family: var(--font-sans), 'Plus Jakarta Sans', sans-serif !important;
+}
+
+/* Enforce Swiss Technical font for specs, tables, code */
 code,
 pre,
 kbd,
@@ -106,15 +113,10 @@ tt,
 table,
 th,
 td,
-input,
-select,
-textarea,
-button,
-label,
 .font-mono,
 .font-telemetry,
 .font-swiss {
-  font-family: var(--font-swiss), sans-serif !important;
+  font-family: var(--font-swiss), sans-serif;
 }
 
 .font-gta {

@@ -8,7 +8,7 @@
  */
 
 import type { Metadata } from 'next';
-import { Michroma, Archivo, Chakra_Petch, Titillium_Web } from 'next/font/google';
+import { Michroma, Archivo, Chakra_Petch, Titillium_Web, Playfair_Display, Plus_Jakarta_Sans } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/presentation/components/providers/AuthProvider';
 import { SyncProviderWrapper } from '@/presentation/components/providers/SyncProviderWrapper';
@@ -18,6 +18,20 @@ import { CookieConsent } from '@/presentation/components/compliance/CookieConsen
 import { CartDrawer } from '@/presentation/components/cart/CartDrawer';
 import { ProvenanceManifestModal } from '@/presentation/components/provenance/ProvenanceManifestModal';
 import { RazorpayScript } from '@/presentation/components/payments/RazorpayScript';
+
+const playfair = Playfair_Display({
+  subsets: ['latin'],
+  weight: ['600', '700', '800'],
+  variable: '--font-serif',
+  display: 'swap',
+});
+
+const plusJakartaSans = Plus_Jakarta_Sans({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-sans',
+  display: 'swap',
+});
 
 const michroma = Michroma({
   subsets: ['latin'],
@@ -61,17 +75,17 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`antialiased ${michroma.variable} ${archivo.variable} ${chakraPetch.variable} ${titilliumWeb.variable}`}
+      className={`antialiased ${michroma.variable} ${archivo.variable} ${chakraPetch.variable} ${titilliumWeb.variable} ${playfair.variable} ${plusJakartaSans.variable}`}
       suppressHydrationWarning
     >
       <body
         suppressHydrationWarning
-        className={`${titilliumWeb.className} bg-[#0a0a0a] text-white selection:bg-[#F85B1A] selection:text-white`}
+        className={`${plusJakartaSans.className} bg-[#080808] text-white selection:bg-[#F2EFE9] selection:text-[#080808]`}
         style={{
           minHeight: '100vh',
           display: 'flex',
           flexDirection: 'column',
-          fontFamily: 'var(--font-swiss), sans-serif',
+          fontFamily: 'var(--font-sans), sans-serif',
         }}
       >
         {/* Lazy Loaded Razorpay Checkout Script */}

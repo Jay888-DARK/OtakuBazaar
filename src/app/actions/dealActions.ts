@@ -225,7 +225,7 @@ export async function addToCart(productId: string, userId: string = 'user_buyer_
           userId_productId: { userId, productId },
         },
         update: {
-          quantity: { increment: 1 },
+          quantity: 1,
         },
         create: {
           userId,
@@ -240,6 +240,13 @@ export async function addToCart(productId: string, userId: string = 'user_buyer_
     console.warn('[dealActions] DB note on addToCart:', err);
     // Find mock product to populate in-memory fallback
     const mock = MOCK_GRAILS.find((g) => g.id === productId || g.lotNumber === productId);
+    const current = inMemoryCart.get(userId) || [];
+    const existingIndex = current.findIndex((i) => i.productId === productId);
+    if (existingIndex >= 0) {
+      current[existingIndex].quantity = 1;
+      return { success: true, cartItem: current[existingIndex] };
+    }
+
     const fallbackItem = {
       id: `cart-${Date.now()}`,
       productId,
@@ -248,19 +255,18 @@ export async function addToCart(productId: string, userId: string = 'user_buyer_
         id: productId,
         title: mock ? mock.title : 'Authentic Scale Figure',
         price: mock ? mock.price : 28500,
-        imageUrls: mock ? mock.imageUrl : '/Firefly_clean.png',
+        imageUrls: mock ? mock.imageUrl : 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=800&q=85',
         minOfferPrice: mock ? Math.round(mock.price * 0.75) : 20000,
         dealOffers: [
           {
             id: `offer-cart-${Date.now()}`,
-            offeredPrice: mock ? Math.round(mock.price * 0.85) : 24000,
+            offeredPrice: mock ? Math.round(mock.price * 0.85) : 24225,
             status: 'PENDING',
             expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
           },
         ],
       },
     };
-    const current = inMemoryCart.get(userId) || [];
     inMemoryCart.set(userId, [fallbackItem, ...current]);
     return { success: true, cartItem: fallbackItem };
   }

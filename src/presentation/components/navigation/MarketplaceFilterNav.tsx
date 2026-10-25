@@ -3,18 +3,18 @@
 /**
  * @file src/presentation/components/navigation/MarketplaceFilterNav.tsx
  *
- * Sticky Criteria & Category Bar for Stage 2.
- * Pins immediately below the fixed 56px navbar (top-14) once scrolled past the 100vh hero.
+ * Architectural Criteria & Category Bar for OtakuBazaar.
+ * Pins immediately below the sticky 80px navbar (top-20).
  *
- * Strict Brutalist Architecture:
- * - 0px border-radius, hairline #262626 borders, matte black #0a0a0a canvas.
- * - 0ms instant border/background swaps.
- * - Bracketed uppercase labels: [ ALL ARCHIVAL LOTS ], [ S-RANK ONLY ], etc.
- * - Emerald #10b981 status indicator for INDEX ACTIVE: 9 VERIFIED LOTS.
+ * Strict Architectural Visual Rules:
+ * - 0px border-radius, hairline #1F1F1F borders, #080808 canvas.
+ * - Pure typographic category tabs (zero micro-thumbnails, zero right-edge clipping).
+ * - Active: bg-[#F2EFE9] text-[#080808] font-semibold.
+ * - Inactive: bg-[#0C0C0C] text-[#888888] border-[#1F1F1F].
+ * - Right Status: #10B981 text on #091812 surface with #193829 border.
  */
 
 import React, { useState, useEffect } from 'react';
-import Image from 'next/image';
 
 const FILTER_TABS = [
   { id: 'ALL', label: '[ ALL ARCHIVAL LOTS ]' },
@@ -30,43 +30,36 @@ const CATEGORY_TABS = [
     id: 'ALL',
     label: 'ALL ARCHIVAL LOTS',
     count: '[9 LOTS]',
-    image: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=240&q=80',
   },
   {
     id: 'Scale Figure',
     label: 'SCALE FIGURES',
     count: '[6 LOTS]',
-    image: 'https://images.unsplash.com/photo-1563089145-599997674d42?auto=format&fit=crop&w=240&q=80',
   },
   {
     id: 'Manga Sets',
     label: 'MANGA SETS',
     count: '[1 LOTS]',
-    image: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=240&q=80',
   },
   {
     id: 'Nendoroid',
     label: 'NENDOROIDS',
     count: '[1 LOTS]',
-    image: 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=240&q=80',
   },
   {
     id: 'Statues & Resin',
     label: 'STATUES & RESIN',
     count: '[2 LOTS]',
-    image: '/showcase/guts_berserker_statue.jpg',
   },
   {
     id: 'Mecha & Gunpla',
     label: 'MECHA & GUNPLA',
     count: '[1 LOTS]',
-    image: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=240&q=80',
   },
   {
     id: 'Cosplay & Props',
     label: 'COSPLAY & PROPS',
     count: '[1 LOTS]',
-    image: 'https://images.unsplash.com/photo-1563089145-599997674d42?auto=format&fit=crop&w=240&q=80',
   },
 ];
 
@@ -123,22 +116,12 @@ export function MarketplaceFilterNav(): React.JSX.Element {
   };
 
   return (
-    <div className="sticky top-14 z-40 w-full border-b border-[#262626] bg-[#0a0a0a] select-none">
+    <div className="sticky top-20 z-40 w-full border-b border-[#1F1F1F] bg-[#080808] select-none">
       {/* Tier 1: CRITERIA Pills Bar */}
-      <div className="border-b border-[#262626] bg-[#0a0a0a] px-4 sm:px-6 lg:px-8 py-2.5">
+      <div className="border-b border-[#1F1F1F] bg-[#080808] px-4 sm:px-6 lg:px-8 py-2.5">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
           <div className="flex items-center gap-2 overflow-x-auto scrollbar-none py-0.5">
-            <span
-              style={{
-                fontFamily: 'var(--font-swiss), sans-serif',
-                fontSize: '0.7rem',
-                fontWeight: 600,
-                letterSpacing: '0.2em',
-                textTransform: 'uppercase',
-                color: '#8a8a8a',
-              }}
-              className="shrink-0 mr-1 font-swiss uppercase"
-            >
+            <span className="shrink-0 mr-1 font-sans uppercase text-[10px] tracking-[0.15em] text-[#777777] font-semibold">
               CRITERIA:
             </span>
 
@@ -149,17 +132,10 @@ export function MarketplaceFilterNav(): React.JSX.Element {
                   key={tab.id}
                   type="button"
                   onClick={() => handleFilterClick(tab.id)}
-                  style={{
-                    fontFamily: 'var(--font-swiss), sans-serif',
-                    fontSize: '0.75rem',
-                    fontWeight: 600,
-                    letterSpacing: '0.1em',
-                    textTransform: 'uppercase',
-                  }}
-                  className={`px-3 py-1 uppercase border transition-none shrink-0 cursor-pointer rounded-none font-swiss ${
+                  className={`px-3 py-1.5 uppercase border transition-colors shrink-0 cursor-pointer rounded-none font-sans text-[10px] tracking-[0.14em] ${
                     isActive
-                      ? 'border-white bg-white text-black'
-                      : 'border-[#262626] bg-[#141414] text-zinc-300 hover:border-zinc-500 hover:text-white'
+                      ? 'border-[#F2EFE9] bg-[#F2EFE9] text-[#080808] font-semibold'
+                      : 'border-[#1F1F1F] bg-[#0C0C0C] text-[#888888] hover:border-[#333333] hover:text-[#F2EFE9]'
                   }`}
                 >
                   {tab.label}
@@ -169,28 +145,18 @@ export function MarketplaceFilterNav(): React.JSX.Element {
           </div>
 
           {/* Right Status Badge */}
-          <div className="hidden md:flex items-center gap-2 shrink-0 border border-[#262626] bg-[#141414] px-3 py-1">
-            <span className="w-2 h-2 rounded-none bg-[#10b981] inline-block" />
-            <span
-              style={{
-                fontFamily: 'var(--font-swiss), sans-serif',
-                fontSize: '0.7rem',
-                fontWeight: 600,
-                letterSpacing: '0.2em',
-                textTransform: 'uppercase',
-                color: '#8a8a8a',
-              }}
-              className="font-swiss uppercase"
-            >
+          <div className="hidden md:flex items-center gap-2 shrink-0 border border-[#193829] bg-[#091812] px-3 py-1">
+            <span className="w-1.5 h-1.5 rounded-none bg-[#10B981] inline-block" />
+            <span className="font-sans uppercase text-[10px] tracking-[0.15em] text-[#10B981] font-semibold">
               INDEX ACTIVE: 9 VERIFIED LOTS
             </span>
           </div>
         </div>
       </div>
 
-      {/* Tier 2: Horizontal Category Thumbnail Strip */}
-      <div className="bg-[#0a0a0a] px-4 sm:px-6 lg:px-8 py-2 overflow-x-auto scrollbar-none">
-        <div className="mx-auto flex max-w-7xl items-center gap-3">
+      {/* Tier 2: Pure Typographic Category Bar (No Muddy Micro-Thumbnails, Complete Width Clearance) */}
+      <div className="bg-[#080808] px-4 sm:px-6 lg:px-8 py-3 overflow-x-auto scrollbar-none">
+        <div className="mx-auto flex max-w-7xl items-center gap-2.5 flex-nowrap pb-1">
           {CATEGORY_TABS.map((cat) => {
             const isActive = activeCategory === cat.id;
             return (
@@ -198,49 +164,16 @@ export function MarketplaceFilterNav(): React.JSX.Element {
                 key={cat.id}
                 type="button"
                 onClick={() => handleCategoryClick(cat.id)}
-                className={`flex items-center gap-2.5 px-3 py-1.5 border transition-none shrink-0 cursor-pointer rounded-none ${
+                className={`flex items-center gap-2 px-4 py-2.5 border transition-colors shrink-0 cursor-pointer rounded-none uppercase font-sans text-[11px] tracking-[0.14em] ${
                   isActive
-                    ? 'border-white bg-[#141414] text-white'
-                    : 'border-[#262626] bg-[#0a0a0a] text-zinc-400 hover:border-zinc-500 hover:text-zinc-200 hover:bg-[#141414]'
+                    ? 'border-[#F2EFE9] bg-[#F2EFE9] text-[#080808] font-semibold'
+                    : 'border-[#1F1F1F] bg-[#0C0C0C] text-[#888888] hover:border-[#333333] hover:text-[#F2EFE9]'
                 }`}
               >
-                <div className="relative w-6 h-6 shrink-0 bg-[#141414] border border-[#262626] overflow-hidden">
-                  <Image
-                    src={cat.image}
-                    alt={cat.label}
-                    fill
-                    sizes="24px"
-                    className="object-cover"
-                    unoptimized={cat.image.startsWith('http')}
-                  />
-                </div>
-                <div className="flex items-center gap-1.5 text-left">
-                  <span
-                    style={{
-                      fontFamily: 'var(--font-swiss), sans-serif',
-                      fontSize: '0.75rem',
-                      fontWeight: 600,
-                      letterSpacing: '0.1em',
-                      textTransform: 'uppercase',
-                    }}
-                    className="whitespace-nowrap font-swiss"
-                  >
-                    {cat.label}
-                  </span>
-                  <span
-                    style={{
-                      fontFamily: 'var(--font-swiss), sans-serif',
-                      fontSize: '0.7rem',
-                      fontWeight: 600,
-                      letterSpacing: '0.1em',
-                      textTransform: 'uppercase',
-                      color: '#8a8a8a',
-                    }}
-                    className="whitespace-nowrap font-swiss"
-                  >
-                    {cat.count}
-                  </span>
-                </div>
+                <span>{cat.label}</span>
+                <span className={isActive ? 'text-[#080808]/75 text-[10px] font-medium' : 'text-[#555555] text-[10px]'}>
+                  {cat.count}
+                </span>
               </button>
             );
           })}

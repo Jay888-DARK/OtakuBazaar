@@ -7,16 +7,21 @@
  *
  * Fully integrated with Next.js Server Actions (createListingAction),
  * Clean Architecture repository persistence, and multi-window BroadcastChannel sync.
- * Adheres strictly to high-end monochrome vault aesthetic with Universal Button Tokens.
+ * Adheres strictly to high-end monochrome vault aesthetic with Universal Button Tokens:
+ * - Collector Condition Grading: MISB vs BIB vs Open Shelf
+ * - Box & Blister Integrity Selector
+ * - Single Lot vs Multi-Figure Shelf Bundle Toggle
+ * - Timestamp Note + Hologram Macro Upload Slots
  */
 
 import React, { useState, useTransition, useCallback } from 'react';
 import Link from 'next/link';
 import { LiveCardPreview } from '@/presentation/components/listings/LiveCardPreview';
 import { createListingAction } from '@/app/actions';
+import { ArchivalFooter } from '@/presentation/components/footer/ArchivalFooter';
 
 // ---------------------------------------------------------------------------
-// Constants & Options (Strictly English Only)
+// Constants & Options
 // ---------------------------------------------------------------------------
 
 const FRANCHISES = [
@@ -28,15 +33,19 @@ const FRANCHISES = [
   'Attack on Titan',
   'Naruto Shippuden',
   'Berserk',
+  'Fate / Stay Night',
+  'Neon Genesis Evangelion',
+  'Fullmetal Alchemist',
   'Other / Retro',
 ] as const;
 
 const CATEGORIES = [
   'Scale Figure',
   'Nendoroid',
-  'Manga Volume / Set',
+  'Statues & Resin',
+  'Manga Sets',
+  'Mecha & Gunpla',
   'Cosplay & Props',
-  'Trading Card (TCG)',
 ] as const;
 
 const MANUFACTURERS = [
@@ -47,6 +56,7 @@ const MANUFACTURERS = [
   'Alter',
   'eStream / Shibuya Scramble',
   'Bandai Spirits / Tamashii Nations',
+  'Prime 1 Studio',
   'Dark Horse Manga',
   'Other',
 ] as const;
@@ -60,52 +70,67 @@ interface ConditionOption {
 
 const CONDITION_GRADES: ConditionOption[] = [
   {
-    rank: '[S-RANK]',
-    englishLabel: 'Brand New / Factory Sealed',
-    description: 'Never opened. Original packaging with intact manufacturer security hologram.',
+    rank: '[S-RANK // MISB]',
+    englishLabel: 'MISB (Factory Sealed)',
+    description: 'Never opened. Pristine original manufacturer seals with intact security hologram foil.',
     internalValue: 'NEW',
   },
   {
-    rank: '[A-RANK]',
-    englishLabel: 'Like New / Flawless',
-    description: 'Opened for authenticity inspection only. Figure never displayed; all blister pieces complete.',
+    rank: '[A-RANK // BIB]',
+    englishLabel: 'BIB (Glass Cabinet Displayed)',
+    description: 'Back in Box. Maintained inside UV-filtered glass Moducase. Flawless figure, complete blister tray.',
     internalValue: 'LIKE_NEW',
   },
   {
-    rank: '[B-RANK]',
-    englishLabel: 'Displayed / Pristine Figure',
-    description: 'Displayed in smoke-free glass cabinet. Figure in prime condition with minor outer carton wear.',
+    rank: '[B-RANK // OPEN]',
+    englishLabel: 'Open Shelf (Displayed)',
+    description: 'Kept on open shelf. Micro-dust or minor paint contact possible. Complete original packaging.',
     internalValue: 'GOOD',
-  },
-  {
-    rank: '[C-RANK]',
-    englishLabel: 'Visible Wear / Loose Figure',
-    description: 'Noticeable scuffs, paint transfer, or missing original packaging. Ideal for customizers.',
-    internalValue: 'FAIR',
   },
 ];
 
+const BOX_GRADES = [
+  {
+    id: 'MINT_BOX',
+    label: 'Mint Box (Blister Intact)',
+    desc: 'Sharp 90° corners, zero scuffs, factory window clarity.',
+  },
+  {
+    id: 'MINOR_WEAR',
+    label: 'Minor Courier Corner Wear',
+    desc: 'Light transit crease or corner indentation. Blister 100% intact.',
+  },
+  {
+    id: 'BLISTER_CREASE',
+    label: 'Creased Carton / Blister Wear',
+    desc: 'Visible exterior box wear, ideal for unboxed display collectors.',
+  },
+] as const;
+
 const SAMPLE_IMAGE_PRESETS = [
   {
-    label: 'Gojo Satoru 1/7 Scale',
-    url: 'https://images.unsplash.com/photo-1563089145-599997674d42?w=800&auto=format&fit=crop',
+    label: 'Guts Berserker Armor',
+    url: '/showcase/guts_berserker_statue.jpg',
   },
   {
-    label: 'Rengoku Flame Hashira',
-    url: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=800&auto=format&fit=crop',
+    label: 'Kyojuro Rengoku Flame 1/8',
+    url: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=800&q=85',
   },
   {
-    label: 'Luffy Gear 5 Sun God',
-    url: 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=800&auto=format&fit=crop',
+    label: 'Saber Altria Pendragon',
+    url: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=800&q=85',
   },
   {
-    label: 'Power Blood Fiend Pop Up',
-    url: 'https://images.unsplash.com/photo-1618336753974-aae8e04506aa?w=800&auto=format&fit=crop',
+    label: 'Satoru Gojo Hollow Purple',
+    url: 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=800&q=85',
   },
 ];
 
 export default function SellPage(): React.JSX.Element {
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
+
+  // Consignment Type Toggle
+  const [consignType, setConsignType] = useState<'SINGLE' | 'BUNDLE'>('SINGLE');
 
   // Form Field States
   const [title, setTitle] = useState('');
@@ -115,17 +140,18 @@ export default function SellPage(): React.JSX.Element {
   const [manufacturer, setManufacturer] = useState<string>(MANUFACTURERS[0]);
   const [customManufacturer, setCustomManufacturer] = useState('');
   const [selectedGrade, setSelectedGrade] = useState<ConditionOption>(CONDITION_GRADES[0]!);
+  const [selectedBoxGrade, setSelectedBoxGrade] = useState<string>(BOX_GRADES[0].id);
   const [askingPrice, setAskingPrice] = useState('');
   const [minimumPrice, setMinimumPrice] = useState('');
   const [description, setDescription] = useState('');
   const [imageUrl, setImageUrl] = useState<string>(SAMPLE_IMAGE_PRESETS[0]?.url || '');
   const [customImageUrl, setCustomImageUrl] = useState('');
   const [extraImageUrls, setExtraImageUrls] = useState<string[]>(['']);
-  const [videoUrl, setVideoUrl] = useState('');
+  const [hologramProofUrl, setHologramProofUrl] = useState('');
+  const [timestampProofUrl, setTimestampProofUrl] = useState('');
 
   // Upload Interaction State
-  const [activeUploadTab, setActiveUploadTab] = useState<'UPLOAD' | 'PRESETS' | 'LINK'>('UPLOAD');
-  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [activeUploadTab, setActiveUploadTab] = useState<'UPLOAD' | 'PRESETS' | 'LINK'>('PRESETS');
   const [isUploading, setIsUploading] = useState(false);
 
   // UI Feedback States
@@ -139,33 +165,29 @@ export default function SellPage(): React.JSX.Element {
   const priceNum = parseInt(askingPrice, 10) || 0;
   const originalEst = Math.round(priceNum * 1.25);
 
-  // Handle Local File Upload
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    setImageFile(file);
     setIsUploading(true);
-
     setTimeout(() => {
-      const localUrl = URL.createObjectURL(file);
-      setCustomImageUrl(localUrl);
+      const simulatedUrl = URL.createObjectURL(file);
+      setImageUrl(simulatedUrl);
       setIsUploading(false);
-    }, 800);
+    }, 600);
   };
 
-  // Submission via Server Action
   const handlePublish = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
       setErrorMessage(null);
 
       if (!title.trim()) {
-        setErrorMessage('Please provide a title for the collectible.');
+        setErrorMessage('Collectible title is required.');
         return;
       }
-      if (priceNum <= 0) {
-        setErrorMessage('Please provide a valid asking price.');
+      if (!priceNum || priceNum < 500) {
+        setErrorMessage('Asking price must be at least ₹500 INR.');
         return;
       }
 
@@ -173,19 +195,19 @@ export default function SellPage(): React.JSX.Element {
         try {
           const result = await createListingAction({
             title: `[${activeFranchise}] ${title}`,
-            franchise: activeFranchise,
+            series: activeFranchise,
             category,
             manufacturer: activeManufacturer,
             condition: selectedGrade.internalValue,
-            askingPriceAmount: priceNum * 100,
+            conditionGrade: selectedGrade.rank,
+            askingPriceINR: priceNum,
+            originalPriceINR: originalEst,
             imageUrl: activeImageUrl,
             description,
-            extraImageUrls: extraImageUrls.filter((url) => url.trim().length > 0),
-            videoUrl,
-          } as any);
-
+          });
           if (!result.success) {
-            throw new Error(result.error || 'Failed to create listing');
+            setErrorMessage(result.error || 'Failed to consign lot.');
+            return;
           }
 
           const newListingPayload = {
@@ -197,7 +219,7 @@ export default function SellPage(): React.JSX.Element {
             category,
             type: category,
             condition: selectedGrade.internalValue,
-            conditionGrade: `${selectedGrade.rank} ${selectedGrade.englishLabel}`,
+            conditionGrade: selectedGrade.rank,
             askingPriceINR: priceNum,
             askingPriceAmount: priceNum * 100,
             price: priceNum,
@@ -205,7 +227,6 @@ export default function SellPage(): React.JSX.Element {
             imageUrl: activeImageUrl,
             image: activeImageUrl,
             imageUrls: [activeImageUrl, ...extraImageUrls.filter((url) => url.trim().length > 0)],
-            videoUrl,
             status: 'ACTIVE',
             badge: selectedGrade.rank,
             sellerName: 'Kyojuro Rengoku',
@@ -213,7 +234,6 @@ export default function SellPage(): React.JSX.Element {
             sellerAvatar: 'KR',
           };
 
-          // Broadcast cross-tab instant state sync
           if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
             const channel = new BroadcastChannel('otaku_bargain_sync');
             channel.postMessage({
@@ -223,17 +243,16 @@ export default function SellPage(): React.JSX.Element {
             channel.close();
           }
 
-          // Store locally so buyer feed discovers it immediately
           try {
             const stored = JSON.parse(localStorage.getItem('otaku_custom_listings') || '[]');
             localStorage.setItem('otaku_custom_listings', JSON.stringify([newListingPayload, ...stored]));
           } catch {
-            // Ignore storage errors
+            // ignore
           }
 
           setIsPublished(true);
         } catch (err: unknown) {
-          setErrorMessage(err instanceof Error ? err.message : 'Failed to publish listing');
+          setErrorMessage(err instanceof Error ? err.message : 'Failed to publish consignment');
         }
       });
     },
@@ -248,78 +267,108 @@ export default function SellPage(): React.JSX.Element {
       activeManufacturer,
       originalEst,
       extraImageUrls,
-      videoUrl,
     ]
   );
 
   return (
-    <div className="min-h-screen bg-[#09090b] py-10 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-zinc-100 pb-24">
-      {/* Page Header & Typography */}
-      <div className="mb-8">
-        <div className="inline-flex items-center gap-2 px-2.5 py-1 border border-zinc-800 bg-zinc-900 text-zinc-400 text-[10px] tracking-[0.25em] uppercase mb-3 font-semibold">
-          <span>Vault Studio</span>
-          <span>•</span>
-          <span>Consignment</span>
-        </div>
-        <h1 className="text-2xl md:text-3xl font-extrabold text-zinc-100 uppercase tracking-[0.15em] mb-2">
-          Vault Consignment
-        </h1>
-        <p className="mt-1 text-xs text-zinc-400 font-normal tracking-wide">
-          List your authentic anime collectible with escrow security and real-time buyer bargaining.
-        </p>
-      </div>
-
-      {/* Success Notification */}
-      {isPublished && (
-        <div className="bg-[#0e0e11] border border-emerald-500/40 p-8 mb-10 text-center">
-          <div className="w-10 h-10 mx-auto mb-3 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
-            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-            </svg>
+    <div className="min-h-screen bg-[#080808] pt-8 pb-20 text-[#F2EFE9] select-none">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Page Header */}
+        <div className="mb-8 border-b border-[#1F1F1F] pb-6">
+          <div className="inline-flex items-center gap-2 px-3 py-1 border border-[#1F1F1F] bg-[#0C0C0C] text-[#777777] text-[10px] tracking-[0.2em] uppercase mb-3 font-semibold font-sans">
+            <span>VAULT CONSIGNMENT STUDIO</span>
+            <span>•</span>
+            <span>ESCROW AUTHENTICATED</span>
           </div>
-          <h2 className="text-lg font-bold text-zinc-100 mb-2 uppercase tracking-[0.15em]">
-            Grail Consigned Successfully
-          </h2>
-          <p className="text-xs text-zinc-400 max-w-lg mx-auto mb-6 font-normal tracking-wide">
-            Your listing is now live in the global vault catalog and synchronized across all active buyer windows.
+          <h1 className="font-serif text-3xl md:text-4xl font-bold text-[#F2EFE9] uppercase tracking-[0.08em] mb-2">
+            Vault Consignment
+          </h1>
+          <p className="font-sans text-[13px] text-[#8E8E8E] font-normal leading-relaxed max-w-2xl">
+            List your authentic anime collectible with escrow security and real-time buyer bargaining.
           </p>
-          <div className="flex flex-wrap items-center justify-center gap-4">
-            <Link
-              href="/"
-              className="px-6 py-2.5 bg-zinc-100 hover:bg-white text-black text-xs font-bold uppercase tracking-[0.2em] transition-colors"
-            >
-              View in Buyer Feed →
-            </Link>
+
+          {/* Consignment Mode Toggle */}
+          <div className="flex gap-3 mt-6">
             <button
               type="button"
-              onClick={() => setIsPublished(false)}
-              className="px-6 py-2.5 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white border border-zinc-700 text-xs font-bold uppercase tracking-[0.2em] transition-colors cursor-pointer"
+              onClick={() => setConsignType('SINGLE')}
+              className={`px-4 py-2 text-[11px] font-sans uppercase tracking-[0.14em] font-semibold border transition-colors cursor-pointer rounded-none ${
+                consignType === 'SINGLE'
+                  ? 'bg-[#F2EFE9] text-[#080808] border-[#F2EFE9]'
+                  : 'bg-[#0C0C0C] text-[#888888] border-[#1F1F1F] hover:border-[#3A3A3A]'
+              }`}
             >
-              + Consign Another Grail
+              [ 01 // SINGLE LOT CONSIGNMENT ]
+            </button>
+            <button
+              type="button"
+              onClick={() => setConsignType('BUNDLE')}
+              className={`px-4 py-2 text-[11px] font-sans uppercase tracking-[0.14em] font-semibold border transition-colors cursor-pointer rounded-none ${
+                consignType === 'BUNDLE'
+                  ? 'bg-[#F2EFE9] text-[#080808] border-[#F2EFE9]'
+                  : 'bg-[#0C0C0C] text-[#888888] border-[#1F1F1F] hover:border-[#3A3A3A]'
+              }`}
+            >
+              [ 02 // MULTI-FIGURE SHELF BUNDLE ]
             </button>
           </div>
         </div>
-      )}
 
-      {/* Main Studio Grid: Form Controls on Left, Live Card Preview on Right */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-        {/* Left Column: Streamlined Editorial Form Controls */}
-        <form onSubmit={handlePublish} className="lg:col-span-7 space-y-12">
-          {/* Step 1: Item Identity */}
-          <div className="space-y-6">
-            <div className="border-b border-zinc-800 pb-2">
-              <span className="text-[10px] uppercase tracking-[0.25em] text-zinc-500 font-semibold block mb-1">
-                SECTION 01
-              </span>
-              <h2 className="text-xs font-bold text-zinc-200 uppercase tracking-[0.2em]">
-                Item Identity &amp; Series
-              </h2>
+        {/* Error Notification */}
+        {errorMessage && (
+          <div className="bg-[#180A0A] border border-[#7F1D1D] p-4 mb-6 font-sans text-xs text-[#F87171] uppercase tracking-wider">
+            [ ERROR: {errorMessage} ]
+          </div>
+        )}
+
+        {/* Success Notification */}
+        {isPublished && (
+          <div className="bg-[#091812] border border-[#193829] p-8 mb-8 text-center font-sans">
+            <span className="text-[#10B981] text-[10px] tracking-[0.2em] uppercase font-bold block mb-2">
+              [ LOT AUTHENTICATED &amp; CONSIGNED ]
+            </span>
+            <h2 className="font-serif text-[22px] text-[#F2EFE9] uppercase tracking-[0.06em] mb-2">
+              Grail Consigned Successfully
+            </h2>
+            <p className="text-xs text-[#8E8E8E] max-w-lg mx-auto mb-6 leading-relaxed">
+              Your lot is now live in the global vault catalog and synchronized across all active buyer windows.
+            </p>
+            <div className="flex items-center justify-center gap-4">
+              <Link
+                href="/"
+                className="px-6 py-2.5 bg-[#F2EFE9] text-[#080808] font-sans text-[11px] font-semibold uppercase tracking-[0.18em] transition-colors no-underline"
+              >
+                [ VIEW IN BUYER FEED ]
+              </Link>
+              <button
+                type="button"
+                onClick={() => setIsPublished(false)}
+                className="px-6 py-2.5 bg-[#0C0C0C] text-[#CCCCCC] border border-[#1F1F1F] font-sans text-[11px] uppercase tracking-[0.18em] transition-colors cursor-pointer"
+              >
+                [ + CONSIGN ANOTHER LOT ]
+              </button>
             </div>
+          </div>
+        )}
 
-            <div className="space-y-5">
+        {/* Studio Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          {/* Left Column: Form Controls */}
+          <form onSubmit={handlePublish} className="lg:col-span-7 space-y-8 font-sans">
+            {/* Section 01: Item Identity */}
+            <div className="bg-[#0C0C0C] border border-[#1F1F1F] p-6 space-y-5">
+              <div className="border-b border-[#161616] pb-3 flex justify-between items-center">
+                <span className="text-[10px] uppercase tracking-[0.2em] text-[#777777] font-semibold">
+                  SECTION 01 // ITEM IDENTITY &amp; SERIES
+                </span>
+                <span className="text-[10px] text-[#10B981] font-semibold uppercase tracking-wider">
+                  MANDATORY
+                </span>
+              </div>
+
               <div>
-                <label className="block text-xs uppercase tracking-[0.2em] font-medium text-zinc-400 mb-2">
-                  Figure or Collectible Title *
+                <label className="block text-[11px] uppercase tracking-[0.14em] text-[#888888] mb-2 font-medium">
+                  Collectible Title *
                 </label>
                 <input
                   type="text"
@@ -327,49 +376,48 @@ export default function SellPage(): React.JSX.Element {
                   onChange={(e) => setTitle(e.target.value)}
                   required
                   placeholder="e.g., Satoru Gojo - 1/7 Scale Shibuya Scramble"
-                  className="w-full bg-[#0c0c0e] border border-zinc-800 px-4 py-3 text-xs text-zinc-100 placeholder-zinc-600 focus:border-zinc-400 outline-none transition-colors"
+                  className="w-full bg-[#080808] border border-[#1F1F1F] focus:border-[#F2EFE9] px-4 py-3 text-xs text-[#F2EFE9] placeholder-[#555555] outline-none rounded-none"
                 />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 items-start">
-                <div className="flex flex-col">
-                  <label className="block text-xs uppercase tracking-[0.2em] font-medium text-zinc-400 mb-2">
-                    Anime Franchise *
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[11px] uppercase tracking-[0.14em] text-[#888888] mb-2 font-medium">
+                    Franchise *
                   </label>
                   <select
                     value={franchise}
                     onChange={(e) => setFranchise(e.target.value)}
-                    className="w-full bg-[#0c0c0e] border border-zinc-800 px-4 py-3 text-xs text-zinc-100 placeholder-zinc-600 focus:border-zinc-400 outline-none transition-colors"
+                    className="w-full bg-[#080808] border border-[#1F1F1F] focus:border-[#F2EFE9] px-4 py-3 text-xs text-[#F2EFE9] outline-none rounded-none cursor-pointer"
                   >
                     {FRANCHISES.map((f) => (
-                      <option key={f} value={f} className="bg-[#0c0c0e] text-zinc-100">
+                      <option key={f} value={f} className="bg-[#080808] text-[#F2EFE9]">
                         {f}
                       </option>
                     ))}
                   </select>
-
                   {franchise === 'Other / Retro' && (
                     <input
                       type="text"
-                      placeholder="Type custom anime franchise..."
+                      placeholder="Custom franchise name..."
                       value={customFranchise}
                       onChange={(e) => setCustomFranchise(e.target.value)}
-                      className="w-full mt-3 bg-[#0c0c0e] border border-zinc-800 px-4 py-3 text-xs text-zinc-100 placeholder-zinc-600 focus:border-zinc-400 outline-none transition-colors"
+                      className="w-full mt-2 bg-[#080808] border border-[#1F1F1F] px-4 py-2 text-xs text-[#F2EFE9] outline-none"
                     />
                   )}
                 </div>
 
-                <div className="flex flex-col">
-                  <label className="block text-xs uppercase tracking-[0.2em] font-medium text-zinc-400 mb-2">
+                <div>
+                  <label className="block text-[11px] uppercase tracking-[0.14em] text-[#888888] mb-2 font-medium">
                     Category *
                   </label>
                   <select
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
-                    className="w-full bg-[#0c0c0e] border border-zinc-800 px-4 py-3 text-xs text-zinc-100 placeholder-zinc-600 focus:border-zinc-400 outline-none transition-colors"
+                    className="w-full bg-[#080808] border border-[#1F1F1F] focus:border-[#F2EFE9] px-4 py-3 text-xs text-[#F2EFE9] outline-none rounded-none cursor-pointer"
                   >
                     {CATEGORIES.map((c) => (
-                      <option key={c} value={c} className="bg-[#0c0c0e] text-zinc-100">
+                      <option key={c} value={c} className="bg-[#080808] text-[#F2EFE9]">
                         {c}
                       </option>
                     ))}
@@ -378,417 +426,302 @@ export default function SellPage(): React.JSX.Element {
               </div>
 
               <div>
-                <label className="block text-xs uppercase tracking-[0.2em] font-medium text-zinc-400 mb-2">
-                  Manufacturer or Studio
+                <label className="block text-[11px] uppercase tracking-[0.14em] text-[#888888] mb-2 font-medium">
+                  Studio / Manufacturer *
                 </label>
                 <select
                   value={manufacturer}
                   onChange={(e) => setManufacturer(e.target.value)}
-                  className="w-full bg-[#0c0c0e] border border-zinc-800 px-4 py-3 text-xs text-zinc-100 placeholder-zinc-600 focus:border-zinc-400 outline-none transition-colors"
+                  className="w-full bg-[#080808] border border-[#1F1F1F] focus:border-[#F2EFE9] px-4 py-3 text-xs text-[#F2EFE9] outline-none rounded-none cursor-pointer"
                 >
                   {MANUFACTURERS.map((m) => (
-                    <option key={m} value={m} className="bg-[#0c0c0e] text-zinc-100">
+                    <option key={m} value={m} className="bg-[#080808] text-[#F2EFE9]">
                       {m}
                     </option>
                   ))}
                 </select>
-
                 {manufacturer === 'Other' && (
                   <input
                     type="text"
-                    placeholder="Type custom manufacturer studio..."
+                    placeholder="Custom studio name..."
                     value={customManufacturer}
                     onChange={(e) => setCustomManufacturer(e.target.value)}
-                    className="w-full mt-3 bg-[#0c0c0e] border border-zinc-800 px-4 py-3 text-xs text-zinc-100 placeholder-zinc-600 focus:border-zinc-400 outline-none transition-colors"
+                    className="w-full mt-2 bg-[#080808] border border-[#1F1F1F] px-4 py-2 text-xs text-[#F2EFE9] outline-none"
                   />
                 )}
               </div>
             </div>
-          </div>
 
-          {/* Step 2: Collector Condition Grading */}
-          <div className="space-y-6">
-            <div className="border-b border-zinc-800 pb-2">
-              <span className="text-[10px] uppercase tracking-[0.25em] text-zinc-500 font-semibold block mb-1">
-                SECTION 02
-              </span>
-              <h2 className="text-xs font-bold text-zinc-200 uppercase tracking-[0.2em]">
-                Collector Condition Grading
-              </h2>
-            </div>
-            <p className="text-xs text-zinc-400 -mt-2 font-normal tracking-wide">
-              Select the authentic collector grade based on seal and packaging integrity:
-            </p>
+            {/* Section 02: Collector Condition Grading */}
+            <div className="bg-[#0C0C0C] border border-[#1F1F1F] p-6 space-y-5">
+              <div className="border-b border-[#161616] pb-3">
+                <span className="text-[10px] uppercase tracking-[0.2em] text-[#777777] font-semibold block mb-1">
+                  SECTION 02 // COLLECTOR CONDITION GRADING
+                </span>
+                <p className="text-[12px] text-[#8E8E8E]">
+                  Select the verifiable figure condition and packaging state:
+                </p>
+              </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {CONDITION_GRADES.map((grade) => {
-                const isSelected = selectedGrade.rank === grade.rank;
-                return (
-                  <div
-                    key={grade.rank}
-                    onClick={() => setSelectedGrade(grade)}
-                    className={`p-4 border transition-colors cursor-pointer ${
-                      isSelected
-                        ? 'border-zinc-300 bg-zinc-900/90'
-                        : 'border-zinc-800 bg-[#0c0c0e] hover:border-zinc-600'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between mb-1.5">
-                      <span className="text-xs font-bold text-zinc-100 uppercase tracking-wider">
-                        {grade.rank}
-                      </span>
-                      {isSelected && (
-                        <span className="text-zinc-100 text-[10px] font-bold uppercase tracking-widest border border-zinc-600 px-1.5 py-0.5 bg-zinc-800">
-                          SELECTED
+              {/* 3 Explicit Selectable Figure Condition Cards */}
+              <div className="grid grid-cols-1 gap-3">
+                {CONDITION_GRADES.map((grade) => {
+                  const isSelected = selectedGrade.rank === grade.rank;
+                  return (
+                    <div
+                      key={grade.rank}
+                      onClick={() => setSelectedGrade(grade)}
+                      className={`p-4 border transition-colors cursor-pointer rounded-none ${
+                        isSelected
+                          ? 'border-[#F2EFE9] bg-[#161616]'
+                          : 'border-[#1F1F1F] bg-[#080808] hover:border-[#3A3A3A]'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="font-serif text-[14px] text-[#F2EFE9] uppercase tracking-[0.04em]">
+                          {grade.englishLabel}
                         </span>
-                      )}
+                        <span className="text-[10px] tracking-[0.14em] uppercase text-[#10B981] font-semibold">
+                          {grade.rank}
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-[#8E8E8E] leading-relaxed">
+                        {grade.description}
+                      </p>
                     </div>
-                    <div className="text-xs font-semibold text-zinc-200 mb-1 tracking-wide">
-                      {grade.englishLabel}
-                    </div>
-                    <p className="text-[11px] text-zinc-400 leading-relaxed font-normal">
-                      {grade.description}
-                    </p>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+                  );
+                })}
+              </div>
 
-          {/* Step 3: Photo & Hologram Seal Verification */}
-          <div className="space-y-6">
-            <div className="border-b border-zinc-800 pb-2">
-              <span className="text-[10px] uppercase tracking-[0.25em] text-zinc-500 font-semibold block mb-1">
-                SECTION 03
-              </span>
-              <h2 className="text-xs font-bold text-zinc-200 uppercase tracking-[0.2em]">
-                Photo &amp; Verification
-              </h2>
-            </div>
-
-            {/* Standard Upload Modal Tabs */}
-            <div className="flex overflow-x-auto border-b border-zinc-800 mb-4 no-scrollbar">
-              <button
-                type="button"
-                onClick={() => setActiveUploadTab('UPLOAD')}
-                className={`pb-3 px-4 text-xs uppercase tracking-[0.2em] transition-colors whitespace-nowrap cursor-pointer ${
-                  activeUploadTab === 'UPLOAD'
-                    ? 'border-b-2 border-zinc-200 text-zinc-100 font-bold'
-                    : 'border-b-2 border-transparent text-zinc-500 hover:text-zinc-300 font-medium'
-                }`}
-              >
-                Upload File
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveUploadTab('PRESETS')}
-                className={`pb-3 px-4 text-xs uppercase tracking-[0.2em] transition-colors whitespace-nowrap cursor-pointer ${
-                  activeUploadTab === 'PRESETS'
-                    ? 'border-b-2 border-zinc-200 text-zinc-100 font-bold'
-                    : 'border-b-2 border-transparent text-zinc-500 hover:text-zinc-300 font-medium'
-                }`}
-              >
-                Gallery Presets
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveUploadTab('LINK')}
-                className={`pb-3 px-4 text-xs uppercase tracking-[0.2em] transition-colors whitespace-nowrap cursor-pointer ${
-                  activeUploadTab === 'LINK'
-                    ? 'border-b-2 border-zinc-200 text-zinc-100 font-bold'
-                    : 'border-b-2 border-transparent text-zinc-500 hover:text-zinc-300 font-medium'
-                }`}
-              >
-                Custom URL
-              </button>
-            </div>
-
-            {isUploading ? (
-              <div className="h-52 w-full flex flex-col items-center justify-center bg-[#0c0c0e] border border-zinc-800 overflow-hidden">
-                <div className="relative flex items-center justify-center w-16 h-16">
-                  <div className="absolute inset-0 border border-zinc-700 animate-[spin_4s_linear_infinite]" />
-                  <div className="absolute inset-2 border border-dashed border-zinc-400 animate-[spin_2s_linear_infinite_reverse]" />
+              {/* Separate Selector for Box & Blister Integrity */}
+              <div className="pt-4 border-t border-[#161616] space-y-3">
+                <span className="text-[10px] uppercase tracking-[0.18em] text-[#888888] font-semibold block">
+                  BOX &amp; BLISTER INTEGRITY
+                </span>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  {BOX_GRADES.map((box) => {
+                    const isSelected = selectedBoxGrade === box.id;
+                    return (
+                      <div
+                        key={box.id}
+                        onClick={() => setSelectedBoxGrade(box.id)}
+                        className={`p-3 border transition-colors cursor-pointer rounded-none ${
+                          isSelected
+                            ? 'border-[#F2EFE9] bg-[#161616]'
+                            : 'border-[#1F1F1F] bg-[#080808] hover:border-[#3A3A3A]'
+                        }`}
+                      >
+                        <div className="text-[11px] font-semibold text-[#F2EFE9] uppercase mb-1">
+                          {box.label}
+                        </div>
+                        <p className="text-[10px] text-[#777777] leading-relaxed">
+                          {box.desc}
+                        </p>
+                      </div>
+                    );
+                  })}
                 </div>
-                <span className="text-[10px] text-zinc-400 uppercase tracking-[0.25em] font-semibold mt-4">
-                  Digitizing Asset...
+              </div>
+            </div>
+
+            {/* Section 03: Photo & Authenticity Proof Uploads */}
+            <div className="bg-[#0C0C0C] border border-[#1F1F1F] p-6 space-y-5">
+              <div className="border-b border-[#161616] pb-3 flex justify-between items-center">
+                <span className="text-[10px] uppercase tracking-[0.2em] text-[#777777] font-semibold">
+                  SECTION 03 // PHOTO &amp; PROOF VERIFICATION
+                </span>
+                <span className="text-[10px] text-[#10B981] font-semibold uppercase tracking-wider">
+                  48H ESCROW REQUIREMENT
                 </span>
               </div>
-            ) : (
-              <div>
-                {/* TAB 1: DEVICE UPLOAD */}
-                {activeUploadTab === 'UPLOAD' && (
-                  <div className="relative w-full h-52 border border-dashed border-zinc-800 hover:border-zinc-600 bg-[#0c0c0e] flex flex-col items-center justify-center transition-colors overflow-hidden">
-                    {customImageUrl ? (
-                      <div className="relative w-full h-full flex flex-col items-center justify-center p-3 z-20">
-                        <div className="relative w-full h-32 overflow-hidden border border-zinc-800 bg-black flex items-center justify-center">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            src={customImageUrl}
-                            alt="Uploaded collectible"
-                            className="w-full h-full object-contain"
-                          />
-                          <div className="absolute top-2 left-2 px-2 py-0.5 bg-zinc-900 border border-zinc-700 text-zinc-200 text-[10px] uppercase tracking-wider font-semibold">
-                            Asset Attached
-                          </div>
-                        </div>
 
-                        <div className="w-full mt-2 flex items-center justify-between px-1">
-                          <div className="truncate max-w-[220px]">
-                            <span className="text-xs text-zinc-200 block truncate font-medium">
-                              {imageFile?.name || 'Custom Uploaded Photo'}
-                            </span>
-                            {imageFile && (
-                              <span className="text-[10px] text-zinc-500 uppercase tracking-wider">
-                                {(imageFile.size / 1024 / 1024).toFixed(2)} MB • Ready for Vault
-                              </span>
-                            )}
-                          </div>
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              setImageFile(null);
-                              setCustomImageUrl('');
-                            }}
-                            className="px-3 py-1 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 text-xs border border-zinc-700 uppercase tracking-wider transition-colors cursor-pointer"
-                          >
-                            Remove / Change
-                          </button>
-                        </div>
-                      </div>
-                    ) : (
-                      <>
-                        <input
-                          type="file"
-                          accept="image/*,video/*"
-                          onChange={handleFileUpload}
-                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                        />
-                        <div className="text-center pointer-events-none p-4">
-                          <svg className="w-6 h-6 mx-auto mb-2 text-zinc-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
-                          </svg>
-                          <span className="text-xs font-bold text-zinc-300 uppercase tracking-[0.2em] block mb-1">
-                            Drag &amp; Drop Asset or Click to Browse
-                          </span>
-                          <span className="text-[10px] text-zinc-500 uppercase tracking-wider">
-                            JPG, PNG, WEBP, MP4 (Max 50MB)
-                          </span>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                )}
-
-                {/* TAB 2: GALLERY PRESETS */}
-                {activeUploadTab === 'PRESETS' && (
-                  <div className="space-y-4">
-                    <span className="block text-xs uppercase tracking-[0.2em] font-medium text-zinc-400 mb-2">
-                      Select a Verified Showcase Asset:
-                    </span>
-                    <div className="flex flex-wrap gap-2">
-                      {SAMPLE_IMAGE_PRESETS.map((preset) => (
-                        <button
-                          type="button"
-                          key={preset.label}
-                          onClick={() => {
-                            setImageUrl(preset.url);
-                            setCustomImageUrl('');
-                          }}
-                          className={`px-3 py-2 text-xs uppercase tracking-wider transition-colors cursor-pointer ${
-                            imageUrl === preset.url && !customImageUrl
-                              ? 'bg-zinc-100 text-black border border-zinc-100 font-bold'
-                              : 'bg-zinc-900 text-zinc-400 border border-zinc-800 hover:border-zinc-700 font-medium'
-                          }`}
-                        >
-                          {preset.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* TAB 3: CUSTOM URL */}
-                {activeUploadTab === 'LINK' && (
-                  <div>
-                    <label className="block text-xs uppercase tracking-[0.2em] font-medium text-zinc-400 mb-2">
-                      Direct Image / Asset URL
-                    </label>
-                    <input
-                      type="url"
-                      value={customImageUrl}
-                      onChange={(e) => setCustomImageUrl(e.target.value)}
-                      placeholder="https://images.unsplash.com/..."
-                      className="w-full bg-[#0c0c0e] border border-zinc-800 px-4 py-3 text-xs text-zinc-100 placeholder-zinc-600 focus:border-zinc-400 outline-none transition-colors"
-                    />
-                    <p className="text-[10px] text-zinc-500 mt-2 font-normal">
-                      * Ensure asset link ends in .jpg, .png, or .webp for direct embedding.
-                    </p>
-                  </div>
-                )}
+              {/* Upload Tabs */}
+              <div className="flex border-b border-[#161616] mb-3">
+                {(['PRESETS', 'UPLOAD', 'LINK'] as const).map((tab) => (
+                  <button
+                    key={tab}
+                    type="button"
+                    onClick={() => setActiveUploadTab(tab)}
+                    className={`py-2 px-4 text-[11px] uppercase tracking-[0.14em] font-semibold transition-colors cursor-pointer rounded-none ${
+                      activeUploadTab === tab
+                        ? 'border-b-2 border-[#F2EFE9] text-[#F2EFE9]'
+                        : 'text-[#777777] hover:text-[#CCCCCC]'
+                    }`}
+                  >
+                    {tab === 'PRESETS' ? 'Vault Presets' : tab === 'UPLOAD' ? 'File Upload' : 'Custom URL'}
+                  </button>
+                ))}
               </div>
-            )}
 
-            {/* Extra Gallery Images & Video Attachment Section */}
-            <div className="space-y-4 pt-4 border-t border-zinc-800">
-              <label className="text-xs uppercase tracking-[0.2em] font-bold text-zinc-400 block">
-                Extra Gallery Images (Optional)
-              </label>
+              {/* Tab Content */}
+              {activeUploadTab === 'PRESETS' && (
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                  {SAMPLE_IMAGE_PRESETS.map((p) => (
+                    <button
+                      key={p.label}
+                      type="button"
+                      onClick={() => {
+                        setImageUrl(p.url);
+                        setCustomImageUrl('');
+                      }}
+                      className={`p-2 border text-left rounded-none transition-colors cursor-pointer ${
+                        imageUrl === p.url && !customImageUrl
+                          ? 'border-[#F2EFE9] bg-[#161616]'
+                          : 'border-[#1F1F1F] bg-[#080808] hover:border-[#3A3A3A]'
+                      }`}
+                    >
+                      <div className="relative aspect-[4/5] w-full bg-[#111111] border border-[#1A1A1A] overflow-hidden mb-1.5">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={p.url} alt={p.label} className="w-full h-full object-cover object-center" />
+                      </div>
+                      <span className="text-[9px] text-[#888888] uppercase block truncate">{p.label}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
 
-              {extraImageUrls.map((url, idx) => (
-                <div key={idx} className="flex gap-2 items-center">
+              {activeUploadTab === 'UPLOAD' && (
+                <div className="p-8 border border-dashed border-[#1F1F1F] bg-[#080808] text-center">
                   <input
                     type="file"
                     accept="image/*"
-                    id={`extra-file-${idx}`}
+                    onChange={handleFileUpload}
                     className="hidden"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) {
-                        const updated = [...extraImageUrls];
-                        updated[idx] = URL.createObjectURL(file);
-                        setExtraImageUrls(updated);
-                      }
-                    }}
+                    id="primary-photo-input"
                   />
+                  <label
+                    htmlFor="primary-photo-input"
+                    className="inline-block px-5 py-2.5 border border-[#1F1F1F] bg-[#0C0C0C] hover:bg-[#F2EFE9] hover:text-[#080808] text-[#CCCCCC] text-[11px] uppercase tracking-[0.14em] cursor-pointer transition-colors"
+                  >
+                    [ CHOOSE SPECIMEN PHOTOGRAPH ]
+                  </label>
+                  <p className="text-[10px] text-[#777777] mt-2">
+                    JPG, PNG, or WEBP up to 25MB • Studio lighting recommended
+                  </p>
+                </div>
+              )}
 
+              {activeUploadTab === 'LINK' && (
+                <div>
                   <input
                     type="url"
-                    readOnly
-                    placeholder="Click 'Browse' to upload an image..."
-                    value={url}
-                    className="flex-1 bg-[#0c0c0e] border border-zinc-800 px-4 py-2.5 text-xs text-zinc-400 cursor-not-allowed outline-none"
+                    value={customImageUrl}
+                    onChange={(e) => setCustomImageUrl(e.target.value)}
+                    placeholder="https://..."
+                    className="w-full bg-[#080808] border border-[#1F1F1F] focus:border-[#F2EFE9] px-4 py-3 text-xs text-[#F2EFE9] placeholder-[#555555] outline-none rounded-none"
                   />
-
-                  <button
-                    type="button"
-                    onClick={() => document.getElementById(`extra-file-${idx}`)?.click()}
-                    className="px-3.5 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-bold uppercase tracking-wider border border-zinc-700 cursor-pointer transition-colors whitespace-nowrap"
-                  >
-                    Browse
-                  </button>
-
-                  {idx === extraImageUrls.length - 1 && (
-                    <button
-                      type="button"
-                      onClick={() => setExtraImageUrls([...extraImageUrls, ''])}
-                      className="px-3.5 py-2.5 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 text-xs font-bold uppercase tracking-wider border border-zinc-700 cursor-pointer transition-colors whitespace-nowrap"
-                    >
-                      + Add
-                    </button>
-                  )}
                 </div>
-              ))}
+              )}
 
-              <label className="text-xs uppercase tracking-[0.2em] font-bold text-zinc-400 block mt-4">
-                Unboxing / Verification Video URL (YouTube / MP4)
-              </label>
-              <input
-                type="url"
-                placeholder="https://www.youtube.com/watch?v=..."
-                value={videoUrl}
-                onChange={(e) => setVideoUrl(e.target.value)}
-                className="w-full bg-[#0c0c0e] border border-zinc-800 px-4 py-3 text-xs text-zinc-100 placeholder-zinc-600 focus:border-zinc-400 outline-none transition-colors"
-              />
-            </div>
-          </div>
-
-          {/* Step 4: Pricing & Auto-Bargaining Controls */}
-          <div className="space-y-6">
-            <div className="border-b border-zinc-800 pb-2">
-              <span className="text-[10px] uppercase tracking-[0.25em] text-zinc-500 font-semibold block mb-1">
-                SECTION 04
-              </span>
-              <h2 className="text-xs font-bold text-zinc-200 uppercase tracking-[0.2em]">
-                Pricing &amp; Bargaining Floor
-              </h2>
-            </div>
-            <p className="text-xs text-zinc-400 -mt-2 font-normal tracking-wide">
-              Set your public asking price and an optional floor below which buyer offers are auto-rejected.
-            </p>
-
-            <div className="space-y-5">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <div>
-                  <label className="block text-xs uppercase tracking-[0.2em] font-medium text-zinc-400 mb-2">
-                    Asking Price (INR) *
-                  </label>
-                  <div className="relative">
-                    <span className="absolute left-3.5 top-3 text-xs text-zinc-500 font-bold">₹</span>
-                    <input
-                      type="number"
-                      value={askingPrice}
-                      onChange={(e) => setAskingPrice(e.target.value)}
-                      required
-                      placeholder="7200"
-                      className="w-full bg-[#0c0c0e] border border-zinc-800 pl-7 pr-4 py-3 text-xs text-zinc-100 placeholder-zinc-600 focus:border-zinc-400 outline-none transition-colors"
-                    />
-                  </div>
+              {/* Upload Slots for Timestamp Note + Hologram Macro */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3 border-t border-[#161616]">
+                <div className="p-3 border border-[#1F1F1F] bg-[#080808] space-y-2">
+                  <span className="text-[10px] uppercase tracking-[0.14em] text-[#888888] font-semibold block">
+                    HOLOGRAM PROOF SLOT
+                  </span>
+                  <input
+                    type="url"
+                    value={hologramProofUrl}
+                    onChange={(e) => setHologramProofUrl(e.target.value)}
+                    placeholder="URL: Hologram macro photo..."
+                    className="w-full bg-[#0C0C0C] border border-[#1F1F1F] px-3 py-2 text-[11px] text-[#F2EFE9] placeholder-[#555555] outline-none rounded-none"
+                  />
+                  <span className="text-[9px] text-[#777777] block">
+                    Close-up of Toei, Aniplex, or GSC seal.
+                  </span>
                 </div>
 
+                <div className="p-3 border border-[#1F1F1F] bg-[#080808] space-y-2">
+                  <span className="text-[10px] uppercase tracking-[0.14em] text-[#888888] font-semibold block">
+                    HANDWRITTEN TIMESTAMP SLOT
+                  </span>
+                  <input
+                    type="url"
+                    value={timestampProofUrl}
+                    onChange={(e) => setTimestampProofUrl(e.target.value)}
+                    placeholder="URL: Handwritten note photo..."
+                    className="w-full bg-[#0C0C0C] border border-[#1F1F1F] px-3 py-2 text-[11px] text-[#F2EFE9] placeholder-[#555555] outline-none rounded-none"
+                  />
+                  <span className="text-[9px] text-[#777777] block">
+                    Card showing @YourHandle + Current Date.
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Section 04: Valuation & Escrow Floor */}
+            <div className="bg-[#0C0C0C] border border-[#1F1F1F] p-6 space-y-5">
+              <div className="border-b border-[#161616] pb-3">
+                <span className="text-[10px] uppercase tracking-[0.2em] text-[#777777] font-semibold block mb-1">
+                  SECTION 04 // VALUATION &amp; SETTLEMENT
+                </span>
+                <p className="text-[12px] text-[#8E8E8E]">
+                  Specify your public asking price and optional automated bargaining minimum:
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs uppercase tracking-[0.2em] font-medium text-zinc-400 mb-2">
-                    Auto-Reject Floor (INR)
+                  <label className="block text-[11px] uppercase tracking-[0.14em] text-[#888888] mb-2 font-medium">
+                    Asking Price (₹ INR) *
                   </label>
-                  <div className="relative">
-                    <span className="absolute left-3.5 top-3 text-xs text-zinc-500 font-bold">₹</span>
-                    <input
-                      type="number"
-                      value={minimumPrice}
-                      onChange={(e) => setMinimumPrice(e.target.value)}
-                      placeholder="6000"
-                      className="w-full bg-[#0c0c0e] border border-zinc-800 pl-7 pr-4 py-3 text-xs text-zinc-100 placeholder-zinc-600 focus:border-zinc-400 outline-none transition-colors"
-                    />
-                  </div>
+                  <input
+                    type="number"
+                    min="500"
+                    value={askingPrice}
+                    onChange={(e) => setAskingPrice(e.target.value)}
+                    required
+                    placeholder="28500"
+                    className="w-full bg-[#080808] border border-[#1F1F1F] focus:border-[#F2EFE9] px-4 py-3 text-xs text-[#F2EFE9] placeholder-[#555555] outline-none rounded-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] uppercase tracking-[0.14em] text-[#888888] mb-2 font-medium">
+                    Auto-Accept Minimum (Optional)
+                  </label>
+                  <input
+                    type="number"
+                    min="500"
+                    value={minimumPrice}
+                    onChange={(e) => setMinimumPrice(e.target.value)}
+                    placeholder="24000"
+                    className="w-full bg-[#080808] border border-[#1F1F1F] focus:border-[#F2EFE9] px-4 py-3 text-xs text-[#F2EFE9] placeholder-[#555555] outline-none rounded-none"
+                  />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs uppercase tracking-[0.2em] font-medium text-zinc-400 mb-2">
-                  Collector Authenticity Notes
+                <label className="block text-[11px] uppercase tracking-[0.14em] text-[#888888] mb-2 font-medium">
+                  Curatorial Provenance &amp; Custody Notes
                 </label>
                 <textarea
                   rows={3}
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Include details regarding packaging condition, manufacturer authenticity seal, or purchase history..."
-                  className="w-full bg-[#0c0c0e] border border-zinc-800 px-4 py-3 text-xs text-zinc-100 placeholder-zinc-600 focus:border-zinc-400 outline-none transition-colors resize-none leading-relaxed"
+                  placeholder="Notes on glass Moducase storage, smoke-free home, unboxing inspection history..."
+                  className="w-full bg-[#080808] border border-[#1F1F1F] focus:border-[#F2EFE9] px-4 py-3 text-xs text-[#F2EFE9] placeholder-[#555555] outline-none rounded-none resize-none"
                 />
               </div>
+
+              {/* Submit CTA */}
+              <button
+                type="submit"
+                className="w-full py-3.5 bg-[#F2EFE9] hover:bg-white text-[#080808] border border-[#F2EFE9] text-xs font-semibold uppercase tracking-[0.2em] transition-colors cursor-pointer rounded-none"
+              >
+                [ PUBLISH CONSIGNMENT TO LIVE VAULT ]
+              </button>
             </div>
-          </div>
+          </form>
 
-          {errorMessage && (
-            <div className="p-4 bg-red-950/30 border border-red-500/40 text-red-300 text-xs tracking-wide">
-              {errorMessage}
+          {/* Right Column: Live Card Preview Component */}
+          <div className="lg:col-span-5 sticky top-28">
+            <div className="mb-2 flex justify-between items-center text-[10px] tracking-[0.16em] uppercase font-sans text-[#777777]">
+              <span>SYNCHRONIZED PREVIEW</span>
+              <span className="text-[#10B981] font-semibold">LIVE CARD BLUEPRINT</span>
             </div>
-          )}
-
-          {/* D. Final Submit Button: Universal Button Token */}
-          <button
-            type="submit"
-            id="submit-sell-btn"
-            disabled={isPending}
-            className="w-full py-3.5 bg-zinc-900 hover:bg-zinc-100 text-zinc-200 hover:text-black border border-zinc-700 hover:border-zinc-100 text-xs font-bold uppercase tracking-[0.25em] transition-colors cursor-pointer mt-4"
-          >
-            {isPending ? 'Publishing Grail to Vault...' : 'Drop Grail into Marketplace'}
-          </button>
-        </form>
-
-        {/* C. Right Column: Live Card Preview */}
-        <div className="lg:col-span-5 flex flex-col items-center">
-          <div className="w-full max-w-sm sticky top-28">
-            <div className="mb-4">
-              <span className="text-xs font-bold tracking-[0.2em] uppercase text-zinc-300 block mb-1">
-                Live Card Preview
-              </span>
-              <p className="text-[11px] text-zinc-500 font-normal">
-                Real-time gallery catalog rendering with condition badge
-              </p>
-            </div>
-
             <LiveCardPreview
-              title={title || 'Untitled Collectible'}
+              title={title}
               series={activeFranchise}
               category={category}
               manufacturer={activeManufacturer}
@@ -800,27 +733,8 @@ export default function SellPage(): React.JSX.Element {
         </div>
       </div>
 
-      {/* Mobile Sticky Action Bar (Hidden on desktop) */}
-      <div className="fixed inset-x-0 bottom-0 z-50 md:hidden bg-[#09090b] border-t border-zinc-800 p-4 pb-safe flex items-center justify-between">
-        <div className="flex flex-col">
-          <span className="text-[10px] text-zinc-500 uppercase tracking-widest font-semibold">Total Valuation</span>
-          <span className="text-sm font-extrabold text-zinc-100 tracking-wider">
-            ₹{priceNum > 0 ? priceNum.toLocaleString('en-IN') : '0'}
-          </span>
-        </div>
-
-        {/* Universal Button Token */}
-        <button
-          type="button"
-          onClick={() => {
-            const btn = document.getElementById('submit-sell-btn');
-            if (btn) btn.click();
-          }}
-          disabled={isPending}
-          className="px-6 py-3 bg-zinc-900 hover:bg-zinc-100 text-zinc-200 hover:text-black border border-zinc-700 hover:border-zinc-100 text-[11px] font-bold uppercase tracking-[0.25em] transition-colors cursor-pointer disabled:opacity-50 disabled:pointer-events-none"
-        >
-          {isPending ? 'Publishing...' : 'Lock Escrow'}
-        </button>
+      <div className="mt-20">
+        <ArchivalFooter />
       </div>
     </div>
   );

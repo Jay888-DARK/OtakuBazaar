@@ -3,13 +3,13 @@
 /**
  * @file src/presentation/components/footer/ArchivalFooter.tsx
  *
- * Swiss Horological Architectural Index Footer inspired by Richard Mille (richardmille.com).
- * Features a 3-column architectural index layout:
- * - Top breadcrumb divider: OTAKUBAZAAR · INDEX
- * - Column 1 (Left): Brand Wordmark (Michroma)
- * - Column 2 (Center): Primary Vault Index (Chakra Petch, uppercase)
- * - Column 3 (Right): Secondary Service & Legal Links (Titillium Web, sentence-case)
- * - Bottom Bar: Copyright on left and currency/language codes on right
+ * Luxury Archival Editorial Footer for OtakuBazaar.
+ * Strictly adheres to the dark vault design tokens:
+ * - Surface: #080808 canvas with 1px solid #1F1F1F border and #161616 inner dividers.
+ * - Typography: High-contrast Playfair editorial serif for titles, Plus Jakarta Sans for body copy.
+ * - Platform Custody Specs: 0% BOOTLEG TOLERANCE • 48H ESCROW PROTECTED • PAN-INDIA INSURED TRANSIT.
+ * - Explicit direct links to /, /sell, /vault, /login, /terms-of-service, /privacy-policy, /escrow-policy.
+ * - Zero emoji, zero icons, zero animated arrows.
  */
 
 import React from 'react';
@@ -17,85 +17,84 @@ import Link from 'next/link';
 
 export function ArchivalFooter(): React.JSX.Element {
   const primaryVaultLinks = [
-    { label: 'THE VAULT', href: '/vault' },
-    { label: 'ESCROW PROTOCOL', href: '#escrow-vault' },
-    { label: 'ARCHIVAL LOTS', href: '#catalog' },
-    { label: 'AUTHENTICATION STANDARDS', href: '/terms-of-service' },
-    { label: 'CONSIGNMENT DISPATCH', href: '/sell' },
-    { label: 'PRIVATE ACQUISITIONS', href: '/vault-ops' },
+    { label: 'ARCHIVAL CATALOG', href: '/#stage-2' },
+    { label: 'VAULT CONSIGNMENT', href: '/sell' },
+    { label: 'COLLECTOR VAULT PORTFOLIO', href: '/vault' },
+    { label: 'COLLECTOR LOGIN', href: '/login' },
+    { label: 'BUYER ESCROW PROTECTION', href: '/#escrow-vault' },
   ];
 
-  const secondaryCol1 = [
-    { label: 'Historical Grail Index', href: '#catalog' },
-    { label: 'Pre-Owned Custody', href: '/vault' },
-    { label: 'Grading Verification', href: '/verify' },
-    { label: 'Book Vault Inspection', href: '/terms-of-service' },
-  ];
-
-  const secondaryCol2 = [
-    { label: 'Contact', href: '/terms-of-service' },
+  const complianceLinks = [
     { label: 'Terms of Service', href: '/terms-of-service' },
-    { label: 'Privacy Policy', href: '/privacy-policy' },
-    { label: 'Escrow Legals', href: '/legal/refunds' },
+    { label: 'Privacy Policy (DPDP Act)', href: '/privacy-policy' },
+    { label: '48-Hour Escrow & Unboxing Policy', href: '/escrow-policy' },
+    { label: 'Authenticity Guarantee Standards', href: '/terms-of-service' },
   ];
 
   return (
-    <footer className="w-full border-t border-[#262626] bg-[#0a0a0a] text-zinc-400 select-none">
-      {/* Top Breadcrumb Divider Line */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-4">
-        <span
-          style={{
-            fontFamily: 'var(--font-swiss), sans-serif',
-            fontSize: '0.72rem',
-            letterSpacing: '0.16em',
-            color: '#737373',
-            textTransform: 'uppercase',
-          }}
-          className="font-swiss block mb-4"
-        >
-          OTAKUBAZAAR · INDEX
-        </span>
-        <div className="w-full h-px bg-[#262626]" />
+    <footer className="w-full border-t border-[#1F1F1F] bg-[#080808] text-[#8E8E8E] select-none font-sans">
+      {/* Top Protocol Spec Strip */}
+      <div className="border-b border-[#1F1F1F] bg-[#0A0A0A] px-4 sm:px-6 lg:px-8 py-3">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-[10px] tracking-[0.18em] uppercase font-semibold">
+          <span className="text-[#CCCCCC]">
+            0% BOOTLEG TOLERANCE • 48H ESCROW PROTECTED • PAN-INDIA INSURED TRANSIT
+          </span>
+          <span className="text-[#10B981] flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 bg-[#10B981] inline-block" />
+            <span>NODAL ESCROW VERIFIED</span>
+          </span>
+        </div>
       </div>
 
-      {/* 3-Column Luxury Architectural Index Layout */}
+      {/* Main Structural Grid */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-start">
-          {/* Column 1 (Left): Brand Wordmark */}
-          <div className="lg:col-span-4 flex flex-col justify-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+          {/* Column 1: Brand Wordmark & Indian Escrow Custody Specs */}
+          <div className="lg:col-span-5 flex flex-col space-y-4">
             <Link href="/" className="inline-block no-underline">
               <span
                 style={{
                   fontFamily: 'var(--font-brand), sans-serif',
-                  fontSize: '1.1rem',
+                  fontSize: '1.25rem',
                   letterSpacing: '0.16em',
-                  color: '#ffffff',
+                  color: '#F2EFE9',
                   textTransform: 'uppercase',
                 }}
-                className="font-brand block leading-none hover:text-zinc-300 transition-none"
+                className="font-brand block leading-none hover:text-white transition-colors"
               >
                 OTAKUBAZAAR
               </span>
             </Link>
+
+            <p className="text-[12px] text-[#8E8E8E] leading-relaxed max-w-md">
+              India&apos;s premier escrow-authenticated anime figure and collectible vault exchange. Every consigned lot is verified against Japanese factory master molds before insured flight transit to Indian collectors.
+            </p>
+
+            {/* Indian Escrow Custody Specs Badge */}
+            <div className="p-3.5 bg-[#0C0C0C] border border-[#1F1F1F] space-y-1.5 max-w-md">
+              <div className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 bg-[#10B981]" />
+                <span className="text-[10px] tracking-[0.14em] text-[#10B981] uppercase font-semibold">
+                  RBI-COMPLIANT NODAL ESCROW CUSTODY
+                </span>
+              </div>
+              <p className="text-[11px] text-[#777777] leading-relaxed">
+                Funds remain sequestered in designated Indian bank nodal escrow accounts. Payouts are authorized only after your 48-hour physical inspection period completes without discrepancy.
+              </p>
+            </div>
           </div>
 
-          {/* Column 2 (Center): Primary Vault Index */}
-          <div className="lg:col-span-4 flex flex-col">
-            <nav className="flex flex-col space-y-1" aria-label="Primary Vault Index">
+          {/* Column 2: Archival Vault Index */}
+          <div className="lg:col-span-3 flex flex-col">
+            <span className="text-[10px] tracking-[0.2em] text-[#777777] uppercase font-semibold mb-3">
+              PRIMARY VAULT INDEX
+            </span>
+            <nav className="flex flex-col space-y-2.5" aria-label="Primary Vault Index">
               {primaryVaultLinks.map((link) => (
                 <Link
                   key={link.label}
                   href={link.href}
-                  style={{
-                    fontFamily: 'var(--font-mechanical), sans-serif',
-                    fontWeight: 700,
-                    fontSize: '1.15rem',
-                    letterSpacing: '0.06em',
-                    lineHeight: '2.1',
-                    color: '#ffffff',
-                    textTransform: 'uppercase',
-                  }}
-                  className="font-mechanical block hover:text-zinc-400 transition-none no-underline"
+                  className="font-serif text-[14px] tracking-[0.06em] text-[#F2EFE9] hover:text-white transition-colors uppercase no-underline"
                 >
                   {link.label}
                 </Link>
@@ -103,99 +102,51 @@ export function ArchivalFooter(): React.JSX.Element {
             </nav>
           </div>
 
-          {/* Column 3 (Right): Secondary Service & Legal Links */}
-          <div className="lg:col-span-4 flex flex-col divide-y divide-[#262626]">
-            {/* Sub-columns container */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-6">
-              <div className="flex flex-col space-y-3">
-                {secondaryCol1.map((item) => (
-                  <Link
-                    key={item.label}
-                    href={item.href}
-                    style={{
-                      fontFamily: 'var(--font-swiss), sans-serif',
-                      fontSize: '0.9rem',
-                      fontWeight: 400,
-                      color: '#e5e5e5',
-                    }}
-                    className="font-swiss hover:text-white transition-none no-underline"
-                  >
-                    {item.label}
-                  </Link>
-                ))}
-              </div>
+          {/* Column 3: Authenticity Guarantee & Mandatory Legal Routes */}
+          <div className="lg:col-span-4 flex flex-col space-y-4">
+            <span className="text-[10px] tracking-[0.2em] text-[#777777] uppercase font-semibold">
+              AUTHENTICITY &amp; LEGAL GOVERNANCE
+            </span>
 
-              <div className="flex flex-col space-y-3">
-                {secondaryCol2.map((item) => (
-                  <Link
-                    key={item.label}
-                    href={item.href}
-                    style={{
-                      fontFamily: 'var(--font-swiss), sans-serif',
-                      fontSize: '0.9rem',
-                      fontWeight: 400,
-                      color: '#e5e5e5',
-                    }}
-                    className="font-swiss hover:text-white transition-none no-underline"
-                  >
-                    {item.label}
-                  </Link>
-                ))}
-              </div>
+            {/* Direct Links to Legal Pages */}
+            <div className="flex flex-col space-y-2 border-b border-[#161616] pb-4">
+              {complianceLinks.map((item) => (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  className="text-[12px] text-[#F2EFE9] hover:text-white transition-colors no-underline"
+                >
+                  [ {item.label.toUpperCase()} ]
+                </Link>
+              ))}
             </div>
 
-            {/* Sub-column lower service micro-notes */}
-            <div className="pt-6">
-              <p
-                style={{
-                  fontFamily: 'var(--font-swiss), sans-serif',
-                  fontSize: '0.75rem',
-                  fontWeight: 400,
-                  letterSpacing: '0.04em',
-                  color: '#8a8a8a',
-                  lineHeight: 1.6,
-                }}
-                className="font-swiss"
-              >
-                Curated Japanese scale figures and authenticated manga archives. Climate-controlled Tokyo vault custody backed by 48-hour escrow protection.
+            {/* Authenticity Guarantee Protocol Box */}
+            <div className="space-y-1">
+              <span className="text-[10px] tracking-[0.14em] text-[#777777] uppercase font-medium block">
+                AUTHENTICITY GUARANTEE PROTOCOLS
+              </span>
+              <p className="text-[11px] text-[#8E8E8E] leading-relaxed">
+                Multi-point optical seam inspection, UV anti-counterfeit hologram verification, and weight calibration against Japanese factory master molds before lot dispatch.
               </p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Bottom Bar: © OtakuBazaar 2026 on the left and currency/language codes on the right */}
-      <div className="border-t border-[#262626] bg-[#0a0a0a]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <span
-            style={{
-              fontFamily: 'var(--font-swiss), sans-serif',
-              fontSize: '0.75rem',
-              fontWeight: 400,
-              letterSpacing: '0.08em',
-              color: '#8a8a8a',
-            }}
-            className="font-swiss"
-          >
-            © OtakuBazaar 2026
+      {/* Bottom Bar: Copyright & Telemetry */}
+      <div className="border-t border-[#1F1F1F] bg-[#080808]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <span className="text-[11px] text-[#777777] tracking-[0.04em]">
+            © OtakuBazaar 2026. All rights reserved. Escrow-Authenticated Japanese Collectibles.
           </span>
 
-          <div
-            style={{
-              fontFamily: 'var(--font-swiss), sans-serif',
-              fontSize: '0.75rem',
-              fontWeight: 600,
-              letterSpacing: '0.14em',
-              color: '#8a8a8a',
-            }}
-            className="flex items-center space-x-4 font-swiss uppercase"
-          >
-            <span>INR</span>
-            <span>JPY</span>
-            <span>USD</span>
-            <span className="text-[#262626]">|</span>
-            <span>EN</span>
-            <span>JA</span>
+          <div className="flex items-center space-x-4 text-[10px] tracking-[0.15em] text-[#777777] uppercase">
+            <span>INR (₹)</span>
+            <span>·</span>
+            <span>PAN-INDIA LOGISTICS</span>
+            <span className="text-[#1F1F1F]">|</span>
+            <span>MUMBAI &amp; BENGALURU HUBS</span>
           </div>
         </div>
       </div>

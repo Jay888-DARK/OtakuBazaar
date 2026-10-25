@@ -1,5 +1,16 @@
 'use client';
 
+/**
+ * @file src/presentation/components/home/VaultHero.tsx
+ *
+ * Full-Viewport Hero Presentation for OtakuBazaar.
+ * Strictly adheres to the dark archival auction-house aesthetic:
+ * - Headline: High-contrast editorial Serif (Playfair Display), uppercase, wide tracking, #F2EFE9.
+ * - Subtitle: Clean geometric sans, sentence case, #8E8E8E.
+ * - Architectural hairline bracketed CTA ([ ACCESS ARCHIVAL INDEX ]).
+ * - Zero GTA fonts, zero animated arrows, zero emoji.
+ */
+
 import React from 'react';
 import DriftWall from '../ui/DriftWall';
 
@@ -15,7 +26,7 @@ const CURATED_VAULT_GRAILS = [
   { id: 'lot-0483', image: 'https://images.unsplash.com/photo-1563089145-599997674d42?auto=format&fit=crop&w=800&q=85', title: 'EDWARD ELRIC GEM', href: '/lot/lot-0483' },
   { id: 'lot-0486', image: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=800&q=85', title: 'EVA UNIT-01 METAL BUILD', href: '/lot/lot-0486' },
   { id: 'lot-0488', image: 'https://images.unsplash.com/photo-1563089145-599997674d42?auto=format&fit=crop&w=800&q=85', title: 'BERSERK DELUXE 1-14', href: '/lot/lot-0488' },
-  { id: 'lot-0489', image: 'https://images.unsplash.com/photo-1563089145-599997674d42?auto=format&fit=crop&w=800&q=85', title: 'NICHIRIN SWORD 1:1', href: '/lot/lot-0489' },
+  { id: 'lot-0489', image: 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&w=800&q=85', title: 'NICHIRIN SWORD 1:1', href: '/lot/lot-0489' },
 ];
 
 export default function VaultHero({ onSelectVaultItem }: VaultHeroProps) {
@@ -29,9 +40,9 @@ export default function VaultHero({ onSelectVaultItem }: VaultHeroProps) {
   };
 
   return (
-    <section className="relative w-full h-screen min-h-screen overflow-hidden bg-[#0a0a0a] flex flex-col justify-center items-center select-none">
+    <section className="relative w-full h-[calc(100vh-5rem)] min-h-[520px] overflow-hidden bg-[#080808] flex flex-col justify-center items-center select-none border-b border-[#1F1F1F]">
       {/* 3D Drifting Animation Canvas filling full viewport */}
-      <div className="absolute inset-0 w-full h-full pointer-events-auto opacity-75">
+      <div className="absolute inset-0 w-full h-full pointer-events-auto opacity-45">
         <DriftWall
           items={CURATED_VAULT_GRAILS}
           columns={6}
@@ -40,7 +51,7 @@ export default function VaultHero({ onSelectVaultItem }: VaultHeroProps) {
           gap={18}
           speed={16}
           grayscale={false}
-          overlayColor="#0a0a0a"
+          overlayColor="#080808"
           pauseOnHover={true}
           onItemClick={(item) => {
             if (onSelectVaultItem) {
@@ -54,75 +65,27 @@ export default function VaultHero({ onSelectVaultItem }: VaultHeroProps) {
 
       {/* Floating Center Hero Text */}
       <div className="relative z-20 flex flex-col items-center justify-center text-center px-4 max-w-4xl mx-auto pointer-events-none">
-        <span
-          className="uppercase mb-3 border border-[#262626] bg-[#0a0a0a] px-3 py-1 font-swiss"
-          style={{
-            fontFamily: 'var(--font-swiss), sans-serif',
-            fontSize: '0.7rem',
-            fontWeight: 600,
-            letterSpacing: '0.2em',
-            textTransform: 'uppercase',
-            color: '#8a8a8a',
-          }}
-        >
-          TOKYO ARCHIVAL VAULT · ESCROW DIRECT
+        <span className="uppercase mb-4 border border-[#1F1F1F] bg-[#0C0C0C] px-3.5 py-1.5 font-sans text-[10px] tracking-[0.2em] text-[#777777] font-semibold">
+          TOKYO ARCHIVAL VAULT • ESCROW CUSTODY DIRECT
         </span>
-        <h1
-          className="uppercase select-none font-gta"
-          style={{
-            fontFamily: "var(--font-gta), 'Pricedown Bl', 'Pricedown', sans-serif",
-            fontSize: 'clamp(4.5rem, 11vw, 9.5rem)',
-            lineHeight: 0.88,
-            letterSpacing: '0.02em',
-            color: '#ffffff',
-            WebkitTextStroke: '2px #0a0a0a',
-          }}
-        >
+        <h1 className="font-serif text-[42px] sm:text-[64px] lg:text-[76px] font-bold text-[#F2EFE9] uppercase tracking-[0.08em] leading-[0.95] max-w-4xl">
           AUTHENTICATED GRAILS
         </h1>
-        <p
-          className="max-w-xl mt-4 font-swiss"
-          style={{
-            fontFamily: 'var(--font-swiss), sans-serif',
-            fontSize: '1.05rem',
-            fontWeight: 400,
-            letterSpacing: '0.02em',
-            lineHeight: 1.5,
-            color: '#d4d4d4',
-          }}
-        >
-          Pre-inspected Japanese scale figures backed by a 24-hour liquidity protocol. Double-entry escrow custody with 48-hour inspection protection.
+        <p className="max-w-xl mt-5 font-sans text-[14px] font-normal leading-relaxed text-[#8E8E8E]">
+          Pre-inspected Japanese scale figures and authenticated anime grails backed by double-entry escrow custody with a guaranteed 48-hour physical inspection window.
         </p>
       </div>
 
-      {/* Stage 1 subtle bottom scroll indicator anchored at bottom center of the 100vh frame */}
+      {/* Stage 1 subtle bottom scroll indicator anchored at bottom center of the frame */}
       <button
         onClick={handleScrollToStage2}
         type="button"
         aria-label="Scroll to access archival index"
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 cursor-pointer flex flex-col items-center gap-1.5 border border-[#262626] bg-[#0a0a0a] hover:bg-[#141414] hover:border-white px-4 py-2 transition-none rounded-none group"
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 cursor-pointer flex flex-col items-center gap-1.5 border border-[#1F1F1F] bg-[#0C0C0C] hover:bg-[#F2EFE9] hover:border-[#F2EFE9] px-5 py-2.5 transition-colors rounded-none group"
       >
-        <span
-          style={{
-            fontFamily: 'var(--font-swiss), sans-serif',
-            fontSize: '0.75rem',
-            fontWeight: 600,
-            letterSpacing: '0.12em',
-            textTransform: 'uppercase',
-          }}
-          className="uppercase font-semibold text-zinc-300 group-hover:text-white font-swiss"
-        >
-          [ SCROLL TO ACCESS ARCHIVAL INDEX ]
+        <span className="font-sans text-[10px] font-semibold tracking-[0.16em] uppercase text-[#888888] group-hover:text-[#080808] transition-colors">
+          [ ACCESS ARCHIVAL INDEX ]
         </span>
-        <svg
-          className="w-3.5 h-3.5 text-zinc-400 group-hover:text-white"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-        >
-          <path d="M6 9l6 6 6-6" />
-        </svg>
       </button>
     </section>
   );

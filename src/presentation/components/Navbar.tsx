@@ -88,15 +88,15 @@ export function Navbar() {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 w-full h-14 border-b border-[#262626] bg-[#0a0a0a]">
-      {/* Primary Navigation Bar (Height: 56px) */}
-      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+    <header className="sticky top-0 left-0 right-0 z-50 w-full h-20 border-b border-[#1F1F1F] bg-[#080808]">
+      {/* Primary Navigation Bar (Height: 80px) */}
+      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Left: Mascot Brand Logo & Typography */}
         <div className="flex items-center">
           <Link
             href="/"
             aria-label="OtakuBazaar Home — Authentic Anime Collectibles"
-            className="flex items-center space-x-3 cursor-pointer group no-underline focus-visible:outline-none p-1"
+            className="flex items-center space-x-3 cursor-pointer group no-underline focus-visible:outline-none"
           >
             {/* Mascot Logo Mark */}
             <div
@@ -122,7 +122,7 @@ export function Navbar() {
                   fontSize: '0.95rem',
                   letterSpacing: '0.16em',
                   textTransform: 'uppercase',
-                  color: '#ffffff',
+                  color: '#F2EFE9',
                 }}
                 className="font-extrabold uppercase leading-tight font-brand"
               >
@@ -130,14 +130,14 @@ export function Navbar() {
               </span>
               <span
                 style={{
-                  fontFamily: 'var(--font-swiss), sans-serif',
-                  fontSize: '0.7rem',
+                  fontFamily: 'var(--font-sans), sans-serif',
+                  fontSize: '0.68rem',
                   fontWeight: 600,
                   letterSpacing: '0.2em',
                   textTransform: 'uppercase',
-                  color: '#8a8a8a',
+                  color: '#777777',
                 }}
-                className="leading-tight font-swiss"
+                className="leading-tight font-sans"
               >
                 ESCROW AUTHENTICATED
               </span>
@@ -154,13 +154,13 @@ export function Navbar() {
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="SEARCH PRODUCTS, SERIES, OR CHARACTERS..."
               style={{
-                fontFamily: 'var(--font-swiss), sans-serif',
-                fontSize: '0.75rem',
+                fontFamily: 'var(--font-sans), sans-serif',
+                fontSize: '0.72rem',
                 fontWeight: 600,
                 letterSpacing: '0.12em',
                 textTransform: 'uppercase',
               }}
-              className="w-full border border-[#262626] bg-[#141414] px-3.5 py-1.5 text-zinc-100 placeholder-[#737373] outline-none transition-none focus:border-white focus:bg-[#0a0a0a] uppercase rounded-none font-swiss"
+              className="w-full border border-[#1F1F1F] bg-[#0C0C0C] px-3.5 py-2 text-[#F2EFE9] placeholder-[#777777] outline-none transition-colors focus:border-[#F2EFE9] focus:bg-[#080808] uppercase rounded-none font-sans"
             />
           </form>
         </div>
@@ -173,13 +173,13 @@ export function Navbar() {
             type="button"
             aria-label="Open Cart Drawer"
             style={{
-              fontFamily: 'var(--font-swiss), sans-serif',
-              fontSize: '0.75rem',
+              fontFamily: 'var(--font-sans), sans-serif',
+              fontSize: '0.72rem',
               fontWeight: 600,
               letterSpacing: '0.12em',
               textTransform: 'uppercase',
             }}
-            className="flex items-center border border-[#262626] bg-[#141414] px-3 py-1.5 uppercase text-zinc-200 hover:border-white hover:bg-white hover:text-black transition-none cursor-pointer rounded-none font-swiss"
+            className="flex items-center border border-[#1F1F1F] bg-[#0C0C0C] px-3.5 py-2 uppercase text-[#888888] hover:border-[#F2EFE9] hover:bg-[#F2EFE9] hover:text-[#080808] transition-colors cursor-pointer rounded-none font-sans"
           >
             <span>[ CART {cartItemCount} ]</span>
           </button>
@@ -189,13 +189,13 @@ export function Navbar() {
             onClick={handleOpenSellModal}
             type="button"
             style={{
-              fontFamily: 'var(--font-swiss), sans-serif',
-              fontSize: '0.75rem',
+              fontFamily: 'var(--font-sans), sans-serif',
+              fontSize: '0.72rem',
               fontWeight: 600,
               letterSpacing: '0.12em',
               textTransform: 'uppercase',
             }}
-            className="hidden sm:inline-flex border border-[#262626] bg-[#141414] px-3.5 py-1.5 uppercase text-zinc-200 hover:border-white hover:bg-white hover:text-black transition-none cursor-pointer rounded-none font-swiss"
+            className="hidden sm:inline-flex border border-[#1F1F1F] bg-[#0C0C0C] px-3.5 py-2 uppercase text-[#888888] hover:border-[#F2EFE9] hover:bg-[#F2EFE9] hover:text-[#080808] transition-colors cursor-pointer rounded-none font-sans"
           >
             [ SELL ITEM ]
           </button>
@@ -206,41 +206,41 @@ export function Navbar() {
               onClick={handleAuth}
               type="button"
               style={{
-                fontFamily: 'var(--font-swiss), sans-serif',
-                fontSize: '0.75rem',
+                fontFamily: 'var(--font-sans), sans-serif',
+                fontSize: '0.72rem',
                 fontWeight: 600,
                 letterSpacing: '0.12em',
                 textTransform: 'uppercase',
               }}
-              className="border border-[#262626] bg-[#141414] px-3 py-1.5 uppercase text-zinc-200 hover:border-white hover:bg-white hover:text-black transition-none cursor-pointer rounded-none font-swiss"
+              className="border border-[#1F1F1F] bg-[#0C0C0C] px-3.5 py-2 uppercase text-[#888888] hover:border-[#F2EFE9] hover:bg-[#F2EFE9] hover:text-[#080808] transition-colors cursor-pointer rounded-none font-sans"
             >
               [ SIGN IN ]
             </button>
           ) : (
-            <div className="flex items-center gap-2 pl-2 pr-2 py-1 bg-[#141414] border border-[#262626] shrink-0">
+            <div className="flex items-center gap-2 pl-2 pr-2 py-1 bg-[#0C0C0C] border border-[#1F1F1F] shrink-0">
               {session.user?.image ? (
                 <img
                   src={session.user.image}
                   alt={session.user?.name || 'User profile'}
-                  className="w-5 h-5 border border-[#262626] object-cover shrink-0 rounded-none"
+                  className="w-5 h-5 border border-[#1F1F1F] object-cover shrink-0 rounded-none"
                 />
               ) : (
                 <div
-                  style={{ fontFamily: 'var(--font-swiss), sans-serif' }}
-                  className="w-5 h-5 border border-[#262626] bg-[#0a0a0a] flex items-center justify-center text-[10px] font-bold text-zinc-300 shrink-0 font-swiss"
+                  style={{ fontFamily: 'var(--font-sans), sans-serif' }}
+                  className="w-5 h-5 border border-[#1F1F1F] bg-[#080808] flex items-center justify-center text-[10px] font-bold text-[#F2EFE9] shrink-0 font-sans"
                 >
                   {session.user?.name ? session.user.name.charAt(0).toUpperCase() : 'U'}
                 </div>
               )}
               <span
                 style={{
-                  fontFamily: 'var(--font-swiss), sans-serif',
-                  fontSize: '0.75rem',
+                  fontFamily: 'var(--font-sans), sans-serif',
+                  fontSize: '0.72rem',
                   fontWeight: 600,
                   letterSpacing: '0.12em',
                   textTransform: 'uppercase',
                 }}
-                className="hidden lg:inline-block max-w-[80px] truncate uppercase text-zinc-300 font-swiss"
+                className="hidden lg:inline-block max-w-[80px] truncate uppercase text-[#888888] font-sans"
               >
                 {session.user?.name}
               </span>
@@ -249,13 +249,13 @@ export function Navbar() {
                 onClick={() => signOut()}
                 aria-label="Sign out of OtakuBazaar"
                 style={{
-                  fontFamily: 'var(--font-swiss), sans-serif',
-                  fontSize: '0.75rem',
+                  fontFamily: 'var(--font-sans), sans-serif',
+                  fontSize: '0.72rem',
                   fontWeight: 600,
                   letterSpacing: '0.12em',
                   textTransform: 'uppercase',
                 }}
-                className="uppercase text-zinc-400 hover:text-white px-2 py-0.5 border border-[#262626] bg-[#0a0a0a] hover:bg-[#262626] transition-none cursor-pointer shrink-0 whitespace-nowrap rounded-none font-swiss"
+                className="uppercase text-[#888888] hover:text-[#080808] px-2 py-0.5 border border-[#1F1F1F] bg-[#080808] hover:bg-[#F2EFE9] hover:border-[#F2EFE9] transition-colors cursor-pointer shrink-0 whitespace-nowrap rounded-none font-sans"
                 title="Sign out of OtakuBazaar"
               >
                 [ SIGN OUT ]

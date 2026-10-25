@@ -3,13 +3,16 @@
 /**
  * @file src/presentation/components/home/ArchivalMerchandisingBanners.tsx
  *
- * 4-Column Curated Archival Merchandising Banners for Stage 2.
- * Placed immediately below the sticky category strip.
+ * 4-Column Curated Archival Merchandising Showcase — Museum Mat Layout.
  *
- * Strict Brutalist Architecture:
- * - 0px border-radius, hairline #262626 borders, elevated #141414 surface.
- * - 0ms instant border/background swaps.
- * - [ VIEW LOT INDEX ] trigger button with filter telemetry.
+ * Strict Architectural Rules:
+ * - Outer 1px solid #1F1F1F card frame with p-6 bg-[#080808].
+ * - Kicker (#777777) and editorial serif title (#F2EFE9) at the top.
+ * - Padded aspect-[16/10] studio well (p-2 bg-[#0C0C0C] border border-[#1A1A1A]).
+ * - ZERO overlay pills covering the collectible photography.
+ * - Clean bottom hairline row (border-t border-[#161616] pt-4 mt-4 flex justify-between items-center)
+ *   with curation spec on left (#777777) and bracketed link on right ([ VIEW LOT INDEX ]).
+ * - ZERO hover animations, scale transforms, or animated arrows.
  */
 
 import React from 'react';
@@ -31,7 +34,7 @@ const BANNERS: BannerData[] = [
     header: 'UNDER ₹30,000 GRAILS',
     subtitle: 'AUTHENTIC JAPANESE LOTS',
     spec: 'ENTRY-LEVEL ESCROW VERIFIED',
-    image: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=600&q=80',
+    image: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=800&q=85',
     filterType: 'filter',
     filterValue: 'UNDER_30K',
   },
@@ -40,7 +43,7 @@ const BANNERS: BannerData[] = [
     header: 'S-RANK FACTORY SEALED',
     subtitle: 'UNOPENED COLLECTOR VAULT',
     spec: 'PRISTINE TOKYO CUSTODY',
-    image: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=600&q=80',
+    image: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=800&q=85',
     filterType: 'filter',
     filterValue: 'FACTORY_SEALED',
   },
@@ -48,7 +51,7 @@ const BANNERS: BannerData[] = [
     id: 'b-prime1',
     header: 'PRIME 1 STUDIO RESIN',
     subtitle: 'POLYSTONE MONUMENTS',
-    spec: '1/4 SCALE MUSEUM MASTERPIECE',
+    spec: '1/4 SCALE MASTERPIECE',
     image: '/showcase/guts_berserker_statue.jpg',
     filterType: 'filter',
     filterValue: 'PRIME_1',
@@ -58,7 +61,7 @@ const BANNERS: BannerData[] = [
     header: 'VERIFIED MANGA BOX SETS',
     subtitle: 'COMPLETE ARCHIVAL EDITIONS',
     spec: 'ACID-FREE LEATHERETTE',
-    image: 'https://images.unsplash.com/photo-1563089145-599997674d42?auto=format&fit=crop&w=600&q=80',
+    image: 'https://images.unsplash.com/photo-1563089145-599997674d42?auto=format&fit=crop&w=800&q=85',
     filterType: 'category',
     filterValue: 'Manga Sets',
   },
@@ -89,112 +92,59 @@ export function ArchivalMerchandisingBanners(): React.JSX.Element {
   };
 
   return (
-    <section className="w-full bg-[#0a0a0a] border-b border-[#262626] py-6 px-4 sm:px-6 lg:px-8 select-none">
+    <section className="w-full bg-[#080808] border-b border-[#1F1F1F] py-8 px-4 sm:px-6 lg:px-8 select-none">
       <div className="mx-auto max-w-7xl">
-        <div className="flex items-center justify-between mb-4 border-b border-[#262626] pb-2">
-          <span
-            style={{
-              fontFamily: 'var(--font-swiss), sans-serif',
-              fontSize: '0.7rem',
-              fontWeight: 600,
-              letterSpacing: '0.2em',
-              textTransform: 'uppercase',
-              color: '#8a8a8a',
-            }}
-            className="uppercase font-swiss"
-          >
+        {/* Section Header */}
+        <div className="flex items-center justify-between mb-6 border-b border-[#1F1F1F] pb-3">
+          <span className="font-sans text-[10px] tracking-[0.18em] text-[#777777] uppercase font-semibold">
             CURATED ARCHIVAL MERCHANDISING • 4-STAGE LOT FOCUS
           </span>
-          <span
-            style={{
-              fontFamily: 'var(--font-swiss), sans-serif',
-              fontSize: '0.7rem',
-              fontWeight: 600,
-              letterSpacing: '0.2em',
-              textTransform: 'uppercase',
-              color: '#8a8a8a',
-            }}
-            className="uppercase font-swiss"
-          >
+          <span className="font-sans text-[10px] tracking-[0.15em] text-[#10B981] uppercase font-semibold">
             48H ESCROW BACKED
           </span>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* 4-Column Showcase */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {BANNERS.map((banner) => (
             <div
               key={banner.id}
-              className="bg-[#141414] border border-[#262626] hover:border-zinc-500 transition-none flex flex-col justify-between p-4 group rounded-none"
+              onClick={() => handleBannerClick(banner)}
+              className="bg-[#080808] border border-[#1F1F1F] hover:border-[#3A3A3A] hover:bg-[#0A0A0A] transition-colors flex flex-col justify-between p-6 group rounded-none cursor-pointer"
             >
               <div>
-                {/* Visual Header */}
-                <span
-                  style={{
-                    fontFamily: 'var(--font-swiss), sans-serif',
-                    fontSize: '0.68rem',
-                    fontWeight: 600,
-                    letterSpacing: '0.18em',
-                    color: '#8a8a8a',
-                    textTransform: 'uppercase',
-                  }}
-                  className="block mb-1 font-swiss uppercase"
-                >
+                {/* 1. Category Kicker & Editorial Serif Title at Top */}
+                <span className="block font-sans text-[10px] tracking-[0.16em] text-[#777777] uppercase mb-1.5 font-medium">
                   {banner.subtitle}
                 </span>
-                <h3
-                  style={{
-                    fontFamily: 'var(--font-mechanical), sans-serif',
-                    fontSize: '1.05rem',
-                    fontWeight: 700,
-                    letterSpacing: '0.05em',
-                    textTransform: 'uppercase',
-                    color: '#ffffff',
-                  }}
-                  className="mb-3 font-mechanical uppercase leading-tight"
-                >
+                <h3 className="font-serif text-[17px] text-[#F2EFE9] uppercase tracking-[0.06em] leading-snug mb-4 group-hover:text-white transition-colors">
                   {banner.header}
                 </h3>
 
-                {/* Media Preview Box */}
-                <div className="relative w-full aspect-[16/10] bg-[#0a0a0a] border border-[#262626] overflow-hidden mb-3">
-                  <Image
-                    src={banner.image}
-                    alt={banner.header}
-                    fill
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                    className="object-cover contrast-105"
-                    unoptimized={banner.image.startsWith('http')}
-                  />
-                  <div
-                    style={{
-                      fontFamily: 'var(--font-swiss), sans-serif',
-                      fontSize: '0.65rem',
-                      fontWeight: 600,
-                      letterSpacing: '0.15em',
-                      textTransform: 'uppercase',
-                    }}
-                    className="absolute bottom-2 left-2 border border-[#262626] bg-[#0a0a0a] px-2 py-0.5 text-zinc-300 font-swiss"
-                  >
-                    {banner.spec}
+                {/* 2. Padded Studio Well (Zero Overlaid Text Pills) */}
+                <div className="relative w-full aspect-[16/10] p-2 bg-[#0C0C0C] border border-[#1A1A1A] overflow-hidden flex items-center justify-center">
+                  <div className="relative w-full h-full bg-[#111111]">
+                    <Image
+                      src={banner.image}
+                      alt={banner.header}
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                      className="object-cover object-center w-full h-full"
+                      unoptimized={banner.image.startsWith('http')}
+                    />
                   </div>
                 </div>
               </div>
 
-              {/* Action Trigger */}
-              <button
-                type="button"
-                onClick={() => handleBannerClick(banner)}
-                style={{
-                  fontFamily: 'var(--font-swiss), sans-serif',
-                  fontWeight: 600,
-                  fontSize: '0.75rem',
-                  letterSpacing: '0.1em',
-                  textTransform: 'uppercase',
-                }}
-                className="w-full mt-2 py-2 border border-[#262626] bg-[#0a0a0a] hover:bg-white hover:text-black hover:border-white text-zinc-300 transition-none cursor-pointer rounded-none text-center font-swiss uppercase"
-              >
-                [ VIEW LOT INDEX ]
-              </button>
+              {/* 3. Clean Bottom Hairline Row with Spec and Link */}
+              <div className="border-t border-[#161616] pt-4 mt-4 flex justify-between items-center font-sans">
+                <span className="text-[10px] tracking-[0.14em] text-[#777777] uppercase">
+                  {banner.spec}
+                </span>
+                <span className="text-[11px] tracking-[0.14em] text-[#F2EFE9] group-hover:text-white uppercase transition-colors">
+                  [ VIEW LOT INDEX ]
+                </span>
+              </div>
             </div>
           ))}
         </div>

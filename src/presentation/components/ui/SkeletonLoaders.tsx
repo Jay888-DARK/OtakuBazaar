@@ -13,34 +13,40 @@ import React from 'react';
 /** Single Product Card Skeleton */
 export function ProductCardSkeleton(): React.JSX.Element {
   return (
-    <div className="relative flex flex-col justify-between bg-[#0e0e11] border border-[#27272a] p-4 select-none animate-pulse">
+    <div className="relative flex flex-col justify-between bg-[#0C0C0C] border border-[#1F1F1F] p-5 select-none animate-pulse rounded-none">
       {/* 1. Header Bar Placeholder */}
-      <div className="flex items-center justify-between mb-3">
-        <div className="h-2.5 w-28 bg-[#18181c]" />
-        <div className="h-4 w-16 bg-[#18181c] border border-[#27272a]" />
+      <div className="flex items-center justify-between mb-2">
+        <div className="h-2.5 w-28 bg-[#141414]" />
+        <div className="h-4 w-16 bg-[#141414] border border-[#2A2A2A]" />
       </div>
 
-      {/* 2. Image Stage Placeholder */}
-      <div className="relative w-full aspect-[4/5] bg-[#121215] border border-[#27272a] my-2 flex items-center justify-center">
-        <div className="w-12 h-12 border border-[#27272a] bg-[#18181c]" />
+      {/* 2. Strict 4:5 Studio Portrait Well Placeholder */}
+      <div className="relative w-full aspect-[4/5] p-3 bg-[#0A0A0A] border border-[#1A1A1A] my-4 flex items-center justify-center">
+        <div className="w-full h-full bg-[#141414]" />
       </div>
 
       {/* 3. Title & Specs Placeholder */}
-      <div className="mt-2 space-y-2">
-        <div className="h-3.5 w-5/6 bg-[#1c1c20]" />
-        <div className="h-2.5 w-1/2 bg-[#161619]" />
+      <div className="space-y-2">
+        <div className="h-2.5 w-1/2 bg-[#141414]" />
+        <div className="h-4 w-5/6 bg-[#141414]" />
+        <div className="h-2.5 w-2/3 bg-[#141414]" />
 
-        {/* Valuation & Bid Ticker Placeholder */}
-        <div className="flex items-center justify-between pt-1">
-          <div className="h-2.5 w-20 bg-[#161619]" />
-          <div className="h-2.5 w-16 bg-[#161619]" />
+        {/* Valuation & Status Line Placeholder */}
+        <div className="flex items-center justify-between pt-3 border-t border-[#161616]">
+          <div className="h-2.5 w-20 bg-[#141414]" />
+          <div className="h-2.5 w-16 bg-[#141414]" />
         </div>
 
-        {/* Price & Action Button Placeholder */}
-        <div className="flex items-center gap-2 pt-2">
-          <div className="flex-1 h-9 bg-[#16161a] border border-[#27272a]" />
-          <div className="w-9 h-9 bg-[#16161a] border border-[#27272a] shrink-0" />
+        {/* Price Box Placeholder */}
+        <div className="border border-[#1F1F1F] bg-[#0C0C0C] px-3.5 py-2.5 mt-3 flex justify-between items-center">
+          <div className="h-2.5 w-16 bg-[#141414]" />
+          <div className="h-4 w-20 bg-[#141414]" />
         </div>
+      </div>
+
+      {/* 4. Action Button Placeholder */}
+      <div className="mt-3">
+        <div className="w-full h-9 bg-[#080808] border border-[#1F1F1F]" />
       </div>
     </div>
   );

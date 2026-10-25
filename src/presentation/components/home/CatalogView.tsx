@@ -3,10 +3,13 @@
 /**
  * @file src/presentation/components/home/CatalogView.tsx
  *
- * Main Catalog Layout for Stage 2:
- * - Left Facet Sidebar (260px wide on desktop): Price Bracket, Grade Condition, Origin Vault, Scale, Escrow Inspection Window.
- * - Right Product Grid (4 columns on desktop, 2 on tablet, 1 on mobile): 1px solid hairline borders, dark-grey tabular skeleton loaders.
- * - Strict Brutalist aesthetic: 0px border-radius, #0a0a0a canvas, #141414 elevated surface, #262626 hairline borders.
+ * Main Catalog Layout for OtakuBazaar:
+ * - Left Facet Sidebar (260px wide on desktop): Custom sharp architectural square selectors
+ *   (12px x 12px, zero native radio/checkbox styling), #0C0C0C surface, #1F1F1F borders.
+ * - Right Product Grid (4 columns on desktop): Strict 4-multiple pagination (8 lots per view)
+ *   eliminating the 9th orphaned card, complete with architectural pagination bar.
+ * - Strict Aesthetic: #080808 canvas, #0C0C0C elevated surface, #1F1F1F outer hairlines,
+ *   #161616 inner dividers, editorial serif titles (#F2EFE9), clean Plus Jakarta Sans body copy.
  */
 
 import React, { useState, useEffect, useTransition, useMemo } from 'react';
@@ -27,6 +30,10 @@ export const CatalogView: React.FC = () => {
   const [selectedOrigins, setSelectedOrigins] = useState<string[]>([]);
   const [selectedScales, setSelectedScales] = useState<string[]>([]);
 
+  // Pagination State (Strict multiples of 4: 8 lots per view)
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const LOTS_PER_PAGE = 8;
+
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
@@ -38,9 +45,10 @@ export const CatalogView: React.FC = () => {
         setTimeout(() => {
           startTransition(() => {
             setSelectedCategory(cat);
+            setCurrentPage(1);
             setIsLoading(false);
           });
-        }, 120);
+        }, 100);
       }
     };
 
@@ -52,9 +60,10 @@ export const CatalogView: React.FC = () => {
         setTimeout(() => {
           startTransition(() => {
             setActiveFilter(flt);
+            setCurrentPage(1);
             setIsLoading(false);
           });
-        }, 120);
+        }, 100);
       }
     };
 
@@ -63,6 +72,7 @@ export const CatalogView: React.FC = () => {
       const query = customEvent.detail || '';
       startTransition(() => {
         setSearchQuery(query.toLowerCase().trim());
+        setCurrentPage(1);
       });
     };
 
@@ -83,8 +93,9 @@ export const CatalogView: React.FC = () => {
       setSelectedGrades((prev) =>
         prev.includes(grade) ? prev.filter((g) => g !== grade) : [...prev, grade]
       );
+      setCurrentPage(1);
       setIsLoading(false);
-    }, 100);
+    }, 80);
   };
 
   const toggleOrigin = (origin: string) => {
@@ -93,8 +104,9 @@ export const CatalogView: React.FC = () => {
       setSelectedOrigins((prev) =>
         prev.includes(origin) ? prev.filter((o) => o !== origin) : [...prev, origin]
       );
+      setCurrentPage(1);
       setIsLoading(false);
-    }, 100);
+    }, 80);
   };
 
   const toggleScale = (scale: string) => {
@@ -103,16 +115,18 @@ export const CatalogView: React.FC = () => {
       setSelectedScales((prev) =>
         prev.includes(scale) ? prev.filter((s) => s !== scale) : [...prev, scale]
       );
+      setCurrentPage(1);
       setIsLoading(false);
-    }, 100);
+    }, 80);
   };
 
   const handlePriceBracketChange = (bracket: string) => {
     setIsLoading(true);
     setTimeout(() => {
       setSelectedPriceBracket(bracket);
+      setCurrentPage(1);
       setIsLoading(false);
-    }, 100);
+    }, 80);
   };
 
   const handleResetFilters = () => {
@@ -125,8 +139,9 @@ export const CatalogView: React.FC = () => {
       setSelectedOrigins([]);
       setSelectedScales([]);
       setSearchQuery('');
+      setCurrentPage(1);
       setIsLoading(false);
-    }, 120);
+    }, 100);
   };
 
   const filteredProducts = useMemo(() => {
@@ -202,54 +217,36 @@ export const CatalogView: React.FC = () => {
     selectedScales,
   ]);
 
+  // Paginated Product Slice (8 items per view to avoid orphaned 9th card)
+  const totalPages = Math.max(1, Math.ceil(filteredProducts.length / LOTS_PER_PAGE));
+  const paginatedProducts = useMemo(() => {
+    const startIndex = (currentPage - 1) * LOTS_PER_PAGE;
+    return filteredProducts.slice(startIndex, startIndex + LOTS_PER_PAGE);
+  }, [filteredProducts, currentPage]);
+
+  const startLot = filteredProducts.length > 0 ? (currentPage - 1) * LOTS_PER_PAGE + 1 : 0;
+  const endLot = Math.min(currentPage * LOTS_PER_PAGE, filteredProducts.length);
+  const startStr = String(startLot).padStart(2, '0');
+  const endStr = String(endLot).padStart(2, '0');
+  const totalStr = String(filteredProducts.length).padStart(2, '0');
+
   return (
-    <div id="catalog" className="w-full bg-[#0a0a0a] py-8 px-4 sm:px-6 lg:px-8 select-none">
+    <div id="catalog" className="w-full bg-[#080808] py-10 px-4 sm:px-6 lg:px-8 select-none">
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between border-b border-[#262626] pb-4 mb-6 gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between border-b border-[#1F1F1F] pb-4 mb-8 gap-4">
           <div>
-            <span
-              style={{
-                fontFamily: 'var(--font-swiss), sans-serif',
-                fontSize: '0.7rem',
-                fontWeight: 600,
-                letterSpacing: '0.2em',
-                textTransform: 'uppercase',
-                color: '#8a8a8a',
-              }}
-              className="block mb-1 font-swiss uppercase"
-            >
+            <span className="block mb-1 font-sans text-[10px] tracking-[0.15em] text-[#777777] uppercase font-semibold">
               ARCHIVAL CUSTODY • MAIN CATALOG
             </span>
-            <h2
-              style={{
-                fontFamily: 'var(--font-headline), sans-serif',
-                fontSize: 'clamp(2rem, 3.5vw, 3rem)',
-                fontWeight: 800,
-                letterSpacing: '-0.01em',
-                textTransform: 'uppercase',
-                color: '#ffffff',
-              }}
-              className="leading-tight font-headline uppercase"
-            >
+            <h2 className="leading-tight font-serif text-[26px] sm:text-[32px] text-[#F2EFE9] uppercase tracking-[0.06em]">
               ACTIVE VAULT LOTS
             </h2>
           </div>
 
           <div className="flex items-center gap-3">
-            <span
-              style={{
-                fontFamily: 'var(--font-swiss), sans-serif',
-                fontVariantNumeric: 'tabular-nums',
-                fontSize: '0.75rem',
-                fontWeight: 600,
-                letterSpacing: '0.08em',
-                color: '#8a8a8a',
-                textTransform: 'uppercase',
-              }}
-              className="font-swiss"
-            >
-              SHOWING {filteredProducts.length} OF {MOCK_PRODUCTS.length} LOTS
+            <span className="font-sans text-[11px] tracking-[0.14em] text-[#777777] uppercase">
+              SHOWING LOTS {startStr}–{endStr} OF {totalStr}
             </span>
             {(activeFilter !== 'ALL' ||
               selectedCategory !== 'ALL' ||
@@ -260,14 +257,7 @@ export const CatalogView: React.FC = () => {
               <button
                 type="button"
                 onClick={handleResetFilters}
-                style={{
-                  fontFamily: 'var(--font-swiss), sans-serif',
-                  fontWeight: 600,
-                  fontSize: '0.75rem',
-                  letterSpacing: '0.1em',
-                  textTransform: 'uppercase',
-                }}
-                className="px-2.5 py-1 border border-[#262626] bg-[#141414] hover:bg-white hover:text-black hover:border-white text-zinc-300 transition-none cursor-pointer rounded-none font-swiss uppercase"
+                className="px-3 py-1.5 border border-[#1F1F1F] bg-[#0C0C0C] hover:bg-[#F2EFE9] hover:text-[#080808] hover:border-[#F2EFE9] text-[#888888] font-sans text-[10px] tracking-[0.12em] uppercase transition-colors cursor-pointer rounded-none"
               >
                 [ RESET ALL ]
               </button>
@@ -276,268 +266,208 @@ export const CatalogView: React.FC = () => {
         </div>
 
         {/* 2-Column Desktop Architecture: Left 260px Facet Sidebar + Right 4-Column Grid */}
-        <div className="flex flex-col lg:flex-row gap-6 items-start">
+        <div className="flex flex-col lg:flex-row gap-8 items-start">
           {/* Left Filter Sidebar (260px wide on desktop) */}
-          <aside className="w-full lg:w-[260px] shrink-0 bg-[#141414] border border-[#262626] p-4 space-y-6 rounded-none">
+          <aside className="w-full lg:w-[260px] shrink-0 bg-[#0C0C0C] border border-[#1F1F1F] p-5 space-y-6 rounded-none">
             {/* Sidebar Title */}
-            <div className="border-b border-[#262626] pb-3 flex items-center justify-between">
-              <span
-                style={{
-                  fontFamily: 'var(--font-swiss), sans-serif',
-                  fontVariantNumeric: 'tabular-nums',
-                  fontWeight: 600,
-                  letterSpacing: '0.08em',
-                  textTransform: 'uppercase',
-                }}
-                className="text-xs text-white font-swiss"
-              >
+            <div className="border-b border-[#1F1F1F] pb-3 flex items-center justify-between">
+              <span className="text-[11px] font-sans text-[#F2EFE9] uppercase tracking-[0.15em] font-semibold">
                 FILTER FACETS
               </span>
-              <span
-                style={{
-                  fontFamily: 'var(--font-swiss), sans-serif',
-                  fontSize: '0.65rem',
-                  fontWeight: 600,
-                  letterSpacing: '0.15em',
-                  textTransform: 'uppercase',
-                  color: '#8a8a8a',
-                }}
-                className="font-swiss"
-              >
+              <span className="text-[10px] font-sans text-[#777777] uppercase tracking-[0.15em]">
                 CUSTODY SPEC
               </span>
             </div>
 
             {/* Facet 1: Price Bracket */}
-            <div className="space-y-2">
-              <span
-                style={{
-                  fontFamily: 'var(--font-swiss), sans-serif',
-                  fontSize: '0.68rem',
-                  fontWeight: 600,
-                  letterSpacing: '0.16em',
-                  color: '#8a8a8a',
-                  textTransform: 'uppercase',
-                }}
-                className="block font-swiss"
-              >
+            <div className="space-y-2.5">
+              <span className="block font-sans text-[10px] tracking-[0.15em] text-[#777777] uppercase font-semibold">
                 PRICE BRACKET (INR)
               </span>
-              <div className="space-y-1.5">
+              <div className="space-y-2">
                 {[
                   { id: 'ALL', label: 'ALL PRICING BRACKETS' },
                   { id: 'UNDER_15K', label: 'UNDER ₹15,000' },
                   { id: '15K_35K', label: '₹15,000 – ₹35,000' },
                   { id: '35K_75K', label: '₹35,000 – ₹75,000' },
                   { id: 'ABOVE_75K', label: '₹75,000+ (GRAIL TIER)' },
-                ].map((bracket) => (
-                  <label
-                    key={bracket.id}
-                    className="flex items-center space-x-2.5 cursor-pointer text-zinc-300 hover:text-white"
-                  >
-                    <input
-                      type="radio"
-                      name="priceBracket"
-                      checked={selectedPriceBracket === bracket.id}
-                      onChange={() => handlePriceBracketChange(bracket.id)}
-                      className="rounded-none border-[#262626] bg-[#0a0a0a] text-white focus:ring-0 cursor-pointer w-3.5 h-3.5 accent-white"
-                    />
-                    <span
-                      style={{
-                        fontFamily: 'var(--font-swiss), sans-serif',
-                        fontVariantNumeric: 'tabular-nums',
-                        fontSize: '0.72rem',
-                        fontWeight: 600,
-                        letterSpacing: '0.08em',
-                        textTransform: 'uppercase',
-                      }}
-                      className="font-swiss"
+                ].map((bracket) => {
+                  const isActive = selectedPriceBracket === bracket.id;
+                  return (
+                    <label
+                      key={bracket.id}
+                      className="flex items-center space-x-2.5 cursor-pointer group select-none"
                     >
-                      {bracket.label}
-                    </span>
-                  </label>
-                ))}
+                      <input
+                        type="radio"
+                        name="priceBracket"
+                        checked={isActive}
+                        onChange={() => handlePriceBracketChange(bracket.id)}
+                        className="sr-only"
+                      />
+                      {/* Custom Architectural Selector: Sharp 12px x 12px square */}
+                      <span
+                        className={`w-3 h-3 shrink-0 border transition-colors flex items-center justify-center ${
+                          isActive
+                            ? 'border-[#F2EFE9] bg-[#F2EFE9]'
+                            : 'border-[#3A3A3A] bg-transparent group-hover:border-[#666666]'
+                        }`}
+                      />
+                      <span
+                        className={`font-sans text-[11px] tracking-[0.08em] uppercase transition-colors ${
+                          isActive
+                            ? 'text-[#F2EFE9] font-medium'
+                            : 'text-[#888888] group-hover:text-[#CCCCCC]'
+                        }`}
+                      >
+                        {bracket.label}
+                      </span>
+                    </label>
+                  );
+                })}
               </div>
             </div>
 
             {/* Facet 2: Grade Condition */}
-            <div className="space-y-2 pt-3 border-t border-[#262626]">
-              <span
-                style={{
-                  fontFamily: 'var(--font-swiss), sans-serif',
-                  fontSize: '0.68rem',
-                  fontWeight: 600,
-                  letterSpacing: '0.16em',
-                  color: '#8a8a8a',
-                  textTransform: 'uppercase',
-                }}
-                className="block font-swiss"
-              >
+            <div className="space-y-2.5 pt-4 border-t border-[#161616]">
+              <span className="block font-sans text-[10px] tracking-[0.15em] text-[#777777] uppercase font-semibold">
                 GRADE CONDITION
               </span>
-              <div className="space-y-1.5">
-                {['GRADE S (MINT)', 'GRADE A', 'FACTORY SEALED'].map((grade) => (
-                  <label
-                    key={grade}
-                    className="flex items-center space-x-2.5 cursor-pointer text-zinc-300 hover:text-white"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={selectedGrades.includes(grade)}
-                      onChange={() => toggleGrade(grade)}
-                      className="rounded-none border-[#262626] bg-[#0a0a0a] text-white focus:ring-0 cursor-pointer w-3.5 h-3.5 accent-white"
-                    />
-                    <span
-                      style={{
-                        fontFamily: 'var(--font-swiss), sans-serif',
-                        fontVariantNumeric: 'tabular-nums',
-                        fontSize: '0.72rem',
-                        fontWeight: 600,
-                        letterSpacing: '0.08em',
-                        textTransform: 'uppercase',
-                      }}
-                      className="font-swiss"
+              <div className="space-y-2">
+                {['GRADE S (MINT)', 'GRADE A', 'FACTORY SEALED'].map((grade) => {
+                  const isActive = selectedGrades.includes(grade);
+                  return (
+                    <label
+                      key={grade}
+                      className="flex items-center space-x-2.5 cursor-pointer group select-none"
                     >
-                      {grade}
-                    </span>
-                  </label>
-                ))}
+                      <input
+                        type="checkbox"
+                        checked={isActive}
+                        onChange={() => toggleGrade(grade)}
+                        className="sr-only"
+                      />
+                      {/* Custom Architectural Selector: Sharp 12px x 12px square */}
+                      <span
+                        className={`w-3 h-3 shrink-0 border transition-colors flex items-center justify-center ${
+                          isActive
+                            ? 'border-[#F2EFE9] bg-[#F2EFE9]'
+                            : 'border-[#3A3A3A] bg-transparent group-hover:border-[#666666]'
+                        }`}
+                      />
+                      <span
+                        className={`font-sans text-[11px] tracking-[0.08em] uppercase transition-colors ${
+                          isActive
+                            ? 'text-[#F2EFE9] font-medium'
+                            : 'text-[#888888] group-hover:text-[#CCCCCC]'
+                        }`}
+                      >
+                        {grade}
+                      </span>
+                    </label>
+                  );
+                })}
               </div>
             </div>
 
             {/* Facet 3: Origin Vault */}
-            <div className="space-y-2 pt-3 border-t border-[#262626]">
-              <span
-                style={{
-                  fontFamily: 'var(--font-swiss), sans-serif',
-                  fontSize: '0.68rem',
-                  fontWeight: 600,
-                  letterSpacing: '0.16em',
-                  color: '#8a8a8a',
-                  textTransform: 'uppercase',
-                }}
-                className="block font-swiss"
-              >
+            <div className="space-y-2.5 pt-4 border-t border-[#161616]">
+              <span className="block font-sans text-[10px] tracking-[0.15em] text-[#777777] uppercase font-semibold">
                 ORIGIN VAULT
               </span>
-              <div className="space-y-1.5">
-                {['TOKYO, JAPAN', 'OSAKA', 'KYOTO'].map((origin) => (
-                  <label
-                    key={origin}
-                    className="flex items-center space-x-2.5 cursor-pointer text-zinc-300 hover:text-white"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={selectedOrigins.includes(origin)}
-                      onChange={() => toggleOrigin(origin)}
-                      className="rounded-none border-[#262626] bg-[#0a0a0a] text-white focus:ring-0 cursor-pointer w-3.5 h-3.5 accent-white"
-                    />
-                    <span
-                      style={{
-                        fontFamily: 'var(--font-swiss), sans-serif',
-                        fontVariantNumeric: 'tabular-nums',
-                        fontSize: '0.72rem',
-                        fontWeight: 600,
-                        letterSpacing: '0.08em',
-                        textTransform: 'uppercase',
-                      }}
-                      className="font-swiss"
-                    >
-                      {origin}
-                    </span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            {/* Facet 4: Scale */}
-            <div className="space-y-2 pt-3 border-t border-[#262626]">
-              <span
-                style={{
-                  fontFamily: 'var(--font-swiss), sans-serif',
-                  fontSize: '0.68rem',
-                  fontWeight: 600,
-                  letterSpacing: '0.16em',
-                  color: '#8a8a8a',
-                  textTransform: 'uppercase',
-                }}
-                className="block font-swiss"
-              >
-                COLLECTIBLE SCALE
-              </span>
-              <div className="space-y-1.5">
-                {['1/4 SCALE', '1/6 SCALE', '1/7 SCALE', '1/8 SCALE', 'NON-SCALE'].map(
-                  (scale) => (
+              <div className="space-y-2">
+                {['TOKYO, JAPAN', 'OSAKA', 'KYOTO'].map((origin) => {
+                  const isActive = selectedOrigins.includes(origin);
+                  return (
                     <label
-                      key={scale}
-                      className="flex items-center space-x-2.5 cursor-pointer text-zinc-300 hover:text-white"
+                      key={origin}
+                      className="flex items-center space-x-2.5 cursor-pointer group select-none"
                     >
                       <input
                         type="checkbox"
-                        checked={selectedScales.includes(scale)}
-                        onChange={() => toggleScale(scale)}
-                        className="rounded-none border-[#262626] bg-[#0a0a0a] text-white focus:ring-0 cursor-pointer w-3.5 h-3.5 accent-white"
+                        checked={isActive}
+                        onChange={() => toggleOrigin(origin)}
+                        className="sr-only"
                       />
                       <span
-                        style={{
-                          fontFamily: 'var(--font-swiss), sans-serif',
-                          fontVariantNumeric: 'tabular-nums',
-                          fontSize: '0.72rem',
-                          fontWeight: 600,
-                          letterSpacing: '0.08em',
-                          textTransform: 'uppercase',
-                        }}
-                        className="font-swiss"
+                        className={`w-3 h-3 shrink-0 border transition-colors flex items-center justify-center ${
+                          isActive
+                            ? 'border-[#F2EFE9] bg-[#F2EFE9]'
+                            : 'border-[#3A3A3A] bg-transparent group-hover:border-[#666666]'
+                        }`}
+                      />
+                      <span
+                        className={`font-sans text-[11px] tracking-[0.08em] uppercase transition-colors ${
+                          isActive
+                            ? 'text-[#F2EFE9] font-medium'
+                            : 'text-[#888888] group-hover:text-[#CCCCCC]'
+                        }`}
                       >
-                        {scale}
+                        {origin}
                       </span>
                     </label>
-                  )
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Facet 4: Collectible Scale */}
+            <div className="space-y-2.5 pt-4 border-t border-[#161616]">
+              <span className="block font-sans text-[10px] tracking-[0.15em] text-[#777777] uppercase font-semibold">
+                COLLECTIBLE SCALE
+              </span>
+              <div className="space-y-2">
+                {['1/4 SCALE', '1/6 SCALE', '1/7 SCALE', '1/8 SCALE', 'NON-SCALE'].map(
+                  (scale) => {
+                    const isActive = selectedScales.includes(scale);
+                    return (
+                      <label
+                        key={scale}
+                        className="flex items-center space-x-2.5 cursor-pointer group select-none"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={isActive}
+                          onChange={() => toggleScale(scale)}
+                          className="sr-only"
+                        />
+                        <span
+                          className={`w-3 h-3 shrink-0 border transition-colors flex items-center justify-center ${
+                            isActive
+                              ? 'border-[#F2EFE9] bg-[#F2EFE9]'
+                              : 'border-[#3A3A3A] bg-transparent group-hover:border-[#666666]'
+                          }`}
+                        />
+                        <span
+                          className={`font-sans text-[11px] tracking-[0.08em] uppercase transition-colors ${
+                            isActive
+                              ? 'text-[#F2EFE9] font-medium'
+                              : 'text-[#888888] group-hover:text-[#CCCCCC]'
+                          }`}
+                        >
+                          {scale}
+                        </span>
+                      </label>
+                    );
+                  }
                 )}
               </div>
             </div>
 
             {/* Facet 5: Escrow Inspection Window */}
-            <div className="pt-3 border-t border-[#262626] space-y-2">
-              <span
-                style={{
-                  fontFamily: 'var(--font-swiss), sans-serif',
-                  fontSize: '0.68rem',
-                  fontWeight: 600,
-                  letterSpacing: '0.16em',
-                  color: '#8a8a8a',
-                  textTransform: 'uppercase',
-                }}
-                className="block font-swiss"
-              >
+            <div className="pt-4 border-t border-[#161616] space-y-2.5">
+              <span className="block font-sans text-[10px] tracking-[0.15em] text-[#777777] uppercase font-semibold">
                 ESCROW PROTECTION
               </span>
-              <div className="p-2.5 bg-[#0a0a0a] border border-[#262626] space-y-1">
+              <div className="p-3 bg-[#080808] border border-[#1F1F1F] space-y-1.5">
                 <div className="flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 bg-[#10b981] inline-block" />
-                  <span
-                    style={{
-                      fontFamily: 'var(--font-swiss), sans-serif',
-                      fontSize: '0.7rem',
-                      fontWeight: 600,
-                      letterSpacing: '0.08em',
-                      textTransform: 'uppercase',
-                    }}
-                    className="text-zinc-200 font-swiss"
-                  >
+                  <span className="w-1.5 h-1.5 bg-[#10B981] inline-block" />
+                  <span className="font-sans text-[10px] tracking-[0.14em] text-[#10B981] uppercase font-semibold">
                     48H INSPECTION WINDOW
                   </span>
                 </div>
-                <p
-                  style={{
-                    fontFamily: 'var(--font-swiss), sans-serif',
-                    fontSize: '0.65rem',
-                    letterSpacing: '0.08em',
-                    textTransform: 'uppercase',
-                  }}
-                  className="text-zinc-500 leading-tight font-swiss"
-                >
-                  100% ESCROW PROTECTED VIA OTAKUBAZAAR CUSTODY PROTOCOL.
+                <p className="font-sans text-[10px] text-[#777777] leading-relaxed">
+                  100% escrow protected via OtakuBazaar custody protocol. Funds released only upon buyer verification.
                 </p>
               </div>
             </div>
@@ -546,69 +476,75 @@ export const CatalogView: React.FC = () => {
             <button
               type="button"
               onClick={handleResetFilters}
-              style={{
-                fontFamily: 'var(--font-swiss), sans-serif',
-                fontWeight: 600,
-                fontSize: '0.75rem',
-                letterSpacing: '0.1em',
-                textTransform: 'uppercase',
-              }}
-              className="w-full py-2 border border-[#262626] bg-[#0a0a0a] hover:bg-white hover:text-black hover:border-white text-zinc-300 transition-none cursor-pointer rounded-none text-center font-swiss uppercase"
+              className="w-full py-2.5 border border-[#1F1F1F] bg-[#080808] hover:bg-[#F2EFE9] hover:text-[#080808] hover:border-[#F2EFE9] text-[#888888] text-[11px] tracking-[0.14em] uppercase transition-colors cursor-pointer rounded-none text-center font-sans font-medium"
             >
               [ RESET FACETS ]
             </button>
           </aside>
 
-          {/* Right Product Grid (4 columns on desktop, 2 on tablet, 1 on mobile) */}
+          {/* Right Product Grid (Strict multiples of 4: 8 lots per view) */}
           <main className="flex-1 w-full">
             {isLoading ? (
               <ProductFeedSkeleton count={8} />
             ) : filteredProducts.length === 0 ? (
-              <div className="p-12 border border-[#262626] bg-[#141414] text-center">
-                <p
-                  style={{
-                    fontFamily: 'var(--font-headline), sans-serif',
-                    fontWeight: 700,
-                    letterSpacing: '0.05em',
-                    textTransform: 'uppercase',
-                  }}
-                  className="text-xs text-zinc-300 mb-2 font-headline"
-                >
+              <div className="p-16 border border-[#1F1F1F] bg-[#0C0C0C] text-center">
+                <p className="font-serif text-[18px] text-[#F2EFE9] uppercase tracking-[0.06em] mb-2">
                   No Archival Lots Found
                 </p>
-                <p
-                  style={{
-                    fontFamily: 'var(--font-swiss), sans-serif',
-                    fontSize: '0.75rem',
-                    letterSpacing: '0.08em',
-                    textTransform: 'uppercase',
-                  }}
-                  className="text-zinc-500 max-w-sm mx-auto mb-4 font-swiss"
-                >
-                  No lots match your active criteria and facet selections.
+                <p className="font-sans text-[12px] text-[#8E8E8E] max-w-sm mx-auto mb-6">
+                  No collectibles match your active criteria and facet selections.
                 </p>
                 <button
                   type="button"
                   onClick={handleResetFilters}
-                  style={{
-                    fontFamily: 'var(--font-swiss), sans-serif',
-                    fontWeight: 600,
-                    fontSize: '0.75rem',
-                    letterSpacing: '0.1em',
-                    textTransform: 'uppercase',
-                  }}
-                  className="px-4 py-2 border border-[#262626] bg-[#0a0a0a] text-zinc-200 hover:bg-white hover:text-black hover:border-white transition-none cursor-pointer rounded-none font-swiss uppercase"
+                  className="px-5 py-2.5 border border-[#1F1F1F] bg-[#080808] text-[#F2EFE9] hover:bg-[#F2EFE9] hover:text-[#080808] hover:border-[#F2EFE9] transition-colors cursor-pointer rounded-none font-sans text-[11px] tracking-[0.14em] uppercase"
                 >
                   [ RESET ALL FILTERS ]
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                {filteredProducts.map((product) => (
-                  <div key={product.id} id={product.id}>
-                    <ProductCard product={product} />
+              <div>
+                {/* Strict 4-Column Grid: Exactly 8 lots per view */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                  {paginatedProducts.map((product) => (
+                    <div key={product.id} id={product.id}>
+                      <ProductCard product={product} />
+                    </div>
+                  ))}
+                </div>
+
+                {/* Clean Architectural Pagination Bar (Eliminating the Orphaned 9th Card) */}
+                <div className="border border-[#1F1F1F] bg-[#0C0C0C] px-5 py-4 mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 font-sans text-[11px] tracking-[0.14em] uppercase text-[#777777]">
+                  <div>
+                    SHOWING LOTS {startStr}–{endStr} OF {totalStr}
                   </div>
-                ))}
+                  <div className="flex items-center gap-4">
+                    {currentPage > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setCurrentPage((p) => Math.max(1, p - 1));
+                          document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth' });
+                        }}
+                        className="text-[#888888] hover:text-[#F2EFE9] transition-colors cursor-pointer uppercase"
+                      >
+                        [ PREV PAGE ]
+                      </button>
+                    )}
+                    {currentPage < totalPages && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setCurrentPage((p) => Math.min(totalPages, p + 1));
+                          document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth' });
+                        }}
+                        className="text-[#F2EFE9] hover:text-white transition-colors cursor-pointer uppercase font-medium"
+                      >
+                        [ NEXT PAGE ]
+                      </button>
+                    )}
+                  </div>
+                </div>
               </div>
             )}
           </main>
