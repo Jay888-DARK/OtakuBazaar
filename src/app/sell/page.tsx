@@ -46,6 +46,7 @@ const CATEGORIES = [
   'Manga Sets',
   'Mecha & Gunpla',
   'Cosplay & Props',
+  'Other',
 ] as const;
 
 const MANUFACTURERS = [
@@ -137,6 +138,7 @@ export default function SellPage(): React.JSX.Element {
   const [franchise, setFranchise] = useState<string>(FRANCHISES[0]);
   const [customFranchise, setCustomFranchise] = useState('');
   const [category, setCategory] = useState<string>(CATEGORIES[0]);
+  const [customCategory, setCustomCategory] = useState('');
   const [manufacturer, setManufacturer] = useState<string>(MANUFACTURERS[0]);
   const [customManufacturer, setCustomManufacturer] = useState('');
   const [selectedGrade, setSelectedGrade] = useState<ConditionOption>(CONDITION_GRADES[0]!);
@@ -160,6 +162,7 @@ export default function SellPage(): React.JSX.Element {
 
   // Derived Values
   const activeFranchise = franchise === 'Other / Retro' ? customFranchise || 'Anime Series' : franchise;
+  const activeCategory = category === 'Other' ? customCategory || 'Other' : category;
   const activeManufacturer = manufacturer === 'Other' ? customManufacturer || 'Import Studio' : manufacturer;
   const activeImageUrl = customImageUrl.trim() || imageUrl;
   const priceNum = parseInt(askingPrice, 10) || 0;
@@ -196,7 +199,7 @@ export default function SellPage(): React.JSX.Element {
           const result = await createListingAction({
             title: `[${activeFranchise}] ${title}`,
             series: activeFranchise,
-            category,
+            category: activeCategory,
             manufacturer: activeManufacturer,
             condition: selectedGrade.internalValue,
             conditionGrade: selectedGrade.rank,
@@ -216,8 +219,8 @@ export default function SellPage(): React.JSX.Element {
             name: `[${activeFranchise}] ${title}`,
             series: activeFranchise,
             manufacturer: activeManufacturer,
-            category,
-            type: category,
+            category: activeCategory,
+            type: activeCategory,
             condition: selectedGrade.internalValue,
             conditionGrade: selectedGrade.rank,
             askingPriceINR: priceNum,
@@ -262,7 +265,7 @@ export default function SellPage(): React.JSX.Element {
       activeFranchise,
       description,
       activeImageUrl,
-      category,
+      activeCategory,
       selectedGrade,
       activeManufacturer,
       originalEst,
@@ -402,7 +405,7 @@ export default function SellPage(): React.JSX.Element {
                       placeholder="Custom franchise name..."
                       value={customFranchise}
                       onChange={(e) => setCustomFranchise(e.target.value)}
-                      className="w-full mt-2 bg-[#080808] border border-[#1F1F1F] px-4 py-2 text-xs text-[#F2EFE9] outline-none"
+                      className="w-full mt-2 bg-[#080808] border border-[#1F1F1F] focus:border-[#F2EFE9] px-4 py-2 text-xs text-[#F2EFE9] outline-none"
                     />
                   )}
                 </div>
@@ -422,6 +425,15 @@ export default function SellPage(): React.JSX.Element {
                       </option>
                     ))}
                   </select>
+                  {category === 'Other' && (
+                    <input
+                      type="text"
+                      placeholder="Custom category name..."
+                      value={customCategory}
+                      onChange={(e) => setCustomCategory(e.target.value)}
+                      className="w-full mt-2 bg-[#080808] border border-[#1F1F1F] focus:border-[#F2EFE9] px-4 py-2 text-xs text-[#F2EFE9] outline-none"
+                    />
+                  )}
                 </div>
               </div>
 
@@ -446,7 +458,7 @@ export default function SellPage(): React.JSX.Element {
                     placeholder="Custom studio name..."
                     value={customManufacturer}
                     onChange={(e) => setCustomManufacturer(e.target.value)}
-                    className="w-full mt-2 bg-[#080808] border border-[#1F1F1F] px-4 py-2 text-xs text-[#F2EFE9] outline-none"
+                    className="w-full mt-2 bg-[#080808] border border-[#1F1F1F] focus:border-[#F2EFE9] px-4 py-2 text-xs text-[#F2EFE9] outline-none"
                   />
                 )}
               </div>
@@ -723,7 +735,7 @@ export default function SellPage(): React.JSX.Element {
             <LiveCardPreview
               title={title}
               series={activeFranchise}
-              category={category}
+              category={activeCategory}
               manufacturer={activeManufacturer}
               conditionGrade={selectedGrade.rank}
               askingPriceINR={priceNum}
