@@ -47,7 +47,7 @@ export function CheckoutButton({
   lotId,
   productId,
   dealOfferId,
-  receiptId = `rcpt_${Date.now()}`,
+  receiptId,
   title = 'OtakuBazaar Collectibles',
   description = 'Secure Escrow Checkout',
   customerName = 'Otaku Collector',
