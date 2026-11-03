@@ -241,7 +241,7 @@ export function EscrowChat({
         <button
           type="submit"
           disabled={isSending || inputText.trim().length === 0}
-          className="px-5 py-2.5 bg-zinc-100 hover:bg-white text-black font-bold text-xs tracking-[0.2em] uppercase transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5 cursor-pointer shrink-0"
+          className="px-5 py-2.5 bg-zinc-100 hover:bg-[#EAE6DF] text-black font-bold text-xs tracking-[0.2em] uppercase transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5 cursor-pointer shrink-0"
         >
           <span>{isSending ? 'Sending...' : 'Send'}</span>
         </button>

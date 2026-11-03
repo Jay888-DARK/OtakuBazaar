@@ -231,7 +231,7 @@ export function ProductDemoGallery({
                     <button
                       type="button"
                       onClick={() => setVideoPlaying(!videoPlaying)}
-                      className="pointer-events-auto px-4 py-2 border border-zinc-600 bg-zinc-900 text-zinc-200 text-[10px] uppercase tracking-[0.2em] font-bold hover:bg-white hover:text-black"
+                      className="pointer-events-auto px-4 py-2 border border-zinc-600 bg-zinc-900 text-zinc-200 text-[10px] uppercase tracking-[0.2em] font-bold hover:bg-[#EAE6DF] hover:text-black"
                     >
                       {videoPlaying ? '[ PAUSE FEED ]' : '[ RESUME 60FPS FEED ]'}
                     </button>

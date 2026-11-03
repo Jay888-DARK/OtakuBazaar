@@ -358,7 +358,7 @@ export function BargainChatDrawer({
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full py-3 px-4 bg-zinc-100 hover:bg-white text-black font-bold text-xs uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                className="w-full py-3 px-4 bg-zinc-100 hover:bg-[#EAE6DF] text-black font-bold text-xs uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
               >
                 <span>{submitting ? 'Submitting Bid...' : 'Submit 24-Hour Bid'}</span>
               </button>
@@ -476,7 +476,7 @@ export function BargainChatDrawer({
                 <button
                   type="button"
                   onClick={handleProceedToCheckout}
-                  className="w-full py-3.5 px-4 bg-zinc-100 hover:bg-white text-black font-bold text-xs uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full py-3.5 px-4 bg-zinc-100 hover:bg-[#EAE6DF] text-black font-bold text-xs uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <span>
                     Pay Negotiated Price (₹{(dealOffer.offeredPrice || offerPrice).toLocaleString('en-IN')}) via Escrow

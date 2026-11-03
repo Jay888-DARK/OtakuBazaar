@@ -719,7 +719,7 @@ export default function SellPage(): React.JSX.Element {
               {/* Submit CTA */}
               <button
                 type="submit"
-                className="w-full py-3.5 bg-[#F2EFE9] hover:bg-white text-[#080808] border border-[#F2EFE9] text-xs font-semibold uppercase tracking-[0.2em] transition-colors cursor-pointer rounded-none"
+                className="w-full py-3.5 bg-[#F2EFE9] hover:bg-[#EAE6DF] text-[#080808] border border-[#F2EFE9] text-xs font-semibold uppercase tracking-[0.2em] transition-colors cursor-pointer rounded-none"
               >
                 [ PUBLISH CONSIGNMENT TO LIVE VAULT ]
               </button>

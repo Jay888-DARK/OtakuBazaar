@@ -54,7 +54,7 @@ function SuccessContent(): React.JSX.Element {
       <div className="flex flex-col sm:flex-row gap-4 pt-2">
         <Link
           href="/"
-          className="flex-1 py-3.5 bg-white hover:bg-zinc-200 text-black text-xs font-bold uppercase tracking-[0.2em] text-center border border-white transition-none no-underline"
+          className="flex-1 py-3.5 bg-[#F2EFE9] hover:bg-[#EAE6DF] text-black text-xs font-bold uppercase tracking-[0.2em] text-center border border-[#F2EFE9] transition-none no-underline"
           style={{ borderRadius: '0px' }}
         >
           [ CONTINUE BROWSING ]

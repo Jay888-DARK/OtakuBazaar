@@ -131,7 +131,7 @@ export function CookieConsent(): React.JSX.Element | null {
         <button
           type="button"
           onClick={handleAccept}
-          className="bg-zinc-100 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-zinc-950 transition hover:bg-white cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400"
+          className="bg-zinc-100 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-zinc-950 transition hover:bg-[#EAE6DF] cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400"
         >
           Accept All
         </button>

@@ -331,7 +331,7 @@ export function OneClickBuyBox({
           onClick={() => setIsDrawerOpen(true)}
           disabled={loading}
           style={{ fontFamily: "'Satoshi', sans-serif" }}
-          className="w-full py-3.5 px-4 bg-[#f4f4f4] hover:bg-white text-black font-bold text-xs sm:text-sm uppercase tracking-[0.15em] border border-[#f4f4f4] transition-none cursor-pointer flex items-center justify-center gap-2 rounded-none disabled:opacity-50 disabled:pointer-events-none"
+          className="w-full py-3.5 px-4 bg-[#f4f4f4] hover:bg-[#EAE6DF] text-black font-bold text-xs sm:text-sm uppercase tracking-[0.15em] border border-[#f4f4f4] transition-none cursor-pointer flex items-center justify-center gap-2 rounded-none disabled:opacity-50 disabled:pointer-events-none"
         >
           {loading ? (
             <>

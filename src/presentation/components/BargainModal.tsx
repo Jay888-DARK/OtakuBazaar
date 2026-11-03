@@ -322,7 +322,7 @@ export function BargainModal({
             <button
               type="button"
               onClick={handleProceedToCheckout}
-              className="w-full py-2.5 bg-zinc-100 hover:bg-white text-black text-[11px] font-bold uppercase tracking-[0.2em] transition-all cursor-pointer"
+              className="w-full py-2.5 bg-zinc-100 hover:bg-[#EAE6DF] text-black text-[11px] font-bold uppercase tracking-[0.2em] transition-all cursor-pointer"
             >
               PROCEED TO ESCROW PAYMENT (₹{(dealOffer.offeredPrice || Number(offerPrice)).toLocaleString('en-IN')})
             </button>

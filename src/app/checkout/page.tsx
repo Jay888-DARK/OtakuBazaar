@@ -5,18 +5,11 @@
  *
  * Single-Step Luxury Escrow Checkout View for OtakuBazaar.
  * Strictly adheres to the dark archival vault visual language:
- *
- * 1. Left Column — Indian Delivery & Insured Custody Address:
- *    - Full Name, Phone (+91), 6-digit Indian Pincode with instant serviceability check
- *      (BlueDart Air / Delhivery Surface Insured), Street Address, City, State.
- * 2. 48-Hour Escrow Custody Protocol:
- *    - 4-Stage architectural timeline:
- *      01. FUNDS LOCKED IN ESCROW -> 02. SELLER DISPATCHES INSURED AWB ->
- *      03. 48H UNBOXING VERIFICATION WINDOW -> 04. PAYOUT RELEASED TO SELLER.
- *    - Mandatory Uncut 360° Unboxing Video Checkbox (sharp 12px square, disables CTA until checked).
- * 3. Right Column — Valuation Summary & Razorpay Escrow Trigger:
- *    - Itemized breakdown (Lot Price, Foam Crating, 48H Escrow, Total Payable in ₹ INR).
- *    - Primary CTA: [ LOCK FUNDS IN ESCROW VIA RAZORPAY ].
+ * - High-contrast editorial typography (Playfair Display, Archivo, Titillium Web).
+ * - 0px border-radius containers with hairline charcoal borders (#1F1F1F).
+ * - Brutalist state transitions with 0ms transition duration.
+ * - Zero pure white backgrounds, zero 3-feature cards in a row, zero drop shadows.
+ * - Integrated Tax Invoice Generation & Secure Download.
  */
 
 import React, { useState, useMemo } from 'react';
@@ -49,6 +42,7 @@ export default function CheckoutPage(): React.JSX.Element {
   const [isProcessing, setIsProcessing] = useState(false);
   const [isEscrowLocked, setIsEscrowLocked] = useState(false);
   const [orderReference, setOrderReference] = useState<string | null>(null);
+  const [invoiceLoading, setInvoiceLoading] = useState(false);
 
   // Cart / Lot Data
   const lotItem: CheckoutItem = useMemo(() => {
@@ -58,7 +52,7 @@ export default function CheckoutPage(): React.JSX.Element {
       title: 'Kyojuro Rengoku 1/8 Flame Breathing Scale Figure',
       series: 'DEMON SLAYER • ANIPLEX+ EXCLUSIVE',
       condition: 'S-RANK // MISB (FACTORY SEALED)',
-      price: 24225, // accepted bargain offer price or catalog price
+      price: 24225,
       sellerHandle: '@flame_hashira_in',
     };
   }, []);
@@ -81,13 +75,32 @@ export default function CheckoutPage(): React.JSX.Element {
     }, 1200);
   };
 
+  const handleDownloadInvoice = async () => {
+    setInvoiceLoading(true);
+    try {
+      const res = await fetch('/api/invoices/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId: lotItem.lotRef.toLowerCase() }),
+      });
+      const data = await res.json();
+      if (res.ok && data.invoice?.downloadUrl) {
+        window.location.href = data.invoice.downloadUrl;
+      }
+    } catch (err) {
+      console.error('Invoice generation failed:', err);
+    } finally {
+      setInvoiceLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#080808] text-[#F2EFE9] select-none py-8 px-4 sm:px-6 lg:px-8 font-sans">
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Navigation Breadcrumb Bar */}
         <div className="flex items-center justify-between border-b border-[#1F1F1F] pb-4 text-[10px] uppercase tracking-[0.18em] text-[#777777] font-semibold">
           <div className="flex items-center gap-2">
-            <Link href="/" className="hover:text-white transition-colors no-underline text-[#777777]">
+            <Link href="/" className="hover:text-white transition-none no-underline text-[#777777]">
               Marketplace
             </Link>
             <span>/</span>
@@ -137,10 +150,18 @@ export default function CheckoutPage(): React.JSX.Element {
                 <span className="text-[#10B981] font-semibold">48H UNBOXING WINDOW</span>
               </div>
             </div>
-            <div className="pt-2">
+            <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+              <button
+                type="button"
+                onClick={handleDownloadInvoice}
+                disabled={invoiceLoading}
+                className="px-6 py-2.5 bg-[#080808] border border-[#1F1F1F] hover:border-[#3A3A3A] text-[#CCCCCC] text-[11px] font-semibold uppercase tracking-[0.16em] transition-none cursor-pointer rounded-none disabled:opacity-50"
+              >
+                {invoiceLoading ? '[ GENERATING INVOICE... ]' : '[ DOWNLOAD TAX INVOICE (PDF) ]'}
+              </button>
               <Link
                 href="/vault"
-                className="inline-block px-6 py-2.5 bg-[#F2EFE9] text-[#080808] text-[11px] font-semibold uppercase tracking-[0.16em] no-underline"
+                className="inline-block px-6 py-2.5 bg-[#F2EFE9] text-[#080808] border border-[#F2EFE9] text-[11px] font-semibold uppercase tracking-[0.16em] no-underline transition-none rounded-none"
               >
                 [ VIEW IN COLLECTOR VAULT DASHBOARD ]
               </Link>
@@ -193,28 +214,28 @@ export default function CheckoutPage(): React.JSX.Element {
 
                 <div>
                   <label className="block text-[10px] uppercase tracking-[0.14em] text-[#888888] mb-1.5 font-medium">
-                    Street Address &amp; Apartment / Landmark *
+                    6-Digit Pincode *
                   </label>
                   <input
                     type="text"
                     required
-                    value={address}
-                    onChange={(e) => setAddress(e.target.value)}
+                    maxLength={6}
+                    value={pincode}
+                    onChange={(e) => setPincode(e.target.value)}
                     className="w-full bg-[#080808] border border-[#1F1F1F] px-3.5 py-2.5 text-xs text-[#F2EFE9] outline-none rounded-none"
                   />
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <div>
+                  <div className="sm:col-span-1">
                     <label className="block text-[10px] uppercase tracking-[0.14em] text-[#888888] mb-1.5 font-medium">
-                      6-Digit PIN Code *
+                      Street Address *
                     </label>
                     <input
                       type="text"
-                      maxLength={6}
                       required
-                      value={pincode}
-                      onChange={(e) => setPincode(e.target.value)}
+                      value={address}
+                      onChange={(e) => setAddress(e.target.value)}
                       className="w-full bg-[#080808] border border-[#1F1F1F] px-3.5 py-2.5 text-xs text-[#F2EFE9] outline-none rounded-none"
                     />
                   </div>
@@ -268,35 +289,34 @@ export default function CheckoutPage(): React.JSX.Element {
                   </span>
                 </div>
 
-                {/* 4-Stage Architectural Timeline */}
-                <div className="grid grid-cols-1 sm:grid-cols-4 border border-[#1F1F1F] divide-y sm:divide-y-0 sm:divide-x divide-[#161616] bg-[#080808] text-[10px]">
-                  <div className="p-3.5 space-y-1">
-                    <span className="text-[#10B981] font-bold block">STAGE 01</span>
-                    <span className="text-[#F2EFE9] font-medium uppercase block">FUNDS LOCKED IN ESCROW</span>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                  <div className="p-3 bg-[#080808] border border-[#1F1F1F] space-y-1">
+                    <span className="text-[9px] text-[#777777] uppercase tracking-wider block">STAGE 01</span>
+                    <span className="text-[11px] text-[#F2EFE9] font-semibold uppercase block">FUNDS LOCKED</span>
                     <p className="text-[9px] text-[#777777] leading-relaxed">
-                      Captured via Razorpay into nodal bank trust account.
+                      Secured in Razorpay Escrow. Zero seller withdrawal allowed.
                     </p>
                   </div>
 
-                  <div className="p-3.5 space-y-1">
-                    <span className="text-[#777777] font-bold block">STAGE 02</span>
-                    <span className="text-[#F2EFE9] font-medium uppercase block">SELLER CRATES &amp; SHIPS</span>
+                  <div className="p-3 bg-[#080808] border border-[#1F1F1F] space-y-1">
+                    <span className="text-[9px] text-[#777777] uppercase tracking-wider block">STAGE 02</span>
+                    <span className="text-[11px] text-[#F2EFE9] font-semibold uppercase block">DISPATCHED</span>
                     <p className="text-[9px] text-[#777777] leading-relaxed">
-                      Insured BlueDart/Delhivery AWB generated within 48h.
+                      Insured BlueDart flight with verified tracking code.
                     </p>
                   </div>
 
-                  <div className="p-3.5 space-y-1">
-                    <span className="text-[#777777] font-bold block">STAGE 03</span>
-                    <span className="text-[#F2EFE9] font-medium uppercase block">48H UNBOXING WINDOW</span>
+                  <div className="p-3 bg-[#080808] border border-[#1F1F1F] space-y-1">
+                    <span className="text-[9px] text-[#777777] uppercase tracking-wider block">STAGE 03</span>
+                    <span className="text-[11px] text-[#F2EFE9] font-semibold uppercase block">48H UNBOXING</span>
                     <p className="text-[9px] text-[#777777] leading-relaxed">
-                      Inspect joints, paint, and seals under camera.
+                      Physical inspection window with anti-counterfeit guarantee.
                     </p>
                   </div>
 
-                  <div className="p-3.5 space-y-1">
-                    <span className="text-[#777777] font-bold block">STAGE 04</span>
-                    <span className="text-[#F2EFE9] font-medium uppercase block">PAYOUT RELEASED</span>
+                  <div className="p-3 bg-[#080808] border border-[#1F1F1F] space-y-1">
+                    <span className="text-[9px] text-[#777777] uppercase tracking-wider block">STAGE 04</span>
+                    <span className="text-[11px] text-[#F2EFE9] font-semibold uppercase block">SETTLEMENT</span>
                     <p className="text-[9px] text-[#777777] leading-relaxed">
                       Escrow settlement finalized to seller upon clearance.
                     </p>
@@ -314,7 +334,7 @@ export default function CheckoutPage(): React.JSX.Element {
                     />
                     {/* Custom 12px x 12px Architectural Square */}
                     <span
-                      className={`w-3.5 h-3.5 mt-0.5 shrink-0 border transition-colors flex items-center justify-center ${
+                      className={`w-3.5 h-3.5 mt-0.5 shrink-0 border transition-none flex items-center justify-center ${
                         unboxingConfirmed
                           ? 'border-[#F2EFE9] bg-[#F2EFE9]'
                           : 'border-[#3A3A3A] bg-transparent'
@@ -389,7 +409,7 @@ export default function CheckoutPage(): React.JSX.Element {
                 type="button"
                 onClick={handleEscrowPayment}
                 disabled={!unboxingConfirmed || isProcessing || !isServiceable}
-                className="w-full py-3.5 bg-[#F2EFE9] hover:bg-white text-[#080808] border border-[#F2EFE9] text-xs font-semibold uppercase tracking-[0.18em] transition-colors cursor-pointer rounded-none disabled:opacity-30 disabled:hover:bg-[#F2EFE9] disabled:hover:text-[#080808] flex items-center justify-center font-sans"
+                className="w-full py-3.5 bg-[#F2EFE9] text-[#080808] border border-[#F2EFE9] text-xs font-semibold uppercase tracking-[0.18em] transition-none cursor-pointer rounded-none disabled:opacity-30 flex items-center justify-center font-sans"
               >
                 {isProcessing
                   ? '[ INITIATING RAZORPAY ESCROW... ]'

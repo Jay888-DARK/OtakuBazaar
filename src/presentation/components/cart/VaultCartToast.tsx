@@ -4,13 +4,14 @@
  * @file src/presentation/components/cart/VaultCartToast.tsx
  *
  * Seamless Dark Archival Cart Notification Toast for OtakuBazaar.
- * Blends into the obsidian theme (#080808 / #0C0C0C) with 0ms instant trigger.
+ * Blends into the obsidian theme (#080808 / #0C0C0C) with 0ms brutalist trigger.
  *
  * Specs:
- * - Frame: fixed bottom-8 right-8 z-[100] w-[380px] bg-[#0C0C0C] border border-[#222222] p-4 shadow-2xl.
- * - Header: Emerald dot (#10B981), monospace label (VAULT CUSTODY: LOT #[NUMBER] ADDED), close [ X ].
- * - Details: Item title in serif (14px, #F2EFE9, uppercase), price in monospace (12px, #A0A0A0), escrow tag.
- * - Actions: Flat 0px buttons [ CONTINUE ] and [ VIEW CART -> ].
+ * - Frame: fixed bottom-8 right-8 z-[100] w-[380px] bg-[#0C0C0C] border border-[#222222] p-4.
+ * - Header: Emerald square (#10B981, 0px radius), label (VAULT CUSTODY: LOT #[NUMBER] ADDED), close [ X ].
+ * - Details: Item title in serif (14px, #F2EFE9, uppercase), price (12px, #A0A0A0), escrow tag.
+ * - Actions: Flat 0px buttons [ CONTINUE ] and [ VIEW CART ].
+ * - STRICT CONSTRAINT: Zero shadows, zero hover animations, zero pure white backgrounds, zero animated arrows.
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
@@ -80,7 +81,7 @@ export function VaultCartToast(): React.JSX.Element | null {
     <div
       role="status"
       aria-live="polite"
-      className="fixed bottom-8 right-8 z-[100] w-[380px] max-w-[calc(100vw-2rem)] bg-[#0C0C0C] border border-[#222222] p-4 shadow-2xl select-none font-sans rounded-none transition-opacity duration-75"
+      className="fixed bottom-8 right-8 z-[100] w-[380px] max-w-[calc(100vw-2rem)] bg-[#0C0C0C] border border-[#222222] p-4 select-none font-sans rounded-none transition-none"
     >
       {/* Header Bar */}
       <div className="flex items-center justify-between border-b border-[#1A1A1A] pb-2.5 mb-3">
@@ -94,7 +95,7 @@ export function VaultCartToast(): React.JSX.Element | null {
           type="button"
           onClick={dismissToast}
           aria-label="Close notification"
-          className="text-[10px] font-mono tracking-widest text-[#888888] hover:text-white transition-colors duration-75 cursor-pointer bg-transparent border-none p-0"
+          className="text-[10px] font-mono tracking-widest text-[#888888] hover:text-[#F2EFE9] transition-none cursor-pointer bg-transparent border-none p-0"
         >
           [ X ]
         </button>
@@ -120,16 +121,16 @@ export function VaultCartToast(): React.JSX.Element | null {
         <button
           type="button"
           onClick={dismissToast}
-          className="flex-1 py-2 bg-[#080808] border border-[#1F1F1F] hover:border-[#3A3A3A] text-[#888888] hover:text-[#CCCCCC] text-[10px] uppercase font-mono tracking-[0.14em] transition-colors duration-75 cursor-pointer rounded-none text-center"
+          className="flex-1 py-2 bg-[#080808] border border-[#1F1F1F] hover:border-[#3A3A3A] text-[#888888] hover:text-[#CCCCCC] text-[10px] uppercase font-mono tracking-[0.14em] transition-none cursor-pointer rounded-none text-center"
         >
           [ CONTINUE ]
         </button>
         <button
           type="button"
           onClick={handleViewCart}
-          className="flex-1 py-2 bg-[#F2EFE9] hover:bg-white text-[#080808] border border-[#F2EFE9] text-[10px] uppercase font-mono font-semibold tracking-[0.14em] transition-colors duration-75 cursor-pointer rounded-none text-center"
+          className="flex-1 py-2 bg-[#F2EFE9] text-[#080808] border border-[#F2EFE9] text-[10px] uppercase font-mono font-semibold tracking-[0.14em] transition-none cursor-pointer rounded-none text-center"
         >
-          [ VIEW CART -&gt; ]
+          [ VIEW CART ]
         </button>
       </div>
     </div>

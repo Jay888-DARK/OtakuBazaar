@@ -91,7 +91,7 @@ export default async function VaultOpsPage(): Promise<React.JSX.Element> {
             </Link>
             <Link
               href="/"
-              className="px-3.5 py-2 bg-[#f4f4f4] hover:bg-white text-black border border-[#f4f4f4] text-[11px] font-extrabold uppercase tracking-wider no-underline"
+              className="px-3.5 py-2 bg-[#f4f4f4] hover:bg-[#EAE6DF] text-black border border-[#f4f4f4] text-[11px] font-extrabold uppercase tracking-wider no-underline"
               style={{ borderRadius: '0px', transition: 'none' }}
             >
               Archive Index

@@ -531,7 +531,7 @@ export function SettingsModal({ isOpen, onClose, isSoundOn, onToggleSound }: Set
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-black bg-zinc-100 hover:bg-white transition-colors cursor-pointer"
+            className="px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-black bg-zinc-100 hover:bg-[#EAE6DF] transition-colors cursor-pointer"
           >
             Done
           </button>

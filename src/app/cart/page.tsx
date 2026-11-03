@@ -107,7 +107,7 @@ export default function CartPage(): React.JSX.Element {
             </p>
             <Link
               href="/catalog"
-              className="inline-block px-5 py-2.5 bg-[#f4f4f4] hover:bg-white text-black text-xs font-semibold uppercase tracking-wider border border-[#f4f4f4] transition-none cursor-pointer rounded-none"
+              className="inline-block px-5 py-2.5 bg-[#f4f4f4] hover:bg-[#EAE6DF] text-black text-xs font-semibold uppercase tracking-wider border border-[#f4f4f4] transition-none cursor-pointer rounded-none"
             >
               Explore Catalog →
             </Link>
@@ -195,7 +195,7 @@ export default function CartPage(): React.JSX.Element {
                   <button
                     type="button"
                     onClick={() => router.push('/checkout')}
-                    className="w-full py-3 bg-[#f4f4f4] hover:bg-white text-black text-xs font-bold uppercase tracking-wider border border-[#f4f4f4] transition-none cursor-pointer text-center block rounded-none"
+                    className="w-full py-3 bg-[#f4f4f4] hover:bg-[#EAE6DF] text-black text-xs font-bold uppercase tracking-wider border border-[#f4f4f4] transition-none cursor-pointer text-center block rounded-none"
                   >
                     Proceed to Escrow Checkout →
                   </button>

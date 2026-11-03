@@ -119,7 +119,7 @@ export function CookieBanner(): React.JSX.Element | null {
           <button
             type="button"
             onClick={handleAccept}
-            className="px-5 py-1.5 text-xs font-bold text-black bg-zinc-100 hover:bg-white uppercase tracking-widest transition-colors cursor-pointer flex items-center gap-1.5"
+            className="px-5 py-1.5 text-xs font-bold text-black bg-zinc-100 hover:bg-[#EAE6DF] uppercase tracking-widest transition-colors cursor-pointer flex items-center gap-1.5"
           >
             <span>Accept All</span>
           </button>

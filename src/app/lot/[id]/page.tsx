@@ -456,7 +456,7 @@ export default function LotDetailPage({ params }: LotPageProps) {
                   <button
                     type="button"
                     onClick={() => handleAcquireDirect(true)}
-                    className="w-full py-3.5 bg-[#F2EFE9] hover:bg-white text-[#080808] border border-[#F2EFE9] font-sans text-[11px] font-semibold uppercase tracking-[0.16em] transition-colors duration-75 cursor-pointer rounded-none text-center"
+                    className="w-full py-3.5 bg-[#F2EFE9] hover:bg-[#EAE6DF] text-[#080808] border border-[#F2EFE9] font-sans text-[11px] font-semibold uppercase tracking-[0.16em] transition-colors duration-75 cursor-pointer rounded-none text-center"
                   >
                     [ ACQUIRE NOW — ₹{product.price.toLocaleString('en-IN')} ]
                   </button>

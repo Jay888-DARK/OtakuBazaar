@@ -301,7 +301,7 @@ export function CuratedEditorialCollection(): React.JSX.Element {
                   type="button"
                   onClick={() => setIsCheckoutOpen(true)}
                   style={{ fontFamily: "var(--font-sans), 'Plus Jakarta Sans', sans-serif" }}
-                  className="w-full py-4 px-6 bg-[#f4f4f4] hover:bg-white text-black text-center text-xs sm:text-sm font-bold uppercase tracking-[0.15em] border border-[#f4f4f4] cursor-pointer block rounded-none transition-none"
+                  className="w-full py-4 px-6 bg-[#f4f4f4] hover:bg-[#EAE6DF] text-black text-center text-xs sm:text-sm font-bold uppercase tracking-[0.15em] border border-[#f4f4f4] cursor-pointer block rounded-none transition-none"
                 >
                   [ BUY NOW — ₹1,24,000 ]
                 </button>

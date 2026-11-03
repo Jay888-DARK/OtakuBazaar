@@ -525,7 +525,7 @@ export function InstantCheckoutDrawer({
                 onClick={() => handleInstantPay()}
                 disabled={loading}
                 style={{ fontFamily: "'Satoshi', sans-serif" }}
-                className="w-full py-4 bg-[#f4f4f4] hover:bg-white text-black font-bold text-xs sm:text-sm uppercase tracking-[0.15em] border border-[#f4f4f4] cursor-pointer rounded-none transition-none flex items-center justify-center gap-2 disabled:opacity-50 disabled:pointer-events-none"
+                className="w-full py-4 bg-[#f4f4f4] hover:bg-[#EAE6DF] text-black font-bold text-xs sm:text-sm uppercase tracking-[0.15em] border border-[#f4f4f4] cursor-pointer rounded-none transition-none flex items-center justify-center gap-2 disabled:opacity-50 disabled:pointer-events-none"
               >
                 {loading ? (
                   <>

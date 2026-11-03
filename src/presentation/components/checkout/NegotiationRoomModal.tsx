@@ -288,7 +288,7 @@ export function NegotiationRoomModal(): React.JSX.Element | null {
               type="button"
               onClick={handleExecuteEscrowLock}
               disabled={!isAgreedToTerms || paymentProcessing}
-              className="w-full py-4 px-6 bg-[#f4f4f4] hover:bg-white text-black font-bold text-xs uppercase tracking-[0.22em] border border-[#f4f4f4] disabled:opacity-40 transition-none cursor-pointer brutalist-btn block text-center"
+              className="w-full py-4 px-6 bg-[#f4f4f4] hover:bg-[#EAE6DF] text-black font-bold text-xs uppercase tracking-[0.22em] border border-[#f4f4f4] disabled:opacity-40 transition-none cursor-pointer brutalist-btn block text-center"
             >
               {paymentProcessing
                 ? 'PROCESSING CHECKOUT...'

@@ -30,7 +30,7 @@ export default async function HomePage(props?: {
 
   return (
     <div className="min-h-screen bg-[#080808] text-[#F2EFE9]">
-      {/* STAGE 1: Full-Viewport Hero Animation */}
+      {/* STAGE 1: Full-Viewport Hero Presentation */}
       <VaultHero />
 
       {/* STAGE 2: Scroll-Revealed Criteria, Curated Collections & Catalog */}
@@ -60,10 +60,10 @@ export default async function HomePage(props?: {
               </p>
             </div>
 
-            {/* Stark 2-Up Editorial Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-[#161616]">
-              {/* Primary Dominant Hero Block: Step 01 */}
-              <div className="lg:col-span-7 p-6 sm:p-8 flex flex-col justify-between border-b lg:border-b-0 border-[#1F1F1F] bg-[#080808]">
+            {/* Symmetrical 2-Column Editorial Grid (No Bento) */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-[#161616]">
+              {/* Primary Column: Step 01 */}
+              <div className="p-6 sm:p-8 flex flex-col justify-between border-b lg:border-b-0 border-[#1F1F1F] bg-[#080808]">
                 <div>
                   <div className="flex items-center justify-between gap-4 mb-4">
                     <span className="text-[#F2EFE9] border border-[#1F1F1F] bg-[#0C0C0C] px-2.5 py-1 font-sans text-[10px] tracking-[0.15em] uppercase font-semibold">
@@ -81,8 +81,8 @@ export default async function HomePage(props?: {
                   </p>
                 </div>
 
-                {/* Protection Indicators */}
-                <div className="mt-8 pt-6 border-t border-[#161616] grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {/* 2x2 Technical Telemetry (Avoids 3 feature cards in a row) */}
+                <div className="mt-8 pt-6 border-t border-[#161616] grid grid-cols-2 gap-3">
                   <div className="border border-[#1F1F1F] bg-[#0C0C0C] p-3">
                     <span className="block font-sans text-[10px] tracking-[0.15em] text-[#777777] uppercase font-semibold">
                       LOCK DURATION
@@ -101,6 +101,14 @@ export default async function HomePage(props?: {
                   </div>
                   <div className="border border-[#1F1F1F] bg-[#0C0C0C] p-3">
                     <span className="block font-sans text-[10px] tracking-[0.15em] text-[#777777] uppercase font-semibold">
+                      TRANSIT ASSURANCE
+                    </span>
+                    <span className="text-[#F2EFE9] block mt-1 font-sans text-[11px] tracking-[0.08em] uppercase font-medium">
+                      TRACKED EXPRESS
+                    </span>
+                  </div>
+                  <div className="border border-[#1F1F1F] bg-[#0C0C0C] p-3">
+                    <span className="block font-sans text-[10px] tracking-[0.15em] text-[#777777] uppercase font-semibold">
                       REFUND POLICY
                     </span>
                     <span className="text-[#F2EFE9] block mt-1 font-sans text-[11px] tracking-[0.08em] uppercase font-medium">
@@ -110,8 +118,8 @@ export default async function HomePage(props?: {
                 </div>
               </div>
 
-              {/* Secondary Stacked Column: Step 02 & Step 03 */}
-              <div className="lg:col-span-5 flex flex-col divide-y divide-[#161616] bg-[#0C0C0C]">
+              {/* Secondary Column: Step 02 & Step 03 */}
+              <div className="flex flex-col divide-y divide-[#161616] bg-[#0C0C0C]">
                 {/* Step 02 */}
                 <div className="p-6 sm:p-8 flex flex-col justify-between flex-1">
                   <div>

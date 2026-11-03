@@ -106,7 +106,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full py-3 bg-[#F2EFE9] hover:bg-white text-[#080808] border border-[#F2EFE9] font-sans font-semibold text-[11px] uppercase tracking-[0.18em] transition-colors cursor-pointer rounded-none disabled:opacity-50 mt-2"
+            className="w-full py-3 bg-[#F2EFE9] hover:bg-[#EAE6DF] text-[#080808] border border-[#F2EFE9] font-sans font-semibold text-[11px] uppercase tracking-[0.18em] transition-colors cursor-pointer rounded-none disabled:opacity-50 mt-2"
           >
             {isLoading ? '[ AUTHENTICATING... ]' : '[ AUTHENTICATE WITH EMAIL ]'}
           </button>

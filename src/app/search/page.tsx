@@ -91,7 +91,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps): Pro
             <div className="pt-2">
               <Link
                 href="/"
-                className="inline-block px-6 py-3 bg-[#f4f4f4] hover:bg-white text-black font-extrabold text-xs uppercase tracking-[0.2em] border border-[#f4f4f4] transition-none no-underline rounded-none"
+                className="inline-block px-6 py-3 bg-[#f4f4f4] hover:bg-[#EAE6DF] text-black font-extrabold text-xs uppercase tracking-[0.2em] border border-[#f4f4f4] transition-none no-underline rounded-none"
               >
                 [ BROWSE ALL PRODUCTS ]
               </Link>

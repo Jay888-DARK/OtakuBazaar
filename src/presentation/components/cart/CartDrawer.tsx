@@ -396,7 +396,7 @@ export function CartDrawer(): React.JSX.Element | null {
                 <button
                   type="button"
                   onClick={handleCheckout}
-                  className="w-full py-3 bg-[#F2EFE9] hover:bg-white text-[#080808] border border-[#F2EFE9] text-[11px] font-semibold uppercase tracking-[0.2em] transition-colors duration-75 cursor-pointer flex items-center justify-center font-sans rounded-none"
+                  className="w-full py-3 bg-[#F2EFE9] hover:bg-[#EAE6DF] text-[#080808] border border-[#F2EFE9] text-[11px] font-semibold uppercase tracking-[0.2em] transition-colors duration-75 cursor-pointer flex items-center justify-center font-sans rounded-none"
                 >
                   <span>[ PROCEED TO ESCROW CHECKOUT ]</span>
                 </button>
