@@ -246,6 +246,16 @@ export default function VaultPage(): React.JSX.Element {
     }
   };
 
+  const getTabButtonClass = (tab: 'SHELF' | 'LEDGER' | 'DISPATCH' | 'INVOICES'): string => {
+    const isSelected = activeTab === tab;
+    return [
+      'px-5 py-3 text-[11px] uppercase tracking-[0.16em] font-semibold border cursor-pointer rounded-none whitespace-nowrap transition-none',
+      isSelected
+        ? 'bg-[#F2EFE9] text-[#080808] border-[#F2EFE9]'
+        : 'bg-[#0C0C0C] text-[#888888] border-[#1F1F1F]'
+    ].join(' ');
+  };
+
   return (
     <div className="min-h-screen bg-[#080808] text-[#F2EFE9] select-none py-8 px-4 sm:px-6 lg:px-8 font-sans">
       <div className="max-w-7xl mx-auto space-y-8">
@@ -327,49 +337,33 @@ export default function VaultPage(): React.JSX.Element {
           <button
             type="button"
             onClick={() => setActiveTab('SHELF')}
-            className={`px-5 py-3 text-[11px] uppercase tracking-[0.16em] font-semibold border cursor-pointer rounded-none whitespace-nowrap transition-none ${
-              activeTab === 'SHELF'
-                ? 'bg-[#F2EFE9] text-[#080808] border-[#F2EFE9]'
-                : 'bg-[#0C0C0C] text-[#888888] border-[#1F1F1F]'
-            }`}
+            className={getTabButtonClass('SHELF')}
           >
-            [ 01 // MY DIGITAL SHELF ({shelf.length}) ]
+            {`[ 01 // MY DIGITAL SHELF (${shelf.length}) ]`}
           </button>
 
           <button
             type="button"
             onClick={() => setActiveTab('LEDGER')}
-            className={`px-5 py-3 text-[11px] uppercase tracking-[0.16em] font-semibold border cursor-pointer rounded-none whitespace-nowrap transition-none ${
-              activeTab === 'LEDGER'
-                ? 'bg-[#F2EFE9] text-[#080808] border-[#F2EFE9]'
-                : 'bg-[#0C0C0C] text-[#888888] border-[#1F1F1F]'
-            }`}
+            className={getTabButtonClass('LEDGER')}
           >
-            [ 02 // BARGAINING LEDGER ({offers.filter((o) => o.status === 'PENDING').length}) ]
+            {`[ 02 // BARGAINING LEDGER (${offers.filter((o) => o.status === 'PENDING').length}) ]`}
           </button>
 
           <button
             type="button"
             onClick={() => setActiveTab('DISPATCH')}
-            className={`px-5 py-3 text-[11px] uppercase tracking-[0.16em] font-semibold border cursor-pointer rounded-none whitespace-nowrap transition-none ${
-              activeTab === 'DISPATCH'
-                ? 'bg-[#F2EFE9] text-[#080808] border-[#F2EFE9]'
-                : 'bg-[#0C0C0C] text-[#888888] border-[#1F1F1F]'
-            }`}
+            className={getTabButtonClass('DISPATCH')}
           >
-            [ 03 // ESCROW DISPATCH ({dispatches.length}) ]
+            {`[ 03 // ESCROW DISPATCH (${dispatches.length}) ]`}
           </button>
 
           <button
             type="button"
             onClick={() => setActiveTab('INVOICES')}
-            className={`px-5 py-3 text-[11px] uppercase tracking-[0.16em] font-semibold border cursor-pointer rounded-none whitespace-nowrap transition-none ${
-              activeTab === 'INVOICES'
-                ? 'bg-[#F2EFE9] text-[#080808] border-[#F2EFE9]'
-                : 'bg-[#0C0C0C] text-[#888888] border-[#1F1F1F]'
-            }`}
+            className={getTabButtonClass('INVOICES')}
           >
-            [ 04 // TAX INVOICES &amp; RECEIPTS ({invoices.length}) ]
+            {`[ 04 // TAX INVOICES & RECEIPTS (${invoices.length}) ]`}
           </button>
         </div>
 
@@ -378,7 +372,7 @@ export default function VaultPage(): React.JSX.Element {
           <div className="space-y-6">
             <div className="flex justify-between items-center">
               <span className="text-[10px] uppercase tracking-[0.18em] text-[#777777] font-semibold">
-                ACTIVE COLLECTOR CONSIGNMENTS &amp; IN-HAND SHELF
+                ACTIVE COLLECTOR CONSIGNMENTS & IN-HAND SHELF
               </span>
               <Link
                 href="/sell"
@@ -506,7 +500,7 @@ export default function VaultPage(): React.JSX.Element {
                           onClick={() => handleOfferAction(offer.id, 'ACCEPT')}
                           className="px-4 py-2 bg-[#F2EFE9] text-[#080808] border border-[#F2EFE9] text-[11px] font-semibold uppercase tracking-[0.14em] transition-none cursor-pointer rounded-none"
                         >
-                          [ ACCEPT &amp; LOCK ]
+                          [ ACCEPT & LOCK ]
                         </button>
                         <button
                           type="button"
@@ -533,7 +527,7 @@ export default function VaultPage(): React.JSX.Element {
           <div className="space-y-6">
             <div className="border border-[#1F1F1F] bg-[#0C0C0C] p-6 space-y-4">
               <span className="text-[10px] uppercase tracking-[0.18em] text-[#777777] font-semibold block">
-                CARRIER DISPATCH &amp; AWB INPUT
+                CARRIER DISPATCH & AWB INPUT
               </span>
               <form onSubmit={handleAddAwb} className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
                 <div className="sm:col-span-4">
@@ -631,10 +625,10 @@ export default function VaultPage(): React.JSX.Element {
             <div className="border border-[#1F1F1F] bg-[#0C0C0C] p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div>
                 <span className="text-[10px] uppercase tracking-[0.2em] text-[#777777] font-semibold border border-[#1F1F1F] bg-[#080808] px-2.5 py-1 inline-block mb-2">
-                  SECURITY &amp; COMPLIANCE DIRECTIVE
+                  SECURITY & COMPLIANCE DIRECTIVE
                 </span>
                 <h2 className="font-serif text-xl sm:text-2xl text-[#F2EFE9] uppercase tracking-[0.04em]">
-                  Authoritative Tax Invoices &amp; Escrow Receipts
+                  Authoritative Tax Invoices & Escrow Receipts
                 </h2>
                 <p className="text-[12px] text-[#8E8E8E] mt-1 max-w-2xl">
                   Generated invoices include Indian GST 18% tax breakdowns, double-entry escrow verification, and SHA-256 cryptographic digests. Downloads are protected by strict Object-Level Access Control (IDOR prevention).
