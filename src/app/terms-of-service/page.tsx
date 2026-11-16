@@ -116,13 +116,38 @@ export default function TermsOfServicePage(): React.JSX.Element {
                 <span className="text-[#10B981] font-semibold">₹0 (100% FREE FOR BUYERS)</span>
               </div>
               <div className="flex justify-between p-2.5 bg-[#080808] border border-[#1F1F1F]">
-                <span className="text-[#F2EFE9] uppercase tracking-wider">Consignment Authentication Fee:</span>
-                <span className="text-[#F2EFE9] font-medium">5% deducted from seller upon release</span>
+                <span className="text-[#F2EFE9] uppercase tracking-wider">Platform Commission (Seller):</span>
+                <span className="text-[#F2EFE9] font-medium">5% deducted only upon successful order release</span>
               </div>
               <div className="flex justify-between p-2.5 bg-[#080808] border border-[#1F1F1F]">
-                <span className="text-[#F2EFE9] uppercase tracking-wider">Insured Foam Crate Courier:</span>
-                <span className="text-[#10B981] font-semibold">Included in agreed lot price</span>
+                <span className="text-[#F2EFE9] uppercase tracking-wider">Tracked Courier Shipping:</span>
+                <span className="text-[#10B981] font-semibold">Calculated at checkout or included in agreed price</span>
               </div>
+            </div>
+          </section>
+
+          {/* Section 05: Legal Entity, Jurisdiction & Grievance */}
+          <section className="bg-[#0C0C0C] border border-[#1F1F1F] p-6 space-y-3">
+            <div className="flex items-center justify-between border-b border-[#161616] pb-2">
+              <h2 className="font-serif text-[18px] text-[#F2EFE9] uppercase tracking-[0.04em]">
+                05. Legal Entity, Governing Law &amp; Grievance Redressal
+              </h2>
+              <span className="text-[10px] text-[#777777] uppercase tracking-wider font-semibold">
+                SEC. 05
+              </span>
+            </div>
+            <div className="space-y-2 text-[#8E8E8E] text-[12px]">
+              {/* TODO: Lawyer review - Verify registered entity name and office address upon incorporation */}
+              <p>
+                <strong className="text-[#F2EFE9]">Operating Entity:</strong> OtakuBazaar Internet Services Private Limited (Proposed). Registered address: Mumbai, Maharashtra, India.
+              </p>
+              {/* TODO: Lawyer review - Governing law and jurisdiction */}
+              <p>
+                <strong className="text-[#F2EFE9]">Governing Law &amp; Jurisdiction:</strong> Governed by the laws of India. Courts of Mumbai, Maharashtra have exclusive jurisdiction over any disputes.
+              </p>
+              <p>
+                <strong className="text-[#F2EFE9]">Grievance Officer:</strong> In compliance with the Information Technology Act, 2000: Grievance Redressal Officer (<a href="mailto:grievance@otakubazaar.com" className="text-[#F2EFE9] underline">grievance@otakubazaar.com</a>). Grievances acknowledged within 48 hours; resolved within 30 days.
+              </p>
             </div>
           </section>
         </div>

@@ -50,25 +50,24 @@ export function LegalSupportFooter(): React.JSX.Element {
           {/* Business Entity Details */}
           <div className="space-y-1.5 bg-[#111114] p-4 border border-zinc-800">
             <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-zinc-300 m-0">
-              Registered Corporate Entity
+              Corporate Entity (Proposed)
             </h3>
             <p className="font-semibold text-zinc-100 m-0">
-              OtakuBazaar Technologies Pvt. Ltd.
+              OtakuBazaar Internet Services Private Limited
             </p>
-            <p className="text-zinc-400 m-0 leading-relaxed">
-              4th Floor, Akihabara Gateway Arcade,<br />
-              100-Ft Road, Indiranagar,<br />
-              Bengaluru, Karnataka 560038, India
+            <p className="text-zinc-400 m-0 leading-relaxed text-[11px]">
+              {/* TODO: Lawyer review - Verify registered entity name and office address upon incorporation */}
+              Registered Office: Mumbai, Maharashtra, India
             </p>
-            <p className="text-[11px] text-zinc-500 pt-1 m-0 uppercase tracking-wider">
-              CIN: U72900KA2026PTC184920
+            <p className="text-[10px] text-zinc-500 pt-1 m-0 uppercase tracking-wider">
+              Jurisdiction: Courts of Mumbai, Maharashtra
             </p>
           </div>
 
           {/* Grievance & Support Contacts */}
           <div className="space-y-1.5 bg-[#111114] p-4 border border-zinc-800">
             <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-zinc-300 m-0">
-              Contact & Grievance Redressal
+              Contact &amp; Grievance Redressal
             </h3>
             <p className="m-0">
               <strong className="text-zinc-100">Customer Support:</strong>{' '}
@@ -82,7 +81,7 @@ export function LegalSupportFooter(): React.JSX.Element {
             </p>
             <p className="m-0">
               <strong className="text-zinc-100">Grievance Officer:</strong>{' '}
-              <span className="text-zinc-400">Haruki Tanaka</span>
+              <span className="text-zinc-400">Grievance Redressal Officer</span>
             </p>
             <p className="m-0">
               <strong className="text-zinc-100">Grievance Desk:</strong>{' '}
@@ -94,8 +93,8 @@ export function LegalSupportFooter(): React.JSX.Element {
                 grievance@otakubazaar.com
               </a>
             </p>
-            <p className="text-[11px] text-zinc-500 pt-1 m-0 uppercase tracking-wider">
-              Response Turnaround: Within 24-48 Business Hours
+            <p className="text-[10px] text-zinc-500 pt-1 m-0 uppercase tracking-wider">
+              Response SLA: Acknowledged within 48 Hours
             </p>
           </div>
         </div>

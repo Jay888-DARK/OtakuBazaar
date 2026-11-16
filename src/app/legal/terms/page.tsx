@@ -6,10 +6,12 @@
  *
  * Details:
  * - 15-Minute Concurrency Checkout Reservation Locks
- * - Double-Entry Escrow Vault (Razorpay Route)
- * - Shiprocket Insured Logistics & Strict 48-Hour Inspection Window
+ * - Secure Escrow Architecture (Razorpay Route)
+ * - Tracked Pan-India Logistics & Strict 48-Hour Inspection Window
  * - Counterfeit Zero-Tolerance Policy & Payout Protocols
- * - Centralized Support & Grievance Footer Block
+ * - Fee Structure (5% seller fee, 0% buyer platform fee, GST on services)
+ * - Governing Law, Dispute Process, Grievance Officer & Legal Entity
+ * - TODO annotations for legal counsel review
  */
 
 import React from 'react';
@@ -20,7 +22,7 @@ import { LegalSupportFooter } from '@/presentation/components/compliance/LegalSu
 export const metadata: Metadata = {
   title: 'Terms of Service — OtakuBazaar Escrow Marketplace',
   description:
-    'OtakuBazaar Terms of Service: Escrow architecture, 15-minute concurrency checkout locks, 48-hour unboxing inspection guarantee, Razorpay settlement, and Shiprocket delivery policies.',
+    'OtakuBazaar Terms of Service: Escrow architecture, 15-minute concurrency checkout locks, 48-hour unboxing inspection guarantee, fee structure, and dispute arbitration rules.',
 };
 
 export default function TermsOfServicePage() {
@@ -48,15 +50,15 @@ export default function TermsOfServicePage() {
               Marketplace Charter
             </span>
             <span className="text-xs text-zinc-400 uppercase tracking-wider">
-              Effective: March 2026 • Verified Escrow
+              Effective: 2026 • Verified Escrow
             </span>
           </div>
 
           <h1 className="text-2xl sm:text-3xl font-extrabold text-zinc-100 uppercase tracking-[0.15em] mb-3">
-            Terms of Service & Escrow Rules
+            Terms of Service &amp; Escrow Rules
           </h1>
           <p className="text-sm sm:text-base text-zinc-300 leading-relaxed max-w-2xl font-normal">
-            OtakuBazaar is a peer-to-peer anime collectibles marketplace engineered to eradicate counterfeits through cryptographic escrow locking, insured delivery, and guaranteed unboxing inspection windows.
+            OtakuBazaar is a peer-to-peer anime collectibles marketplace engineered to eradicate counterfeits and transaction fraud through secure escrow payments, tracked courier delivery, and guaranteed 48-hour unboxing inspection windows.
           </p>
         </header>
 
@@ -65,18 +67,18 @@ export default function TermsOfServicePage() {
           {/* Section 1: Escrow Architecture */}
           <section className="p-6 rounded-2xl bg-[#140F0B]/90 border border-amber-900/30">
             <h2 className="text-base sm:text-lg font-black text-[#E8C36A] mb-3 flex items-center gap-2">
-              <span>1.</span> Double-Escrow Financial Architecture
+              <span>1.</span> Escrow Financial Architecture
             </h2>
             <div className="space-y-3">
               <p>
-                When a buyer initiates a checkout, funds are captured via our payment partner <strong className="text-white">Razorpay</strong> into an isolated Escrow Liability Account. Funds remain locked in escrow and are never released to the seller until:
+                When a buyer initiates a checkout, funds are captured via our payment gateway partner <strong className="text-white">Razorpay</strong> into a secure Escrow holding account. Funds remain locked in escrow and are never released to the seller until:
               </p>
               <ul className="list-disc list-inside space-y-2 text-stone-300 pl-2">
                 <li>
-                  <strong className="text-white">Verified Delivery:</strong> Shiprocket transmits a verified delivery timestamp.
+                  <strong className="text-white">Verified Delivery:</strong> The courier transmits an authoritative delivery confirmation timestamp.
                 </li>
                 <li>
-                  <strong className="text-white">Inspection Clearance:</strong> The buyer explicitly marks the item as authentic or the mandatory 48-Hour Inspection Window elapses without an active dispute.
+                  <strong className="text-white">Inspection Clearance:</strong> The buyer explicitly marks the item as authentic/conforming, or the mandatory 48-Hour Inspection Window elapses without an active dispute.
                 </li>
               </ul>
             </div>
@@ -95,32 +97,86 @@ export default function TermsOfServicePage() {
           {/* Section 3: Strict Zero-Bootleg & Authenticity Standard */}
           <section className="p-6 bg-[#111114] border border-zinc-800">
             <h2 className="text-base sm:text-lg font-bold text-zinc-100 uppercase tracking-wider mb-3 flex items-center gap-2">
-              <span>3.</span> Authenticity Standards & Bootleg Prohibition
+              <span>3.</span> Authenticity Standards &amp; Bootleg Prohibition
             </h2>
             <p>
               OtakuBazaar enforces a zero-tolerance policy against unlicensed reproductions, bootlegs, and unauthorized recast statues. Sellers must accurately declare manufacturer stickers (e.g., Toei Animation golden cat sticker, Kodansha seal) and disclose any box blemishes or paint flaws. Sellers attempting to distribute counterfeit items face permanent banishment and forfeiture of escrow holdings.
             </p>
           </section>
 
-          {/* Section 4: Logistics & Shiprocket Dispatch */}
+          {/* Section 4: Logistics & Dispatch */}
           <section className="p-6 rounded-2xl bg-[#140F0B]/90 border border-amber-900/30">
             <h2 className="text-base sm:text-lg font-black text-[#E8C36A] mb-3 flex items-center gap-2">
-              <span>4.</span> Shipping, Transit Insurance & Dispatch
+              <span>4.</span> Shipping &amp; Seller Dispatch Obligations
             </h2>
             <div className="space-y-3">
               <p>
-                Sellers must package collectibles with collector-grade protection (bubble wrap, corner guards, and rigid double-boxing). All parcels are scheduled and insured via <strong className="text-white">Shiprocket</strong> courier networks. Sellers must hand over the parcel within 3 business days of order confirmation. Failure to dispatch results in automatic cancellation and full escrow refund to the buyer.
+                Sellers must package collectibles with collector-grade protection (bubble wrap, corner guards, and rigid double-boxing). Dispatch must be conducted via reliable national express couriers (e.g. BlueDart, Delhivery) with a valid tracking AWB entered on the platform within 48 hours of escrow confirmation.
               </p>
             </div>
           </section>
 
-          {/* Section 5: Dispute Arbitration */}
+          {/* Section 5: Dispute Arbitration & 100% Refund */}
           <section className="p-6 rounded-2xl bg-[#140F0B]/90 border border-amber-900/30">
             <h2 className="text-base sm:text-lg font-black text-[#E8C36A] mb-3 flex items-center gap-2">
-              <span>5.</span> Dispute Arbitration & Payout Release
+              <span>5.</span> 48-Hour Inspection Window &amp; Dispute Arbitration
             </h2>
             <p>
-              Buyers must report any discrepancy (broken parts, box crush, fake authentication) within 48 hours of delivery accompanied by an uninterrupted unboxing video. OtakuBazaar Escrow Arbiter reviews claims within 24 business hours. If approved, reverse pickup is initiated via Shiprocket and funds are refunded via Razorpay. If no dispute is raised within 48 hours, payout is settled to the seller&apos;s verified UPI VPA.
+              Buyers must report any discrepancy (broken parts, box crush, fake authentication) within 48 hours of delivery accompanied by an uninterrupted, uncut unboxing video recorded from the sealed box. OtakuBazaar dispute arbitration reviews claims within 24–48 business hours. If approved as counterfeit or non-conforming, 100% of escrow funds are refunded to the buyer via Razorpay. If no dispute is raised within 48 hours, payout is settled to the seller&apos;s verified bank account or UPI VPA.
+            </p>
+          </section>
+
+          {/* Section 6: Marketplace Fees & Taxes */}
+          <section className="p-6 bg-[#111114] border border-zinc-800">
+            <h2 className="text-base sm:text-lg font-bold text-zinc-100 uppercase tracking-wider mb-3 flex items-center gap-2">
+              <span>6.</span> Marketplace Fees &amp; Applicable Taxes
+            </h2>
+            <div className="space-y-2 text-stone-300">
+              <p>
+                <strong className="text-white">Buyer Platform Fee:</strong> 0% (Buyers pay no platform subscription or escrow surcharge).
+              </p>
+              <p>
+                <strong className="text-white">Seller Commission:</strong> A flat 5% platform fee is deducted from the seller payout only upon successful order settlement.
+              </p>
+              <p>
+                <strong className="text-white">Taxes:</strong> Platform commissions are subject to Goods and Services Tax (GST) at applicable rates under Indian Tax law. Sellers are individually responsible for their own direct tax reporting on personal collectible sales.
+              </p>
+            </div>
+          </section>
+
+          {/* Section 7: Legal Entity, Jurisdiction & Grievance */}
+          <section className="p-6 bg-[#111114] border border-zinc-800">
+            <h2 className="text-base sm:text-lg font-bold text-zinc-100 uppercase tracking-wider mb-3 flex items-center gap-2">
+              <span>7.</span> Legal Entity, Governing Law &amp; Grievance Redressal
+            </h2>
+            <div className="space-y-3 text-stone-300">
+              {/* TODO: Lawyer review - Verify registered entity name and office address upon incorporation */}
+              <p>
+                <strong className="text-white">Operating Entity:</strong> OtakuBazaar Internet Services Private Limited (Proposed). Registered address: Mumbai, Maharashtra, India.
+              </p>
+              {/* TODO: Lawyer review - Governing law and exclusive dispute jurisdiction */}
+              <p>
+                <strong className="text-white">Governing Law &amp; Jurisdiction:</strong> These Terms shall be governed by and construed in accordance with the laws of India. Any disputes arising out of these terms shall be subject to the exclusive jurisdiction of the competent courts in Mumbai, Maharashtra.
+              </p>
+              <p>
+                <strong className="text-white">Grievance Officer:</strong> In compliance with the Information Technology Act, 2000 and rules made thereunder:
+              </p>
+              <div className="p-3 bg-zinc-900 border border-zinc-700 text-xs space-y-1">
+                <div>Name: Grievance Redressal Officer, OtakuBazaar</div>
+                <div>Email: <a href="mailto:grievance@otakubazaar.com" className="text-amber-300 underline">grievance@otakubazaar.com</a></div>
+                <div>Turnaround: Grievances acknowledged within 48 hours; resolved within 30 days.</div>
+              </div>
+            </div>
+          </section>
+
+          {/* Section 8: Disclaimer & Limitation of Liability */}
+          <section className="p-6 rounded-2xl bg-[#140F0B]/90 border border-amber-900/30">
+            <h2 className="text-base sm:text-lg font-black text-[#E8C36A] mb-3 flex items-center gap-2">
+              <span>8.</span> Limitation of Liability
+            </h2>
+            {/* TODO: Lawyer review - Standard C2C intermediary liability limitation */}
+            <p className="text-xs text-stone-400 leading-relaxed">
+              OtakuBazaar functions as an intermediary platform connecting independent buyers and sellers. While we enforce strict escrow protection, unboxing video requirements, and seller KYC, OtakuBazaar is not the manufacturer or original distributor of third-party collectibles. To the maximum extent permitted under applicable law, OtakuBazaar’s aggregate liability for any claim arising from a transaction shall not exceed the total transaction amount held in escrow for that specific order.
             </p>
           </section>
         </div>
