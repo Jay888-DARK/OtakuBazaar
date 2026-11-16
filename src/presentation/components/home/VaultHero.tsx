@@ -64,16 +64,33 @@ export default function VaultHero({ onSelectVaultItem }: VaultHeroProps) {
       </div>
 
       {/* Floating Center Hero Text */}
-      <div className="relative z-20 flex flex-col items-center justify-center text-center px-4 max-w-4xl mx-auto pointer-events-none">
-        <span className="font-mono text-[10px] tracking-[0.25em] text-[#888888] uppercase mb-4">
-          TOKYO ARCHIVAL VAULT // ESCROW DIRECT
+      <div className="relative z-20 flex flex-col items-center justify-center text-center px-4 max-w-4xl mx-auto">
+        <span className="font-mono text-[10px] tracking-[0.25em] text-[#888888] uppercase mb-4 pointer-events-none">
+          INDIA’S C2C ANIME COLLECTIBLES MARKETPLACE // ESCROW SECURED
         </span>
-        <h1 className="font-serif text-[42px] md:text-[56px] text-[#F2EFE9] tracking-[0.04em] uppercase font-normal leading-[1.05]">
-          Authenticated Grails
+        <h1 className="font-serif text-[38px] sm:text-[46px] md:text-[54px] text-[#F2EFE9] tracking-[0.04em] uppercase font-bold leading-[1.08] pointer-events-none">
+          Authentic Anime Figures &amp; Collectibles
         </h1>
-        <p className="font-sans text-[13px] text-[#8E8E8E] max-w-xl mx-auto font-normal leading-relaxed mt-4">
-          Pre-inspected Japanese scale figures backed by a 24-hour liquidity protocol. Double-entry escrow custody with 48-hour inspection protection.
+        <p className="font-sans text-[13px] sm:text-[14px] text-[#8E8E8E] max-w-xl mx-auto font-normal leading-relaxed mt-4 pointer-events-none">
+          Buy and sell verified Japanese scale figures and statues with peace of mind. Buyer payments are held safely in escrow until you unbox and inspect your collectible.
         </p>
+
+        {/* Dual Primary CTAs (Task 2) */}
+        <div className="flex flex-col sm:flex-row items-center gap-3 mt-8 pointer-events-auto">
+          <button
+            onClick={handleScrollToStage2}
+            type="button"
+            className="w-full sm:w-auto px-6 py-3 bg-[#F2EFE9] hover:bg-[#EAE6DF] text-[#080808] border border-[#F2EFE9] font-sans font-semibold text-[11px] uppercase tracking-[0.16em] transition-none cursor-pointer rounded-none text-center"
+          >
+            [ BROWSE FIGURES ]
+          </button>
+          <a
+            href="/sell"
+            className="w-full sm:w-auto px-6 py-3 bg-[#0C0C0C] hover:bg-[#161616] text-[#F2EFE9] hover:text-white border border-[#1F1F1F] hover:border-[#3A3A3A] font-sans font-semibold text-[11px] uppercase tracking-[0.16em] transition-none rounded-none text-center no-underline"
+          >
+            [ SELL YOUR COLLECTION ]
+          </a>
+        </div>
       </div>
 
       {/* Stage 1 subtle bottom scroll indicator anchored at bottom center of the frame */}
