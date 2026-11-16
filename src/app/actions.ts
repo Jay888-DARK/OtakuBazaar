@@ -54,6 +54,10 @@ export interface CreateListingInput {
   readonly description: string;
   readonly sellerId?: string;
   readonly sellerName?: string;
+  readonly pickupPincode?: string;
+  readonly weightKg?: number;
+  readonly dimensionsCm?: string;
+  readonly invoiceProofUrl?: string;
 }
 
 export interface AcceptOfferInput {
@@ -104,6 +108,10 @@ const CreateListingSchema = z.object({
   description: z.string().trim().min(10, 'Description must be at least 10 characters'),
   sellerId: z.string().optional().default('user_seller_rengoku'),
   sellerName: z.string().optional().default('Kyojuro Rengoku'),
+  pickupPincode: z.string().optional(),
+  weightKg: z.number().optional(),
+  dimensionsCm: z.string().optional(),
+  invoiceProofUrl: z.string().optional(),
 });
 
 const AcceptOfferSchema = z.object({

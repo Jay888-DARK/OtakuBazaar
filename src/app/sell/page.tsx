@@ -146,14 +146,27 @@ export default function SellPage(): React.JSX.Element {
   const [askingPrice, setAskingPrice] = useState('');
   const [minimumPrice, setMinimumPrice] = useState('');
   const [description, setDescription] = useState('');
-  const [imageUrl, setImageUrl] = useState<string>(SAMPLE_IMAGE_PRESETS[0]?.url || '');
+  const [imageUrl, setImageUrl] = useState<string>('');
   const [customImageUrl, setCustomImageUrl] = useState('');
   const [extraImageUrls, setExtraImageUrls] = useState<string[]>(['']);
   const [hologramProofUrl, setHologramProofUrl] = useState('');
   const [timestampProofUrl, setTimestampProofUrl] = useState('');
 
+  // Shipping & Logistics States
+  const [pickupPincode, setPickupPincode] = useState('');
+  const [shippingWeightKg, setShippingWeightKg] = useState('1.5');
+  const [boxLengthCm, setBoxLengthCm] = useState('30');
+  const [boxWidthCm, setBoxWidthCm] = useState('25');
+  const [boxHeightCm, setBoxHeightCm] = useState('35');
+
+  // Proof of Purchase / Invoice State
+  const [invoiceFileName, setInvoiceFileName] = useState('');
+  const [invoicePreviewUrl, setInvoicePreviewUrl] = useState('');
+  const [invoiceUploaded, setInvoiceUploaded] = useState(false);
+
   // Upload Interaction State
-  const [activeUploadTab, setActiveUploadTab] = useState<'UPLOAD' | 'PRESETS' | 'LINK'>('PRESETS');
+  const isProduction = process.env.NODE_ENV === 'production';
+  const [activeUploadTab, setActiveUploadTab] = useState<'UPLOAD' | 'PRESETS' | 'LINK'>('UPLOAD');
   const [isUploading, setIsUploading] = useState(false);
 
   // UI Feedback States
@@ -164,7 +177,7 @@ export default function SellPage(): React.JSX.Element {
   const activeFranchise = franchise === 'Other / Retro' ? customFranchise || 'Anime Series' : franchise;
   const activeCategory = category === 'Other' ? customCategory || 'Other' : category;
   const activeManufacturer = manufacturer === 'Other' ? customManufacturer || 'Import Studio' : manufacturer;
-  const activeImageUrl = customImageUrl.trim() || imageUrl;
+  const activeImageUrl = (customImageUrl.trim() || imageUrl || (isProduction ? '' : SAMPLE_IMAGE_PRESETS[0]?.url)) as string;
   const priceNum = parseInt(askingPrice, 10) || 0;
   const originalEst = Math.round(priceNum * 1.25);
 
@@ -177,7 +190,16 @@ export default function SellPage(): React.JSX.Element {
       const simulatedUrl = URL.createObjectURL(file);
       setImageUrl(simulatedUrl);
       setIsUploading(false);
-    }, 600);
+    }, 400);
+  };
+
+  const handleInvoiceUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setInvoiceFileName(file.name);
+    setInvoiceUploaded(true);
+    const simulatedUrl = URL.createObjectURL(file);
+    setInvoicePreviewUrl(simulatedUrl);
   };
 
   const handlePublish = useCallback(
@@ -191,6 +213,18 @@ export default function SellPage(): React.JSX.Element {
       }
       if (!priceNum || priceNum < 500) {
         setErrorMessage('Asking price must be at least ₹500 INR.');
+        return;
+      }
+      if (!activeImageUrl) {
+        setErrorMessage('A genuine photograph of your collectible item is required.');
+        return;
+      }
+      if (priceNum > 10000 && !invoiceUploaded && !invoicePreviewUrl) {
+        setErrorMessage('Proof of purchase or store invoice is mandatory for grails valued over ₹10,000 to verify authenticity provenance.');
+        return;
+      }
+      if (!pickupPincode || !/^[1-9][0-9]{5}$/.test(pickupPincode.trim())) {
+        setErrorMessage('A valid 6-digit Indian pickup PIN code is required for courier dispatch.');
         return;
       }
 
@@ -207,6 +241,10 @@ export default function SellPage(): React.JSX.Element {
             originalPriceINR: originalEst,
             imageUrl: activeImageUrl,
             description,
+            pickupPincode: pickupPincode.trim(),
+            weightKg: parseFloat(shippingWeightKg) || 1.5,
+            dimensionsCm: `${boxLengthCm}x${boxWidthCm}x${boxHeightCm}`,
+            invoiceProofUrl: invoicePreviewUrl || undefined,
           });
           if (!result.success) {
             setErrorMessage(result.error || 'Failed to consign lot.');
@@ -270,6 +308,13 @@ export default function SellPage(): React.JSX.Element {
       activeManufacturer,
       originalEst,
       extraImageUrls,
+      pickupPincode,
+      shippingWeightKg,
+      boxLengthCm,
+      boxWidthCm,
+      boxHeightCm,
+      invoiceUploaded,
+      invoicePreviewUrl,
     ]
   );
 
@@ -547,26 +592,49 @@ export default function SellPage(): React.JSX.Element {
                 </span>
               </div>
 
-              {/* Upload Tabs */}
+              {/* Upload Tabs: In production, enforce real file uploads */}
               <div className="flex border-b border-[#161616] mb-3">
-                {(['PRESETS', 'UPLOAD', 'LINK'] as const).map((tab) => (
-                  <button
-                    key={tab}
-                    type="button"
-                    onClick={() => setActiveUploadTab(tab)}
-                    className={`py-2 px-4 text-[11px] uppercase tracking-[0.14em] font-semibold transition-colors cursor-pointer rounded-none ${
-                      activeUploadTab === tab
-                        ? 'border-b-2 border-[#F2EFE9] text-[#F2EFE9]'
-                        : 'text-[#777777] hover:text-[#CCCCCC]'
-                    }`}
-                  >
-                    {tab === 'PRESETS' ? 'Vault Presets' : tab === 'UPLOAD' ? 'File Upload' : 'Custom URL'}
-                  </button>
-                ))}
+                <button
+                  type="button"
+                  onClick={() => setActiveUploadTab('UPLOAD')}
+                  className={`py-2 px-4 text-[11px] uppercase tracking-[0.14em] font-semibold transition-colors cursor-pointer rounded-none ${
+                    activeUploadTab === 'UPLOAD'
+                      ? 'border-b-2 border-[#F2EFE9] text-[#F2EFE9]'
+                      : 'text-[#777777] hover:text-[#CCCCCC]'
+                  }`}
+                >
+                  Real Photo Upload (Mandatory)
+                </button>
+                {!isProduction && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => setActiveUploadTab('PRESETS')}
+                      className={`py-2 px-4 text-[11px] uppercase tracking-[0.14em] font-semibold transition-colors cursor-pointer rounded-none ${
+                        activeUploadTab === 'PRESETS'
+                          ? 'border-b-2 border-[#F2EFE9] text-[#F2EFE9]'
+                          : 'text-[#777777] hover:text-[#CCCCCC]'
+                      }`}
+                    >
+                      Vault Presets (Dev Only)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setActiveUploadTab('LINK')}
+                      className={`py-2 px-4 text-[11px] uppercase tracking-[0.14em] font-semibold transition-colors cursor-pointer rounded-none ${
+                        activeUploadTab === 'LINK'
+                          ? 'border-b-2 border-[#F2EFE9] text-[#F2EFE9]'
+                          : 'text-[#777777] hover:text-[#CCCCCC]'
+                      }`}
+                    >
+                      Custom URL (Dev Only)
+                    </button>
+                  </>
+                )}
               </div>
 
               {/* Tab Content */}
-              {activeUploadTab === 'PRESETS' && (
+              {!isProduction && activeUploadTab === 'PRESETS' && (
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                   {SAMPLE_IMAGE_PRESETS.map((p) => (
                     <button
@@ -605,15 +673,25 @@ export default function SellPage(): React.JSX.Element {
                     htmlFor="primary-photo-input"
                     className="inline-block px-5 py-2.5 border border-[#1F1F1F] bg-[#0C0C0C] hover:bg-[#F2EFE9] hover:text-[#080808] text-[#CCCCCC] text-[11px] uppercase tracking-[0.14em] cursor-pointer transition-colors"
                   >
-                    [ CHOOSE SPECIMEN PHOTOGRAPH ]
+                    {imageUrl && !imageUrl.startsWith('http') ? '[ CHANGE UPLOADED PHOTO ]' : '[ CHOOSE REAL ITEM PHOTOGRAPH ]'}
                   </label>
                   <p className="text-[10px] text-[#777777] mt-2">
-                    JPG, PNG, or WEBP up to 25MB • Studio lighting recommended
+                    JPG, PNG, or WEBP up to 25MB • Take clear in-hand photos showing seals, box, and figure condition
                   </p>
+                  {isUploading && (
+                    <p className="text-[10px] text-[#10B981] mt-2 animate-pulse font-mono">
+                      [ PROCESSING LOCAL SPECIMEN PHOTO... ]
+                    </p>
+                  )}
+                  {imageUrl && (
+                    <p className="text-[10px] text-[#10B981] mt-2 font-mono">
+                      [ IMAGE ATTACHED AND VERIFIED ]
+                    </p>
+                  )}
                 </div>
               )}
 
-              {activeUploadTab === 'LINK' && (
+              {!isProduction && activeUploadTab === 'LINK' && (
                 <div>
                   <input
                     type="url"
@@ -659,16 +737,151 @@ export default function SellPage(): React.JSX.Element {
                   </span>
                 </div>
               </div>
+
+              {/* Proof of Purchase / Invoice Upload for Items > ₹10,000 */}
+              <div className="pt-4 border-t border-[#161616] space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] uppercase tracking-[0.18em] text-[#888888] font-semibold block">
+                    PROOF OF PURCHASE / INVOICE {priceNum > 10000 ? '(MANDATORY OVER ₹10,000)' : '(OPTIONAL)'}
+                  </span>
+                  {priceNum > 10000 && (
+                    <span className="text-[9px] uppercase tracking-[0.14em] text-[#EF4444] border border-[#EF4444]/40 bg-[#EF4444]/10 px-2 py-0.5 font-bold">
+                      REQUIRED FOR ₹10,000+ LOTS
+                    </span>
+                  )}
+                </div>
+                <p className="text-[11px] text-[#777777] leading-relaxed">
+                  Upload store receipt, AmiAmi/GoodSmile import invoice, or customs bill to verify provenance and eliminate counterfeit disputes.
+                </p>
+                <div className="p-4 border border-dashed border-[#1F1F1F] bg-[#080808] flex flex-col sm:flex-row items-center justify-between gap-3">
+                  <input
+                    type="file"
+                    accept="image/*,application/pdf"
+                    onChange={handleInvoiceUpload}
+                    className="hidden"
+                    id="invoice-file-input"
+                  />
+                  <div className="text-left">
+                    <span className="text-[11px] text-[#CCCCCC] block font-mono">
+                      {invoiceFileName ? `[ ATTACHED: ${invoiceFileName} ]` : '[ NO INVOICE ATTACHED ]'}
+                    </span>
+                    <span className="text-[9px] text-[#666666]">
+                      PDF, JPG, or PNG up to 10MB
+                    </span>
+                  </div>
+                  <label
+                    htmlFor="invoice-file-input"
+                    className="px-4 py-2 border border-[#1F1F1F] bg-[#0C0C0C] hover:bg-[#F2EFE9] hover:text-[#080808] text-[#CCCCCC] text-[10px] uppercase tracking-[0.14em] cursor-pointer transition-colors whitespace-nowrap"
+                  >
+                    {invoiceFileName ? '[ REPLACE FILE ]' : '[ ATTACH INVOICE ]'}
+                  </label>
+                </div>
+              </div>
             </div>
 
-            {/* Section 04: Valuation & Escrow Floor */}
+            {/* Section 04: Shipping & Logistics */}
+            <div className="bg-[#0C0C0C] border border-[#1F1F1F] p-6 space-y-5">
+              <div className="border-b border-[#161616] pb-3 flex justify-between items-center">
+                <span className="text-[10px] uppercase tracking-[0.2em] text-[#777777] font-semibold">
+                  SECTION 04 // LOGISTICS &amp; PICKUP SPEC
+                </span>
+                <span className="text-[10px] text-[#10B981] font-semibold uppercase tracking-wider">
+                  SHIPROCKET DIRECT C2C
+                </span>
+              </div>
+              <p className="text-[12px] text-[#8E8E8E]">
+                Enter your pickup pincode and package dimensions for automated courier pickup and weight verification:
+              </p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[11px] uppercase tracking-[0.14em] text-[#888888] mb-2 font-medium">
+                    Seller Pickup Pincode (6 Digits) *
+                  </label>
+                  <input
+                    type="text"
+                    maxLength={6}
+                    value={pickupPincode}
+                    onChange={(e) => setPickupPincode(e.target.value.replace(/\D/g, ''))}
+                    required
+                    placeholder="e.g. 400001"
+                    className="w-full bg-[#080808] border border-[#1F1F1F] focus:border-[#F2EFE9] px-4 py-3 text-xs text-[#F2EFE9] placeholder-[#555555] outline-none rounded-none font-mono"
+                  />
+                  <span className="text-[9px] text-[#666666] mt-1 block">
+                    Shiprocket will collect the boxed lot directly from this address upon escrow confirmation.
+                  </span>
+                </div>
+
+                <div>
+                  <label className="block text-[11px] uppercase tracking-[0.14em] text-[#888888] mb-2 font-medium">
+                    Estimated Packed Weight (kg) *
+                  </label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    min="0.1"
+                    value={shippingWeightKg}
+                    onChange={(e) => setShippingWeightKg(e.target.value)}
+                    required
+                    placeholder="1.5"
+                    className="w-full bg-[#080808] border border-[#1F1F1F] focus:border-[#F2EFE9] px-4 py-3 text-xs text-[#F2EFE9] placeholder-[#555555] outline-none rounded-none font-mono"
+                  />
+                  <span className="text-[9px] text-[#666666] mt-1 block">
+                    Figure + art box + sturdy 3-ply outer shipping carton + bubble wrap.
+                  </span>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[11px] uppercase tracking-[0.14em] text-[#888888] mb-2 font-medium">
+                  Outer Carton Dimensions (L × W × H in cm) *
+                </label>
+                <div className="grid grid-cols-3 gap-3">
+                  <div>
+                    <input
+                      type="number"
+                      min="5"
+                      value={boxLengthCm}
+                      onChange={(e) => setBoxLengthCm(e.target.value)}
+                      placeholder="Length cm"
+                      className="w-full bg-[#080808] border border-[#1F1F1F] focus:border-[#F2EFE9] px-3 py-2.5 text-xs text-[#F2EFE9] placeholder-[#555555] outline-none rounded-none font-mono text-center"
+                    />
+                    <span className="text-[9px] text-[#666666] block text-center mt-1">LENGTH (CM)</span>
+                  </div>
+                  <div>
+                    <input
+                      type="number"
+                      min="5"
+                      value={boxWidthCm}
+                      onChange={(e) => setBoxWidthCm(e.target.value)}
+                      placeholder="Width cm"
+                      className="w-full bg-[#080808] border border-[#1F1F1F] focus:border-[#F2EFE9] px-3 py-2.5 text-xs text-[#F2EFE9] placeholder-[#555555] outline-none rounded-none font-mono text-center"
+                    />
+                    <span className="text-[9px] text-[#666666] block text-center mt-1">WIDTH (CM)</span>
+                  </div>
+                  <div>
+                    <input
+                      type="number"
+                      min="5"
+                      value={boxHeightCm}
+                      onChange={(e) => setBoxHeightCm(e.target.value)}
+                      placeholder="Height cm"
+                      className="w-full bg-[#080808] border border-[#1F1F1F] focus:border-[#F2EFE9] px-3 py-2.5 text-xs text-[#F2EFE9] placeholder-[#555555] outline-none rounded-none font-mono text-center"
+                    />
+                    <span className="text-[9px] text-[#666666] block text-center mt-1">HEIGHT (CM)</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Section 05: Valuation & Settlement */}
             <div className="bg-[#0C0C0C] border border-[#1F1F1F] p-6 space-y-5">
               <div className="border-b border-[#161616] pb-3">
                 <span className="text-[10px] uppercase tracking-[0.2em] text-[#777777] font-semibold block mb-1">
-                  SECTION 04 // VALUATION &amp; SETTLEMENT
+                  SECTION 05 // VALUATION &amp; SETTLEMENT
                 </span>
                 <p className="text-[12px] text-[#8E8E8E]">
-                  Specify your public asking price and optional automated bargaining minimum:
+                  Specify your public asking price and optional automated bargaining minimum (5% seller platform fee applies upon escrow completion):
                 </p>
               </div>
 
