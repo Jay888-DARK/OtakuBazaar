@@ -50,7 +50,7 @@ const DEFAULT_FALLBACK_GRAIL: FeaturedGrailItem = {
   condition: 'S-Rank Mint in Box',
   askingPrice: 24500,
   timeRemaining: '08H : 15M',
-  imageUrl: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=800&q=85',
+  imageUrl: '/showcase/bay2_clean.png',
 };
 
 const FALLBACK_FEATURED_GRAILS: FeaturedGrailItem[] = [
@@ -65,7 +65,7 @@ const FALLBACK_FEATURED_GRAILS: FeaturedGrailItem[] = [
     condition: 'S-Rank Factory Sealed',
     askingPrice: 36000,
     timeRemaining: '19H : 40M',
-    imageUrl: 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=800&q=85',
+    imageUrl: '/showcase/bay3_clean.png',
   },
   {
     id: 'lot-0486',
@@ -77,7 +77,7 @@ const FALLBACK_FEATURED_GRAILS: FeaturedGrailItem[] = [
     condition: 'S-Rank Factory Sealed',
     askingPrice: 42000,
     timeRemaining: '05H : 50M',
-    imageUrl: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=800&q=85',
+    imageUrl: '/showcase/cabinet_clean.png',
   },
   {
     id: 'lot-0481',
@@ -89,7 +89,7 @@ const FALLBACK_FEATURED_GRAILS: FeaturedGrailItem[] = [
     condition: 'S-Rank Factory Sealed',
     askingPrice: 28500,
     timeRemaining: '12H : 45M',
-    imageUrl: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=800&q=85',
+    imageUrl: '/showcase/bay1_clean.png',
   },
 ];
 
@@ -415,7 +415,7 @@ export default function FeaturedGrailSpotlight({ onOpenOfferModal }: FeaturedGra
               <div className="p-4 sm:p-5 flex items-center gap-4 bg-[#09090b]">
                 <div className="relative w-16 h-16 aspect-square bg-[#0c0c0e] border border-[#27272a] shrink-0 overflow-hidden">
                   <Image
-                    src="https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=300&h=300&q=85"
+                    src="/showcase/bay1_clean.png"
                     alt="Supporting Specimen A-01"
                     fill
                     sizes="64px"
@@ -443,7 +443,7 @@ export default function FeaturedGrailSpotlight({ onOpenOfferModal }: FeaturedGra
               <div className="p-4 sm:p-5 flex items-center gap-4 bg-[#09090b]">
                 <div className="relative w-16 h-16 aspect-square bg-[#0c0c0e] border border-[#27272a] shrink-0 overflow-hidden">
                   <Image
-                    src="https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=300&h=300&q=85"
+                    src="/showcase/bay2_clean.png"
                     alt="Supporting Specimen B-02"
                     fill
                     sizes="64px"

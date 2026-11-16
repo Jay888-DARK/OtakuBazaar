@@ -20,13 +20,13 @@ interface VaultHeroProps {
 
 const CURATED_VAULT_GRAILS = [
   { id: 'lot-0482', image: '/showcase/guts_berserker_statue.jpg', title: 'GUTS BERSERKER 1/4', href: '/lot/lot-0482' },
-  { id: 'lot-0481', image: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=800&q=85', title: 'RENGOKU FLAME 1/8', href: '/lot/lot-0481' },
-  { id: 'lot-0484', image: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=800&q=85', title: 'SABER ALTRIA 1/7', href: '/lot/lot-0484' },
-  { id: 'lot-0485', image: 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=800&q=85', title: 'GOJO HOLLOW PURPLE 1/7', href: '/lot/lot-0485' },
-  { id: 'lot-0483', image: 'https://images.unsplash.com/photo-1563089145-599997674d42?auto=format&fit=crop&w=800&q=85', title: 'EDWARD ELRIC GEM', href: '/lot/lot-0483' },
-  { id: 'lot-0486', image: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=800&q=85', title: 'EVA UNIT-01 METAL BUILD', href: '/lot/lot-0486' },
-  { id: 'lot-0488', image: 'https://images.unsplash.com/photo-1563089145-599997674d42?auto=format&fit=crop&w=800&q=85', title: 'BERSERK DELUXE 1-14', href: '/lot/lot-0488' },
-  { id: 'lot-0489', image: 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&w=800&q=85', title: 'NICHIRIN SWORD 1:1', href: '/lot/lot-0489' },
+  { id: 'lot-0481', image: '/showcase/bay1_clean.png', title: 'RENGOKU FLAME 1/8', href: '/lot/lot-0481' },
+  { id: 'lot-0484', image: '/showcase/bay2_clean.png', title: 'SABER ALTRIA 1/7', href: '/lot/lot-0484' },
+  { id: 'lot-0485', image: '/showcase/bay3_clean.png', title: 'GOJO HOLLOW PURPLE 1/7', href: '/lot/lot-0485' },
+  { id: 'lot-0483', image: '/showcase/figure_umbreon.png', title: 'EDWARD ELRIC GEM', href: '/lot/lot-0483' },
+  { id: 'lot-0486', image: '/showcase/cabinet_clean.png', title: 'EVA UNIT-01 METAL BUILD', href: '/lot/lot-0486' },
+  { id: 'lot-0488', image: '/showcase/manga_shelf_bottom.png', title: 'BERSERK DELUXE 1-14', href: '/lot/lot-0488' },
+  { id: 'lot-0489', image: '/Firefly_clean.png', title: 'NICHIRIN SWORD 1:1', href: '/lot/lot-0489' },
 ];
 
 export default function VaultHero({ onSelectVaultItem }: VaultHeroProps) {

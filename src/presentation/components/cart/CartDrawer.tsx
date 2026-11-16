@@ -53,7 +53,7 @@ const DEMO_CART_ITEMS: CartItemData[] = [
       id: 'lot-0481',
       title: 'Kyojuro Rengoku Flame Breathing 1/8 Scale Figure',
       price: 28500,
-      imageUrls: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=800&q=85',
+      imageUrls: '/showcase/bay1_clean.png',
       minOfferPrice: 20000,
       activeOffer: {
         id: 'offer-demo-pending',
@@ -75,7 +75,7 @@ function formatCountdown(expiresAt: string | Date): string {
 }
 
 function getValidThumbnail(imageUrls?: string | null): string {
-  if (!imageUrls) return 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=800&q=85';
+  if (!imageUrls) return '/showcase/bay1_clean.png';
   try {
     const parsed = JSON.parse(imageUrls);
     if (Array.isArray(parsed) && parsed[0]) return parsed[0];
@@ -308,8 +308,7 @@ export function CartDrawer(): React.JSX.Element | null {
                             alt={item.product.title}
                             className="w-full h-full object-cover object-center"
                             onError={(e) => {
-                              (e.currentTarget as HTMLImageElement).src =
-                                'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=800&q=85';
+                              (e.currentTarget as HTMLImageElement).src = '/showcase/bay1_clean.png';
                             }}
                           />
                         </div>

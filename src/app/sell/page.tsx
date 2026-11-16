@@ -115,15 +115,15 @@ const SAMPLE_IMAGE_PRESETS = [
   },
   {
     label: 'Kyojuro Rengoku Flame 1/8',
-    url: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=800&q=85',
+    url: '/showcase/bay1_clean.png',
   },
   {
     label: 'Saber Altria Pendragon',
-    url: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=800&q=85',
+    url: '/showcase/bay2_clean.png',
   },
   {
     label: 'Satoru Gojo Hollow Purple',
-    url: 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=800&q=85',
+    url: '/showcase/bay3_clean.png',
   },
 ];
 

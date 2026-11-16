@@ -255,7 +255,7 @@ export async function addToCart(productId: string, userId: string = 'user_buyer_
         id: productId,
         title: mock ? mock.title : 'Authentic Scale Figure',
         price: mock ? mock.price : 28500,
-        imageUrls: mock ? mock.imageUrl : 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=800&q=85',
+        imageUrls: mock ? mock.imageUrl : '/showcase/bay1_clean.png',
         minOfferPrice: mock ? Math.round(mock.price * 0.75) : 20000,
         dealOffers: [
           {

@@ -88,7 +88,7 @@ const INITIAL_SHELF: ShelfItem[] = [
     valuation: 28500,
     custodyBay: 'BENGALURU VAULT 02',
     status: 'OFFER_PENDING',
-    imageUrl: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=800&q=85',
+    imageUrl: '/showcase/bay1_clean.png',
   },
   {
     id: 'shelf-03',
@@ -100,7 +100,7 @@ const INITIAL_SHELF: ShelfItem[] = [
     valuation: 24500,
     custodyBay: 'AHMEDABAD PRIVATE STORAGE',
     status: 'PERSONAL_CUSTODY',
-    imageUrl: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=800&q=85',
+    imageUrl: '/showcase/bay2_clean.png',
   },
   {
     id: 'shelf-04',
@@ -112,7 +112,7 @@ const INITIAL_SHELF: ShelfItem[] = [
     valuation: 42000,
     custodyBay: 'BENGALURU VAULT',
     status: 'ACTIVE_CONSIGNMENT',
-    imageUrl: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=800&q=85',
+    imageUrl: '/showcase/cabinet_clean.png',
   },
 ];
 

@@ -96,19 +96,19 @@ export function LotDetailClientView({ product }: LotDetailClientViewProps): Reac
       {
         slot: '[ 02 // HOLOGRAM STICKER MACRO ]',
         title: 'Hologram Sticker Macro',
-        src: 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=1000&q=85',
+        src: '/showcase/bay3_clean.png',
         description: 'Tamper-evident holographic authenticity seal with sequential serial.',
       },
       {
         slot: '[ 03 // BASE COPYRIGHT STAMP ]',
         title: 'Base Copyright Stamp',
-        src: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=1000&q=85',
+        src: '/showcase/bay1_clean.png',
         description: 'Debossed factory copyright stamp verification.',
       },
       {
         slot: '[ 04 // HANDWRITTEN TIMESTAMP ]',
         title: 'Handwritten Timestamp',
-        src: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=1000&q=85',
+        src: '/showcase/bay2_clean.png',
         description: 'Physical ledger verification card with seller handle and date.',
       },
     ];

@@ -204,7 +204,7 @@ export function CuratedEditorialCollection(): React.JSX.Element {
               <div className="grid grid-cols-3 gap-3 items-center">
                 <div className="relative aspect-square bg-[#08080a] border border-[#27272a] overflow-hidden">
                   <Image
-                    src="https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=300&h=300&q=85"
+                    src="/showcase/bay1_clean.png"
                     alt="Berserk Dragon Slayer Relic"
                     fill
                     sizes="120px"
@@ -246,7 +246,7 @@ export function CuratedEditorialCollection(): React.JSX.Element {
               <div className="grid grid-cols-3 gap-3 items-center">
                 <div className="relative aspect-square bg-[#08080a] border border-[#27272a] overflow-hidden">
                   <Image
-                    src="https://images.unsplash.com/photo-1563089145-599997674d42?auto=format&fit=crop&w=300&h=300&q=85"
+                    src="/showcase/figure_umbreon.png"
                     alt="Berserk Deluxe Edition 1-14 Hardcover Set"
                     fill
                     sizes="120px"

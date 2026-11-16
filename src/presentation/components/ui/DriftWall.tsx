@@ -38,12 +38,12 @@ export interface DriftWallProps {
 }
 
 const DEFAULT_ITEMS: DriftWallItem[] = [
-  { image: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=800&q=85', title: 'Saber Altria 1/7' },
-  { image: 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&w=800&q=85', title: 'Guts Berserker 1/4' },
-  { image: 'https://images.unsplash.com/photo-1612462766564-96eb122ce279?auto=format&fit=crop&w=800&q=85', title: 'Rengoku Flame Breathing' },
-  { image: 'https://images.unsplash.com/photo-1563089145-599997674d42?auto=format&fit=crop&w=800&q=85', title: 'Edward Elric GEM' },
-  { image: 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=800&q=85', title: 'Satoru Gojo Scramble' },
-  { image: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=800&q=85', title: 'EVA Unit-01 Metal Build' }
+  { image: '/showcase/bay2_clean.png', title: 'Saber Altria 1/7' },
+  { image: '/showcase/guts_berserker_statue.jpg', title: 'Guts Berserker 1/4' },
+  { image: '/showcase/bay1_clean.png', title: 'Rengoku Flame Breathing' },
+  { image: '/showcase/figure_umbreon.png', title: 'Edward Elric GEM' },
+  { image: '/showcase/bay3_clean.png', title: 'Satoru Gojo Scramble' },
+  { image: '/showcase/cabinet_clean.png', title: 'EVA Unit-01 Metal Build' },
 ];
 
 const prefersReducedMotion = () =>

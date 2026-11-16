@@ -35,9 +35,9 @@ interface ProductDemoGalleryProps {
 // 4 distinct physical inspection angles for 360 turnaround
 const TURNAROUND_ANGLES = [
   { deg: 0, label: '000° FRONT ELEVATION', src: '/showcase/guts_berserker_statue.jpg' },
-  { deg: 90, label: '090° LATERAL FLANK', src: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=1000&q=85' },
-  { deg: 180, label: '180° REAR CAPE & ARMOR', src: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=1000&q=85' },
-  { deg: 270, label: '270° WEAPON CLEARANCE', src: 'https://images.unsplash.com/photo-1563089145-599997674d42?auto=format&fit=crop&w=1000&q=85' },
+  { deg: 90, label: '090° LATERAL FLANK', src: '/showcase/bay1_clean.png' },
+  { deg: 180, label: '180° REAR CAPE & ARMOR', src: '/showcase/bay2_clean.png' },
+  { deg: 270, label: '270° WEAPON CLEARANCE', src: '/showcase/figure_umbreon.png' },
 ];
 
 export function ProductDemoGallery({
