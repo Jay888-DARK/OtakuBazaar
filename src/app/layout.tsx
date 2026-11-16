@@ -19,6 +19,7 @@ import { CartDrawer } from '@/presentation/components/cart/CartDrawer';
 import { VaultCartToast } from '@/presentation/components/cart/VaultCartToast';
 import { ProvenanceManifestModal } from '@/presentation/components/provenance/ProvenanceManifestModal';
 import { RazorpayScript } from '@/presentation/components/payments/RazorpayScript';
+import { AnalyticsAndMonitoring } from '@/presentation/components/telemetry/AnalyticsAndMonitoring';
 
 export const metadata: Metadata = {
   title: 'OtakuBazaar — Premium Anime Collectibles Marketplace',
@@ -45,6 +46,9 @@ export default function RootLayout({
       >
         {/* Lazy Loaded Razorpay Checkout Script */}
         <RazorpayScript />
+
+        {/* Analytics & Error Monitoring Telemetry */}
+        <AnalyticsAndMonitoring />
 
         <AuthProvider>
           <ThemeProvider>
