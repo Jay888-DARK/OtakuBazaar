@@ -32,7 +32,12 @@ export interface MockProduct {
   condition: 'NEW' | 'LIKE_NEW' | 'GOOD';
   gradeCondition: string; // e.g. "MISB (FACTORY SEALED)" | "BIB (CABINET DISPLAYED)"
   figureGrade: 'MISB (FACTORY SEALED)' | 'BIB (CABINET DISPLAYED)' | 'LOOSE (DISPLAYED PRISTINE)';
-  boxCondition: 'MINT BOX (BLISTER INTACT)' | 'MINOR COURIER CORNER WEAR' | 'FACTORY CARTON SEALED';
+  boxCondition:
+    | 'MINT BOX (BLISTER INTACT)'
+    | 'MINOR COURIER CORNER WEAR'
+    | 'FACTORY CARTON SEALED'
+    | 'FACTORY SHRINKWRAP SEALED'
+    | 'MINT / SHRINKWRAP INTACT';
   origin: string; // e.g. "MUMBAI, MH • IN-HAND"
   indianLocation: string; // e.g. "MUMBAI, MH" | "BENGALURU, KA" | "AHMEDABAD, GJ"
   ownerCount: string; // e.g. "1ST OWNER" | "AUTHENTIC IMPORT"
@@ -330,7 +335,7 @@ export const MOCK_GRAILS: MockProduct[] = [
     condition: 'NEW',
     gradeCondition: 'GRADE S // MISB (FACTORY SEALED)',
     figureGrade: 'MISB (FACTORY SEALED)',
-    boxCondition: 'MINT BOX (BLISTER INTACT)',
+    boxCondition: 'FACTORY SHRINKWRAP SEALED',
     origin: 'KOLKATA, WB • 1ST OWNER',
     indianLocation: 'KOLKATA, WB',
     ownerCount: '1ST OWNER',
