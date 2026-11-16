@@ -36,6 +36,7 @@ export function Navbar() {
   const { data: session } = useSession();
   const [searchQuery, setSearchQuery] = useState('');
   const [cartItemCount, setCartItemCount] = useState<number>(0);
+  const [watchlistCount, setWatchlistCount] = useState<number>(0);
 
   useEffect(() => {
     // Initial fetch of cart items
@@ -58,7 +59,27 @@ export function Navbar() {
     };
 
     window.addEventListener('otaku_cart_updated', handleCartUpdate);
-    return () => window.removeEventListener('otaku_cart_updated', handleCartUpdate);
+
+    // Watchlist count sync
+    try {
+      const stored = JSON.parse(localStorage.getItem('otaku_watchlist_ids') || '[]');
+      if (Array.isArray(stored)) {
+        setWatchlistCount(stored.length);
+      }
+    } catch {}
+
+    const handleWatchlistUpdate = (e: Event) => {
+      const customEvent = e as CustomEvent<{ ids?: string[] }>;
+      if (customEvent.detail?.ids && Array.isArray(customEvent.detail.ids)) {
+        setWatchlistCount(customEvent.detail.ids.length);
+      }
+    };
+    window.addEventListener('otaku_watchlist_updated', handleWatchlistUpdate);
+
+    return () => {
+      window.removeEventListener('otaku_cart_updated', handleCartUpdate);
+      window.removeEventListener('otaku_watchlist_updated', handleWatchlistUpdate);
+    };
   }, []);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
@@ -167,6 +188,22 @@ export function Navbar() {
 
         {/* Right: Bracketed Action Cluster */}
         <div className="flex items-center space-x-2 sm:space-x-3">
+          {/* Watchlist Saved Trigger */}
+          <Link
+            href="/search?filter=watchlist"
+            aria-label="View Saved Items"
+            style={{
+              fontFamily: 'var(--font-sans), sans-serif',
+              fontSize: '0.72rem',
+              fontWeight: 600,
+              letterSpacing: '0.12em',
+              textTransform: 'uppercase',
+            }}
+            className="hidden md:flex items-center border border-[#1F1F1F] bg-[#0C0C0C] px-3.5 py-2 uppercase text-[#888888] hover:border-[#F2EFE9] hover:bg-[#F2EFE9] hover:text-[#080808] transition-colors duration-75 cursor-pointer rounded-none font-sans no-underline"
+          >
+            <span>[ SAVED {watchlistCount} ]</span>
+          </Link>
+
           {/* Cart Drawer Trigger */}
           <button
             onClick={openCart}

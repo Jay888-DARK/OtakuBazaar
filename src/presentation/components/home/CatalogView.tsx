@@ -30,12 +30,30 @@ export const CatalogView: React.FC = () => {
   const [selectedOrigins, setSelectedOrigins] = useState<string[]>([]);
   const [selectedScales, setSelectedScales] = useState<string[]>([]);
 
+  // Sorting & Watchlist States
+  const [sortOption, setSortOption] = useState<'NEWEST' | 'PRICE_ASC' | 'PRICE_DESC'>('NEWEST');
+  const [showWatchlistOnly, setShowWatchlistOnly] = useState<boolean>(false);
+  const [watchlistedIds, setWatchlistedIds] = useState<string[]>([]);
+
   // Pagination State (Strict multiples of 4: 8 lots per view)
   const [currentPage, setCurrentPage] = useState<number>(1);
   const LOTS_PER_PAGE = 8;
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
+
+    try {
+      const stored = JSON.parse(localStorage.getItem('otaku_watchlist_ids') || '[]');
+      if (Array.isArray(stored)) setWatchlistedIds(stored);
+    } catch {}
+
+    const handleWatchlistUpdate = (e: Event) => {
+      const customEvent = e as CustomEvent<{ ids?: string[] }>;
+      if (customEvent.detail?.ids && Array.isArray(customEvent.detail.ids)) {
+        setWatchlistedIds(customEvent.detail.ids);
+      }
+    };
+    window.addEventListener('otaku_watchlist_updated', handleWatchlistUpdate);
 
     const handleCategoryEvent = (e: Event) => {
       const customEvent = e as CustomEvent<{ category?: string }>;
@@ -84,6 +102,7 @@ export const CatalogView: React.FC = () => {
       window.removeEventListener('otaku_category_select', handleCategoryEvent);
       window.removeEventListener('otaku_filter_select', handleFilterEvent);
       window.removeEventListener('otaku_search', handleSearchEvent as EventListener);
+      window.removeEventListener('otaku_watchlist_updated', handleWatchlistUpdate);
     };
   }, []);
 
@@ -139,13 +158,20 @@ export const CatalogView: React.FC = () => {
       setSelectedOrigins([]);
       setSelectedScales([]);
       setSearchQuery('');
+      setSortOption('NEWEST');
+      setShowWatchlistOnly(false);
       setCurrentPage(1);
       setIsLoading(false);
     }, 100);
   };
 
   const filteredProducts = useMemo(() => {
-    return MOCK_PRODUCTS.filter((product: MockProduct) => {
+    const list = MOCK_PRODUCTS.filter((product: MockProduct) => {
+      // 0. Watchlist Only Filter
+      if (showWatchlistOnly && !watchlistedIds.includes(product.id)) {
+        return false;
+      }
+
       // 1. Search Query
       if (searchQuery) {
         const titleMatch = product.title.toLowerCase().includes(searchQuery);
@@ -194,9 +220,9 @@ export const CatalogView: React.FC = () => {
         if (!selectedGrades.includes(product.gradeCondition)) return false;
       }
 
-      // 6. Sidebar Origin Vault
+      // 6. Sidebar Origin Vault (Indian Custody Origins)
       if (selectedOrigins.length > 0) {
-        const match = selectedOrigins.some((orig) => product.origin.includes(orig));
+        const match = selectedOrigins.some((orig) => product.origin.toUpperCase().includes(orig.toUpperCase()));
         if (!match) return false;
       }
 
@@ -207,6 +233,12 @@ export const CatalogView: React.FC = () => {
 
       return true;
     });
+
+    return [...list].sort((a, b) => {
+      if (sortOption === 'PRICE_ASC') return a.price - b.price;
+      if (sortOption === 'PRICE_DESC') return b.price - a.price;
+      return 0;
+    });
   }, [
     searchQuery,
     selectedCategory,
@@ -215,6 +247,9 @@ export const CatalogView: React.FC = () => {
     selectedGrades,
     selectedOrigins,
     selectedScales,
+    showWatchlistOnly,
+    watchlistedIds,
+    sortOption,
   ]);
 
   // Paginated Product Slice (8 items per view to avoid orphaned 9th card)
@@ -233,35 +268,102 @@ export const CatalogView: React.FC = () => {
   return (
     <div id="catalog" className="w-full bg-[#080808] py-10 px-4 sm:px-6 lg:px-8 select-none">
       <div className="max-w-7xl mx-auto">
-        {/* Section Header */}
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between border-b border-[#1F1F1F] pb-4 mb-8 gap-4">
-          <div>
-            <span className="block mb-1 font-sans text-[10px] tracking-[0.15em] text-[#777777] uppercase font-semibold">
-              ARCHIVAL CUSTODY • MAIN CATALOG
-            </span>
-            <h2 className="leading-tight font-serif text-[26px] sm:text-[32px] text-[#F2EFE9] uppercase tracking-[0.06em]">
-              ACTIVE VAULT LOTS
-            </h2>
+        {/* Section Header with Search, Sort, Watchlist & Counts */}
+        <div className="border-b border-[#1F1F1F] pb-4 mb-8 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+            <div>
+              <span className="block mb-1 font-sans text-[10px] tracking-[0.15em] text-[#777777] uppercase font-semibold">
+                AUTHENTIC CUSTODY • DIRECT C2C CATALOG
+              </span>
+              <h2 className="leading-tight font-serif text-[26px] sm:text-[32px] text-[#F2EFE9] uppercase tracking-[0.06em]">
+                ACTIVE VERIFIED LOTS
+              </h2>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="font-sans text-[11px] tracking-[0.14em] text-[#777777] uppercase">
+                SHOWING LOTS {startStr}–{endStr} OF {totalStr}
+              </span>
+              {(activeFilter !== 'ALL' ||
+                selectedCategory !== 'ALL' ||
+                selectedPriceBracket !== 'ALL' ||
+                selectedGrades.length > 0 ||
+                selectedOrigins.length > 0 ||
+                selectedScales.length > 0 ||
+                searchQuery ||
+                showWatchlistOnly) && (
+                <button
+                  type="button"
+                  onClick={handleResetFilters}
+                  className="px-3 py-1.5 border border-[#1F1F1F] bg-[#0C0C0C] hover:bg-[#F2EFE9] hover:text-[#080808] hover:border-[#F2EFE9] text-[#888888] font-sans text-[10px] tracking-[0.12em] uppercase transition-colors cursor-pointer rounded-none"
+                >
+                  [ RESET ALL ]
+                </button>
+              )}
+            </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <span className="font-sans text-[11px] tracking-[0.14em] text-[#777777] uppercase">
-              SHOWING LOTS {startStr}–{endStr} OF {totalStr}
-            </span>
-            {(activeFilter !== 'ALL' ||
-              selectedCategory !== 'ALL' ||
-              selectedPriceBracket !== 'ALL' ||
-              selectedGrades.length > 0 ||
-              selectedOrigins.length > 0 ||
-              selectedScales.length > 0) && (
+          {/* Quick Toolbar: Search Bar, Sorting, Watchlist Filter */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-2">
+            {/* Inline Search Input */}
+            <div className="relative flex-1 max-w-md">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value.toLowerCase());
+                  setCurrentPage(1);
+                }}
+                placeholder="SEARCH FIGURES, LOT #, OR SERIES..."
+                className="w-full border border-[#1F1F1F] bg-[#0C0C0C] px-3.5 py-2 text-[11px] text-[#F2EFE9] placeholder-[#555555] uppercase tracking-[0.08em] outline-none focus:border-[#F2EFE9] rounded-none font-sans"
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-[#777777] hover:text-white uppercase font-sans cursor-pointer"
+                >
+                  [CLEAR]
+                </button>
+              )}
+            </div>
+
+            <div className="flex items-center gap-2">
+              {/* Watchlist Toggle */}
               <button
                 type="button"
-                onClick={handleResetFilters}
-                className="px-3 py-1.5 border border-[#1F1F1F] bg-[#0C0C0C] hover:bg-[#F2EFE9] hover:text-[#080808] hover:border-[#F2EFE9] text-[#888888] font-sans text-[10px] tracking-[0.12em] uppercase transition-colors cursor-pointer rounded-none"
+                onClick={() => {
+                  setShowWatchlistOnly((prev) => !prev);
+                  setCurrentPage(1);
+                }}
+                className={`px-3 py-2 border text-[10px] uppercase tracking-[0.12em] transition-none cursor-pointer font-sans ${
+                  showWatchlistOnly
+                    ? 'border-[#10B981] bg-[#091812] text-[#10B981]'
+                    : 'border-[#1F1F1F] bg-[#0C0C0C] text-[#888888] hover:text-[#F2EFE9] hover:border-[#444444]'
+                }`}
               >
-                [ RESET ALL ]
+                {showWatchlistOnly ? `★ WATCHLIST (${watchlistedIds.length}) ACTIVE` : `★ WATCHLIST (${watchlistedIds.length})`}
               </button>
-            )}
+
+              {/* Sorting Select */}
+              <div className="flex items-center border border-[#1F1F1F] bg-[#0C0C0C] px-2 py-1.5">
+                <span className="text-[10px] text-[#777777] uppercase tracking-[0.12em] mr-2 font-sans font-semibold">
+                  SORT:
+                </span>
+                <select
+                  value={sortOption}
+                  onChange={(e) => {
+                    setSortOption(e.target.value as 'NEWEST' | 'PRICE_ASC' | 'PRICE_DESC');
+                    setCurrentPage(1);
+                  }}
+                  className="bg-transparent text-[#F2EFE9] text-[10px] uppercase tracking-[0.08em] outline-none cursor-pointer font-sans"
+                >
+                  <option value="NEWEST" className="bg-[#0C0C0C] text-[#F2EFE9]">NEWEST LOTS</option>
+                  <option value="PRICE_ASC" className="bg-[#0C0C0C] text-[#F2EFE9]">PRICE: LOW TO HIGH</option>
+                  <option value="PRICE_DESC" className="bg-[#0C0C0C] text-[#F2EFE9]">PRICE: HIGH TO LOW</option>
+                </select>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -370,13 +472,13 @@ export const CatalogView: React.FC = () => {
               </div>
             </div>
 
-            {/* Facet 3: Origin Vault */}
+            {/* Facet 3: Seller City (India) */}
             <div className="space-y-2.5 pt-4 border-t border-[#161616]">
               <span className="block font-sans text-[10px] tracking-[0.15em] text-[#777777] uppercase font-semibold">
-                ORIGIN VAULT
+                SELLER LOCATION (INDIA)
               </span>
               <div className="space-y-2">
-                {['TOKYO, JAPAN', 'OSAKA', 'KYOTO'].map((origin) => {
+                {['MUMBAI', 'BENGALURU', 'DELHI NCR', 'AHMEDABAD', 'PUNE', 'HYDERABAD', 'CHENNAI', 'KOLKATA'].map((origin) => {
                   const isActive = selectedOrigins.includes(origin);
                   return (
                     <label
@@ -513,38 +615,40 @@ export const CatalogView: React.FC = () => {
                   ))}
                 </div>
 
-                {/* Clean Architectural Pagination Bar (Eliminating the Orphaned 9th Card) */}
-                <div className="border border-[#1F1F1F] bg-[#0C0C0C] px-5 py-4 mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 font-sans text-[11px] tracking-[0.14em] uppercase text-[#777777]">
-                  <div>
-                    SHOWING LOTS {startStr}–{endStr} OF {totalStr}
+                {/* Clean Architectural Pagination Bar (Only rendered when more than 1 page exists) */}
+                {totalPages > 1 && (
+                  <div className="border border-[#1F1F1F] bg-[#0C0C0C] px-5 py-4 mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 font-sans text-[11px] tracking-[0.14em] uppercase text-[#777777]">
+                    <div>
+                      SHOWING LOTS {startStr}–{endStr} OF {totalStr}
+                    </div>
+                    <div className="flex items-center gap-4">
+                      {currentPage > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setCurrentPage((p) => Math.max(1, p - 1));
+                            document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth' });
+                          }}
+                          className="text-[#888888] hover:text-[#F2EFE9] transition-colors cursor-pointer uppercase"
+                        >
+                          [ PREV PAGE ]
+                        </button>
+                      )}
+                      {currentPage < totalPages && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setCurrentPage((p) => Math.min(totalPages, p + 1));
+                            document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth' });
+                          }}
+                          className="text-[#F2EFE9] hover:text-white transition-colors cursor-pointer uppercase font-medium"
+                        >
+                          [ NEXT PAGE ]
+                        </button>
+                      )}
+                    </div>
                   </div>
-                  <div className="flex items-center gap-4">
-                    {currentPage > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setCurrentPage((p) => Math.max(1, p - 1));
-                          document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth' });
-                        }}
-                        className="text-[#888888] hover:text-[#F2EFE9] transition-colors cursor-pointer uppercase"
-                      >
-                        [ PREV PAGE ]
-                      </button>
-                    )}
-                    {currentPage < totalPages && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setCurrentPage((p) => Math.min(totalPages, p + 1));
-                          document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth' });
-                        }}
-                        className="text-[#F2EFE9] hover:text-white transition-colors cursor-pointer uppercase font-medium"
-                      >
-                        [ NEXT PAGE ]
-                      </button>
-                    )}
-                  </div>
-                </div>
+                )}
               </div>
             )}
           </main>

@@ -14,7 +14,7 @@
  * 5. Consistent Action: [ INSPECT LOT DETAILS ] across every card (zero hover scale transforms).
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { showVaultCartToast } from '@/presentation/components/cart/VaultCartToast';
 import { addToCart } from '@/app/actions/dealActions';
@@ -47,6 +47,44 @@ export interface ProductCardProps {
 
 export function ProductCard({ product, className = '' }: ProductCardProps): React.JSX.Element {
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [isWatchlisted, setIsWatchlisted] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      const stored = JSON.parse(localStorage.getItem('otaku_watchlist_ids') || '[]');
+      if (Array.isArray(stored)) {
+        setIsWatchlisted(stored.includes(product.id));
+      }
+    } catch {}
+
+    const handleWatchlistChange = (e: Event) => {
+      const customEvent = e as CustomEvent<{ ids?: string[] }>;
+      if (customEvent.detail?.ids) {
+        setIsWatchlisted(customEvent.detail.ids.includes(product.id));
+      }
+    };
+    window.addEventListener('otaku_watchlist_updated', handleWatchlistChange);
+    return () => window.removeEventListener('otaku_watchlist_updated', handleWatchlistChange);
+  }, [product.id]);
+
+  const toggleWatchlist = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    try {
+      const stored: string[] = JSON.parse(localStorage.getItem('otaku_watchlist_ids') || '[]');
+      let updated: string[];
+      if (stored.includes(product.id)) {
+        updated = stored.filter((id) => id !== product.id);
+        setIsWatchlisted(false);
+      } else {
+        updated = [...stored, product.id];
+        setIsWatchlisted(true);
+      }
+      localStorage.setItem('otaku_watchlist_ids', JSON.stringify(updated));
+      window.dispatchEvent(new CustomEvent('otaku_watchlist_updated', { detail: { ids: updated } }));
+    } catch {}
+  };
 
   const displayPrice =
     typeof product.price === 'number' && product.price > 0
@@ -143,9 +181,23 @@ export function ProductCard({ product, className = '' }: ProductCardProps): Reac
           <span>
             LOT #{lotNumber} • VAULT ID: {vaultId}
           </span>
-          <span className="border border-[#2A2A2A] px-2 py-0.5 text-[10px] tracking-[0.12em] text-[#E5E5E5] bg-[#080808] uppercase">
-            {gradeBadge}
-          </span>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={toggleWatchlist}
+              className={`border px-2 py-0.5 text-[9px] tracking-[0.12em] uppercase transition-none cursor-pointer ${
+                isWatchlisted
+                  ? 'border-[#10B981] text-[#10B981] bg-[#091812]'
+                  : 'border-[#2A2A2A] text-[#777777] hover:text-[#F2EFE9] hover:border-[#444444] bg-[#080808]'
+              }`}
+              title={isWatchlisted ? 'Remove from Watchlist' : 'Add to Watchlist'}
+            >
+              {isWatchlisted ? '★ WATCHED' : '+ WATCH'}
+            </button>
+            <span className="border border-[#2A2A2A] px-2 py-0.5 text-[10px] tracking-[0.12em] text-[#E5E5E5] bg-[#080808] uppercase">
+              {gradeBadge}
+            </span>
+          </div>
         </div>
 
         {/* 2. Strict 4:5 Studio Image Frame (No Floating Text Badges) */}
