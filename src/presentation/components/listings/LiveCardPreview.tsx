@@ -41,7 +41,7 @@ export function LiveCardPreview({
       <div>
         {/* 1. Header Row */}
         <div className="flex items-center justify-between text-[10px] tracking-[0.15em] text-[#777777] mb-2 font-sans uppercase">
-          <span>LOT #0482 • VAULT ID: JP-TYO</span>
+          <span>LOT #0482 • IN-HAND VERIFIED</span>
           <span className="border border-[#2A2A2A] px-2 py-0.5 text-[10px] tracking-[0.12em] text-[#E5E5E5] bg-[#080808] uppercase">
             {conditionGrade || '[S-RANK]'}
           </span>

@@ -221,7 +221,7 @@ export function ProvenanceManifestModal(): React.JSX.Element | null {
               04 // VAULT GUARANTEE SIGN-OFF
             </div>
             <p className="text-zinc-400 text-xs normal-case leading-relaxed font-sans max-w-3xl">
-              This manifest certifies that the listed specimen has been inspected by certified OtakuBazaar authentication specialists. Funds remain deposited in a double-entry escrow contract until 48 hours post physical unboxing. In the event of holographic seal compromise or transit damage, 100% of escrow funds revert to the buyer unconditionally.
+              This manifest certifies that this figure is protected by OtakuBazaar&apos;s 48-hour buyer escrow guarantee. Funds remain locked in escrow until 48 hours after delivery. If the item is counterfeit, damaged in transit, or non-conforming with an unbroken unboxing video, 100% of escrow funds are refunded.
             </p>
           </div>
         </div>

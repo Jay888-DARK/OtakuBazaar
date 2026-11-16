@@ -110,7 +110,7 @@ const INITIAL_SHELF: ShelfItem[] = [
     condition: 'S-RANK // MISB (FACTORY SEALED)',
     boxGrade: 'ORIGINAL OUTER BROWN BOX',
     valuation: 42000,
-    custodyBay: 'TOKYO CENTRAL ARCHIVE',
+    custodyBay: 'BENGALURU VAULT',
     status: 'ACTIVE_CONSIGNMENT',
     imageUrl: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=800&q=85',
   },
@@ -539,8 +539,8 @@ export default function VaultPage(): React.JSX.Element {
                     onChange={(e) => setSelectedCarrier(e.target.value as any)}
                     className="w-full bg-[#080808] border border-[#1F1F1F] px-3 py-2.5 text-xs text-[#F2EFE9] outline-none rounded-none"
                   >
-                    <option value="BLUEDART AIR">BlueDart Air (Insured Flight)</option>
-                    <option value="DELHIVERY SURFACE">Delhivery Surface (Foam Crate)</option>
+                    <option value="BLUEDART AIR">BlueDart Air (Tracked Express)</option>
+                    <option value="DELHIVERY SURFACE">Delhivery Surface (Tracked Standard)</option>
                   </select>
                 </div>
 

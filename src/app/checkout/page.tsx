@@ -109,7 +109,7 @@ export default function CheckoutPage(): React.JSX.Element {
 
           <div className="flex items-center gap-2 border border-[#193829] bg-[#091812] px-3 py-1">
             <span className="w-1.5 h-1.5 bg-[#10B981] inline-block" />
-            <span className="text-[#10B981]">RBI-NODAL ESCROW GATEWAY ACTIVE</span>
+            <span className="text-[#10B981]">SECURE ESCROW GATEWAY ACTIVE</span>
           </div>
         </div>
 
@@ -302,7 +302,7 @@ export default function CheckoutPage(): React.JSX.Element {
                     <span className="text-[9px] text-[#777777] uppercase tracking-wider block">STAGE 02</span>
                     <span className="text-[11px] text-[#F2EFE9] font-semibold uppercase block">DISPATCHED</span>
                     <p className="text-[9px] text-[#777777] leading-relaxed">
-                      Insured BlueDart flight with verified tracking code.
+                      Tracked express courier with verified AWB code.
                     </p>
                   </div>
 

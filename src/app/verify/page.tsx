@@ -29,17 +29,17 @@ const CUSTODY_CHAIN: CustodyEvent[] = [
   {
     step: 'STAGE 01',
     stage: 'FACTORY SEALING & HOLOGRAPHIC ENCODING',
-    location: 'TOKYO CENTRAL CUSTODY TERMINAL',
+    location: 'OFFICIAL DISTRIBUTOR DISPATCH',
     timestamp: '2026-08-14 09:12:44 UTC',
-    verifier: 'KADOKAWA / PRIME 1 VAULT SPECIALIST',
+    verifier: 'KADOKAWA / PRIME 1 AUTHENTICATION',
     telemetry: 'TAMPER TAPE APPLIED // SEAL #OKB-2026-9941-X',
   },
   {
     step: 'STAGE 02',
-    stage: 'AIRBORNE COLD-CHAIN SECURE TRANSIT',
-    location: 'HND-BOM DIPLOMATIC CARGO FLIGHT 884',
+    stage: 'SECURE TRACKED COURIER TRANSIT',
+    location: 'EXPRESS TRACKED LOGISTICS ROUTE',
     timestamp: '2026-08-18 16:40:11 UTC',
-    verifier: 'LOGISTICS ESCROW AGENT #44',
+    verifier: 'LOGISTICS DISPATCH #44',
     telemetry: 'ACCELEROMETER LOG: ZERO IMPACT SHOCK DETECTED',
   },
   {
@@ -109,7 +109,7 @@ export default function HardwareVerificationPage(): React.JSX.Element {
           </h1>
 
           <p className="text-xs text-zinc-400 normal-case leading-relaxed font-sans max-w-2xl">
-            Tap your mobile device or optical scanner against the tamper-evident holographic tag embedded into the specimen’s plinth. The cryptographic authentication token is checked against the OtakuBazaar decentralized double-entry vault ledger.
+            Tap your mobile device or optical scanner against the tamper-evident holographic tag embedded into the figure plinth or box. The cryptographic authentication token is checked against the OtakuBazaar verification ledger.
           </p>
 
           {/* Monochromatic Hardware Status Indicator */}

@@ -127,7 +127,7 @@ export function BargainModal({
             setChatMessages([
               {
                 id: `msg-${Date.now()}`,
-                text: `Offer of ₹${numericOffer.toLocaleString('en-IN')} submitted to Tokyo Archival Vault. Escrow pending seller counter-signature.`,
+                text: `Offer of ₹${numericOffer.toLocaleString('en-IN')} submitted to seller. Escrow pending seller response.`,
                 senderId: 'system',
                 createdAt: new Date(),
               },

@@ -59,7 +59,7 @@ export class InvoicePdfGenerator {
       '0 -11 Td',
       `(${esc(`GSTIN: ${invoice.gstin} | SAC: ${invoice.hsnSacCode}`)}) Tj`,
       '0 -11 Td',
-      `(${esc('Corporate Staging Vaults: Mumbai & Tokyo Custody Terminals')}) Tj`,
+      `(${esc('OtakuBazaar C2C Marketplace • Pan-India Logistics')}) Tj`,
       '0 -11 Td',
       `(${esc('Escrow Settlement Partner: Razorpay Software Private Limited')}) Tj`,
       'ET',

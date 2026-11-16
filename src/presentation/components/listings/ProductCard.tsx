@@ -6,7 +6,7 @@
  * Strict Brutalist Archival Product Card for OtakuBazaar.
  * Faithfully inherits the visual language of the /sell VAULT CONSIGNMENT "LIVE CARD PREVIEW":
  *
- * 1. Header Row: LOT #0482 • VAULT ID: JP-TYO (left) + boxed grade badge [S-RANK] (right).
+ * 1. Header Row: LOT #0482 • IN-HAND VERIFIED (left) + boxed grade badge [S-RANK] (right).
  * 2. Strict 4:5 Studio Image Frame: aspect-[4/5] portrait mat (p-3 bg-[#0A0A0A] border border-[#1A1A1A] my-4)
  *    with object-cover object-center (zero floating edition pills, flat dark pulsing placeholder).
  * 3. Editorial Metadata: Franchise & Category, font-serif collectible title, Studio & Custody Spec.
@@ -83,7 +83,13 @@ export function ProductCard({ product, className = '' }: ProductCardProps): Reac
     ? 'IN-AMD'
     : product.origin?.toUpperCase().includes('DELHI')
     ? 'IN-DEL'
-    : 'JP-TYO';
+    : product.origin?.toUpperCase().includes('KOLKATA')
+    ? 'IN-CCU'
+    : product.origin?.toUpperCase().includes('CHENNAI')
+    ? 'IN-MAA'
+    : product.origin?.toUpperCase().includes('JAIPUR')
+    ? 'IN-JAI'
+    : 'IN-VERIFIED';
 
   // Format Condition Grade
   const rawGrade = product.gradeCondition || (product.condition === 'NEW' ? 'GRADE S (MINT)' : 'GRADE A');

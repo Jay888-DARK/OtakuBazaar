@@ -46,7 +46,7 @@ function SuccessContent(): React.JSX.Element {
         </div>
         <div className="flex justify-between items-center p-4">
           <span className="text-zinc-500 font-medium">AUTHENTICITY</span>
-          <span className="text-white font-bold">100% PRE-INSPECTED JAPANESE IMPORT</span>
+          <span className="text-white font-bold">48-HOUR UNBOXING INSPECTION GUARANTEED</span>
         </div>
       </div>
 

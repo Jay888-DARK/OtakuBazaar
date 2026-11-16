@@ -55,10 +55,10 @@ export default function TermsOfServicePage(): React.JSX.Element {
               </span>
             </div>
             <p>
-              OtakuBazaar acts as a premier custodial technology platform and escrow settlement intermediary connecting collectors of authentic anime figures and statues across India. All transactions are settled in Indian Rupees (₹ INR) via designated Reserve Bank of India (RBI) compliant nodal bank escrow accounts.
+              OtakuBazaar acts as a premier technology platform and escrow settlement intermediary connecting collectors of authentic anime figures and statues across India. All transactions are settled in Indian Rupees (₹ INR) with payments held securely in escrow via authorized payment gateways.
             </p>
             <p className="text-[#8E8E8E]">
-              Funds deposited by a buyer remain sequestered in nodal custody and are strictly released to the seller only upon completion of the mandatory 48-Hour Unboxing Inspection Window without dispute.
+              Funds deposited by a buyer remain sequestered in escrow and are strictly released to the seller only upon completion of the mandatory 48-Hour Unboxing Inspection Window without an active dispute.
             </p>
           </section>
 

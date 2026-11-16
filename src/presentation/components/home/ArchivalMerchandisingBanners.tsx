@@ -42,7 +42,7 @@ const BANNERS: BannerData[] = [
     id: 'b-srank',
     header: 'S-RANK FACTORY SEALED',
     subtitle: 'UNOPENED COLLECTOR VAULT',
-    spec: 'PRISTINE TOKYO CUSTODY',
+    spec: 'VERIFIED IN-HAND CUSTODY',
     image: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=800&q=85',
     filterType: 'filter',
     filterValue: 'FACTORY_SEALED',

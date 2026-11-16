@@ -35,7 +35,7 @@ export interface MockProduct {
   boxCondition: 'MINT BOX (BLISTER INTACT)' | 'MINOR COURIER CORNER WEAR' | 'FACTORY CARTON SEALED';
   origin: string; // e.g. "MUMBAI, MH • IN-HAND"
   indianLocation: string; // e.g. "MUMBAI, MH" | "BENGALURU, KA" | "AHMEDABAD, GJ"
-  ownerCount: string; // e.g. "1ST OWNER" | "DIRECT TOKYO IMPORT"
+  ownerCount: string; // e.g. "1ST OWNER" | "AUTHENTIC IMPORT"
   sellerHandle: string; // e.g. "@flame_hashira_in"
   dispatchSla: string; // e.g. "48H INSURED BLUEDART/DELHIVERY"
   scale: '1/4 SCALE' | '1/6 SCALE' | '1/7 SCALE' | '1/8 SCALE' | 'NON-SCALE';
@@ -75,15 +75,15 @@ export const MOCK_GRAILS: MockProduct[] = [
     seal: 'HOLOGRAM S-01 (PRIME 1 VERIFIED)',
     sculptor: 'Prime 1 Studio Artisans / Head Sculpt by Kojima',
     manufacturer: 'Prime 1 Studio',
-    boxDimensions: '74cm × 52cm × 48cm • Flight Crate 24.2 KG',
-    provenance: 'Cast in heavy polystone resin with battle-damaged enamel finish, removable magnetic cape, and illuminated LED base. Acquired directly from Prime 1 Tokyo archival stock and cleared through Mumbai customs with full import duty documentation. Inspected under high-magnification optical sensors with zero micro-fractures.',
+    boxDimensions: '74cm × 52cm × 48cm • Heavy Outer Box 24.2 KG',
+    provenance: 'Cast in heavy polystone resin with battle-damaged enamel finish, removable magnetic cape, and illuminated LED base. Acquired directly by original owner with full import documentation. Maintained in smoke-free, UV-filtered glass Moducase with zero micro-fractures.',
     videoUrl: '/showcase/guts_berserker_statue.jpg',
     gallery: [
       { src: '/showcase/guts_berserker_statue.jpg', label: 'FRONT ELEVATION', caption: 'Primary front view showcasing battle-hardened Berserker armor patina' },
       { src: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=1000&q=85', label: 'BACK CAPE DETAIL', caption: 'Fabric weave texture, wired cape armature, and rear spinal plates' },
       { src: 'https://images.unsplash.com/photo-1563089145-599997674d42?auto=format&fit=crop&w=1000&q=85', label: 'HEAD SCULPT MACRO', caption: 'Close-up macro of helmet teeth, crimson optical slits, and teeth gradient' },
       { src: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=1000&q=85', label: 'BASE SERIAL STAMP', caption: 'Solid cold-cast bronze edition plaque stamped 042 / 350' },
-      { src: 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=1000&q=85', label: 'HOLOGRAM SEAL', caption: 'Tamper-evident holographic authenticity seal with Tokyo Vault serial' },
+      { src: 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=1000&q=85', label: 'HOLOGRAM SEAL', caption: 'Tamper-evident holographic authenticity seal with manufacturer serial' },
     ],
     macroSlots: [
       { slot: '[ 01 // STUDIO SCULPT ]', title: 'Studio Sculpt Macro', src: '/showcase/guts_berserker_statue.jpg', description: 'Hand-weathered enamel armor joints with high-definition specular reflection.' },
@@ -230,7 +230,7 @@ export const MOCK_GRAILS: MockProduct[] = [
     dispatchSla: '48H INSURED BLUEDART AIR',
     scale: '1/8 SCALE',
     weight: '1.9 KG',
-    seal: 'HOLOGRAM S-07 (MEGAHOUSE TOKYO)',
+    seal: 'HOLOGRAM S-07 (MEGAHOUSE AUTHENTIC)',
     sculptor: 'MegaHouse Artisans',
     manufacturer: 'MegaHouse',
     boxDimensions: '34cm × 26cm × 24cm',

@@ -25,14 +25,14 @@ export default function EscrowPolicyPage(): React.JSX.Element {
 
           <div className="flex items-center gap-2 border border-[#193829] bg-[#091812] px-3 py-1">
             <span className="w-1.5 h-1.5 bg-[#10B981] inline-block" />
-            <span className="text-[#10B981]">48-HOUR CUSTODY STANDARD</span>
+            <span className="text-[#10B981]">48-HOUR UNBOXING ESCROW</span>
           </div>
         </div>
 
         {/* Header */}
         <div className="bg-[#0C0C0C] border border-[#1F1F1F] p-6 sm:p-8">
           <span className="text-[10px] uppercase tracking-[0.2em] text-[#777777] font-semibold border border-[#1F1F1F] bg-[#080808] px-2.5 py-1 inline-block mb-3">
-            ANTI-BOOTLEG ESCROW SAFEGUARD
+            C2C ESCROW PROTECTION
           </span>
           <h1 className="font-serif text-3xl sm:text-4xl font-bold uppercase tracking-[0.06em] text-[#F2EFE9]">
             48-Hour Escrow &amp; Unboxing Policy
@@ -101,9 +101,9 @@ export default function EscrowPolicyPage(): React.JSX.Element {
               If a collectible is suspected of being an unauthorized recast or bootleg:
             </p>
             <ol className="list-decimal list-inside space-y-1.5 text-[#8E8E8E] pl-1">
-              <li>Submit your dispute directly via your Collector Vault dashboard within 48 hours with your uncut unboxing video.</li>
-              <li>Our Tokyo &amp; Mumbai authentication specialists review the seam lines, paint finishes, and hologram serials within 24 hours.</li>
-              <li>Once verified as non-conforming or bootleg, 100% of your escrow payment is refunded immediately to your original payment method via Razorpay.</li>
+              <li>Submit your dispute directly via your Collector Vault dashboard within 48 hours accompanied by your uncut unboxing video.</li>
+              <li>Our dispute resolution team reviews the unboxing video, serial numbers, box seals, and condition claims within 24–48 business hours.</li>
+              <li>Once verified as non-conforming, counterfeit, or transit-damaged, 100% of your escrow payment is refunded immediately to your original payment method via Razorpay.</li>
             </ol>
           </section>
 
@@ -118,7 +118,7 @@ export default function EscrowPolicyPage(): React.JSX.Element {
               </span>
             </div>
             <p>
-              Approved refunds are triggered directly from the nodal escrow liability account:
+              Approved refunds are triggered directly to your original payment method:
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
               <div className="p-3 bg-[#080808] border border-[#1F1F1F]">

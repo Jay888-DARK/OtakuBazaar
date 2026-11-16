@@ -17,18 +17,20 @@ import Link from 'next/link';
 
 export function ArchivalFooter(): React.JSX.Element {
   const primaryVaultLinks = [
-    { label: 'ARCHIVAL CATALOG', href: '/#stage-2' },
-    { label: 'VAULT CONSIGNMENT', href: '/sell' },
-    { label: 'COLLECTOR VAULT PORTFOLIO', href: '/vault' },
-    { label: 'COLLECTOR LOGIN', href: '/login' },
-    { label: 'BUYER ESCROW PROTECTION', href: '/#escrow-vault' },
+    { label: 'CATALOG & FIGURES', href: '/#stage-2' },
+    { label: 'SELL YOUR COLLECTION', href: '/sell' },
+    { label: 'COLLECTOR VAULT', href: '/vault' },
+    { label: 'ABOUT OTAKUBAZAAR', href: '/about' },
+    { label: 'FREQUENTLY ASKED QUESTIONS', href: '/faq' },
+    { label: 'HOW ESCROW WORKS', href: '/#escrow-vault' },
   ];
 
   const complianceLinks = [
-    { label: 'Terms of Service', href: '/terms-of-service' },
-    { label: 'Privacy Policy (DPDP Act)', href: '/privacy-policy' },
-    { label: '48-Hour Escrow & Unboxing Policy', href: '/escrow-policy' },
-    { label: 'Authenticity Guarantee Standards', href: '/terms-of-service' },
+    { label: 'Terms of Service', href: '/terms' },
+    { label: 'Privacy Policy', href: '/privacy' },
+    { label: '48-Hour Escrow & Returns', href: '/shipping-returns' },
+    { label: 'Prohibited Items Policy', href: '/prohibited-items' },
+    { label: 'Contact & Grievance Desk', href: '/contact' },
   ];
 
   return (
@@ -37,11 +39,11 @@ export function ArchivalFooter(): React.JSX.Element {
       <div className="border-b border-[#1F1F1F] bg-[#0A0A0A] px-4 sm:px-6 lg:px-8 py-3">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-[10px] tracking-[0.18em] uppercase font-semibold">
           <span className="text-[#CCCCCC]">
-            0% BOOTLEG TOLERANCE • 48H ESCROW PROTECTED • PAN-INDIA INSURED TRANSIT
+            ZERO BOOTLEG TOLERANCE • 48H UNBOXING ESCROW • PAN-INDIA TRACKED SHIPPING
           </span>
           <span className="text-[#10B981] flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 bg-[#10B981] inline-block" />
-            <span>NODAL ESCROW VERIFIED</span>
+            <span>SECURE ESCROW PAYMENTS</span>
           </span>
         </div>
       </div>
@@ -67,27 +69,27 @@ export function ArchivalFooter(): React.JSX.Element {
             </Link>
 
             <p className="text-[12px] text-[#8E8E8E] leading-relaxed max-w-md">
-              India&apos;s premier escrow-authenticated anime figure and collectible vault exchange. Every consigned lot is verified against Japanese factory master molds before insured flight transit to Indian collectors.
+              India&apos;s dedicated C2C marketplace for authentic anime figures, statues, and collectibles. Buyer payments remain locked in escrow until the 48-hour unboxing inspection window clears.
             </p>
 
-            {/* Indian Escrow Custody Specs Badge */}
+            {/* Indian Escrow Protection Badge */}
             <div className="p-3.5 bg-[#0C0C0C] border border-[#1F1F1F] space-y-1.5 max-w-md">
               <div className="flex items-center gap-2">
                 <span className="w-1.5 h-1.5 bg-[#10B981]" />
                 <span className="text-[10px] tracking-[0.14em] text-[#10B981] uppercase font-semibold">
-                  RBI-COMPLIANT NODAL ESCROW CUSTODY
+                  48-HOUR ESCROW BUYER PROTECTION
                 </span>
               </div>
               <p className="text-[11px] text-[#777777] leading-relaxed">
-                Funds remain sequestered in designated Indian bank nodal escrow accounts. Payouts are authorized only after your 48-hour physical inspection period completes without discrepancy.
+                Payments are held securely in escrow during transit. The seller receives payout only after your 48-hour unboxing inspection period completes without a dispute.
               </p>
             </div>
           </div>
 
-          {/* Column 2: Archival Vault Index */}
+          {/* Column 2: Primary Navigation Index */}
           <div className="lg:col-span-3 flex flex-col">
             <span className="text-[10px] tracking-[0.2em] text-[#777777] uppercase font-semibold mb-3">
-              PRIMARY VAULT INDEX
+              EXPLORE MARKETPLACE
             </span>
             <nav className="flex flex-col space-y-2.5" aria-label="Primary Vault Index">
               {primaryVaultLinks.map((link) => (
@@ -105,7 +107,7 @@ export function ArchivalFooter(): React.JSX.Element {
           {/* Column 3: Authenticity Guarantee & Mandatory Legal Routes */}
           <div className="lg:col-span-4 flex flex-col space-y-4">
             <span className="text-[10px] tracking-[0.2em] text-[#777777] uppercase font-semibold">
-              AUTHENTICITY &amp; LEGAL GOVERNANCE
+              TRUST, SAFETY &amp; LEGAL
             </span>
 
             {/* Direct Links to Legal Pages */}
@@ -124,10 +126,10 @@ export function ArchivalFooter(): React.JSX.Element {
             {/* Authenticity Guarantee Protocol Box */}
             <div className="space-y-1">
               <span className="text-[10px] tracking-[0.14em] text-[#777777] uppercase font-medium block">
-                AUTHENTICITY GUARANTEE PROTOCOLS
+                AUTHENTICITY GUARANTEE &amp; REFUND
               </span>
               <p className="text-[11px] text-[#8E8E8E] leading-relaxed">
-                Multi-point optical seam inspection, UV anti-counterfeit hologram verification, and weight calibration against Japanese factory master molds before lot dispatch.
+                Record an uncut unboxing video from package seal to figure inspection. If an item is counterfeit, broken, or non-conforming, dispute within 48 hours for a 100% refund.
               </p>
             </div>
           </div>
@@ -138,15 +140,15 @@ export function ArchivalFooter(): React.JSX.Element {
       <div className="border-t border-[#1F1F1F] bg-[#080808]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-4">
           <span className="text-[11px] text-[#777777] tracking-[0.04em]">
-            © OtakuBazaar 2026. All rights reserved. Escrow-Authenticated Japanese Collectibles.
+            © OtakuBazaar 2026. All rights reserved. India’s C2C Anime Collectibles Marketplace.
           </span>
 
           <div className="flex items-center space-x-4 text-[10px] tracking-[0.15em] text-[#777777] uppercase">
             <span>INR (₹)</span>
             <span>·</span>
-            <span>PAN-INDIA LOGISTICS</span>
+            <span>DIRECT C2C SHIPPING</span>
             <span className="text-[#1F1F1F]">|</span>
-            <span>MUMBAI &amp; BENGALURU HUBS</span>
+            <span>PAN-INDIA DISPATCH</span>
           </div>
         </div>
       </div>

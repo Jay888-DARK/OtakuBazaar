@@ -176,7 +176,7 @@ export function CuratedEditorialCollection(): React.JSX.Element {
                   >
                     Origin
                   </span>
-                  <span className="text-xs font-semibold uppercase text-zinc-200 block mt-0.5">Tokyo, Japan</span>
+                  <span className="text-xs font-semibold uppercase text-zinc-200 block mt-0.5">Mumbai, MH</span>
                 </div>
                 <div className="border border-[#27272a] bg-[#09090b] p-3">
                   <span

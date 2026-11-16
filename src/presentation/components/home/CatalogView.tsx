@@ -169,7 +169,7 @@ export const CatalogView: React.FC = () => {
         if (product.gradeCondition !== 'FACTORY SEALED') return false;
       }
       if (activeFilter === 'ESCROW_VERIFIED') {
-        // All items in Tokyo Archival Vault are escrow verified
+        // All items listed on OtakuBazaar are protected by escrow
       }
       if (activeFilter === 'UNDER_30K') {
         if (product.price >= 30000) return false;

@@ -8,9 +8,9 @@ import { CatalogView } from '@/presentation/components/home/CatalogView';
 import { ArchivalFooter } from '@/presentation/components/footer/ArchivalFooter';
 
 export const metadata: Metadata = {
-  title: 'OtakuBazaar — Escrow-Authenticated Japanese Archival Marketplace',
+  title: 'OtakuBazaar — India’s C2C Marketplace for Authentic Anime Figures & Collectibles',
   description:
-    'Direct Japanese scale figures, statues, and rare grails backed by 48-hour inspection escrow protection and climate-controlled Tokyo vault custody.',
+    'India’s dedicated C2C marketplace for verified anime scale figures and collectibles, backed by 48-hour unboxing inspection and secure escrow payments.',
 };
 
 export default async function HomePage(props?: {
@@ -50,13 +50,13 @@ export default async function HomePage(props?: {
             {/* Section Masthead */}
             <div className="p-6 sm:p-8 border-b border-[#1F1F1F] bg-[#080808]">
               <span className="block mb-1.5 font-sans text-[10px] tracking-[0.15em] text-[#777777] uppercase font-semibold">
-                BUYER PROTECTION • CUSTODIAL ESCROW
+                BUYER PROTECTION • ESCROW PAYMENTS
               </span>
               <h2 className="font-serif text-[24px] sm:text-[28px] text-[#F2EFE9] uppercase tracking-[0.06em] leading-tight">
                 Authenticity Guarantee &amp; 48-Hour Inspection Period
               </h2>
               <p className="mt-2 max-w-2xl font-sans text-[13px] text-[#8E8E8E] leading-relaxed">
-                100% authentic Japanese collectibles guaranteed. Your payment is held safely in escrow until you physically receive and inspect your specimen.
+                Authentic anime figures guaranteed. Your payment is held safely in escrow until you receive, unbox, and inspect your collectible.
               </p>
             </div>
 
@@ -77,7 +77,7 @@ export default async function HomePage(props?: {
                     15-Minute Reservation Lock
                   </h3>
                   <p className="max-w-xl font-sans text-[13px] text-[#8E8E8E] leading-relaxed">
-                    When checkout begins, the lot is reserved exclusively for you for 15 minutes while payment is verified into secure custodial escrow.
+                    When checkout begins, the item is reserved exclusively for you for 15 minutes while payment is verified into secure escrow.
                   </p>
                 </div>
 
@@ -101,7 +101,7 @@ export default async function HomePage(props?: {
                   </div>
                   <div className="border border-[#1F1F1F] bg-[#0C0C0C] p-3">
                     <span className="block font-sans text-[10px] tracking-[0.15em] text-[#777777] uppercase font-semibold">
-                      TRANSIT ASSURANCE
+                      SHIPPING ASSURANCE
                     </span>
                     <span className="text-[#F2EFE9] block mt-1 font-sans text-[11px] tracking-[0.08em] uppercase font-medium">
                       TRACKED EXPRESS
@@ -128,19 +128,19 @@ export default async function HomePage(props?: {
                         STEP 02
                       </span>
                       <span className="font-sans text-[10px] tracking-[0.15em] text-[#777777] uppercase font-semibold">
-                        INSURED TRANSIT
+                        DIRECT SELLER DISPATCH
                       </span>
                     </div>
                     <h3 className="font-serif text-[17px] text-[#F2EFE9] uppercase tracking-[0.06em] mb-2">
-                      Tracked Express Flight Custody
+                      Tracked Courier Shipping Direct from Seller
                     </h3>
                     <p className="font-sans text-[13px] text-[#8E8E8E] leading-relaxed">
-                      Packed in reinforced foam flight crates and dispatched via tracked insured express courier directly from Tokyo.
+                      Sellers carefully pack and ship figures via reliable tracked express couriers across India with live AWB tracking details.
                     </p>
                   </div>
                   <div className="mt-4 pt-3 border-t border-[#161616] flex items-center justify-between font-sans text-[10px] tracking-[0.15em] uppercase text-[#777777]">
-                    <span>TRANSIT INSURANCE</span>
-                    <span className="text-[#10B981] font-bold">COVERED IN FULL</span>
+                    <span>DISPATCH TIMELINE</span>
+                    <span className="text-[#10B981] font-bold">24–48 HOUR SLA</span>
                   </div>
                 </div>
 
@@ -159,7 +159,7 @@ export default async function HomePage(props?: {
                       48-Hour Inspection Window
                     </h3>
                     <p className="font-sans text-[13px] text-[#8E8E8E] leading-relaxed">
-                      Inspect your figure under natural light. Verified authentic? Escrow releases funds to seller. Any discrepancies? Immediate 100% refund.
+                      Record a continuous unboxing video upon delivery. Verified authentic &amp; as described? Escrow safely releases payout to seller. Discrepancy or bootleg? 100% refund upon video verification.
                     </p>
                   </div>
                   <div className="mt-4 pt-3 border-t border-[#161616] flex items-center justify-between font-sans text-[10px] tracking-[0.15em] uppercase text-[#777777]">

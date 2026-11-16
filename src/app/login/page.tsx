@@ -144,7 +144,7 @@ export default function LoginPage() {
         {/* Security Micro-Footer */}
         <div className="mt-6 pt-4 border-t border-[#161616] text-center">
           <p className="text-[10px] text-[#777777] tracking-[0.18em] font-medium uppercase">
-            256-BIT ENCRYPTED SESSION • RBI-COMPLIANT NODAL ESCROW
+            256-BIT ENCRYPTED SESSION • SECURE ESCROW PROTECTION
           </p>
         </div>
       </div>

@@ -48,7 +48,7 @@ export function OrderBook({
   const bids: OrderLevel[] = [
     { price: Math.round(basePrice * 0.98), size: 1, total: 1, traderRef: 'OKB-VAULT-MM' },
     { price: Math.round(basePrice * 0.96), size: 2, total: 3, traderRef: 'COLLECTOR-77' },
-    { price: Math.round(basePrice * 0.94), size: 1, total: 4, traderRef: 'TOKYO-DESK-01' },
+    { price: Math.round(basePrice * 0.94), size: 1, total: 4, traderRef: 'COLLECTOR-BOM-01' },
     { price: Math.round(basePrice * 0.92), size: 3, total: 7, traderRef: 'RESERVE-POOL' },
     { price: Math.round(basePrice * 0.90), size: 2, total: 9, traderRef: 'HEDGE-ARCHIVE' },
   ];
@@ -57,7 +57,7 @@ export function OrderBook({
   const asks: OrderLevel[] = [
     { price: basePrice, size: 1, total: 1, traderRef: 'CURRENT-ASK' },
     { price: Math.round(basePrice * 1.03), size: 1, total: 2, traderRef: 'PRIVATE-094' },
-    { price: Math.round(basePrice * 1.07), size: 2, total: 4, traderRef: 'SINGAPORE-VLT' },
+    { price: Math.round(basePrice * 1.07), size: 2, total: 4, traderRef: 'COLLECTOR-BLR-02' },
     { price: Math.round(basePrice * 1.12), size: 1, total: 5, traderRef: 'MUSEUM-HOLD' },
     { price: Math.round(basePrice * 1.18), size: 3, total: 8, traderRef: 'KYOTO-LOTS' },
   ];
