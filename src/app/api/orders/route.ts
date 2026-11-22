@@ -13,7 +13,6 @@
 import { NextResponse } from 'next/server';
 import Razorpay from 'razorpay';
 import { prisma } from '@/lib/prismaClient';
-import { MOCK_GRAILS } from '@/lib/mockProducts';
 
 // Initialize Razorpay SDK with environment secrets
 const key_id = (process.env.RAZORPAY_KEY_ID || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID)?.trim() || 'rzp_test_TdBTiCyaOJ95KC';
@@ -91,17 +90,6 @@ export async function POST(req: Request): Promise<NextResponse> {
       } else if (dbListing) {
         truePriceINR = Math.round(dbListing.askingPriceAmount / 100);
         itemTitle = dbListing.title;
-      }
-
-      // 1B. Fallback to verified catalog grails if not found in dynamic database tables
-      if (truePriceINR <= 0) {
-        const mockGrail = MOCK_GRAILS.find(
-          (g) => g.id === targetLotId || g.lotNumber === targetLotId
-        );
-        if (mockGrail) {
-          truePriceINR = mockGrail.price;
-          itemTitle = mockGrail.title;
-        }
       }
     }
 

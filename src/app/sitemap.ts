@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next';
-import { MOCK_GRAILS } from '@/lib/mockProducts';
+import { ListingRepository } from '@/infrastructure/database/repositories/ListingRepository';
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://otaku-bazaar.vercel.app';
 
   const staticRoutes = [
@@ -28,12 +28,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: route === '' ? 1.0 : 0.8,
   }));
 
-  const productRoutes = MOCK_GRAILS.map((product) => ({
-    url: `${baseUrl}/lot/${product.id}`,
-    lastModified: new Date(),
-    changeFrequency: 'weekly' as const,
-    priority: 0.9,
-  }));
+  let productRoutes: MetadataRoute.Sitemap = [];
+  try {
+    const activeListings = await ListingRepository.findAllActive();
+    productRoutes = activeListings.map((listing) => ({
+      url: `${baseUrl}/lot/${listing.id}`,
+      lastModified: listing.updatedAt || new Date(),
+      changeFrequency: 'weekly' as const,
+      priority: 0.9,
+    }));
+  } catch (err) {
+    console.warn('[sitemap] Failed to fetch active listings for sitemap:', err);
+  }
 
   return [...staticRoutes, ...productRoutes];
 }

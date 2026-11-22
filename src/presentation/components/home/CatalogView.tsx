@@ -10,14 +10,48 @@
  *   eliminating the 9th orphaned card, complete with architectural pagination bar.
  * - Strict Aesthetic: #080808 canvas, #0C0C0C elevated surface, #1F1F1F outer hairlines,
  *   #161616 inner dividers, editorial serif titles (#F2EFE9), clean Plus Jakarta Sans body copy.
+ * - Pure live database-driven: zero hardcoded dummy products.
  */
 
 import React, { useState, useEffect, useTransition, useMemo } from 'react';
+import Link from 'next/link';
 import ProductCard from '@/presentation/components/listings/ProductCard';
-import { MOCK_PRODUCTS, MockProduct } from '@/infrastructure/data/mockProducts';
 import { ProductFeedSkeleton } from '@/presentation/components/ui/SkeletonLoaders';
 
-export const CatalogView: React.FC = () => {
+export interface CatalogProductItem {
+  id: string;
+  lotNumber?: string;
+  title: string;
+  price?: number;
+  askingPriceAmount?: number;
+  category?: string | null;
+  categorySubtitle?: string;
+  edition?: string;
+  condition?: string | null;
+  gradeCondition?: string;
+  figureGrade?: string;
+  boxCondition?: string;
+  origin?: string;
+  indianLocation?: string;
+  ownerCount?: string;
+  franchise?: string;
+  series?: string;
+  manufacturer?: string;
+  imageUrl?: string;
+  imageUrls?: string | null;
+  scale?: string;
+  status?: string;
+  lockRemainingSeconds?: number;
+}
+
+interface CatalogViewProps {
+  initialProducts?: CatalogProductItem[];
+}
+
+export const CatalogView: React.FC<CatalogViewProps> = ({ initialProducts }) => {
+  const [products, setProducts] = useState<CatalogProductItem[]>(initialProducts || []);
+  const [isInitialLoading, setIsInitialLoading] = useState<boolean>(!initialProducts);
+
   const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
   const [activeFilter, setActiveFilter] = useState<string>('ALL');
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -30,30 +64,74 @@ export const CatalogView: React.FC = () => {
   const [selectedOrigins, setSelectedOrigins] = useState<string[]>([]);
   const [selectedScales, setSelectedScales] = useState<string[]>([]);
 
-  // Sorting & Watchlist States
-  const [sortOption, setSortOption] = useState<'NEWEST' | 'PRICE_ASC' | 'PRICE_DESC'>('NEWEST');
-  const [showWatchlistOnly, setShowWatchlistOnly] = useState<boolean>(false);
-  const [watchlistedIds, setWatchlistedIds] = useState<string[]>([]);
-
   // Pagination State (Strict multiples of 4: 8 lots per view)
   const [currentPage, setCurrentPage] = useState<number>(1);
   const LOTS_PER_PAGE = 8;
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (initialProducts) return;
+    let isMounted = true;
+    fetch('/api/listings')
+      .then((res) => (res.ok ? res.json() : { items: [] }))
+      .then((data) => {
+        if (!isMounted) return;
+        const items = Array.isArray(data.items) ? data.items : [];
+        const mapped: CatalogProductItem[] = items.map((item: any) => {
+          let img = '/Firefly_clean.png';
+          if (Array.isArray(item.imageUrls) && item.imageUrls[0]) {
+            img = item.imageUrls[0];
+          } else if (typeof item.imageUrls === 'string') {
+            try {
+              const parsed = JSON.parse(item.imageUrls);
+              if (Array.isArray(parsed) && parsed[0]) img = parsed[0];
+              else img = item.imageUrls;
+            } catch {
+              img = item.imageUrls;
+            }
+          }
+          return {
+            id: item.id,
+            lotNumber: String(item.id).replace(/[^0-9]/g, '').padStart(4, '0').slice(-4) || '0001',
+            title: item.title,
+            price: Math.round((item.askingPriceAmount || 0) / 100),
+            askingPriceAmount: item.askingPriceAmount,
+            category: item.category || 'Scale Figure',
+            categorySubtitle: 'AUTHENTIC JAPANESE IMPORT',
+            edition: 'VERIFIED CUSTODY',
+            condition: item.condition || 'NEW',
+            gradeCondition: item.condition === 'NEW' ? 'FACTORY SEALED' : 'GRADE A',
+            figureGrade: item.condition === 'NEW' ? 'MISB (FACTORY SEALED)' : 'BIB (CABINET DISPLAYED)',
+            boxCondition: item.condition === 'NEW' ? 'FACTORY CARTON SEALED' : 'MINT BOX (BLISTER INTACT)',
+            origin: 'PAN-INDIA VAULT • IN-HAND',
+            indianLocation: 'MUMBAI, MH',
+            ownerCount: '1ST OWNER',
+            franchise: item.category || 'Anime',
+            series: item.title,
+            manufacturer: 'Japanese Studio',
+            imageUrl: img,
+            imageUrls: typeof item.imageUrls === 'string' ? item.imageUrls : JSON.stringify(item.imageUrls || [img]),
+            scale: '1/7 SCALE',
+            status: item.status,
+            lockRemainingSeconds: item.lockRemainingSeconds,
+          };
+        });
+        setProducts(mapped);
+        setIsInitialLoading(false);
+      })
+      .catch(() => {
+        if (isMounted) {
+          setProducts([]);
+          setIsInitialLoading(false);
+        }
+      });
 
-    try {
-      const stored = JSON.parse(localStorage.getItem('otaku_watchlist_ids') || '[]');
-      if (Array.isArray(stored)) setWatchlistedIds(stored);
-    } catch {}
-
-    const handleWatchlistUpdate = (e: Event) => {
-      const customEvent = e as CustomEvent<{ ids?: string[] }>;
-      if (customEvent.detail?.ids && Array.isArray(customEvent.detail.ids)) {
-        setWatchlistedIds(customEvent.detail.ids);
-      }
+    return () => {
+      isMounted = false;
     };
-    window.addEventListener('otaku_watchlist_updated', handleWatchlistUpdate);
+  }, [initialProducts]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
 
     const handleCategoryEvent = (e: Event) => {
       const customEvent = e as CustomEvent<{ category?: string }>;
@@ -102,7 +180,6 @@ export const CatalogView: React.FC = () => {
       window.removeEventListener('otaku_category_select', handleCategoryEvent);
       window.removeEventListener('otaku_filter_select', handleFilterEvent);
       window.removeEventListener('otaku_search', handleSearchEvent as EventListener);
-      window.removeEventListener('otaku_watchlist_updated', handleWatchlistUpdate);
     };
   }, []);
 
@@ -158,25 +235,20 @@ export const CatalogView: React.FC = () => {
       setSelectedOrigins([]);
       setSelectedScales([]);
       setSearchQuery('');
-      setSortOption('NEWEST');
-      setShowWatchlistOnly(false);
       setCurrentPage(1);
       setIsLoading(false);
     }, 100);
   };
 
   const filteredProducts = useMemo(() => {
-    const list = MOCK_PRODUCTS.filter((product: MockProduct) => {
-      // 0. Watchlist Only Filter
-      if (showWatchlistOnly && !watchlistedIds.includes(product.id)) {
-        return false;
-      }
+    return products.filter((product) => {
+      const itemPrice = typeof product.price === 'number' ? product.price : Math.round((product.askingPriceAmount || 0) / 100);
 
       // 1. Search Query
       if (searchQuery) {
         const titleMatch = product.title.toLowerCase().includes(searchQuery);
-        const catMatch = product.category.toLowerCase().includes(searchQuery);
-        const lotMatch = product.lotNumber.toLowerCase().includes(searchQuery);
+        const catMatch = (product.category || '').toLowerCase().includes(searchQuery);
+        const lotMatch = (product.lotNumber || '').toLowerCase().includes(searchQuery);
         if (!titleMatch && !catMatch && !lotMatch) return false;
       }
 
@@ -189,57 +261,51 @@ export const CatalogView: React.FC = () => {
 
       // 3. Criteria Filter Pills from Bar
       if (activeFilter === 'S_RANK') {
-        if (product.gradeCondition !== 'GRADE S (MINT)') return false;
+        if (product.condition !== 'NEW' && product.gradeCondition !== 'FACTORY SEALED') return false;
       }
       if (activeFilter === 'FACTORY_SEALED') {
-        if (product.gradeCondition !== 'FACTORY SEALED') return false;
-      }
-      if (activeFilter === 'ESCROW_VERIFIED') {
-        // All items listed on OtakuBazaar are protected by escrow
+        if (product.condition !== 'NEW' && product.gradeCondition !== 'FACTORY SEALED') return false;
       }
       if (activeFilter === 'UNDER_30K') {
-        if (product.price >= 30000) return false;
+        if (itemPrice >= 30000) return false;
       }
       if (activeFilter === 'PRIME_1') {
-        const isPrime =
+        const isHighValue =
           product.category === 'Statues & Resin' ||
           product.title.toLowerCase().includes('berserk') ||
-          product.manufacturer.toLowerCase().includes('prime 1') ||
-          product.price >= 50000;
-        if (!isPrime) return false;
+          (product.manufacturer && product.manufacturer.toLowerCase().includes('prime 1')) ||
+          itemPrice >= 50000;
+        if (!isHighValue) return false;
       }
 
       // 4. Sidebar Price Bracket
-      if (selectedPriceBracket === 'UNDER_15K' && product.price >= 15000) return false;
-      if (selectedPriceBracket === '15K_35K' && (product.price < 15000 || product.price > 35000)) return false;
-      if (selectedPriceBracket === '35K_75K' && (product.price < 35000 || product.price > 75000)) return false;
-      if (selectedPriceBracket === 'ABOVE_75K' && product.price <= 75000) return false;
+      if (selectedPriceBracket === 'UNDER_15K' && itemPrice >= 15000) return false;
+      if (selectedPriceBracket === '15K_35K' && (itemPrice < 15000 || itemPrice > 35000)) return false;
+      if (selectedPriceBracket === '35K_75K' && (itemPrice < 35000 || itemPrice > 75000)) return false;
+      if (selectedPriceBracket === 'ABOVE_75K' && itemPrice <= 75000) return false;
 
       // 5. Sidebar Grade Condition
       if (selectedGrades.length > 0) {
-        if (!selectedGrades.includes(product.gradeCondition)) return false;
+        const grade = product.gradeCondition || (product.condition === 'NEW' ? 'FACTORY SEALED' : 'GRADE A');
+        if (!selectedGrades.includes(grade)) return false;
       }
 
-      // 6. Sidebar Origin Vault (Indian Custody Origins)
+      // 6. Sidebar Origin Vault
       if (selectedOrigins.length > 0) {
-        const match = selectedOrigins.some((orig) => product.origin.toUpperCase().includes(orig.toUpperCase()));
+        const originStr = product.origin || '';
+        const match = selectedOrigins.some((orig) => originStr.includes(orig));
         if (!match) return false;
       }
 
       // 7. Sidebar Scale
       if (selectedScales.length > 0) {
-        if (!selectedScales.includes(product.scale)) return false;
+        if (product.scale && !selectedScales.includes(product.scale)) return false;
       }
 
       return true;
     });
-
-    return [...list].sort((a, b) => {
-      if (sortOption === 'PRICE_ASC') return a.price - b.price;
-      if (sortOption === 'PRICE_DESC') return b.price - a.price;
-      return 0;
-    });
   }, [
+    products,
     searchQuery,
     selectedCategory,
     activeFilter,
@@ -247,9 +313,6 @@ export const CatalogView: React.FC = () => {
     selectedGrades,
     selectedOrigins,
     selectedScales,
-    showWatchlistOnly,
-    watchlistedIds,
-    sortOption,
   ]);
 
   // Paginated Product Slice (8 items per view to avoid orphaned 9th card)
@@ -268,313 +331,188 @@ export const CatalogView: React.FC = () => {
   return (
     <div id="catalog" className="w-full bg-[#080808] py-10 px-4 sm:px-6 lg:px-8 select-none">
       <div className="max-w-7xl mx-auto">
-        {/* Section Header with Search, Sort, Watchlist & Counts */}
-        <div className="border-b border-[#1F1F1F] pb-4 mb-8 space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-            <div>
-              <span className="block mb-1 font-sans text-[10px] tracking-[0.15em] text-[#777777] uppercase font-semibold">
-                AUTHENTIC CUSTODY • DIRECT C2C CATALOG
-              </span>
-              <h2 className="leading-tight font-serif text-[26px] sm:text-[32px] text-[#F2EFE9] uppercase tracking-[0.06em]">
-                ACTIVE VERIFIED LOTS
-              </h2>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-3">
-              <span className="font-sans text-[11px] tracking-[0.14em] text-[#777777] uppercase">
-                SHOWING LOTS {startStr}–{endStr} OF {totalStr}
-              </span>
-              {(activeFilter !== 'ALL' ||
-                selectedCategory !== 'ALL' ||
-                selectedPriceBracket !== 'ALL' ||
-                selectedGrades.length > 0 ||
-                selectedOrigins.length > 0 ||
-                selectedScales.length > 0 ||
-                searchQuery ||
-                showWatchlistOnly) && (
-                <button
-                  type="button"
-                  onClick={handleResetFilters}
-                  className="px-3 py-1.5 border border-[#1F1F1F] bg-[#0C0C0C] hover:bg-[#F2EFE9] hover:text-[#080808] hover:border-[#F2EFE9] text-[#888888] font-sans text-[10px] tracking-[0.12em] uppercase transition-colors cursor-pointer rounded-none"
-                >
-                  [ RESET ALL ]
-                </button>
-              )}
-            </div>
+        {/* Section Header */}
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between border-b border-[#1F1F1F] pb-4 mb-8 gap-4">
+          <div>
+            <span className="block mb-1 font-sans text-[10px] tracking-[0.15em] text-[#777777] uppercase font-semibold">
+              ARCHIVAL CUSTODY • MAIN CATALOG
+            </span>
+            <h2 className="leading-tight font-serif text-[26px] sm:text-[32px] text-[#F2EFE9] uppercase tracking-[0.06em]">
+              ACTIVE VAULT LOTS
+            </h2>
           </div>
 
-          {/* Quick Toolbar: Search Bar, Sorting, Watchlist Filter */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-2">
-            {/* Inline Search Input */}
-            <div className="relative flex-1 max-w-md">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => {
-                  setSearchQuery(e.target.value.toLowerCase());
-                  setCurrentPage(1);
-                }}
-                placeholder="SEARCH FIGURES, LOT #, OR SERIES..."
-                className="w-full border border-[#1F1F1F] bg-[#0C0C0C] px-3.5 py-2 text-[11px] text-[#F2EFE9] placeholder-[#555555] uppercase tracking-[0.08em] outline-none focus:border-[#F2EFE9] rounded-none font-sans"
-              />
-              {searchQuery && (
-                <button
-                  type="button"
-                  onClick={() => setSearchQuery('')}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-[#777777] hover:text-white uppercase font-sans cursor-pointer"
-                >
-                  [CLEAR]
-                </button>
-              )}
-            </div>
-
-            <div className="flex items-center gap-2">
-              {/* Watchlist Toggle */}
-              <button
-                type="button"
-                onClick={() => {
-                  setShowWatchlistOnly((prev) => !prev);
-                  setCurrentPage(1);
-                }}
-                className={`px-3 py-2 border text-[10px] uppercase tracking-[0.12em] transition-none cursor-pointer font-sans ${
-                  showWatchlistOnly
-                    ? 'border-[#10B981] bg-[#091812] text-[#10B981]'
-                    : 'border-[#1F1F1F] bg-[#0C0C0C] text-[#888888] hover:text-[#F2EFE9] hover:border-[#444444]'
-                }`}
-              >
-                {showWatchlistOnly ? `★ WATCHLIST (${watchlistedIds.length}) ACTIVE` : `★ WATCHLIST (${watchlistedIds.length})`}
-              </button>
-
-              {/* Sorting Select */}
-              <div className="flex items-center border border-[#1F1F1F] bg-[#0C0C0C] px-2 py-1.5">
-                <span className="text-[10px] text-[#777777] uppercase tracking-[0.12em] mr-2 font-sans font-semibold">
-                  SORT:
-                </span>
-                <select
-                  value={sortOption}
-                  onChange={(e) => {
-                    setSortOption(e.target.value as 'NEWEST' | 'PRICE_ASC' | 'PRICE_DESC');
-                    setCurrentPage(1);
-                  }}
-                  className="bg-transparent text-[#F2EFE9] text-[10px] uppercase tracking-[0.08em] outline-none cursor-pointer font-sans"
-                >
-                  <option value="NEWEST" className="bg-[#0C0C0C] text-[#F2EFE9]">NEWEST LOTS</option>
-                  <option value="PRICE_ASC" className="bg-[#0C0C0C] text-[#F2EFE9]">PRICE: LOW TO HIGH</option>
-                  <option value="PRICE_DESC" className="bg-[#0C0C0C] text-[#F2EFE9]">PRICE: HIGH TO LOW</option>
-                </select>
-              </div>
-            </div>
+          <div className="flex items-center gap-3">
+            <span className="font-sans text-[11px] tracking-[0.14em] text-[#777777] uppercase">
+              SHOWING LOTS {startStr}–{endStr} OF {totalStr}
+            </span>
           </div>
         </div>
 
-        {/* 2-Column Desktop Architecture: Left 260px Facet Sidebar + Right 4-Column Grid */}
+        {/* Catalog Body: Left Facet Sidebar + Right Product Grid */}
         <div className="flex flex-col lg:flex-row gap-8 items-start">
-          {/* Left Filter Sidebar (260px wide on desktop) */}
-          <aside className="w-full lg:w-[260px] shrink-0 bg-[#0C0C0C] border border-[#1F1F1F] p-5 space-y-6 rounded-none">
-            {/* Sidebar Title */}
-            <div className="border-b border-[#1F1F1F] pb-3 flex items-center justify-between">
-              <span className="text-[11px] font-sans text-[#F2EFE9] uppercase tracking-[0.15em] font-semibold">
-                FILTER FACETS
+          {/* Left Facet Sidebar (260px wide on desktop) */}
+          <aside className="w-full lg:w-[260px] shrink-0 border border-[#1F1F1F] bg-[#0C0C0C] p-5 space-y-6">
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-[#161616] pb-3">
+              <span className="font-sans text-[11px] tracking-[0.16em] uppercase text-[#F2EFE9] font-medium">
+                CATALOG FACETS
               </span>
-              <span className="text-[10px] font-sans text-[#777777] uppercase tracking-[0.15em]">
-                CUSTODY SPEC
+              <span className="font-mono text-[9px] tracking-[0.14em] uppercase text-[#777777]">
+                LIVE LEDGER
               </span>
             </div>
 
-            {/* Facet 1: Price Bracket */}
+            {/* Facet Group 1: Price Bracket */}
             <div className="space-y-2.5">
-              <span className="block font-sans text-[10px] tracking-[0.15em] text-[#777777] uppercase font-semibold">
-                PRICE BRACKET (INR)
-              </span>
-              <div className="space-y-2">
+              <div className="font-sans text-[10px] tracking-[0.15em] uppercase text-[#777777] font-semibold">
+                VALUATION BRACKET
+              </div>
+              <div className="space-y-1.5 font-sans text-[12px] text-[#8E8E8E]">
                 {[
-                  { id: 'ALL', label: 'ALL PRICING BRACKETS' },
-                  { id: 'UNDER_15K', label: 'UNDER ₹15,000' },
+                  { id: 'ALL', label: 'All Valuations' },
+                  { id: 'UNDER_15K', label: 'Under ₹15,000' },
                   { id: '15K_35K', label: '₹15,000 – ₹35,000' },
                   { id: '35K_75K', label: '₹35,000 – ₹75,000' },
-                  { id: 'ABOVE_75K', label: '₹75,000+ (GRAIL TIER)' },
-                ].map((bracket) => {
-                  const isActive = selectedPriceBracket === bracket.id;
+                  { id: 'ABOVE_75K', label: 'Above ₹75,000' },
+                ].map((item) => {
+                  const isSelected = selectedPriceBracket === item.id;
                   return (
-                    <label
-                      key={bracket.id}
-                      className="flex items-center space-x-2.5 cursor-pointer group select-none"
+                    <div
+                      key={item.id}
+                      onClick={() => handlePriceBracketChange(item.id)}
+                      className="flex items-center justify-between py-1 px-1.5 hover:bg-[#141414] cursor-pointer transition-colors"
                     >
-                      <input
-                        type="radio"
-                        name="priceBracket"
-                        checked={isActive}
-                        onChange={() => handlePriceBracketChange(bracket.id)}
-                        className="sr-only"
-                      />
-                      {/* Custom Architectural Selector: Sharp 12px x 12px square */}
-                      <span
-                        className={`w-3 h-3 shrink-0 border transition-colors flex items-center justify-center ${
-                          isActive
-                            ? 'border-[#F2EFE9] bg-[#F2EFE9]'
-                            : 'border-[#3A3A3A] bg-transparent group-hover:border-[#666666]'
-                        }`}
-                      />
-                      <span
-                        className={`font-sans text-[11px] tracking-[0.08em] uppercase transition-colors ${
-                          isActive
-                            ? 'text-[#F2EFE9] font-medium'
-                            : 'text-[#888888] group-hover:text-[#CCCCCC]'
-                        }`}
-                      >
-                        {bracket.label}
-                      </span>
-                    </label>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Facet 2: Grade Condition */}
-            <div className="space-y-2.5 pt-4 border-t border-[#161616]">
-              <span className="block font-sans text-[10px] tracking-[0.15em] text-[#777777] uppercase font-semibold">
-                GRADE CONDITION
-              </span>
-              <div className="space-y-2">
-                {['GRADE S (MINT)', 'GRADE A', 'FACTORY SEALED'].map((grade) => {
-                  const isActive = selectedGrades.includes(grade);
-                  return (
-                    <label
-                      key={grade}
-                      className="flex items-center space-x-2.5 cursor-pointer group select-none"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={isActive}
-                        onChange={() => toggleGrade(grade)}
-                        className="sr-only"
-                      />
-                      {/* Custom Architectural Selector: Sharp 12px x 12px square */}
-                      <span
-                        className={`w-3 h-3 shrink-0 border transition-colors flex items-center justify-center ${
-                          isActive
-                            ? 'border-[#F2EFE9] bg-[#F2EFE9]'
-                            : 'border-[#3A3A3A] bg-transparent group-hover:border-[#666666]'
-                        }`}
-                      />
-                      <span
-                        className={`font-sans text-[11px] tracking-[0.08em] uppercase transition-colors ${
-                          isActive
-                            ? 'text-[#F2EFE9] font-medium'
-                            : 'text-[#888888] group-hover:text-[#CCCCCC]'
-                        }`}
-                      >
-                        {grade}
-                      </span>
-                    </label>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Facet 3: Seller City (India) */}
-            <div className="space-y-2.5 pt-4 border-t border-[#161616]">
-              <span className="block font-sans text-[10px] tracking-[0.15em] text-[#777777] uppercase font-semibold">
-                SELLER LOCATION (INDIA)
-              </span>
-              <div className="space-y-2">
-                {['MUMBAI', 'BENGALURU', 'DELHI NCR', 'AHMEDABAD', 'PUNE', 'HYDERABAD', 'CHENNAI', 'KOLKATA'].map((origin) => {
-                  const isActive = selectedOrigins.includes(origin);
-                  return (
-                    <label
-                      key={origin}
-                      className="flex items-center space-x-2.5 cursor-pointer group select-none"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={isActive}
-                        onChange={() => toggleOrigin(origin)}
-                        className="sr-only"
-                      />
-                      <span
-                        className={`w-3 h-3 shrink-0 border transition-colors flex items-center justify-center ${
-                          isActive
-                            ? 'border-[#F2EFE9] bg-[#F2EFE9]'
-                            : 'border-[#3A3A3A] bg-transparent group-hover:border-[#666666]'
-                        }`}
-                      />
-                      <span
-                        className={`font-sans text-[11px] tracking-[0.08em] uppercase transition-colors ${
-                          isActive
-                            ? 'text-[#F2EFE9] font-medium'
-                            : 'text-[#888888] group-hover:text-[#CCCCCC]'
-                        }`}
-                      >
-                        {origin}
-                      </span>
-                    </label>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Facet 4: Collectible Scale */}
-            <div className="space-y-2.5 pt-4 border-t border-[#161616]">
-              <span className="block font-sans text-[10px] tracking-[0.15em] text-[#777777] uppercase font-semibold">
-                COLLECTIBLE SCALE
-              </span>
-              <div className="space-y-2">
-                {['1/4 SCALE', '1/6 SCALE', '1/7 SCALE', '1/8 SCALE', 'NON-SCALE'].map(
-                  (scale) => {
-                    const isActive = selectedScales.includes(scale);
-                    return (
-                      <label
-                        key={scale}
-                        className="flex items-center space-x-2.5 cursor-pointer group select-none"
-                      >
-                        <input
-                          type="checkbox"
-                          checked={isActive}
-                          onChange={() => toggleScale(scale)}
-                          className="sr-only"
-                        />
-                        <span
-                          className={`w-3 h-3 shrink-0 border transition-colors flex items-center justify-center ${
-                            isActive
+                      <div className="flex items-center gap-2.5">
+                        <div
+                          className={`w-3 h-3 rounded-none border transition-colors flex items-center justify-center ${
+                            isSelected
                               ? 'border-[#F2EFE9] bg-[#F2EFE9]'
-                              : 'border-[#3A3A3A] bg-transparent group-hover:border-[#666666]'
-                          }`}
-                        />
-                        <span
-                          className={`font-sans text-[11px] tracking-[0.08em] uppercase transition-colors ${
-                            isActive
-                              ? 'text-[#F2EFE9] font-medium'
-                              : 'text-[#888888] group-hover:text-[#CCCCCC]'
+                              : 'border-[#333333] bg-[#080808]'
                           }`}
                         >
+                          {isSelected && <div className="w-1.5 h-1.5 bg-[#080808]" />}
+                        </div>
+                        <span className={isSelected ? 'text-[#F2EFE9] font-medium' : 'text-[#8E8E8E]'}>
+                          {item.label}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Facet Group 2: Condition Grade */}
+            <div className="space-y-2.5 pt-4 border-t border-[#161616]">
+              <div className="font-sans text-[10px] tracking-[0.15em] uppercase text-[#777777] font-semibold">
+                INSPECTION GRADE
+              </div>
+              <div className="space-y-1.5 font-sans text-[12px] text-[#8E8E8E]">
+                {[
+                  { id: 'FACTORY SEALED', label: 'MISB (Factory Sealed)' },
+                  { id: 'GRADE A', label: 'BIB (Cabinet Displayed)' },
+                ].map((item) => {
+                  const isChecked = selectedGrades.includes(item.id);
+                  return (
+                    <div
+                      key={item.id}
+                      onClick={() => toggleGrade(item.id)}
+                      className="flex items-center justify-between py-1 px-1.5 hover:bg-[#141414] cursor-pointer transition-colors"
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <div
+                          className={`w-3 h-3 rounded-none border transition-colors flex items-center justify-center ${
+                            isChecked
+                              ? 'border-[#F2EFE9] bg-[#F2EFE9]'
+                              : 'border-[#333333] bg-[#080808]'
+                          }`}
+                        >
+                          {isChecked && <div className="w-1.5 h-1.5 bg-[#080808]" />}
+                        </div>
+                        <span className={isChecked ? 'text-[#F2EFE9] font-medium' : 'text-[#8E8E8E]'}>
+                          {item.label}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Facet Group 3: Origin Vault */}
+            <div className="space-y-2.5 pt-4 border-t border-[#161616]">
+              <div className="font-sans text-[10px] tracking-[0.15em] uppercase text-[#777777] font-semibold">
+                VAULT LOCATION
+              </div>
+              <div className="space-y-1.5 font-sans text-[12px] text-[#8E8E8E]">
+                {[
+                  { id: 'MUMBAI', label: 'Mumbai, MH (In-Hand)' },
+                  { id: 'BENGALURU', label: 'Bengaluru, KA (In-Hand)' },
+                  { id: 'AHMEDABAD', label: 'Ahmedabad, GJ (In-Hand)' },
+                ].map((item) => {
+                  const isChecked = selectedOrigins.includes(item.id);
+                  return (
+                    <div
+                      key={item.id}
+                      onClick={() => toggleOrigin(item.id)}
+                      className="flex items-center justify-between py-1 px-1.5 hover:bg-[#141414] cursor-pointer transition-colors"
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <div
+                          className={`w-3 h-3 rounded-none border transition-colors flex items-center justify-center ${
+                            isChecked
+                              ? 'border-[#F2EFE9] bg-[#F2EFE9]'
+                              : 'border-[#333333] bg-[#080808]'
+                          }`}
+                        >
+                          {isChecked && <div className="w-1.5 h-1.5 bg-[#080808]" />}
+                        </div>
+                        <span className={isChecked ? 'text-[#F2EFE9] font-medium' : 'text-[#8E8E8E]'}>
+                          {item.label}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Facet Group 4: Scale Ratio */}
+            <div className="space-y-2.5 pt-4 border-t border-[#161616]">
+              <div className="font-sans text-[10px] tracking-[0.15em] uppercase text-[#777777] font-semibold">
+                SCALE SPECIFICATION
+              </div>
+              <div className="space-y-1.5 font-sans text-[12px] text-[#8E8E8E]">
+                {['1/4 SCALE', '1/7 SCALE', '1/8 SCALE', 'NON-SCALE'].map((scale) => {
+                  const isChecked = selectedScales.includes(scale);
+                  return (
+                    <div
+                      key={scale}
+                      onClick={() => toggleScale(scale)}
+                      className="flex items-center justify-between py-1 px-1.5 hover:bg-[#141414] cursor-pointer transition-colors"
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <div
+                          className={`w-3 h-3 rounded-none border transition-colors flex items-center justify-center ${
+                            isChecked
+                              ? 'border-[#F2EFE9] bg-[#F2EFE9]'
+                              : 'border-[#333333] bg-[#080808]'
+                          }`}
+                        >
+                          {isChecked && <div className="w-1.5 h-1.5 bg-[#080808]" />}
+                        </div>
+                        <span className={isChecked ? 'text-[#F2EFE9] font-medium' : 'text-[#8E8E8E]'}>
                           {scale}
                         </span>
-                      </label>
-                    );
-                  }
-                )}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
-            {/* Facet 5: Escrow Inspection Window */}
-            <div className="pt-4 border-t border-[#161616] space-y-2.5">
-              <span className="block font-sans text-[10px] tracking-[0.15em] text-[#777777] uppercase font-semibold">
-                ESCROW PROTECTION
-              </span>
-              <div className="p-3 bg-[#080808] border border-[#1F1F1F] space-y-1.5">
-                <div className="flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 bg-[#10B981] inline-block" />
-                  <span className="font-sans text-[10px] tracking-[0.14em] text-[#10B981] uppercase font-semibold">
-                    48H INSPECTION WINDOW
-                  </span>
-                </div>
-                <p className="font-sans text-[10px] text-[#777777] leading-relaxed">
-                  100% escrow protected via OtakuBazaar custody protocol. Funds released only upon buyer verification.
-                </p>
-              </div>
-            </div>
-
-            {/* Reset Button */}
+            {/* Reset Filters CTA */}
             <button
               type="button"
               onClick={handleResetFilters}
@@ -586,10 +524,30 @@ export const CatalogView: React.FC = () => {
 
           {/* Right Product Grid (Strict multiples of 4: 8 lots per view) */}
           <main className="flex-1 w-full">
-            {isLoading ? (
+            {isInitialLoading || isLoading ? (
               <ProductFeedSkeleton count={8} />
+            ) : products.length === 0 ? (
+              /* Global Zero Lots Empty State (Strict OtakuBazaar Dark Archival Vault Aesthetic) */
+              <div className="p-12 sm:p-16 border border-[#1F1F1F] bg-[#080808] text-center my-4">
+                <div className="font-mono text-[10px] text-[#777777] tracking-[0.2em] uppercase mb-3">
+                  VAULT INDEX // LIVE STATUS
+                </div>
+                <h3 className="font-serif text-[18px] sm:text-[22px] text-[#F2EFE9] uppercase tracking-[0.06em] mb-3">
+                  VAULT INDEX: 0 ACTIVE LOTS — NEW CONSIGNMENTS UNDERGOING AUTHENTICATION
+                </h3>
+                <p className="font-sans text-[12px] text-[#8E8E8E] max-w-lg mx-auto mb-6 leading-relaxed">
+                  ALL VAULT LOTS UNDER CUSTODY HAVE BEEN SETTLED OR ARE CURRENTLY IN TRANSIT. SELLERS CAN CONSIGN GRAILS FOR ESCROW-BACKED ACQUISITIONS.
+                </p>
+                <Link
+                  href="/sell"
+                  className="inline-block px-6 py-3 border border-[#F2EFE9] bg-[#080808] text-[#F2EFE9] hover:bg-[#F2EFE9] hover:text-[#080808] transition-colors font-sans text-[11px] tracking-[0.16em] uppercase font-semibold no-underline"
+                >
+                  [ CONSIGN A LOT ]
+                </Link>
+              </div>
             ) : filteredProducts.length === 0 ? (
-              <div className="p-16 border border-[#1F1F1F] bg-[#0C0C0C] text-center">
+              /* Filter Criteria Zero Matches Empty State */
+              <div className="p-12 sm:p-16 border border-[#1F1F1F] bg-[#0C0C0C] text-center my-4">
                 <p className="font-serif text-[18px] text-[#F2EFE9] uppercase tracking-[0.06em] mb-2">
                   No Archival Lots Found
                 </p>
@@ -615,40 +573,38 @@ export const CatalogView: React.FC = () => {
                   ))}
                 </div>
 
-                {/* Clean Architectural Pagination Bar (Only rendered when more than 1 page exists) */}
-                {totalPages > 1 && (
-                  <div className="border border-[#1F1F1F] bg-[#0C0C0C] px-5 py-4 mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 font-sans text-[11px] tracking-[0.14em] uppercase text-[#777777]">
-                    <div>
-                      SHOWING LOTS {startStr}–{endStr} OF {totalStr}
-                    </div>
-                    <div className="flex items-center gap-4">
-                      {currentPage > 1 && (
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setCurrentPage((p) => Math.max(1, p - 1));
-                            document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth' });
-                          }}
-                          className="text-[#888888] hover:text-[#F2EFE9] transition-colors cursor-pointer uppercase"
-                        >
-                          [ PREV PAGE ]
-                        </button>
-                      )}
-                      {currentPage < totalPages && (
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setCurrentPage((p) => Math.min(totalPages, p + 1));
-                            document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth' });
-                          }}
-                          className="text-[#F2EFE9] hover:text-white transition-colors cursor-pointer uppercase font-medium"
-                        >
-                          [ NEXT PAGE ]
-                        </button>
-                      )}
-                    </div>
+                {/* Clean Architectural Pagination Bar */}
+                <div className="border border-[#1F1F1F] bg-[#0C0C0C] px-5 py-4 mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 font-sans text-[11px] tracking-[0.14em] uppercase text-[#777777]">
+                  <div>
+                    SHOWING LOTS {startStr}–{endStr} OF {totalStr}
                   </div>
-                )}
+                  <div className="flex items-center gap-4">
+                    {currentPage > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setCurrentPage((p) => Math.max(1, p - 1));
+                          document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth' });
+                        }}
+                        className="text-[#888888] hover:text-[#F2EFE9] transition-colors cursor-pointer uppercase"
+                      >
+                        [ PREV PAGE ]
+                      </button>
+                    )}
+                    {currentPage < totalPages && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setCurrentPage((p) => Math.min(totalPages, p + 1));
+                          document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth' });
+                        }}
+                        className="text-[#F2EFE9] hover:text-white transition-colors cursor-pointer uppercase font-medium"
+                      >
+                        [ NEXT PAGE ]
+                      </button>
+                    )}
+                  </div>
+                </div>
               </div>
             )}
           </main>

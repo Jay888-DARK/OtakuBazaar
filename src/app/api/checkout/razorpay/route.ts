@@ -9,8 +9,6 @@ import { NextResponse } from 'next/server';
 import crypto from 'crypto';
 import Razorpay from 'razorpay';
 import { prisma } from '@/lib/prismaClient';
-import { MOCK_PRODUCTS } from '@/infrastructure/data/mockProducts';
-import { MOCK_GRAILS } from '@/lib/mockProducts';
 import { OrderRepository } from '@/infrastructure/database/repositories/OrderRepository';
 import { EscrowLedgerService } from '@/infrastructure/payment/EscrowLedgerService';
 
@@ -230,21 +228,6 @@ export async function POST(req: Request): Promise<NextResponse> {
         }
       } catch (err) {
         console.warn('[Razorpay Order] DB product lookup notice:', err);
-      }
-
-      // Fallback to catalog data
-      if (authoritativePriceINR <= 0) {
-        const mockProduct = MOCK_PRODUCTS.find((p) => p.id === targetLotId || p.lotNumber === targetLotId);
-        if (mockProduct) {
-          authoritativePriceINR = mockProduct.price;
-          itemTitle = mockProduct.title;
-        } else {
-          const mockGrail = MOCK_GRAILS.find((g) => g.id === targetLotId || g.lotNumber === targetLotId);
-          if (mockGrail) {
-            authoritativePriceINR = mockGrail.price;
-            itemTitle = mockGrail.title;
-          }
-        }
       }
     }
 

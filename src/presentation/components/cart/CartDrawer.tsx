@@ -43,27 +43,7 @@ export function openCartDrawer() {
   }
 }
 
-// Demo fallback item accurately matching ₹28,500 / ₹24,225 offer
-const DEMO_CART_ITEMS: CartItemData[] = [
-  {
-    id: 'cart-demo-1',
-    productId: 'lot-0481',
-    quantity: 1,
-    product: {
-      id: 'lot-0481',
-      title: 'Kyojuro Rengoku Flame Breathing 1/8 Scale Figure',
-      price: 28500,
-      imageUrls: '/showcase/bay1_clean.png',
-      minOfferPrice: 20000,
-      activeOffer: {
-        id: 'offer-demo-pending',
-        offeredPrice: 24225,
-        status: 'PENDING',
-        expiresAt: new Date(Date.now() + 23 * 60 * 60 * 1000 + 42 * 60 * 1000),
-      },
-    },
-  },
-];
+const DEMO_CART_ITEMS: CartItemData[] = [];
 
 function formatCountdown(expiresAt: string | Date): string {
   const target = new Date(expiresAt).getTime();

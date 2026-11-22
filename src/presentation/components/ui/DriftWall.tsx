@@ -37,14 +37,7 @@ export interface DriftWallProps {
   onItemClick?: (item: DriftWallItem) => void;
 }
 
-const DEFAULT_ITEMS: DriftWallItem[] = [
-  { image: '/showcase/bay2_clean.png', title: 'Saber Altria 1/7' },
-  { image: '/showcase/guts_berserker_statue.jpg', title: 'Guts Berserker 1/4' },
-  { image: '/showcase/bay1_clean.png', title: 'Rengoku Flame Breathing' },
-  { image: '/showcase/figure_umbreon.png', title: 'Edward Elric GEM' },
-  { image: '/showcase/bay3_clean.png', title: 'Satoru Gojo Scramble' },
-  { image: '/showcase/cabinet_clean.png', title: 'EVA Unit-01 Metal Build' },
-];
+const DEFAULT_ITEMS: DriftWallItem[] = [];
 
 const prefersReducedMotion = () =>
   typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -80,6 +73,9 @@ export const DriftWall = ({
   style,
   onItemClick
 }: DriftWallProps) => {
+  if (!items || items.length === 0) {
+    return null;
+  }
   const containerRef = useRef<HTMLDivElement | null>(null);
   const planeRef = useRef<HTMLDivElement | null>(null);
   const trackRefs = useRef<(HTMLDivElement | null)[]>([]);

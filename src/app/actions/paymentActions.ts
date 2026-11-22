@@ -2,7 +2,6 @@
 
 import Razorpay from 'razorpay';
 import { prisma } from '@/lib/prismaClient';
-import { MOCK_GRAILS } from '@/lib/mockProducts';
 
 /**
  * Creates a Razorpay Order on the server enforcing Server-Side Price Authority.
@@ -43,15 +42,15 @@ export async function createRazorpayOrder(
     }
   }
 
-  // 2. Check product database or catalog grails
+  // 2. Check product database or active listings
   if (truePriceINR <= 0 && lotId) {
     const product = await prisma.product.findUnique({ where: { id: lotId } });
     if (product) {
       truePriceINR = product.price > 0 ? product.price : Math.round(product.askingPriceAmount / 100);
     } else {
-      const mockGrail = MOCK_GRAILS.find((g) => g.id === lotId || g.lotNumber === lotId);
-      if (mockGrail) {
-        truePriceINR = mockGrail.price;
+      const listing = await prisma.listing.findUnique({ where: { id: lotId } });
+      if (listing) {
+        truePriceINR = Math.round(listing.askingPriceAmount / 100);
       }
     }
   }

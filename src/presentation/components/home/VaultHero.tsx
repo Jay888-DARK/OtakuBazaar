@@ -7,29 +7,66 @@
  * Strictly adheres to the dark archival auction-house aesthetic:
  * - Headline: High-contrast editorial Serif (Playfair Display), uppercase, wide tracking, #F2EFE9.
  * - Subtitle: Clean geometric sans, sentence case, #8E8E8E.
- * - Architectural hairline bracketed CTA ([ ACCESS ARCHIVAL INDEX ]).
- * - Zero GTA fonts, zero animated arrows, zero emoji.
+ * - Architectural hairline bracketed CTA ([ BROWSE FIGURES ] / [ SELL YOUR COLLECTION ]).
+ * - Pure database-driven showcase with clean architectural fallback when vault items are 0.
  */
 
-import React from 'react';
-import DriftWall from '../ui/DriftWall';
+import React, { useEffect, useState } from 'react';
+import DriftWall, { DriftWallItem } from '../ui/DriftWall';
 
 interface VaultHeroProps {
   onSelectVaultItem?: (item: { id?: string; title: string }) => void;
+  initialItems?: DriftWallItem[];
 }
 
-const CURATED_VAULT_GRAILS = [
-  { id: 'lot-0482', image: '/showcase/guts_berserker_statue.jpg', title: 'GUTS BERSERKER 1/4', href: '/lot/lot-0482' },
-  { id: 'lot-0481', image: '/showcase/bay1_clean.png', title: 'RENGOKU FLAME 1/8', href: '/lot/lot-0481' },
-  { id: 'lot-0484', image: '/showcase/bay2_clean.png', title: 'SABER ALTRIA 1/7', href: '/lot/lot-0484' },
-  { id: 'lot-0485', image: '/showcase/bay3_clean.png', title: 'GOJO HOLLOW PURPLE 1/7', href: '/lot/lot-0485' },
-  { id: 'lot-0483', image: '/showcase/figure_umbreon.png', title: 'EDWARD ELRIC GEM', href: '/lot/lot-0483' },
-  { id: 'lot-0486', image: '/showcase/cabinet_clean.png', title: 'EVA UNIT-01 METAL BUILD', href: '/lot/lot-0486' },
-  { id: 'lot-0488', image: '/showcase/manga_shelf_bottom.png', title: 'BERSERK DELUXE 1-14', href: '/lot/lot-0488' },
-  { id: 'lot-0489', image: '/Firefly_clean.png', title: 'NICHIRIN SWORD 1:1', href: '/lot/lot-0489' },
-];
+export default function VaultHero({ onSelectVaultItem, initialItems }: VaultHeroProps) {
+  const [items, setItems] = useState<DriftWallItem[]>(initialItems || []);
 
-export default function VaultHero({ onSelectVaultItem }: VaultHeroProps) {
+  useEffect(() => {
+    if (initialItems && initialItems.length > 0) {
+      setItems(initialItems);
+      return;
+    }
+
+    let isMounted = true;
+    fetch('/api/listings')
+      .then((res) => (res.ok ? res.json() : { items: [] }))
+      .then((data) => {
+        if (!isMounted) return;
+        const validListings = Array.isArray(data.items) ? data.items : [];
+        const mapped: DriftWallItem[] = validListings
+          .filter((l: any) => l.status === 'ACTIVE' || l.status === 'RESERVED')
+          .map((l: any) => {
+            let img = '/Firefly_clean.png';
+            if (Array.isArray(l.imageUrls) && l.imageUrls[0]) {
+              img = l.imageUrls[0];
+            } else if (typeof l.imageUrls === 'string') {
+              try {
+                const parsed = JSON.parse(l.imageUrls);
+                if (Array.isArray(parsed) && parsed[0]) img = parsed[0];
+                else img = l.imageUrls;
+              } catch {
+                img = l.imageUrls;
+              }
+            }
+            return {
+              id: l.id,
+              image: img,
+              title: l.title,
+              href: `/lot/${l.id}`,
+            };
+          });
+        setItems(mapped);
+      })
+      .catch(() => {
+        if (isMounted) setItems([]);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [initialItems]);
+
   const handleScrollToStage2 = () => {
     if (typeof document !== 'undefined') {
       const stage2 = document.getElementById('stage-2');
@@ -43,24 +80,32 @@ export default function VaultHero({ onSelectVaultItem }: VaultHeroProps) {
     <section className="relative w-full h-[calc(100vh-5rem)] min-h-[520px] overflow-hidden bg-[#080808] flex flex-col justify-center items-center select-none border-b border-[#1F1F1F]">
       {/* 3D Drifting Animation Canvas filling full viewport */}
       <div className="absolute inset-0 w-full h-full pointer-events-auto opacity-45">
-        <DriftWall
-          items={CURATED_VAULT_GRAILS}
-          columns={6}
-          tileWidth={260}
-          tileHeight={180}
-          gap={18}
-          speed={16}
-          grayscale={false}
-          overlayColor="#080808"
-          pauseOnHover={true}
-          onItemClick={(item) => {
-            if (onSelectVaultItem) {
-              onSelectVaultItem({ id: item.id, title: item.title || '' });
-            } else if (item.id && typeof window !== 'undefined') {
-              window.location.href = `/lot/${item.id}`;
-            }
-          }}
-        />
+        {items.length > 0 ? (
+          <DriftWall
+            items={items}
+            columns={Math.min(6, Math.max(3, items.length))}
+            tileWidth={260}
+            tileHeight={180}
+            gap={18}
+            speed={16}
+            grayscale={false}
+            overlayColor="#080808"
+            pauseOnHover={true}
+            onItemClick={(item) => {
+              if (onSelectVaultItem) {
+                onSelectVaultItem({ id: item.id, title: item.title || '' });
+              } else if (item.id && typeof window !== 'undefined') {
+                window.location.href = `/lot/${item.id}`;
+              }
+            }}
+          />
+        ) : (
+          <div className="absolute inset-0 w-full h-full pointer-events-none opacity-20 bg-[radial-gradient(#27272a_1px,transparent_1px)] [background-size:24px_24px] flex items-center justify-center">
+            <span className="border border-[#1F1F1F] px-4 py-2 text-[#444444] font-mono text-[10px] tracking-[0.2em] uppercase">
+              ARCHIVAL VAULT CUSTODY // ZERO ACTIVE SPECIMENS IN ROTATION
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Floating Center Hero Text */}
@@ -75,7 +120,7 @@ export default function VaultHero({ onSelectVaultItem }: VaultHeroProps) {
           Buy and sell verified Japanese scale figures and statues with peace of mind. Buyer payments are held safely in escrow until you unbox and inspect your collectible.
         </p>
 
-        {/* Dual Primary CTAs (Task 2) */}
+        {/* Dual Primary CTAs */}
         <div className="flex flex-col sm:flex-row items-center gap-3 mt-8 pointer-events-auto">
           <button
             onClick={handleScrollToStage2}
@@ -93,16 +138,14 @@ export default function VaultHero({ onSelectVaultItem }: VaultHeroProps) {
         </div>
       </div>
 
-      {/* Stage 1 subtle bottom scroll indicator anchored at bottom center of the frame */}
+      {/* Stage 1 subtle bottom scroll indicator */}
       <button
         onClick={handleScrollToStage2}
         type="button"
         aria-label="Scroll to access archival index"
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 cursor-pointer flex flex-col items-center gap-1.5 border border-[#1F1F1F] bg-[#0C0C0C] hover:bg-[#F2EFE9] hover:border-[#F2EFE9] px-5 py-2.5 transition-colors duration-75 rounded-none group"
+        className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.24em] text-[#666666] hover:text-[#CCCCCC] transition-none cursor-pointer z-20 border border-transparent hover:border-[#222222] px-3 py-1 bg-[#080808]/80 backdrop-blur-sm"
       >
-        <span className="font-sans text-[10px] font-semibold tracking-[0.16em] uppercase text-[#888888] group-hover:text-[#080808] transition-colors duration-75">
-          [ ACCESS ARCHIVAL INDEX ]
-        </span>
+        <span>[ SCROLL TO ACCESS ARCHIVAL INDEX ]</span>
       </button>
     </section>
   );

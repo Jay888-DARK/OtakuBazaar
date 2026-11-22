@@ -12,7 +12,7 @@
  * - Integrated Tax Invoice Generation & Secure Download.
  */
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { ArchivalFooter } from '@/presentation/components/footer/ArchivalFooter';
 
@@ -45,16 +45,38 @@ export default function CheckoutPage(): React.JSX.Element {
   const [invoiceLoading, setInvoiceLoading] = useState(false);
 
   // Cart / Lot Data
-  const lotItem: CheckoutItem = useMemo(() => {
-    return {
-      id: 'lot-0481',
-      lotRef: 'LOT-0481',
-      title: 'Kyojuro Rengoku 1/8 Flame Breathing Scale Figure',
-      series: 'DEMON SLAYER • ANIPLEX+ EXCLUSIVE',
-      condition: 'S-RANK // MISB (FACTORY SEALED)',
-      price: 24225,
-      sellerHandle: '@flame_hashira_in',
-    };
+  const [lotItem, setLotItem] = useState<CheckoutItem | null>(null);
+  const [isLoadingLot, setIsLoadingLot] = useState<boolean>(true);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const searchParams = new URLSearchParams(window.location.search);
+    const targetLotId = searchParams.get('lotId') || searchParams.get('id');
+
+    fetch('/api/listings')
+      .then((res) => (res.ok ? res.json() : { items: [] }))
+      .then((data) => {
+        const items = Array.isArray(data.items) ? data.items : [];
+        const match = targetLotId
+          ? items.find((i: any) => i.id === targetLotId)
+          : items[0] || null;
+
+        if (match) {
+          setLotItem({
+            id: match.id,
+            lotRef: `LOT-${String(match.id).replace(/[^0-9]/g, '').padStart(4, '0').slice(-4) || '0001'}`,
+            title: match.title,
+            series: match.category || 'AUTHENTIC ARCHIVAL LOT',
+            condition: match.condition === 'NEW' ? 'S-RANK // MISB (FACTORY SEALED)' : 'GRADE A // BIB (DISPLAYED)',
+            price: Math.round((match.askingPriceAmount || 0) / 100),
+            sellerHandle: `@seller_${match.sellerId?.slice(-6) || 'vault'}`,
+          });
+        }
+        setIsLoadingLot(false);
+      })
+      .catch(() => {
+        setIsLoadingLot(false);
+      });
   }, []);
 
   // Instant Pincode Serviceability Indicator
@@ -76,6 +98,7 @@ export default function CheckoutPage(): React.JSX.Element {
   };
 
   const handleDownloadInvoice = async () => {
+    if (!lotItem) return;
     setInvoiceLoading(true);
     try {
       const res = await fetch('/api/invoices/generate', {
@@ -128,8 +151,33 @@ export default function CheckoutPage(): React.JSX.Element {
           </p>
         </div>
 
-        {/* Success Confirmation State */}
-        {isEscrowLocked && (
+        {isLoadingLot ? (
+          <div className="p-16 border border-[#1F1F1F] bg-[#0C0C0C] text-center">
+            <div className="font-mono text-[10px] text-[#777777] tracking-[0.2em] uppercase animate-pulse">
+              INITIALIZING SECURE ESCROW PROTOCOL...
+            </div>
+          </div>
+        ) : !lotItem ? (
+          <div className="p-12 sm:p-16 border border-[#1F1F1F] bg-[#0C0C0C] text-center space-y-4">
+            <div className="font-mono text-[10px] text-[#777777] tracking-[0.2em] uppercase mb-1">
+              ESCROW CHECKOUT // ZERO LOTS SELECTED
+            </div>
+            <h2 className="text-base sm:text-lg font-serif uppercase tracking-wider text-[#F2EFE9]">
+              No Active Lot Selected for Checkout
+            </h2>
+            <p className="text-xs text-[#8E8E8E] max-w-md mx-auto leading-relaxed">
+              Please select a verified anime scale figure from the vault index or consign a new grail to proceed.
+            </p>
+            <div className="pt-2">
+              <Link
+                href="/"
+                className="inline-block px-5 py-2.5 bg-[#F2EFE9] text-[#080808] border border-[#F2EFE9] text-[11px] font-semibold uppercase tracking-[0.16em] no-underline transition-none rounded-none"
+              >
+                [ BROWSE ALL PRODUCTS ]
+              </Link>
+            </div>
+          </div>
+        ) : isEscrowLocked ? (
           <div className="p-8 bg-[#091812] border border-[#193829] text-center space-y-4">
             <span className="text-[10px] tracking-[0.2em] text-[#10B981] uppercase font-bold block">
               [ ESCROW RESERVATION COMPLETED &amp; FUNDS SECURED ]
@@ -167,9 +215,9 @@ export default function CheckoutPage(): React.JSX.Element {
               </Link>
             </div>
           </div>
-        )}
+        ) : null}
 
-        {!isEscrowLocked && (
+        {!isEscrowLocked && lotItem && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             {/* Left Column (7 cols): Address & 4-Stage Protocol */}
             <div className="lg:col-span-7 space-y-6">

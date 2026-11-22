@@ -14,7 +14,7 @@ import crypto from 'crypto';
 import { InvoiceRecord } from '@/domain/entities/Invoice';
 import { OrderRepository } from '@/infrastructure/database/repositories/OrderRepository';
 import { InvoicePdfGenerator } from '@/infrastructure/services/InvoicePdfGenerator';
-import { MOCK_GRAILS } from '@/lib/mockProducts';
+import { prisma } from '@/infrastructure/database/prismaClient';
 
 // Persistent in-memory cache for generated invoices (survives hot reloads)
 const globalInvoices = globalThis as unknown as {
@@ -118,44 +118,6 @@ export class InvoiceService {
       // ignore db errors in test harness
     }
 
-    // In-memory fallback lookup for test fixtures / mock orders
-    if (!order) {
-      const normalizedLotRef = orderId
-        .replace(/^order_audit_grail_/, '')
-        .replace(/^order_/, '')
-        .replace(/_/g, '-')
-        .replace(/^lot/, 'lot-');
-
-      const mockOrderMatch = MOCK_GRAILS.find(
-        (g) =>
-          g.id === orderId ||
-          g.lotNumber === orderId ||
-          g.id === normalizedLotRef ||
-          g.lotNumber === normalizedLotRef
-      );
-
-      if (mockOrderMatch) {
-        order = {
-          id: orderId,
-          listingId: mockOrderMatch.id,
-          buyerId: 'user_victim_buyer_tanjiro',
-          sellerId: 'user_seller_rengoku',
-          totalAmount: mockOrderMatch.price * 100, // in paise
-          currency: 'INR',
-          escrowStatus: 'HELD_IN_ESCROW',
-          inspectionEndsAt: new Date(Date.now() + 48 * 3600 * 1000),
-          razorpayOrderId: `order_rzp_${orderId}`,
-          razorpayPaymentId: `pay_rzp_${orderId}`,
-          shiprocketShipmentId: `ship_${orderId}`,
-          shiprocketAwb: 'BD-884920192',
-          payoutReferenceId: null,
-          payoutCompletedAt: null,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        };
-      }
-    }
-
     if (!order) {
       return {
         success: false,
@@ -181,11 +143,15 @@ export class InvoiceService {
 
     // 4. Resolve Lot title
     let itemTitle = 'OtakuBazaar Japanese Archival Collectible';
-    const mockGrail = MOCK_GRAILS.find(
-      (g) => g.id === order?.listingId || g.lotNumber === order?.listingId
-    );
-    if (mockGrail) {
-      itemTitle = mockGrail.title;
+    if (order?.listingId) {
+      try {
+        const dbListing = await prisma.listing.findUnique({ where: { id: order.listingId } });
+        if (dbListing?.title) {
+          itemTitle = dbListing.title;
+        }
+      } catch {
+        // fallback to standard title
+      }
     }
 
     // 5. Authoritative financial calculations (Integer arithmetic to avoid precision loss)

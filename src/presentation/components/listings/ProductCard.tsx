@@ -14,7 +14,7 @@
  * 5. Consistent Action: [ INSPECT LOT DETAILS ] across every card (zero hover scale transforms).
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { showVaultCartToast } from '@/presentation/components/cart/VaultCartToast';
 import { addToCart } from '@/app/actions/dealActions';
@@ -47,44 +47,6 @@ export interface ProductCardProps {
 
 export function ProductCard({ product, className = '' }: ProductCardProps): React.JSX.Element {
   const [imageLoaded, setImageLoaded] = useState(false);
-  const [isWatchlisted, setIsWatchlisted] = useState(false);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    try {
-      const stored = JSON.parse(localStorage.getItem('otaku_watchlist_ids') || '[]');
-      if (Array.isArray(stored)) {
-        setIsWatchlisted(stored.includes(product.id));
-      }
-    } catch {}
-
-    const handleWatchlistChange = (e: Event) => {
-      const customEvent = e as CustomEvent<{ ids?: string[] }>;
-      if (customEvent.detail?.ids) {
-        setIsWatchlisted(customEvent.detail.ids.includes(product.id));
-      }
-    };
-    window.addEventListener('otaku_watchlist_updated', handleWatchlistChange);
-    return () => window.removeEventListener('otaku_watchlist_updated', handleWatchlistChange);
-  }, [product.id]);
-
-  const toggleWatchlist = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    try {
-      const stored: string[] = JSON.parse(localStorage.getItem('otaku_watchlist_ids') || '[]');
-      let updated: string[];
-      if (stored.includes(product.id)) {
-        updated = stored.filter((id) => id !== product.id);
-        setIsWatchlisted(false);
-      } else {
-        updated = [...stored, product.id];
-        setIsWatchlisted(true);
-      }
-      localStorage.setItem('otaku_watchlist_ids', JSON.stringify(updated));
-      window.dispatchEvent(new CustomEvent('otaku_watchlist_updated', { detail: { ids: updated } }));
-    } catch {}
-  };
 
   const displayPrice =
     typeof product.price === 'number' && product.price > 0
@@ -116,18 +78,18 @@ export function ProductCard({ product, className = '' }: ProductCardProps): Reac
   const vaultId = product.origin?.toUpperCase().includes('MUMBAI')
     ? 'IN-BOM'
     : product.origin?.toUpperCase().includes('BENGALURU')
-    ? 'IN-BLR'
-    : product.origin?.toUpperCase().includes('AHMEDABAD')
-    ? 'IN-AMD'
-    : product.origin?.toUpperCase().includes('DELHI')
-    ? 'IN-DEL'
-    : product.origin?.toUpperCase().includes('KOLKATA')
-    ? 'IN-CCU'
-    : product.origin?.toUpperCase().includes('CHENNAI')
-    ? 'IN-MAA'
-    : product.origin?.toUpperCase().includes('JAIPUR')
-    ? 'IN-JAI'
-    : 'IN-VERIFIED';
+      ? 'IN-BLR'
+      : product.origin?.toUpperCase().includes('AHMEDABAD')
+        ? 'IN-AMD'
+        : product.origin?.toUpperCase().includes('DELHI')
+          ? 'IN-DEL'
+          : product.origin?.toUpperCase().includes('KOLKATA')
+            ? 'IN-CCU'
+            : product.origin?.toUpperCase().includes('CHENNAI')
+              ? 'IN-MAA'
+              : product.origin?.toUpperCase().includes('JAIPUR')
+                ? 'IN-JAI'
+                : 'IN-VERIFIED';
 
   // Format Condition Grade
   const rawGrade = product.gradeCondition || (product.condition === 'NEW' ? 'GRADE S (MINT)' : 'GRADE A');
@@ -149,18 +111,18 @@ export function ProductCard({ product, className = '' }: ProductCardProps): Reac
     (product.title.toUpperCase().includes('BERSERK')
       ? 'BERSERK'
       : product.title.toUpperCase().includes('RENGOKU') || product.title.toUpperCase().includes('DEMON SLAYER')
-      ? 'DEMON SLAYER'
-      : product.title.toUpperCase().includes('GOJO') || product.title.toUpperCase().includes('JUJUTSU')
-      ? 'JUJUTSU KAISEN'
-      : product.title.toUpperCase().includes('SABER') || product.title.toUpperCase().includes('FATE')
-      ? 'FATE / STAY NIGHT'
-      : product.title.toUpperCase().includes('EDWARD') || product.title.toUpperCase().includes('ALCHEMIST')
-      ? 'FULLMETAL ALCHEMIST'
-      : product.title.toUpperCase().includes('EVA') || product.title.toUpperCase().includes('EVANGELION')
-      ? 'EVANGELION'
-      : product.title.toUpperCase().includes('LUFFY') || product.title.toUpperCase().includes('ONE PIECE')
-      ? 'ONE PIECE'
-      : 'ARCHIVAL JAPAN');
+        ? 'DEMON SLAYER'
+        : product.title.toUpperCase().includes('GOJO') || product.title.toUpperCase().includes('JUJUTSU')
+          ? 'JUJUTSU KAISEN'
+          : product.title.toUpperCase().includes('SABER') || product.title.toUpperCase().includes('FATE')
+            ? 'FATE / STAY NIGHT'
+            : product.title.toUpperCase().includes('EDWARD') || product.title.toUpperCase().includes('ALCHEMIST')
+              ? 'FULLMETAL ALCHEMIST'
+              : product.title.toUpperCase().includes('EVA') || product.title.toUpperCase().includes('EVANGELION')
+                ? 'EVANGELION'
+                : product.title.toUpperCase().includes('LUFFY') || product.title.toUpperCase().includes('ONE PIECE')
+                  ? 'ONE PIECE'
+                  : 'ARCHIVAL JAPAN');
 
   const category = (product.category || 'SCALE FIGURE').toUpperCase();
 
@@ -181,23 +143,9 @@ export function ProductCard({ product, className = '' }: ProductCardProps): Reac
           <span>
             LOT #{lotNumber} • VAULT ID: {vaultId}
           </span>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={toggleWatchlist}
-              className={`border px-2 py-0.5 text-[9px] tracking-[0.12em] uppercase transition-none cursor-pointer ${
-                isWatchlisted
-                  ? 'border-[#10B981] text-[#10B981] bg-[#091812]'
-                  : 'border-[#2A2A2A] text-[#777777] hover:text-[#F2EFE9] hover:border-[#444444] bg-[#080808]'
-              }`}
-              title={isWatchlisted ? 'Remove from Watchlist' : 'Add to Watchlist'}
-            >
-              {isWatchlisted ? '★ WATCHED' : '+ WATCH'}
-            </button>
-            <span className="border border-[#2A2A2A] px-2 py-0.5 text-[10px] tracking-[0.12em] text-[#E5E5E5] bg-[#080808] uppercase">
-              {gradeBadge}
-            </span>
-          </div>
+          <span className="border border-[#2A2A2A] px-2 py-0.5 text-[10px] tracking-[0.12em] text-[#E5E5E5] bg-[#080808] uppercase">
+            {gradeBadge}
+          </span>
         </div>
 
         {/* 2. Strict 4:5 Studio Image Frame (No Floating Text Badges) */}
@@ -217,9 +165,8 @@ export function ProductCard({ product, className = '' }: ProductCardProps): Reac
                 setCurrentImage('/Firefly_clean.png');
                 setImageLoaded(true);
               }}
-              className={`w-full h-full object-cover object-center transition-opacity duration-150 ${
-                imageLoaded ? 'opacity-100' : 'opacity-0'
-              }`}
+              className={`w-full h-full object-cover object-center transition-opacity duration-150 ${imageLoaded ? 'opacity-100' : 'opacity-0'
+                }`}
             />
           </div>
         </Link>
@@ -279,7 +226,7 @@ export function ProductCard({ product, className = '' }: ProductCardProps): Reac
               });
               window.dispatchEvent(new CustomEvent('otaku_cart_updated'));
             }
-            addToCart(product.id).catch(() => {});
+            addToCart(product.id).catch(() => { });
           }}
           className="w-full py-2.5 text-center border border-[#1F1F1F] bg-[#080808] hover:bg-[#161616] hover:border-[#3A3A3A] text-[#E5E5E5] text-[10px] tracking-[0.14em] uppercase transition-colors duration-75 block font-sans cursor-pointer rounded-none"
         >

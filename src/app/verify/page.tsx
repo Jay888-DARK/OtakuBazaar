@@ -210,10 +210,10 @@ export default function HardwareVerificationPage(): React.JSX.Element {
         {/* Action Link Back */}
         <div className="pt-4 flex justify-between items-center text-xs">
           <Link
-            href="/products/lot-0482"
+            href="/"
             className="px-4 py-2 border border-zinc-700 bg-zinc-900 text-zinc-300 brutalist-btn no-underline uppercase tracking-wider"
           >
-            ← Return to Specimen Dossier
+            ← Return to Vault Catalog
           </Link>
           <span className="text-[10px] uppercase tracking-widest text-zinc-600">
             SECURE VERIFICATION TERMINAL // OKB

@@ -4,8 +4,6 @@ import { headers } from 'next/headers';
 import { prisma } from '@/lib/prismaClient';
 import { pusherServer } from '@/lib/pusherServer';
 import { RateLimiter } from '@/infrastructure/security/RateLimiter';
-import { MOCK_GRAILS } from '@/lib/mockProducts';
-
 // In-memory fallback stores for high-availability resilience when DB is slow/unreachable
 const inMemoryCart = new Map<string, any[]>();
 const inMemoryOffers = new Map<string, any>();
@@ -40,22 +38,23 @@ export async function submitOffer({
   }
 
   let product: any = null;
-  const mock = MOCK_GRAILS.find((g) => g.id === productId || g.lotNumber === productId);
-  if (mock) {
-    product = {
-      id: mock.id,
-      title: mock.title,
-      price: mock.price,
-      askingPriceAmount: mock.price * 100,
-      sellerId: 'user_seller_rengoku',
-      minOfferPrice: Math.round(mock.price * 0.75),
-    };
-  } else {
-    try {
-      product = await withTimeout(prisma.product.findUnique({ where: { id: productId } }));
-    } catch (dbErr) {
-      console.warn('[dealActions] DB connection check note:', dbErr);
+  try {
+    product = await withTimeout(prisma.product.findUnique({ where: { id: productId } }));
+    if (!product) {
+      const listing = await withTimeout(prisma.listing.findUnique({ where: { id: productId } }));
+      if (listing) {
+        product = {
+          id: listing.id,
+          title: listing.title,
+          price: Math.round(listing.askingPriceAmount / 100),
+          askingPriceAmount: listing.askingPriceAmount,
+          sellerId: listing.sellerId,
+          minOfferPrice: Math.round((listing.askingPriceAmount / 100) * 0.75),
+        };
+      }
     }
+  } catch (dbErr) {
+    console.warn('[dealActions] DB connection check note:', dbErr);
   }
 
   if (!product) {
@@ -238,37 +237,7 @@ export async function addToCart(productId: string, userId: string = 'user_buyer_
     return { success: true, cartItem };
   } catch (err: any) {
     console.warn('[dealActions] DB note on addToCart:', err);
-    // Find mock product to populate in-memory fallback
-    const mock = MOCK_GRAILS.find((g) => g.id === productId || g.lotNumber === productId);
-    const current = inMemoryCart.get(userId) || [];
-    const existingIndex = current.findIndex((i) => i.productId === productId);
-    if (existingIndex >= 0) {
-      current[existingIndex].quantity = 1;
-      return { success: true, cartItem: current[existingIndex] };
-    }
-
-    const fallbackItem = {
-      id: `cart-${Date.now()}`,
-      productId,
-      quantity: 1,
-      product: {
-        id: productId,
-        title: mock ? mock.title : 'Authentic Scale Figure',
-        price: mock ? mock.price : 28500,
-        imageUrls: mock ? mock.imageUrl : '/showcase/bay1_clean.png',
-        minOfferPrice: mock ? Math.round(mock.price * 0.75) : 20000,
-        dealOffers: [
-          {
-            id: `offer-cart-${Date.now()}`,
-            offeredPrice: mock ? Math.round(mock.price * 0.85) : 24225,
-            status: 'PENDING',
-            expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
-          },
-        ],
-      },
-    };
-    inMemoryCart.set(userId, [fallbackItem, ...current]);
-    return { success: true, cartItem: fallbackItem };
+    return { success: false, message: 'Failed to add item to cart due to database error' };
   }
 }
 

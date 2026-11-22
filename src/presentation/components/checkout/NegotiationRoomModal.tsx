@@ -31,14 +31,14 @@ export interface NegotiationRoomItem {
 }
 
 const DEFAULT_ROOM_ITEM: NegotiationRoomItem = {
-  id: 'lot-0482',
-  title: 'GUTS BERSERKER ARMOR UNLEASHED 1/4 SCALE',
-  price: 89000,
-  lotRef: 'LOT-0482',
-  condition: 'S-RANK FACTORY SEALED',
-  imageUrl: '/showcase/guts_berserker_statue.jpg',
-  series: 'BERSERK • KENTARO MIURA MEMORIAL',
-  fabricator: 'PRIME 1 STUDIO',
+  id: '',
+  title: 'AUTHENTIC JAPANESE GRAIL',
+  price: 0,
+  lotRef: 'LOT-VAULT',
+  condition: 'AUTHENTIC CUSTODY',
+  imageUrl: '/Firefly_clean.png',
+  series: 'AUTHENTIC VAULT LOT',
+  fabricator: 'JAPANESE COLLECTIBLES',
 };
 
 export function openNegotiationRoom(item?: Partial<NegotiationRoomItem>) {

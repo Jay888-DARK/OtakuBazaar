@@ -65,104 +65,11 @@ interface VaultInvoice {
   downloadUrl: string;
 }
 
-const INITIAL_SHELF: ShelfItem[] = [
-  {
-    id: 'shelf-01',
-    lotRef: 'LOT-0482',
-    title: 'Guts Berserker Armor Unleashed 1/4 Scale',
-    series: 'Berserk • Kentaro Miura Memorial',
-    condition: 'S-RANK // MISB (FACTORY SEALED)',
-    boxGrade: 'FACTORY CARTON SEALED',
-    valuation: 124000,
-    custodyBay: 'MUMBAI TERMINAL BAY 04',
-    status: 'ACTIVE_CONSIGNMENT',
-    imageUrl: '/showcase/guts_berserker_statue.jpg',
-  },
-  {
-    id: 'shelf-02',
-    lotRef: 'LOT-0481',
-    title: 'Kyojuro Rengoku 1/8 Flame Breathing',
-    series: 'Demon Slayer • Aniplex+ Exclusive',
-    condition: 'S-RANK // MISB (FACTORY SEALED)',
-    boxGrade: 'MINT BOX (BLISTER INTACT)',
-    valuation: 28500,
-    custodyBay: 'BENGALURU VAULT 02',
-    status: 'OFFER_PENDING',
-    imageUrl: '/showcase/bay1_clean.png',
-  },
-  {
-    id: 'shelf-03',
-    lotRef: 'LOT-0484',
-    title: 'Saber Altria Pendragon 1/7 Deluxe',
-    series: 'Fate/Stay Night • Type-Moon Alter',
-    condition: 'S-RANK // MISB (FACTORY SEALED)',
-    boxGrade: 'MINT BOX (BLISTER INTACT)',
-    valuation: 24500,
-    custodyBay: 'AHMEDABAD PRIVATE STORAGE',
-    status: 'PERSONAL_CUSTODY',
-    imageUrl: '/showcase/bay2_clean.png',
-  },
-  {
-    id: 'shelf-04',
-    lotRef: 'LOT-0486',
-    title: 'Evangelion Unit-01 Metal Build 2026',
-    series: 'Neon Genesis Evangelion • Bandai Tamashii',
-    condition: 'S-RANK // MISB (FACTORY SEALED)',
-    boxGrade: 'ORIGINAL OUTER BROWN BOX',
-    valuation: 42000,
-    custodyBay: 'BENGALURU VAULT',
-    status: 'ACTIVE_CONSIGNMENT',
-    imageUrl: '/showcase/cabinet_clean.png',
-  },
-];
+const INITIAL_SHELF: ShelfItem[] = [];
 
-const INITIAL_OFFERS: BargainOffer[] = [
-  {
-    id: 'offer-101',
-    lotRef: 'LOT-0481',
-    itemTitle: 'Kyojuro Rengoku 1/8 Flame Breathing Scale',
-    buyerHandle: '@tanjiro_collector_in',
-    askingPrice: 28500,
-    offeredPrice: 24500,
-    expiresInHours: 18,
-    status: 'PENDING',
-  },
-  {
-    id: 'offer-102',
-    lotRef: 'LOT-0484',
-    itemTitle: 'Saber Altria Pendragon 1/7 Deluxe',
-    buyerHandle: '@shirou_grails_mumbai',
-    askingPrice: 24500,
-    offeredPrice: 22000,
-    expiresInHours: 6,
-    status: 'PENDING',
-  },
-];
+const INITIAL_OFFERS: BargainOffer[] = [];
 
-const INITIAL_DISPATCHES: DispatchTracker[] = [
-  {
-    id: 'disp-01',
-    lotRef: 'LOT-0482',
-    itemTitle: 'Guts Berserker Armor Unleashed 1/4 Scale',
-    carrier: 'BLUEDART AIR',
-    awbNumber: 'BD-884920192',
-    status: 'INSPECTION_WINDOW_ACTIVE',
-    inspectionHoursLeft: 31,
-    destinationCity: 'MUMBAI, MH',
-    orderId: 'lot-0482',
-  },
-  {
-    id: 'disp-02',
-    lotRef: 'LOT-0481',
-    itemTitle: 'Kyojuro Rengoku 1/8 Flame Breathing Scale',
-    carrier: 'DELHIVERY SURFACE',
-    awbNumber: 'DEL-991204122',
-    status: 'IN_TRANSIT',
-    inspectionHoursLeft: 48,
-    destinationCity: 'BENGALURU, KA',
-    orderId: 'lot-0481',
-  },
-];
+const INITIAL_DISPATCHES: DispatchTracker[] = [];
 
 export default function VaultPage(): React.JSX.Element {
   const [activeTab, setActiveTab] = useState<'SHELF' | 'LEDGER' | 'DISPATCH' | 'INVOICES'>('SHELF');
@@ -382,143 +289,176 @@ export default function VaultPage(): React.JSX.Element {
               </Link>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {shelf.map((item) => (
-                <div
-                  key={item.id}
-                  className="bg-[#0C0C0C] border border-[#1F1F1F] p-5 flex flex-col justify-between"
-                >
-                  <div>
-                    <div className="flex justify-between items-center text-[10px] tracking-[0.15em] text-[#777777] mb-2 uppercase">
-                      <span>{item.lotRef}</span>
-                      <span className="text-[#10B981] font-semibold">{item.status.replace(/_/g, ' ')}</span>
-                    </div>
-
-                    <div className="relative aspect-[16/9] w-full bg-[#080808] border border-[#1A1A1A] mb-4 overflow-hidden">
-                      <Image
-                        src={item.imageUrl}
-                        alt={item.title}
-                        fill
-                        className="object-contain p-2"
-                        sizes="(max-width: 768px) 100vw, 50vw"
-                      />
-                    </div>
-
-                    <span className="text-[10px] tracking-[0.16em] uppercase text-[#888888] block">
-                      {item.series}
-                    </span>
-                    <h3 className="font-serif text-[17px] text-[#F2EFE9] uppercase tracking-[0.04em] mt-1 leading-snug">
-                      {item.title}
-                    </h3>
-
-                    <div className="mt-3 pt-3 border-t border-[#161616] space-y-1.5 text-[11px]">
-                      <div className="flex justify-between text-[#8E8E8E]">
-                        <span>Condition Grade</span>
-                        <span className="text-[#E5E5E5] font-semibold">{item.condition}</span>
-                      </div>
-                      <div className="flex justify-between text-[#8E8E8E]">
-                        <span>Box Status</span>
-                        <span className="text-[#E5E5E5]">{item.boxGrade}</span>
-                      </div>
-                      <div className="flex justify-between text-[#8E8E8E]">
-                        <span>Physical Custody Bay</span>
-                        <span className="text-[#E5E5E5]">{item.custodyBay}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="mt-5 pt-3 border-t border-[#1F1F1F] flex items-center justify-between">
-                    <div>
-                      <span className="text-[9px] uppercase tracking-[0.15em] text-[#777777] block">
-                        ESTIMATED LIQUIDITY
-                      </span>
-                      <span className="font-serif text-[18px] text-[#F2EFE9] font-bold">
-                        ₹{item.valuation.toLocaleString('en-IN')}
-                      </span>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={() => handleGenerateInvoice(item.lotRef.toLowerCase(), item.lotRef, item.title)}
-                        className="px-3 py-1.5 bg-[#080808] border border-[#1F1F1F] hover:border-[#3A3A3A] text-[10px] uppercase tracking-[0.14em] text-[#CCCCCC] transition-none cursor-pointer"
-                      >
-                        [ GET INVOICE ]
-                      </button>
-                      <Link
-                        href={`/lot/${item.lotRef.toLowerCase()}`}
-                        className="px-3 py-1.5 bg-[#F2EFE9] text-[#080808] border border-[#F2EFE9] text-[10px] uppercase tracking-[0.14em] font-semibold transition-none no-underline"
-                      >
-                        [ INSPECT ]
-                      </Link>
-                    </div>
-                  </div>
+            {shelf.length === 0 ? (
+              <div className="border border-[#1F1F1F] bg-[#0C0C0C] p-12 sm:p-16 text-center space-y-4">
+                <div className="font-mono text-[10px] text-[#777777] tracking-[0.2em] uppercase">
+                  VAULT PORTFOLIO // 0 ACTIVE CONSIGNMENTS
                 </div>
-              ))}
-            </div>
+                <h3 className="font-serif text-lg sm:text-xl uppercase tracking-wider text-[#F2EFE9]">
+                  NO ACTIVE CONSIGNMENTS IN CUSTODY
+                </h3>
+                <p className="text-xs text-[#8E8E8E] max-w-md mx-auto leading-relaxed">
+                  Your digital vault shelf is currently empty. Consign verified anime scale figures, statues, or manga sets to enter vault custody.
+                </p>
+                <div className="pt-2">
+                  <Link
+                    href="/sell"
+                    className="inline-block px-5 py-2.5 bg-[#F2EFE9] hover:bg-[#EAE6DF] text-[#080808] border border-[#F2EFE9] text-[11px] font-semibold uppercase tracking-[0.16em] transition-none no-underline rounded-none"
+                  >
+                    [ + CONSIGN A LOT ]
+                  </Link>
+                </div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {shelf.map((item) => (
+                  <div
+                    key={item.id}
+                    className="bg-[#0C0C0C] border border-[#1F1F1F] p-5 flex flex-col justify-between"
+                  >
+                    <div>
+                      <div className="flex justify-between items-center text-[10px] tracking-[0.15em] text-[#777777] mb-2 uppercase">
+                        <span>{item.lotRef}</span>
+                        <span className="text-[#10B981] font-semibold">{item.status.replace(/_/g, ' ')}</span>
+                      </div>
+
+                      <div className="relative aspect-[16/9] w-full bg-[#080808] border border-[#1A1A1A] mb-4 overflow-hidden">
+                        <Image
+                          src={item.imageUrl}
+                          alt={item.title}
+                          fill
+                          className="object-contain p-2"
+                          sizes="(max-width: 768px) 100vw, 50vw"
+                        />
+                      </div>
+
+                      <span className="text-[10px] tracking-[0.16em] uppercase text-[#888888] block">
+                        {item.series}
+                      </span>
+                      <h3 className="font-serif text-[17px] text-[#F2EFE9] uppercase tracking-[0.04em] mt-1 leading-snug">
+                        {item.title}
+                      </h3>
+
+                      <div className="mt-3 pt-3 border-t border-[#161616] space-y-1.5 text-[11px]">
+                        <div className="flex justify-between text-[#8E8E8E]">
+                          <span>Condition Grade</span>
+                          <span className="text-[#E5E5E5] font-semibold">{item.condition}</span>
+                        </div>
+                        <div className="flex justify-between text-[#8E8E8E]">
+                          <span>Box Status</span>
+                          <span className="text-[#E5E5E5]">{item.boxGrade}</span>
+                        </div>
+                        <div className="flex justify-between text-[#8E8E8E]">
+                          <span>Physical Custody Bay</span>
+                          <span className="text-[#E5E5E5]">{item.custodyBay}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mt-5 pt-3 border-t border-[#1F1F1F] flex items-center justify-between">
+                      <div>
+                        <span className="text-[9px] uppercase tracking-[0.15em] text-[#777777] block">
+                          ESTIMATED LIQUIDITY
+                        </span>
+                        <span className="font-serif text-[18px] text-[#F2EFE9] font-bold">
+                          ₹{item.valuation.toLocaleString('en-IN')}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => handleGenerateInvoice(item.lotRef.toLowerCase(), item.lotRef, item.title)}
+                          className="px-3 py-1.5 bg-[#080808] border border-[#1F1F1F] hover:border-[#3A3A3A] text-[10px] uppercase tracking-[0.14em] text-[#CCCCCC] transition-none cursor-pointer"
+                        >
+                          [ GET INVOICE ]
+                        </button>
+                        <Link
+                          href={`/lot/${item.lotRef.toLowerCase()}`}
+                          className="px-3 py-1.5 bg-[#F2EFE9] text-[#080808] border border-[#F2EFE9] text-[10px] uppercase tracking-[0.14em] font-semibold transition-none no-underline"
+                        >
+                          [ INSPECT ]
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
         {/* TAB 02: LIVE BARGAINING LEDGER */}
         {activeTab === 'LEDGER' && (
           <div className="space-y-6">
-            <div className="border border-[#1F1F1F] bg-[#0C0C0C] divide-y divide-[#161616]">
-              {offers.map((offer) => (
-                <div key={offer.id} className="p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-3">
-                      <span className="text-[10px] tracking-[0.15em] text-[#777777] uppercase font-semibold">
-                        {offer.lotRef}
-                      </span>
-                      <span className="text-[10px] tracking-[0.14em] text-[#CCCCCC]">
-                        BIDDER: {offer.buyerHandle}
-                      </span>
-                      <span className="border border-[#193829] bg-[#091812] px-2 py-0.5 text-[9px] text-[#10B981] font-bold uppercase">
-                        {offer.expiresInHours}H EXPIRES
-                      </span>
+            {offers.length === 0 ? (
+              <div className="border border-[#1F1F1F] bg-[#0C0C0C] p-12 text-center space-y-3">
+                <span className="text-[10px] tracking-[0.2em] text-[#777777] uppercase block">
+                  BARGAINING LEDGER // 0 PENDING OFFERS
+                </span>
+                <p className="text-xs text-[#8E8E8E] max-w-md mx-auto">
+                  No pending counterparty offers at this time. Incoming offers on your consigned lots will appear here with 24-hour escrow lock triggers.
+                </p>
+              </div>
+            ) : (
+              <div className="border border-[#1F1F1F] bg-[#0C0C0C] divide-y divide-[#161616]">
+                {offers.map((offer) => (
+                  <div key={offer.id} className="p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-3">
+                        <span className="text-[10px] tracking-[0.15em] text-[#777777] uppercase font-semibold">
+                          {offer.lotRef}
+                        </span>
+                        <span className="text-[10px] tracking-[0.14em] text-[#CCCCCC]">
+                          BIDDER: {offer.buyerHandle}
+                        </span>
+                        <span className="border border-[#193829] bg-[#091812] px-2 py-0.5 text-[9px] text-[#10B981] font-bold uppercase">
+                          {offer.expiresInHours}H EXPIRES
+                        </span>
+                      </div>
+
+                      <h3 className="font-serif text-[16px] text-[#F2EFE9] uppercase tracking-[0.04em]">
+                        {offer.itemTitle}
+                      </h3>
+
+                      <div className="flex items-center gap-4 text-[12px] pt-1">
+                        <span className="text-[#777777]">
+                          Asking: <strong className="text-[#CCCCCC]">₹{offer.askingPrice.toLocaleString('en-IN')}</strong>
+                        </span>
+                        <span className="text-[#10B981] font-bold">
+                          Offer: ₹{offer.offeredPrice.toLocaleString('en-IN')}
+                        </span>
+                      </div>
                     </div>
 
-                    <h3 className="font-serif text-[16px] text-[#F2EFE9] uppercase tracking-[0.04em]">
-                      {offer.itemTitle}
-                    </h3>
-
-                    <div className="flex items-center gap-4 text-[12px] pt-1">
-                      <span className="text-[#777777]">
-                        Asking: <strong className="text-[#CCCCCC]">₹{offer.askingPrice.toLocaleString('en-IN')}</strong>
-                      </span>
-                      <span className="text-[#10B981] font-bold">
-                        Offer: ₹{offer.offeredPrice.toLocaleString('en-IN')}
-                      </span>
+                    <div className="flex items-center gap-2">
+                      {offer.status === 'PENDING' ? (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => handleOfferAction(offer.id, 'ACCEPT')}
+                            className="px-4 py-2 bg-[#F2EFE9] text-[#080808] border border-[#F2EFE9] text-[11px] font-semibold uppercase tracking-[0.14em] transition-none cursor-pointer rounded-none"
+                          >
+                            [ ACCEPT & LOCK ]
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleOfferAction(offer.id, 'REJECT')}
+                            className="px-4 py-2 bg-[#080808] text-[#888888] hover:text-[#CCCCCC] border border-[#1F1F1F] text-[11px] font-semibold uppercase tracking-[0.14em] transition-none cursor-pointer rounded-none"
+                          >
+                            [ DECLINE ]
+                          </button>
+                        </>
+                      ) : (
+                        <span className="px-3 py-1.5 border border-[#1F1F1F] bg-[#080808] text-[10px] tracking-[0.15em] uppercase text-[#10B981]">
+                          {offer.status}
+                        </span>
+                      )}
                     </div>
                   </div>
-
-                  <div className="flex items-center gap-2">
-                    {offer.status === 'PENDING' ? (
-                      <>
-                        <button
-                          type="button"
-                          onClick={() => handleOfferAction(offer.id, 'ACCEPT')}
-                          className="px-4 py-2 bg-[#F2EFE9] text-[#080808] border border-[#F2EFE9] text-[11px] font-semibold uppercase tracking-[0.14em] transition-none cursor-pointer rounded-none"
-                        >
-                          [ ACCEPT & LOCK ]
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleOfferAction(offer.id, 'REJECT')}
-                          className="px-4 py-2 bg-[#080808] text-[#888888] hover:text-[#CCCCCC] border border-[#1F1F1F] text-[11px] font-semibold uppercase tracking-[0.14em] transition-none cursor-pointer rounded-none"
-                        >
-                          [ DECLINE ]
-                        </button>
-                      </>
-                    ) : (
-                      <span className="px-3 py-1.5 border border-[#1F1F1F] bg-[#080808] text-[10px] tracking-[0.15em] uppercase text-[#10B981]">
-                        {offer.status}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
@@ -569,53 +509,64 @@ export default function VaultPage(): React.JSX.Element {
               </form>
             </div>
 
-            <div className="border border-[#1F1F1F] bg-[#0C0C0C] divide-y divide-[#161616]">
-              {dispatches.map((disp) => (
-                <div key={disp.id} className="p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                  <div className="space-y-1">
+            {dispatches.length === 0 ? (
+              <div className="border border-[#1F1F1F] bg-[#0C0C0C] p-12 text-center space-y-3">
+                <span className="text-[10px] tracking-[0.2em] text-[#777777] uppercase block">
+                  ESCROW DISPATCH // 0 SHIPMENTS IN TRANSIT
+                </span>
+                <p className="text-xs text-[#8E8E8E] max-w-md mx-auto">
+                  No active shipments currently in transit. Recorded courier dispatches will display real-time 48-hour inspection windows.
+                </p>
+              </div>
+            ) : (
+              <div className="border border-[#1F1F1F] bg-[#0C0C0C] divide-y divide-[#161616]">
+                {dispatches.map((disp) => (
+                  <div key={disp.id} className="p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-3">
+                        <span className="text-[10px] tracking-[0.15em] text-[#777777] uppercase font-semibold">
+                          {disp.lotRef}
+                        </span>
+                        <span className="text-[10px] tracking-[0.14em] text-[#CCCCCC]">
+                          {disp.carrier} • {disp.awbNumber}
+                        </span>
+                        <span className="border border-[#193829] bg-[#091812] px-2 py-0.5 text-[9px] text-[#10B981] font-bold uppercase">
+                          DESTINATION: {disp.destinationCity}
+                        </span>
+                      </div>
+
+                      <h3 className="font-serif text-[16px] text-[#F2EFE9] uppercase tracking-[0.04em]">
+                        {disp.itemTitle}
+                      </h3>
+
+                      <div className="text-[11px] text-[#8E8E8E] pt-1">
+                        {disp.status === 'INSPECTION_WINDOW_ACTIVE'
+                          ? `Buyer received specimen. 48-Hour Inspection window active (${disp.inspectionHoursLeft}h left until escrow release).`
+                          : 'Specimen in transit under carrier custody. Anti-bootleg unboxing video required upon delivery.'}
+                      </div>
+                    </div>
+
                     <div className="flex items-center gap-3">
-                      <span className="text-[10px] tracking-[0.15em] text-[#777777] uppercase font-semibold">
-                        {disp.lotRef}
-                      </span>
-                      <span className="text-[10px] tracking-[0.14em] text-[#CCCCCC]">
-                        {disp.carrier} • {disp.awbNumber}
-                      </span>
-                      <span className="border border-[#193829] bg-[#091812] px-2 py-0.5 text-[9px] text-[#10B981] font-bold uppercase">
-                        DESTINATION: {disp.destinationCity}
-                      </span>
-                    </div>
-
-                    <h3 className="font-serif text-[16px] text-[#F2EFE9] uppercase tracking-[0.04em]">
-                      {disp.itemTitle}
-                    </h3>
-
-                    <div className="text-[11px] text-[#8E8E8E] pt-1">
-                      {disp.status === 'INSPECTION_WINDOW_ACTIVE'
-                        ? `Buyer received specimen. 48-Hour Inspection window active (${disp.inspectionHoursLeft}h left until escrow release).`
-                        : 'Specimen in transit under carrier custody. Anti-bootleg unboxing video required upon delivery.'}
+                      <button
+                        type="button"
+                        onClick={() => handleGenerateInvoice(disp.orderId, disp.lotRef, disp.itemTitle)}
+                        className="px-3.5 py-2 bg-[#080808] border border-[#1F1F1F] hover:border-[#3A3A3A] text-[11px] uppercase tracking-[0.14em] text-[#CCCCCC] cursor-pointer transition-none rounded-none"
+                      >
+                        [ TAX INVOICE ]
+                      </button>
+                      <div className="border border-[#1F1F1F] bg-[#080808] px-3.5 py-2 text-center">
+                        <span className="block text-[9px] tracking-[0.14em] text-[#777777] uppercase">
+                          ESCROW STATUS
+                        </span>
+                        <span className="font-sans text-[11px] text-[#10B981] font-semibold uppercase tracking-wider block mt-0.5">
+                          {disp.status.replace(/_/g, ' ')}
+                        </span>
+                      </div>
                     </div>
                   </div>
-
-                  <div className="flex items-center gap-3">
-                    <button
-                      type="button"
-                      onClick={() => handleGenerateInvoice(disp.orderId, disp.lotRef, disp.itemTitle)}
-                      className="px-3.5 py-2 bg-[#080808] border border-[#1F1F1F] hover:border-[#3A3A3A] text-[11px] uppercase tracking-[0.14em] text-[#CCCCCC] cursor-pointer transition-none rounded-none"
-                    >
-                      [ TAX INVOICE ]
-                    </button>
-                    <div className="border border-[#1F1F1F] bg-[#080808] px-3.5 py-2 text-center">
-                      <span className="block text-[9px] tracking-[0.14em] text-[#777777] uppercase">
-                        ESCROW STATUS
-                      </span>
-                      <span className="font-sans text-[11px] text-[#10B981] font-semibold uppercase tracking-wider block mt-0.5">
-                        {disp.status.replace(/_/g, ' ')}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
@@ -633,17 +584,6 @@ export default function VaultPage(): React.JSX.Element {
                 <p className="text-[12px] text-[#8E8E8E] mt-1 max-w-2xl">
                   Generated invoices include Indian GST 18% tax breakdowns, double-entry escrow verification, and SHA-256 cryptographic digests. Downloads are protected by strict Object-Level Access Control (IDOR prevention).
                 </p>
-              </div>
-
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => handleGenerateInvoice('lot-0482', 'LOT-0482', 'Guts Berserker Armor Unleashed 1/4 Scale')}
-                  disabled={isGeneratingInvoice === 'lot-0482'}
-                  className="px-4 py-2.5 bg-[#F2EFE9] text-[#080808] border border-[#F2EFE9] text-[11px] font-semibold uppercase tracking-[0.14em] cursor-pointer rounded-none transition-none disabled:opacity-50"
-                >
-                  {isGeneratingInvoice === 'lot-0482' ? '[ GENERATING... ]' : '[ + GENERATE LOT-0482 INVOICE ]'}
-                </button>
               </div>
             </div>
 
@@ -663,17 +603,8 @@ export default function VaultPage(): React.JSX.Element {
                   NO INVOICES GENERATED YET
                 </span>
                 <p className="text-xs text-[#8E8E8E] max-w-md mx-auto">
-                  Click below to generate an authoritative tax receipt with cryptographic SHA-256 integrity checks.
+                  Authoritative tax receipts with cryptographic SHA-256 integrity checks are generated upon order completion or settlement.
                 </p>
-                <div className="pt-2">
-                  <button
-                    type="button"
-                    onClick={() => handleGenerateInvoice('lot-0482', 'LOT-0482', 'Guts Berserker Armor Unleashed 1/4 Scale')}
-                    className="px-5 py-2.5 bg-[#F2EFE9] text-[#080808] border border-[#F2EFE9] text-[11px] font-semibold uppercase tracking-[0.14em] cursor-pointer rounded-none transition-none"
-                  >
-                    [ GENERATE SAMPLE ESCROW INVOICE ]
-                  </button>
-                </div>
               </div>
             ) : (
               <div className="border border-[#1F1F1F] bg-[#0C0C0C] divide-y divide-[#161616]">

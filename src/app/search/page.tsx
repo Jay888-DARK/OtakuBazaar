@@ -1,13 +1,15 @@
 import React from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { MOCK_PRODUCTS } from '@/infrastructure/data/mockProducts';
+import { ListingRepository } from '@/infrastructure/database/repositories/ListingRepository';
 import ProductCard from '@/presentation/components/listings/ProductCard';
 
 export const metadata: Metadata = {
   title: 'Search Results — OtakuBazaar',
   description: 'Search results for authentic Japanese anime collectibles and figures on OtakuBazaar.',
 };
+
+export const dynamic = 'force-dynamic';
 
 interface SearchPageProps {
   searchParams?: Promise<{
@@ -20,19 +22,53 @@ export default async function SearchPage({ searchParams }: SearchPageProps): Pro
   const query = (resolvedParams.q || '').trim();
   const lowerQuery = query.toLowerCase();
 
-  const matchingProducts = MOCK_PRODUCTS.filter((product) => {
-    if (!lowerQuery) return true;
-    const titleMatch = product.title.toLowerCase().includes(lowerQuery);
-    const categoryMatch = product.category.toLowerCase().includes(lowerQuery);
-    const lotMatch = product.lotNumber.toLowerCase().includes(lowerQuery);
-    return titleMatch || categoryMatch || lotMatch;
-  });
+  let activeListings: any[] = [];
+  try {
+    activeListings = await ListingRepository.findAllActive();
+  } catch (err) {
+    console.warn('[SearchPage] DB listings search note:', err);
+  }
+
+  const matchingProducts = activeListings
+    .filter((listing) => {
+      if (!lowerQuery) return true;
+      const titleMatch = listing.title.toLowerCase().includes(lowerQuery);
+      const categoryMatch = (listing.category || '').toLowerCase().includes(lowerQuery);
+      const idMatch = listing.id.toLowerCase().includes(lowerQuery);
+      return titleMatch || categoryMatch || idMatch;
+    })
+    .map((item) => {
+      const primaryImg = item.imageUrls[0] || '/Firefly_clean.png';
+      return {
+        id: item.id,
+        lotNumber: String(item.id).replace(/[^0-9]/g, '').padStart(4, '0').slice(-4) || '0001',
+        title: item.title,
+        price: Math.round(item.askingPriceAmount / 100),
+        askingPriceAmount: item.askingPriceAmount,
+        category: item.category || 'Scale Figure',
+        categorySubtitle: 'AUTHENTIC JAPANESE IMPORT',
+        edition: 'VERIFIED CUSTODY',
+        condition: item.condition || 'NEW',
+        gradeCondition: item.condition === 'NEW' ? 'FACTORY SEALED' : 'GRADE A',
+        figureGrade: item.condition === 'NEW' ? 'MISB (FACTORY SEALED)' : 'BIB (CABINET DISPLAYED)',
+        boxCondition: item.condition === 'NEW' ? 'FACTORY CARTON SEALED' : 'MINT BOX (BLISTER INTACT)',
+        origin: 'PAN-INDIA VAULT • IN-HAND',
+        indianLocation: 'MUMBAI, MH',
+        ownerCount: '1ST OWNER',
+        franchise: item.category || 'Anime',
+        series: item.title,
+        manufacturer: 'Japanese Studio',
+        imageUrl: primaryImg,
+        imageUrls: JSON.stringify(item.imageUrls.length > 0 ? item.imageUrls : [primaryImg]),
+        scale: '1/7 SCALE',
+      };
+    });
 
   return (
-    <main className="min-h-screen bg-[#09090b] text-white py-8 px-4 sm:px-6 lg:px-8 select-none">
+    <main className="min-h-screen bg-[#080808] text-white py-8 px-4 sm:px-6 lg:px-8 select-none">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Navigation Breadcrumbs */}
-        <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] font-medium text-zinc-500 border-b border-[#27272a] pb-3">
+        <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] font-medium text-zinc-500 border-b border-[#1F1F1F] pb-3">
           <Link href="/" className="hover:text-zinc-300 transition-none text-zinc-500 no-underline">
             Home
           </Link>
@@ -41,32 +77,23 @@ export default async function SearchPage({ searchParams }: SearchPageProps): Pro
         </div>
 
         {/* Search Header Banner */}
-        <div className="p-6 sm:p-8 bg-[#0c0c0e] border border-[#27272a] flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+        <div className="p-6 sm:p-8 bg-[#0C0C0C] border border-[#1F1F1F] flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           <div>
-            <span
-              style={{ fontFamily: "'Satoshi', sans-serif" }}
-              className="text-[11px] sm:text-xs uppercase tracking-[0.15em] text-[#A3A3A3] font-medium block mb-1"
-            >
-              SEARCH INVENTORY
+            <span className="text-[11px] sm:text-xs uppercase tracking-[0.15em] text-[#777777] font-medium block mb-1">
+              SEARCH INVENTORY // LIVE CUSTODY
             </span>
-            <h1
-              style={{ fontFamily: "'Clash Display', 'Cabinet Grotesk', sans-serif", letterSpacing: '-0.02em' }}
-              className="text-xl sm:text-2xl font-semibold uppercase tracking-tight text-white"
-            >
-              {query ? `Search Results for: "${query}"` : 'All Products'}
+            <h1 className="text-xl sm:text-2xl font-serif uppercase tracking-tight text-[#F2EFE9]">
+              {query ? `Search Results for: "${query}"` : 'All Vault Lots'}
             </h1>
-            <p
-              style={{ fontFamily: "'Satoshi', sans-serif" }}
-              className="text-xs text-zinc-400 mt-1 font-normal"
-            >
-              Showing {matchingProducts.length} verified {matchingProducts.length === 1 ? 'item' : 'items'}
+            <p className="text-xs text-[#8E8E8E] mt-1 font-normal">
+              Showing {matchingProducts.length} verified {matchingProducts.length === 1 ? 'lot' : 'lots'} in active custody
             </p>
           </div>
 
           {query && (
             <Link
               href="/search"
-              className="px-4 py-2 border border-[#27272a] bg-[#111114] hover:bg-[#18181b] text-zinc-400 hover:text-zinc-200 text-[10px] uppercase tracking-[0.18em] font-semibold transition-none no-underline self-start sm:self-auto rounded-none"
+              className="px-4 py-2 border border-[#1F1F1F] bg-[#080808] hover:bg-[#161616] text-[#CCCCCC] hover:text-[#F2EFE9] text-[10px] uppercase tracking-[0.18em] font-semibold transition-none no-underline self-start sm:self-auto rounded-none"
             >
               Clear Search
             </Link>
@@ -75,25 +102,36 @@ export default async function SearchPage({ searchParams }: SearchPageProps): Pro
 
         {/* Dedicated Product Grid or Empty State */}
         {matchingProducts.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 pt-2">
             {matchingProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
         ) : (
-          <div className="p-12 sm:p-16 border border-[#27272a] bg-[#0c0c0e] text-center space-y-4">
-            <h2 className="text-base sm:text-lg font-bold uppercase tracking-wider text-zinc-300">
-              No products found for this search.
+          <div className="p-12 sm:p-16 border border-[#1F1F1F] bg-[#0C0C0C] text-center space-y-4">
+            <div className="font-mono text-[10px] text-[#777777] tracking-[0.2em] uppercase mb-1">
+              VAULT INDEX // ZERO MATCHES
+            </div>
+            <h2 className="text-base sm:text-lg font-serif uppercase tracking-wider text-[#F2EFE9]">
+              {query ? `No verified lots found matching "${query}"` : 'Vault Index: 0 Active Lots'}
             </h2>
-            <p className="text-xs text-zinc-500 max-w-md mx-auto leading-relaxed">
-              We could not find any collectibles matching &quot;{query}&quot;. Try searching for characters, series names, or product types.
+            <p className="text-xs text-[#8E8E8E] max-w-md mx-auto leading-relaxed">
+              {query
+                ? 'Try searching by character name, studio, series, or scale specification.'
+                : 'All vault lots under custody have been settled or are currently in transit. New consignments are undergoing authentication.'}
             </p>
-            <div className="pt-2">
+            <div className="pt-2 flex justify-center gap-3">
               <Link
                 href="/"
-                className="inline-block px-6 py-3 bg-[#f4f4f4] hover:bg-[#EAE6DF] text-black font-extrabold text-xs uppercase tracking-[0.2em] border border-[#f4f4f4] transition-none no-underline rounded-none"
+                className="inline-block px-5 py-2.5 bg-[#080808] hover:bg-[#161616] text-[#F2EFE9] border border-[#1F1F1F] text-[11px] uppercase tracking-[0.16em] transition-none no-underline rounded-none"
               >
-                [ BROWSE ALL PRODUCTS ]
+                [ BROWSE ALL ]
+              </Link>
+              <Link
+                href="/sell"
+                className="inline-block px-5 py-2.5 bg-[#F2EFE9] hover:bg-[#EAE6DF] text-[#080808] border border-[#F2EFE9] text-[11px] font-semibold uppercase tracking-[0.16em] transition-none no-underline rounded-none"
+              >
+                [ CONSIGN A LOT ]
               </Link>
             </div>
           </div>
