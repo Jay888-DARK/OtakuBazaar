@@ -120,12 +120,12 @@ export function Navbar() {
             className="flex items-center space-x-3 cursor-pointer group no-underline focus-visible:outline-none"
           >
             {/* Pure Brand Kitsune Logo Mark (Border-free, crisp & perfectly transparent) */}
-            <div className="relative flex items-center justify-center shrink-0 w-12 h-12 sm:w-14 sm:h-14 bg-transparent border-0">
+            <div className="relative flex items-center justify-center shrink-0 w-14 h-14 sm:w-16 sm:h-16 bg-transparent border-0 p-0 m-0 shadow-none">
               <Image
                 src="/otakubazaar-logo.png"
                 alt="OtakuBazaar Kitsune Logo"
-                width={56}
-                height={56}
+                width={64}
+                height={64}
                 priority
                 className="w-full h-full object-contain"
               />

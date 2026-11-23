@@ -75,6 +75,13 @@ export default function RootLayout({
           fontFamily: 'var(--font-sans), sans-serif',
         }}
       >
+        {/* Purge stale client legacy caches */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{if(typeof localStorage!=='undefined'){localStorage.removeItem('otaku_custom_listings');}}catch(e){}`,
+          }}
+        />
+
         {/* Lazy Loaded Razorpay Checkout Script */}
         <RazorpayScript />
 
