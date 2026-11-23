@@ -274,6 +274,38 @@ export default function SellPage(): React.JSX.Element {
     if (globalError) setGlobalError(null);
   };
 
+  const handleResetForm = () => {
+    setTitle('');
+    setDescription('');
+    setAskingPrice('');
+    setMinimumPrice('');
+    setImageUrl('');
+    setCustomImageUrl('');
+    setExtraImageUrls(['']);
+    setInvoiceFileName('');
+    setInvoicePreviewUrl('');
+    setInvoiceUploaded(false);
+    setFieldErrors({});
+    setGlobalError(null);
+    setIsPublished(false);
+  };
+
+  const hasErrors = Object.keys(fieldErrors).length > 0 || !!globalError;
+  const firstErrorMessage = globalError || Object.values(fieldErrors)[0];
+  const buttonErrorMessage = fieldErrors.title
+    ? 'ITEM TITLE (MIN 3 CHARS)'
+    : fieldErrors.askingPrice
+    ? 'ASKING PRICE (MIN ₹500)'
+    : fieldErrors.image
+    ? 'COLLECTIBLE SPECIMEN PHOTO'
+    : fieldErrors.pickupPincode
+    ? 'VALID 6-DIGIT PICKUP PINCODE'
+    : fieldErrors.invoice
+    ? 'PURCHASE INVOICE FOR > ₹10,000'
+    : firstErrorMessage
+    ? firstErrorMessage.slice(0, 36).toUpperCase()
+    : 'COMPLETE HIGHLIGHTED FIELDS';
+
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -425,7 +457,15 @@ export default function SellPage(): React.JSX.Element {
             // ignore
           }
 
+          setFieldErrors({});
+          setGlobalError(null);
           setIsPublished(true);
+          setTimeout(() => {
+            const submitEl = document.getElementById('field-submit');
+            if (submitEl) {
+              submitEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+          }, 80);
         } catch (err: unknown) {
           setGlobalError(err instanceof Error ? err.message : 'Failed to publish consignment');
         }
@@ -1110,19 +1150,85 @@ export default function SellPage(): React.JSX.Element {
                 />
               </div>
 
-              {/* Submit CTA */}
-              <button
-                type="submit"
-                id="field-submit"
-                disabled={isPending || isCompressing || isUploading}
-                className="w-full py-4 bg-[#F2EFE9] hover:bg-[#EAE6DF] disabled:bg-[#222222] disabled:text-[#666666] disabled:border-[#222222] disabled:cursor-not-allowed text-[#080808] border border-[#F2EFE9] text-xs font-semibold uppercase tracking-[0.2em] transition-colors cursor-pointer rounded-none"
-              >
-                {isCompressing
-                  ? '[ COMPRESSING SPECIMEN IMAGES... ]'
-                  : isPending
-                  ? '[ PUBLISHING CONSIGNMENT TO LIVE VAULT... ]'
-                  : '[ PUBLISH CONSIGNMENT TO LIVE VAULT ]'}
-              </button>
+              {/* Submit CTA with Dynamic Reactive States */}
+              {isPublished ? (
+                <div className="space-y-3 pt-2">
+                  <div
+                    id="field-submit"
+                    className="w-full py-4 bg-[#091812] text-[#10B981] border-2 border-[#10B981] text-xs font-semibold uppercase tracking-[0.2em] flex items-center justify-center gap-2 rounded-none transition-all shadow-[0_0_20px_rgba(16,185,129,0.2)]"
+                  >
+                    <span className="w-2 h-2 rounded-full bg-[#10B981] animate-ping" />
+                    <span>[ CONSIGNMENT ACCEPTED // LIVE IN VAULT ]</span>
+                  </div>
+
+                  {/* Immediate in-place confirmation block */}
+                  <div className="p-5 bg-[#0C140F] border border-[#10B981] text-center font-sans space-y-3">
+                    <div className="text-[10px] text-[#10B981] uppercase tracking-[0.2em] font-bold">
+                      [ LOT AUTHENTICATED &amp; SYNCHRONIZED ]
+                    </div>
+                    <p className="text-xs text-[#F2EFE9] max-w-md mx-auto leading-relaxed">
+                      Your consignment <span className="font-semibold text-white">&ldquo;[{activeFranchise}] {title}&rdquo;</span> is now active in the live catalog and visible to all collectors.
+                    </p>
+                    <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
+                      <Link
+                        href="/vault"
+                        className="px-5 py-2.5 bg-[#10B981] text-[#080808] font-sans text-[11px] font-bold uppercase tracking-[0.16em] hover:bg-[#0ea572] transition-colors no-underline"
+                      >
+                        [ VIEW IN MY VAULT ]
+                      </Link>
+                      <Link
+                        href="/"
+                        className="px-5 py-2.5 bg-[#0C0C0C] text-[#F2EFE9] border border-[#1F1F1F] font-sans text-[11px] font-semibold uppercase tracking-[0.16em] hover:border-[#3A3A3A] transition-colors no-underline"
+                      >
+                        [ VIEW ON MARKETPLACE ]
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={handleResetForm}
+                        className="px-5 py-2.5 bg-transparent text-[#888888] hover:text-[#F2EFE9] border border-[#1F1F1F] font-sans text-[11px] uppercase tracking-[0.16em] transition-colors"
+                      >
+                        [ CONSIGN ANOTHER LOT ]
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-3 pt-2">
+                  <button
+                    type="submit"
+                    id="field-submit"
+                    disabled={hasErrors || isPending || isCompressing || isUploading}
+                    className={`w-full py-4 text-xs font-semibold uppercase tracking-[0.2em] transition-all rounded-none ${
+                      hasErrors
+                        ? 'bg-[#7F1D1D] hover:bg-[#7F1D1D] text-[#F2EFE9] border border-[#EF4444] cursor-not-allowed'
+                        : isPending || isCompressing || isUploading
+                        ? 'bg-[#1F1F1F] text-[#888888] border border-[#1F1F1F] cursor-wait'
+                        : 'bg-[#F2EFE9] hover:bg-[#EAE6DF] text-[#080808] border border-[#F2EFE9] cursor-pointer active:scale-[0.99]'
+                    }`}
+                  >
+                    {isCompressing
+                      ? '[ COMPRESSING SPECIMEN IMAGES... ]'
+                      : isUploading
+                      ? '[ UPLOADING SPECIMEN TO VAULT... ]'
+                      : isPending
+                      ? '[ PUBLISHING CONSIGNMENT TO LIVE VAULT... ]'
+                      : hasErrors
+                      ? `[ REQUIRED: ${buttonErrorMessage} ]`
+                      : '[ PUBLISH CONSIGNMENT TO LIVE VAULT ]'}
+                  </button>
+
+                  {hasErrors && (
+                    <div className="p-3.5 bg-[#180A0A] border border-[#EF4444] font-sans text-left space-y-1">
+                      <div className="text-[10px] text-[#EF4444] font-bold uppercase tracking-[0.18em]">
+                        [ SPECIFICATION REQUIRED BEFORE PUBLISHING ]
+                      </div>
+                      <p className="text-xs text-[#F2EFE9] leading-relaxed">
+                        {firstErrorMessage}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </form>
 
