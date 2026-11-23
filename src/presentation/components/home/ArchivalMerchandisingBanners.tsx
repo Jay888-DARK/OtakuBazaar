@@ -33,7 +33,9 @@ interface ArchivalMerchandisingBannersProps {
   initialListingCount?: number;
 }
 
-export function ArchivalMerchandisingBanners({ initialListingCount }: ArchivalMerchandisingBannersProps): React.JSX.Element {
+export const ArchivalMerchandisingBanners: React.FC<ArchivalMerchandisingBannersProps> = ({
+  initialListingCount,
+}) => {
   const [activeListings, setActiveListings] = useState<any[]>([]);
   const [loading, setLoading] = useState(initialListingCount === undefined);
 
@@ -231,4 +233,4 @@ export function ArchivalMerchandisingBanners({ initialListingCount }: ArchivalMe
       </div>
     </section>
   );
-}
+};

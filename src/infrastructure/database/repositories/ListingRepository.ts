@@ -94,6 +94,27 @@ function toRecord(row: PrismaListingRow): ListingRecord {
   };
 }
 
+export interface CreateListingInput {
+  sellerId?: string;
+  sellerEmail?: string;
+  sellerName?: string;
+  title: string;
+  description: string;
+  imageUrls: string[];
+  askingPriceAmount: number;
+  askingPriceCurrency?: string;
+  category: string;
+  condition: 'NEW' | 'LIKE_NEW' | 'GOOD' | 'FAIR' | 'POOR';
+  franchise?: string | null;
+  mfcItemId?: string | null;
+  mfcUrl?: string | null;
+  originalPriceJPY?: number | null;
+  releaseYear?: number | null;
+  scale?: string | null;
+  manufacturer?: string | null;
+  id?: string;
+}
+
 export class ListingRepository {
   /**
    * Retrieves all active listings from the database.
@@ -189,13 +210,7 @@ export class ListingRepository {
    * Creates a new listing directly in persistent PostgreSQL with cloud image uploads.
    * Throws explicit errors on failure to guarantee zero silent fallback losses.
    */
-  public static async create(
-    listing: Omit<ListingRecord, 'id' | 'createdAt' | 'updatedAt' | 'status' | 'reservedByBuyerId'> & {
-      id?: string;
-      sellerEmail?: string;
-      sellerName?: string;
-    }
-  ): Promise<ListingRecord> {
+  public static async create(listing: CreateListingInput): Promise<ListingRecord> {
     const id = listing.id ?? `listing-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
     const sellerId = listing.sellerId || 'user_seller_rengoku';
     const sellerEmail = listing.sellerEmail || `${sellerId}@otakubazaar.dev`;
