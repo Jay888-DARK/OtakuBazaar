@@ -25,6 +25,8 @@ import { LiveCardPreview } from '@/presentation/components/listings/LiveCardPrev
 import { createListingAction } from '@/app/actions';
 import { fetchMfcMetadataAction } from '@/app/actions/mfcActions';
 import { ArchivalFooter } from '@/presentation/components/footer/ArchivalFooter';
+import { PhotoToDraftModal } from '@/presentation/components/sell/PhotoToDraftModal';
+import type { NormalizedDraftItem } from '@/domain/services/listingVisionService';
 
 // ---------------------------------------------------------------------------
 // Constants & Options
@@ -233,6 +235,16 @@ export default function SellPage(): React.JSX.Element {
   const [mfcError, setMfcError] = useState<string | null>(null);
   const [mfcSuccessBanner, setMfcSuccessBanner] = useState<string | null>(null);
 
+  // AI Photo-to-Listing Vision State
+  const [aiPhotoFiles, setAiPhotoFiles] = useState<File[]>([]);
+  const [aiPhotoPreviews, setAiPhotoPreviews] = useState<string[]>([]);
+  const [isAnalyzingAi, setIsAnalyzingAi] = useState<boolean>(false);
+  const [aiAnalysisError, setAiAnalysisError] = useState<string | null>(null);
+  const [aiAnalysisNotice, setAiAnalysisNotice] = useState<string | null>(null);
+  const [aiSuccessBanner, setAiSuccessBanner] = useState<string | null>(null);
+  const [aiDrafts, setAiDrafts] = useState<NormalizedDraftItem[]>([]);
+  const [isAiDraftModalOpen, setIsAiDraftModalOpen] = useState<boolean>(false);
+
   const [selectedGrade, setSelectedGrade] = useState<ConditionOption>(CONDITION_GRADES[0]!);
   const [selectedBoxGrade, setSelectedBoxGrade] = useState<string>(BOX_GRADES[0].id);
   const [askingPrice, setAskingPrice] = useState('');
@@ -358,6 +370,148 @@ export default function SellPage(): React.JSX.Element {
       setMfcError('Could not reach MyFigureCollection. Please proceed with manual specification entry.');
     } finally {
       setIsMfcLoading(false);
+    }
+  };
+
+  const handleAiFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+
+    setAiAnalysisError(null);
+    setAiSuccessBanner(null);
+
+    if (files.length > 5) {
+      setAiAnalysisError('Maximum 5 images allowed per photo auto-fill request.');
+      return;
+    }
+
+    const validPreviews: string[] = [];
+    const validFiles: File[] = [];
+
+    for (const file of files) {
+      if (!['image/jpeg', 'image/jpg', 'image/png', 'image/webp'].includes(file.type.toLowerCase())) {
+        setAiAnalysisError(`Invalid format for ${file.name}: only JPG, PNG, and WebP are allowed.`);
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        setAiAnalysisError(`Photo ${file.name} exceeds the 5MB size limit.`);
+        return;
+      }
+
+      try {
+        const compressedDataUri = await compressAndStripExif(file, 1600, 0.82);
+        validPreviews.push(compressedDataUri);
+        validFiles.push(file);
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : 'Failed to sanitize image.';
+        setAiAnalysisError(msg);
+        return;
+      }
+    }
+
+    setAiPhotoFiles(validFiles);
+    setAiPhotoPreviews(validPreviews);
+  };
+
+  const handleClearAiPhotos = () => {
+    setAiPhotoFiles([]);
+    setAiPhotoPreviews([]);
+    setAiAnalysisError(null);
+    setAiAnalysisNotice(null);
+  };
+
+  const handleApplyDraftToForm = (draft: NormalizedDraftItem) => {
+    setTitle(draft.title);
+    if (FRANCHISES.includes(draft.franchise as any)) {
+      setFranchise(draft.franchise as any);
+      setCustomFranchise('');
+    } else {
+      setFranchise('Other / Retro');
+      setCustomFranchise(draft.franchise);
+    }
+
+    if (CATEGORIES.includes(draft.category as any)) {
+      setCategory(draft.category as any);
+      setCustomCategory('');
+    } else {
+      setCategory('Other');
+      setCustomCategory(draft.category);
+    }
+
+    if (MANUFACTURERS.includes(draft.manufacturer as any)) {
+      setManufacturer(draft.manufacturer as any);
+      setCustomManufacturer('');
+    } else {
+      setManufacturer('Other');
+      setCustomManufacturer(draft.manufacturer);
+    }
+
+    if (draft.askingPriceINR && draft.askingPriceINR >= 500) {
+      setAskingPrice(String(draft.askingPriceINR));
+    }
+    if (draft.description) {
+      setDescription(draft.description);
+    }
+    if (draft.imageUrl) {
+      setImageUrl(draft.imageUrl);
+      clearFieldError('image');
+    }
+    const matchedGrade = CONDITION_GRADES.find((g) => g.internalValue === draft.condition);
+    if (matchedGrade) {
+      setSelectedGrade(matchedGrade);
+    }
+    clearFieldError('title');
+    clearFieldError('askingPrice');
+
+    setIsAiDraftModalOpen(false);
+    setAiSuccessBanner(`Auto-filled "${draft.title}". Please verify and refine specifications below.`);
+  };
+
+  const handleRunAiAnalysis = async () => {
+    if (aiPhotoPreviews.length === 0) {
+      setAiAnalysisError('Please choose 1 to 5 collectible photographs first.');
+      return;
+    }
+
+    setIsAnalyzingAi(true);
+    setAiAnalysisError(null);
+    setAiAnalysisNotice(null);
+    setAiSuccessBanner(null);
+
+    try {
+      const res = await fetch('/api/listings/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ images: aiPhotoPreviews }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        setAiAnalysisError(data.error || "Couldn't read this image, please fill in manually.");
+        return;
+      }
+
+      const drafts: NormalizedDraftItem[] = data.drafts || [];
+      if (drafts.length === 0) {
+        setAiAnalysisError("Couldn't read this image, please fill in manually.");
+        return;
+      }
+
+      if (data.notice) {
+        setAiAnalysisNotice(data.notice);
+      }
+
+      if (drafts.length === 1 && drafts[0]) {
+        handleApplyDraftToForm(drafts[0]);
+      } else {
+        setAiDrafts(drafts);
+        setIsAiDraftModalOpen(true);
+      }
+    } catch {
+      setAiAnalysisError("Couldn't read this image, please fill in manually.");
+    } finally {
+      setIsAnalyzingAi(false);
     }
   };
 
@@ -679,6 +833,107 @@ export default function SellPage(): React.JSX.Element {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Left Column: Consignment Configuration Form */}
           <form onSubmit={handlePublish} className="lg:col-span-7 space-y-8" noValidate>
+            {/* AI Photo-to-Listing Auto-Fill Card (1-5 Photos, Figures/Manga/Price Lists) */}
+            <div className="bg-[#0C0C0C] border border-[#1F1F1F] p-6 space-y-4">
+              <div className="border-b border-[#161616] pb-3 flex flex-wrap justify-between items-center gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#10B981] animate-pulse" />
+                  <span className="text-[10px] uppercase tracking-[0.2em] text-[#10B981] font-bold font-sans">
+                    AI PHOTO-TO-LISTING AUTO-FILL
+                  </span>
+                </div>
+                <span className="text-[10px] text-[#777777] uppercase tracking-wider font-semibold font-sans">
+                  1-5 PHOTOS • UP TO 20 DRAFTS • GEMINI VISION
+                </span>
+              </div>
+
+              <p className="text-[12px] text-[#888888] leading-relaxed font-sans">
+                Upload 1–5 photographs (specimen cover shots, a stack of books/manga, or a printed/handwritten price list). Our archival vision engine extracts character, franchise, category, publisher, volume, condition, and prices into editable drafts.
+              </p>
+
+              {/* Photo Upload Dropzone / File Picker */}
+              <div className="space-y-3">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                  <label className="flex-1 cursor-pointer">
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
+                      multiple
+                      onChange={handleAiFileSelect}
+                      disabled={isAnalyzingAi}
+                      className="hidden"
+                    />
+                    <div className="border border-dashed border-[#2F2F2F] hover:border-[#10B981] bg-[#080808] px-4 py-3 text-center transition-colors">
+                      <span className="text-xs text-[#CCCCCC] font-sans">
+                        {aiPhotoFiles.length > 0
+                          ? `[ ${aiPhotoFiles.length} PHOTO${aiPhotoFiles.length > 1 ? 'S' : ''} SELECTED — CLICK TO CHANGE ]`
+                          : '[ SELECT 1–5 SPECIMEN PHOTOS OR PRICE LISTS (MAX 5MB) ]'}
+                      </span>
+                    </div>
+                  </label>
+
+                  <button
+                    type="button"
+                    onClick={handleRunAiAnalysis}
+                    disabled={isAnalyzingAi || aiPhotoPreviews.length === 0}
+                    className={`px-5 py-3 text-[11px] font-sans font-bold uppercase tracking-[0.16em] transition-all rounded-none ${
+                      isAnalyzingAi
+                        ? 'bg-[#10B981]/20 text-[#10B981] border border-[#10B981] cursor-wait'
+                        : aiPhotoPreviews.length === 0
+                        ? 'bg-[#1F1F1F] text-[#555555] border border-[#1F1F1F] cursor-not-allowed'
+                        : 'bg-[#10B981] hover:bg-[#0ea572] text-[#080808] border border-[#10B981] cursor-pointer'
+                    }`}
+                  >
+                    {isAnalyzingAi ? '[ ANALYZING PHOTOS (EST. 3-6S)... ]' : '[ AUTO-FILL FROM PHOTO ]'}
+                  </button>
+                </div>
+
+                {/* Previews of selected photos */}
+                {aiPhotoPreviews.length > 0 && (
+                  <div className="flex flex-wrap items-center gap-2 pt-1">
+                    {aiPhotoPreviews.map((preview, i) => (
+                      <div key={i} className="relative w-14 h-14 border border-[#262626] bg-[#050505] overflow-hidden">
+                        <img src={preview} alt={`Upload ${i + 1}`} className="w-full h-full object-cover" />
+                        <span className="absolute bottom-0 right-0 bg-black/80 text-[8px] font-mono px-1 text-white">
+                          #{i + 1}
+                        </span>
+                      </div>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={handleClearAiPhotos}
+                      disabled={isAnalyzingAi}
+                      className="text-[10px] text-[#EF4444] font-mono hover:underline uppercase ml-2 tracking-wider cursor-pointer"
+                    >
+                      [ CLEAR ALL ]
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Error State */}
+              {aiAnalysisError && (
+                <div className="p-3 bg-[#180A0A] border border-[#EF4444] text-[#EF4444] text-xs font-sans space-y-1">
+                  <div className="font-bold tracking-wider">[ PHOTO ANALYSIS NOTICE ]</div>
+                  <p>{aiAnalysisError}</p>
+                </div>
+              )}
+
+              {/* Success Banner */}
+              {aiSuccessBanner && (
+                <div className="p-3 bg-[#0A1810] border border-[#10B981] text-[#10B981] text-xs font-sans flex items-center justify-between gap-2">
+                  <span>✓ {aiSuccessBanner}</span>
+                  <button
+                    type="button"
+                    onClick={() => setAiSuccessBanner(null)}
+                    className="text-[#10B981] hover:text-white font-mono text-xs cursor-pointer"
+                  >
+                    ✕
+                  </button>
+                </div>
+              )}
+            </div>
+
             {/* MyFigureCollection (MFC) Auto-Fill Card (Optional) */}
             <div className="bg-[#0C0C0C] border border-[#1F1F1F] p-6 space-y-4">
               <div className="border-b border-[#161616] pb-3 flex justify-between items-center">
@@ -1444,6 +1699,19 @@ export default function SellPage(): React.JSX.Element {
           </div>
         </div>
       </div>
+
+      {/* Batch AI Photo Draft Review Modal */}
+      <PhotoToDraftModal
+        isOpen={isAiDraftModalOpen}
+        onClose={() => setIsAiDraftModalOpen(false)}
+        drafts={aiDrafts}
+        notice={aiAnalysisNotice || undefined}
+        onApplySingleToForm={handleApplyDraftToForm}
+        onPublishedAll={() => {
+          setIsAiDraftModalOpen(false);
+          setIsPublished(true);
+        }}
+      />
 
       <ArchivalFooter />
     </div>
