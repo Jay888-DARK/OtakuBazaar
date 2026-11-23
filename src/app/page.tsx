@@ -40,7 +40,7 @@ export default async function HomePage(props?: {
   try {
     const rawListings = await ListingRepository.findAllActive();
     catalogItems = rawListings.map((item) => {
-      const rawPrimary = item.imageUrls[0] || '/Firefly_clean.png';
+      const rawPrimary = item.imageUrls[0] || '/otakubazaar-logo.png';
       const primaryImg = optimizeImageUrl(rawPrimary, 800);
       const optimizedImages = item.imageUrls.map((u) => optimizeImageUrl(u, 800));
       return {
@@ -72,7 +72,7 @@ export default async function HomePage(props?: {
 
     driftItems = rawListings.map((l) => ({
       id: l.id,
-      image: optimizeImageUrl(l.imageUrls[0] || '/Firefly_clean.png', 600),
+      image: optimizeImageUrl(l.imageUrls[0] || '/otakubazaar-logo.png', 600),
       title: l.title,
       href: `/lot/${l.id}`,
     }));

@@ -22,9 +22,40 @@ import { RazorpayScript } from '@/presentation/components/payments/RazorpayScrip
 import { AnalyticsAndMonitoring } from '@/presentation/components/telemetry/AnalyticsAndMonitoring';
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://otaku-bazaar.vercel.app'),
   title: 'OtakuBazaar — Premium Anime Collectibles Marketplace',
   description:
     'Buy, sell, and negotiate authentic anime scale figures, Nendoroids, manga box sets, and grails with 15-minute checkout locks and 48-hour escrow protection.',
+  icons: {
+    icon: [
+      { url: '/icon.png' },
+      { url: '/otakubazaar-logo.png' },
+    ],
+    shortcut: '/favicon.ico',
+    apple: '/otakubazaar-logo.png',
+  },
+  openGraph: {
+    title: 'OtakuBazaar — Authenticated Anime Figures & Collectibles',
+    description: '0% Bootleg Tolerance • 48h Escrow Protection • Pan-India Insured Delivery',
+    url: 'https://otaku-bazaar.vercel.app',
+    siteName: 'OtakuBazaar',
+    locale: 'en_IN',
+    type: 'website',
+    images: [
+      {
+        url: 'https://otaku-bazaar.vercel.app/opengraph-image',
+        width: 1200,
+        height: 630,
+        alt: 'OtakuBazaar — Authenticated Anime Figures & Collectibles',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'OtakuBazaar — Authenticated Anime Figures & Collectibles',
+    description: '0% Bootleg Tolerance • 48h Escrow Protection • Pan-India Insured Delivery',
+    images: ['https://otaku-bazaar.vercel.app/opengraph-image'],
+  },
 };
 
 export default function RootLayout({

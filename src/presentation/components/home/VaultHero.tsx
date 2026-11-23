@@ -37,7 +37,7 @@ export default function VaultHero({ onSelectVaultItem, initialItems }: VaultHero
         const mapped: DriftWallItem[] = validListings
           .filter((l: any) => l.status === 'ACTIVE' || l.status === 'RESERVED')
           .map((l: any) => {
-            let img = '/Firefly_clean.png';
+            let img = '/otakubazaar-logo.png';
             if (Array.isArray(l.imageUrls) && l.imageUrls[0]) {
               img = l.imageUrls[0];
             } else if (typeof l.imageUrls === 'string') {

@@ -207,7 +207,7 @@ export function LotDetailClientView({ product }: LotDetailClientViewProps): Reac
                       alt={`${product.title} — ${activeMedia.title}`}
                       onLoad={() => setImageLoaded(true)}
                       onError={(e) => {
-                        (e.currentTarget as HTMLImageElement).src = '/Firefly_clean.png';
+                        (e.currentTarget as HTMLImageElement).src = '/otakubazaar-logo.png';
                         setImageLoaded(true);
                       }}
                       className={`w-full h-full object-cover object-center transition-opacity duration-150 ${
@@ -264,7 +264,7 @@ export function LotDetailClientView({ product }: LotDetailClientViewProps): Reac
                             alt={item.title}
                             className="w-full h-full object-cover object-center"
                             onError={(e) => {
-                              (e.currentTarget as HTMLImageElement).src = '/Firefly_clean.png';
+                              (e.currentTarget as HTMLImageElement).src = '/otakubazaar-logo.png';
                             }}
                           />
                         </div>

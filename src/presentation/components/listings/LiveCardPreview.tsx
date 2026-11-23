@@ -33,7 +33,7 @@ export function LiveCardPreview({
   imageUrl,
 }: LiveCardPreviewProps): React.JSX.Element {
   const displayTitle = title.trim() || 'Untitled Collectible';
-  const displayImage = imageUrl && imageUrl.trim() ? imageUrl : '/Firefly_clean.png';
+  const displayImage = imageUrl && imageUrl.trim() ? imageUrl : '/otakubazaar-logo.png';
   const [imageLoaded, setImageLoaded] = useState(false);
 
   return (
@@ -60,7 +60,7 @@ export function LiveCardPreview({
                 alt={displayTitle}
                 onLoad={() => setImageLoaded(true)}
                 onError={(e) => {
-                  (e.currentTarget as HTMLImageElement).src = '/Firefly_clean.png';
+                  (e.currentTarget as HTMLImageElement).src = '/otakubazaar-logo.png';
                   setImageLoaded(true);
                 }}
                 className={`w-full h-full object-cover object-center transition-opacity duration-200 ${

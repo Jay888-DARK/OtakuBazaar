@@ -38,7 +38,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps): Pro
       return titleMatch || categoryMatch || idMatch;
     })
     .map((item) => {
-      const primaryImg = item.imageUrls[0] || '/Firefly_clean.png';
+      const primaryImg = item.imageUrls[0] || '/otakubazaar-logo.png';
       return {
         id: item.id,
         lotNumber: String(item.id).replace(/[^0-9]/g, '').padStart(4, '0').slice(-4) || '0001',

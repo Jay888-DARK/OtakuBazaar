@@ -8,7 +8,7 @@
 
 export function optimizeImageUrl(url: string | null | undefined, width = 800): string {
   if (!url || typeof url !== 'string') {
-    return '/Firefly_clean.png';
+    return '/otakubazaar-logo.png';
   }
 
   // Optimize Cloudinary URLs

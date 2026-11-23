@@ -53,7 +53,7 @@ export function ProductCard({ product, className = '' }: ProductCardProps): Reac
       ? product.price
       : Math.round((product.askingPriceAmount || 0) / 100);
 
-  let rawImageUrl = product.imageUrl || '/Firefly_clean.png';
+  let rawImageUrl = product.imageUrl || '/otakubazaar-logo.png';
   try {
     if (product.imageUrls) {
       const parsed = JSON.parse(product.imageUrls);
@@ -162,7 +162,7 @@ export function ProductCard({ product, className = '' }: ProductCardProps): Reac
               alt={product.title}
               onLoad={() => setImageLoaded(true)}
               onError={(e) => {
-                setCurrentImage('/Firefly_clean.png');
+                setCurrentImage('/otakubazaar-logo.png');
                 setImageLoaded(true);
               }}
               className={`w-full h-full object-cover object-center transition-opacity duration-150 ${imageLoaded ? 'opacity-100' : 'opacity-0'

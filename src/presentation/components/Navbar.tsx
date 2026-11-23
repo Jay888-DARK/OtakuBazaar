@@ -119,19 +119,19 @@ export function Navbar() {
             aria-label="OtakuBazaar Home — Authentic Anime Collectibles"
             className="flex items-center space-x-3 cursor-pointer group no-underline focus-visible:outline-none"
           >
-            {/* Mascot Logo Mark */}
+            {/* Brand Kitsune Logo Mark */}
             <div
-              className="relative flex items-center justify-center shrink-0 w-8 h-8 sm:w-9 sm:h-9"
-              style={{ borderRadius: '0px', boxShadow: 'none', background: 'transparent' }}
+              className="relative flex items-center justify-center shrink-0 w-8 h-8 sm:w-9 sm:h-9 bg-black border border-[#1F1F1F]"
+              style={{ borderRadius: '0px', boxShadow: 'none' }}
             >
               <Image
-                src="/Firefly.png"
-                alt="OtakuBazaar Mascot"
+                src="/otakubazaar-logo.png"
+                alt="OtakuBazaar Kitsune Logo"
                 width={36}
                 height={36}
                 priority
-                className="w-8 h-8 sm:w-9 sm:h-9 object-contain"
-                style={{ borderRadius: '0px', boxShadow: 'none', background: 'transparent' }}
+                className="w-full h-full object-contain p-0.5"
+                style={{ borderRadius: '0px', boxShadow: 'none' }}
               />
             </div>
 

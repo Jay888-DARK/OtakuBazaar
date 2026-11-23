@@ -17,7 +17,7 @@ async function getProductFromDb(id: string): Promise<MockProduct | null> {
   if (!listing) return null;
 
   const priceINR = Math.round(listing.askingPriceAmount / 100);
-  const rawPrimary = listing.imageUrls[0] || '/Firefly_clean.png';
+  const rawPrimary = listing.imageUrls[0] || '/otakubazaar-logo.png';
   const primaryImg = optimizeImageUrl(rawPrimary, 1200);
   const optimizedGallery = listing.imageUrls.map((url) => optimizeImageUrl(url, 1200));
 

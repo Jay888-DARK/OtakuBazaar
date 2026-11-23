@@ -112,7 +112,7 @@ providers.push(
               email: cleanEmail,
               name: cleanEmail.split('@')[0],
               displayName: cleanEmail.split('@')[0],
-              avatarUrl: '/Firefly_clean.png',
+              avatarUrl: '/otakubazaar-logo.png',
             },
           });
         } catch {
@@ -131,7 +131,7 @@ providers.push(
         id: user.id,
         name: user.name || user.displayName || cleanEmail.split('@')[0],
         email: user.email,
-        image: user.image || user.avatarUrl || '/Firefly_clean.png',
+        image: user.image || user.avatarUrl || '/otakubazaar-logo.png',
       };
     },
   })
@@ -163,7 +163,7 @@ providers.push(
               email: userEmail,
               name: `Collector (+91 ${cleanPhone.slice(-10)})`,
               displayName: `Collector (+91 ${cleanPhone.slice(-10)})`,
-              avatarUrl: '/Firefly_clean.png',
+              avatarUrl: '/otakubazaar-logo.png',
             },
           });
         } catch {
@@ -175,7 +175,7 @@ providers.push(
         id: user?.id || `user_phone_${cleanPhone.slice(-10)}`,
         name: user?.name || `Collector (+91 ${cleanPhone.slice(-10)})`,
         email: user?.email || userEmail,
-        image: user?.image || user?.avatarUrl || '/Firefly_clean.png',
+        image: user?.image || user?.avatarUrl || '/otakubazaar-logo.png',
       };
     },
   })

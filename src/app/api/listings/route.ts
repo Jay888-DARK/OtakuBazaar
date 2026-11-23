@@ -118,7 +118,7 @@ export interface PublicLotDTO {
 export function toPublicLotDTO(listing: any): PublicLotDTO {
   const rawPrimary = Array.isArray(listing.imageUrls) && listing.imageUrls[0]
     ? listing.imageUrls[0]
-    : '/Firefly_clean.png';
+    : '/otakubazaar-logo.png';
   const primaryImg = optimizeImageUrl(rawPrimary, 800);
   const optimizedImages = Array.isArray(listing.imageUrls) && listing.imageUrls.length > 0
     ? listing.imageUrls.map((img: string) => optimizeImageUrl(img, 800))
