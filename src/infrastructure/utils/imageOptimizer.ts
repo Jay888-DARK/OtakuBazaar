@@ -7,7 +7,7 @@
  */
 
 export function optimizeImageUrl(url: string | null | undefined, width = 800): string {
-  if (!url || typeof url !== 'string') {
+  if (!url || typeof url !== 'string' || url.startsWith('blob:')) {
     return '/otakubazaar-logo.png';
   }
 
