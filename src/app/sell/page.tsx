@@ -17,9 +17,10 @@
  * - Step-by-Step Progress & Multi-Click Prevention on Submission
  */
 
-import React, { useState, useTransition, useCallback, useRef } from 'react';
+import React, { useState, useTransition, useCallback, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { LiveCardPreview } from '@/presentation/components/listings/LiveCardPreview';
 import { createListingAction } from '@/app/actions';
 import { ArchivalFooter } from '@/presentation/components/footer/ArchivalFooter';
@@ -201,7 +202,14 @@ async function compressAndStripExif(file: File, maxDim = 1600, quality = 0.82): 
 
 export default function SellPage(): React.JSX.Element {
   const router = useRouter();
+  const { data: session, status } = useSession();
   const [isPending, startTransition] = useTransition();
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/login?callbackUrl=/sell');
+    }
+  }, [status, router]);
 
   // Consignment Type Toggle
   const [consignType, setConsignType] = useState<'SINGLE' | 'BUNDLE'>('SINGLE');
@@ -443,6 +451,22 @@ export default function SellPage(): React.JSX.Element {
       invoicePreviewUrl,
     ]
   );
+
+  if (status === 'loading') {
+    return (
+      <div className="min-h-screen bg-[#080808] flex items-center justify-center font-sans text-xs uppercase tracking-widest text-[#777777]">
+        [ VERIFYING COLLECTOR CREDENTIALS... ]
+      </div>
+    );
+  }
+
+  if (status === 'unauthenticated') {
+    return (
+      <div className="min-h-screen bg-[#080808] flex items-center justify-center font-sans text-xs uppercase tracking-widest text-[#777777]">
+        [ REDIRECTING TO AUTHENTICATION PORTAL... ]
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#080808] pt-8 pb-20 text-[#F2EFE9] select-none">

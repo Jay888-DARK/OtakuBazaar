@@ -237,6 +237,24 @@ export function Navbar() {
             [ SELL ITEM ]
           </button>
 
+          {/* My Vault Link when logged in */}
+          {session && (
+            <Link
+              href="/vault"
+              aria-label="Collector Vault Portfolio"
+              style={{
+                fontFamily: 'var(--font-sans), sans-serif',
+                fontSize: '0.72rem',
+                fontWeight: 600,
+                letterSpacing: '0.12em',
+                textTransform: 'uppercase',
+              }}
+              className="border border-[#1F1F1F] bg-[#0C0C0C] px-3.5 py-2 uppercase text-[#888888] hover:border-[#F2EFE9] hover:bg-[#F2EFE9] hover:text-[#080808] transition-colors duration-75 cursor-pointer rounded-none font-sans no-underline"
+            >
+              <span>[ MY VAULT ]</span>
+            </Link>
+          )}
+
           {/* Sign In / Profile */}
           {!session ? (
             <button

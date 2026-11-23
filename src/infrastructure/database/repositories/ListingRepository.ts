@@ -87,9 +87,9 @@ export class ListingRepository {
     const lockDuration = 900; // 15 minutes = 900 seconds
     const expiredCutoff = new Date(Date.now() - lockDuration * 1000);
 
-    // Single batched query to release all expired reservations at once (Zero N+1 DB round-trips)
-    try {
-      await prisma.listing.updateMany({
+    // Non-blocking fire-and-forget release of expired reservations (Zero read latency penalty)
+    prisma.listing
+      .updateMany({
         where: {
           status: 'RESERVED',
           updatedAt: { lte: expiredCutoff },
@@ -98,16 +98,30 @@ export class ListingRepository {
           status: 'ACTIVE',
           reservedByBuyerId: null,
         },
-      });
-    } catch {
-      // Non-blocking in case of concurrency or read-only replica
-    }
+      })
+      .catch(() => {});
 
+    // Fast indexed query with explicit column selection
     const rows = await prisma.listing.findMany({
       where: {
         status: {
           in: ['ACTIVE', 'RESERVED'],
         },
+      },
+      select: {
+        id: true,
+        sellerId: true,
+        title: true,
+        description: true,
+        imageUrls: true,
+        askingPriceAmount: true,
+        askingPriceCurrency: true,
+        status: true,
+        category: true,
+        condition: true,
+        reservedByBuyerId: true,
+        createdAt: true,
+        updatedAt: true,
       },
       orderBy: {
         createdAt: 'desc',
@@ -116,7 +130,7 @@ export class ListingRepository {
 
     const now = Date.now();
     return rows.map((row) => {
-      const rec = toRecord(row);
+      const rec = toRecord(row as PrismaListingRow);
       if (row.status === 'RESERVED') {
         const lockedAt = new Date(row.updatedAt).getTime();
         const elapsedSeconds = Math.floor((now - lockedAt) / 1000);

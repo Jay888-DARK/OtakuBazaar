@@ -17,6 +17,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { z } from 'zod';
 import { RBACGuard } from '@/infrastructure/security/RBACGuard';
 import { ListingRepository } from '@/infrastructure/database/repositories/ListingRepository';
+import { optimizeImageUrl } from '@/infrastructure/utils/imageOptimizer';
 
 // ---------------------------------------------------------------------------
 // Zod Validation Schema
@@ -115,9 +116,13 @@ export interface PublicLotDTO {
  * Guaranteed to strip all seller PII, emails, phone numbers, payout details, and internal IDs.
  */
 export function toPublicLotDTO(listing: any): PublicLotDTO {
-  const primaryImg = Array.isArray(listing.imageUrls) && listing.imageUrls[0]
+  const rawPrimary = Array.isArray(listing.imageUrls) && listing.imageUrls[0]
     ? listing.imageUrls[0]
     : '/Firefly_clean.png';
+  const primaryImg = optimizeImageUrl(rawPrimary, 800);
+  const optimizedImages = Array.isArray(listing.imageUrls) && listing.imageUrls.length > 0
+    ? listing.imageUrls.map((img: string) => optimizeImageUrl(img, 800))
+    : [primaryImg];
 
   const scale = listing.title.includes('1/4')
     ? '1/4 SCALE'
@@ -146,13 +151,13 @@ export function toPublicLotDTO(listing: any): PublicLotDTO {
     asking_price: Math.round(listing.askingPriceAmount / 100),
     city: 'Mumbai',
     state: 'MH',
-    images: Array.isArray(listing.imageUrls) && listing.imageUrls.length > 0 ? listing.imageUrls : [primaryImg],
+    images: optimizedImages,
     escrow_status: listing.status || 'ACTIVE',
     created_at: listing.createdAt ? new Date(listing.createdAt).toISOString() : new Date().toISOString(),
 
     // Frontend UI backward compatibility
     id: listing.id,
-    imageUrls: Array.isArray(listing.imageUrls) && listing.imageUrls.length > 0 ? listing.imageUrls : [primaryImg],
+    imageUrls: optimizedImages,
     askingPriceAmount: listing.askingPriceAmount,
     askingPriceCurrency: listing.askingPriceCurrency || 'INR',
     status: listing.status || 'ACTIVE',
@@ -173,9 +178,26 @@ export function toPublicLotDTO(listing: any): PublicLotDTO {
  *
  * @returns JSON list of active listings with stripped PII
  */
-export async function GET(): Promise<NextResponse> {
+export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
-    const listings = await ListingRepository.findAllActive();
+    const { searchParams } = new URL(request.url);
+    const my = searchParams.get('my');
+    const sellerId = searchParams.get('sellerId');
+
+    let listings = [];
+
+    if (my === 'true') {
+      const auth = await RBACGuard.authenticateAsync(request);
+      if (!auth) {
+        return NextResponse.json({ error: 'Unauthorized: Please log in to view personal vault listings' }, { status: 401 });
+      }
+      listings = await ListingRepository.findBySellerId(auth.userId);
+    } else if (sellerId) {
+      listings = await ListingRepository.findBySellerId(sellerId);
+    } else {
+      listings = await ListingRepository.findAllActive();
+    }
+
     const publicItems = listings.map(toPublicLotDTO);
     return NextResponse.json(
       {
@@ -185,7 +207,7 @@ export async function GET(): Promise<NextResponse> {
       {
         status: 200,
         headers: {
-          'Cache-Control': 'public, s-maxage=10, stale-while-revalidate=30',
+          'Cache-Control': my === 'true' ? 'no-store' : 'public, s-maxage=10, stale-while-revalidate=30',
         },
       }
     );
@@ -202,8 +224,8 @@ export async function GET(): Promise<NextResponse> {
  * Handles POST /api/listings — creates a new marketplace listing.
  *
  * Requirements:
- * - Authentication: HttpOnly session cookie or Bearer token
- * - RBAC Role: SELLER or ADMIN
+ * - Authentication: HttpOnly session cookie or Bearer token (NextAuth or custom JWT)
+ * - Attaches sellerId strictly from verified session (never client body)
  * - Body: Validated against {@link CreateListingSchema}
  *
  * @param request - Incoming Next.js HTTP request
@@ -211,8 +233,8 @@ export async function GET(): Promise<NextResponse> {
  */
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
-    // 1. Enforce Authentication and SELLER / ADMIN Role
-    const authResult = RBACGuard.requireRole(request, ['SELLER', 'ADMIN']);
+    // 1. Enforce Authentication
+    const authResult = await RBACGuard.requireAuthAsync(request);
     if (!authResult.success) {
       return authResult.response;
     }

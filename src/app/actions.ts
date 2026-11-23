@@ -18,6 +18,9 @@
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 import { z } from 'zod';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { prisma } from '@/infrastructure/database/prismaClient';
 import { ListingRepository, type ListingRecord } from '@/infrastructure/database/repositories/ListingRepository';
 import { RedisSyncManager } from '@/infrastructure/realtime/RedisSyncManager';
 import { TokenService, SESSION_COOKIE_NAME } from '@/infrastructure/security/TokenService';
@@ -148,11 +151,45 @@ export async function createListingAction(
   rawInput: CreateListingInput
 ): Promise<ServerActionResponse<ListingRecord>> {
   try {
+    // 1. Enforce Server-Side Authentication
+    const cookieStore = await cookies();
+    const token = cookieStore.get(SESSION_COOKIE_NAME)?.value;
+    let authenticatedUserId: string | null = null;
+
+    if (token) {
+      const payload = TokenService.verifyToken(token);
+      if (payload?.userId) {
+        authenticatedUserId = payload.userId;
+      }
+    }
+
+    if (!authenticatedUserId) {
+      try {
+        const session = await getServerSession(authOptions);
+        if (session?.user) {
+          authenticatedUserId = (session.user as { id?: string }).id || null;
+          if (!authenticatedUserId && session.user.email) {
+            const user = await prisma.user.findUnique({ where: { email: session.user.email } });
+            if (user) authenticatedUserId = user.id;
+          }
+        }
+      } catch {
+        // Fallback
+      }
+    }
+
+    if (!authenticatedUserId) {
+      return {
+        success: false,
+        error: '401 Unauthorized: You must be logged into your Collector Vault to consign a lot.',
+      };
+    }
+
     const validated = CreateListingSchema.parse(rawInput);
 
     const createdRecord = await ListingRepository.create({
       id: `listing-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
-      sellerId: validated.sellerId,
+      sellerId: authenticatedUserId,
       title: validated.title,
       description: validated.description,
       imageUrls: [validated.imageUrl],
@@ -165,6 +202,7 @@ export async function createListingAction(
     // Revalidate frontend caches
     safeRevalidatePath('/');
     safeRevalidatePath('/profile');
+    safeRevalidatePath('/vault');
     safeRevalidatePath('/sell');
 
     return {

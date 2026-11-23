@@ -8,14 +8,18 @@
  * - High-contrast editorial typography (Playfair Display, Archivo, Titillium Web).
  * - 0px border-radius containers with hairline charcoal borders (#1F1F1F).
  * - Brutalist state transitions with 0ms transition duration.
- * - Zero pure white backgrounds, zero 3-feature cards in a row, zero drop shadows.
+ * - Zero pure white backgrounds, zero drop shadows.
+ * - Live "MY LISTED ITEMS" management with instant Edit & Delete capabilities.
  * - Live Invoice Generation & IDOR-Secured PDF Downloads.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useSession } from 'next-auth/react';
 import { ArchivalFooter } from '@/presentation/components/footer/ArchivalFooter';
+import type { PublicLotDTO } from '@/app/api/listings/route';
+import { optimizeImageUrl } from '@/infrastructure/utils/imageOptimizer';
 
 interface ShelfItem {
   id: string;
@@ -66,13 +70,13 @@ interface VaultInvoice {
 }
 
 const INITIAL_SHELF: ShelfItem[] = [];
-
 const INITIAL_OFFERS: BargainOffer[] = [];
-
 const INITIAL_DISPATCHES: DispatchTracker[] = [];
 
 export default function VaultPage(): React.JSX.Element {
-  const [activeTab, setActiveTab] = useState<'SHELF' | 'LEDGER' | 'DISPATCH' | 'INVOICES'>('SHELF');
+  const { data: session } = useSession();
+
+  const [activeTab, setActiveTab] = useState<'MY_LISTINGS' | 'SHELF' | 'LEDGER' | 'DISPATCH' | 'INVOICES'>('MY_LISTINGS');
   const [shelf] = useState<ShelfItem[]>(INITIAL_SHELF);
   const [offers, setOffers] = useState<BargainOffer[]>(INITIAL_OFFERS);
   const [dispatches, setDispatches] = useState<DispatchTracker[]>(INITIAL_DISPATCHES);
@@ -82,7 +86,52 @@ export default function VaultPage(): React.JSX.Element {
   const [actionFeedback, setActionFeedback] = useState<string | null>(null);
   const [isGeneratingInvoice, setIsGeneratingInvoice] = useState<string | null>(null);
 
-  const totalVaultValue = shelf.reduce((acc, curr) => acc + curr.valuation, 0);
+  // My Listings State
+  const [myListings, setMyListings] = useState<PublicLotDTO[]>([]);
+  const [isLoadingListings, setIsLoadingListings] = useState<boolean>(true);
+
+  // Edit Modal State
+  const [editingLot, setEditingLot] = useState<PublicLotDTO | null>(null);
+  const [editForm, setEditForm] = useState({
+    title: '',
+    askingPriceINR: 0,
+    condition: 'NEW' as 'NEW' | 'LIKE_NEW' | 'GOOD' | 'FAIR',
+    category: 'Scale Figure',
+    description: '',
+    imageUrl: '',
+  });
+  const [isSavingEdit, setIsSavingEdit] = useState<boolean>(false);
+  const [editError, setEditError] = useState<string | null>(null);
+
+  // Delete Confirmation State
+  const [deletingLot, setDeletingLot] = useState<PublicLotDTO | null>(null);
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
+
+  // Fetch Seller's active listings from API
+  const fetchMyListings = useCallback(async () => {
+    setIsLoadingListings(true);
+    try {
+      const res = await fetch('/api/listings?my=true');
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data.items)) {
+          setMyListings(data.items);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to retrieve seller listings:', err);
+    } finally {
+      setIsLoadingListings(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchMyListings();
+  }, [fetchMyListings]);
+
+  const totalVaultValue =
+    shelf.reduce((acc, curr) => acc + curr.valuation, 0) +
+    myListings.reduce((acc, curr) => acc + (curr.asking_price || 0), 0);
 
   const handleOfferAction = (offerId: string, action: 'ACCEPT' | 'REJECT') => {
     setOffers((prev) =>
@@ -153,21 +202,131 @@ export default function VaultPage(): React.JSX.Element {
     }
   };
 
-  const getTabButtonClass = (tab: 'SHELF' | 'LEDGER' | 'DISPATCH' | 'INVOICES'): string => {
+  // Open Edit Modal with pre-filled lot values
+  const handleOpenEdit = (lot: PublicLotDTO) => {
+    setEditingLot(lot);
+    setEditError(null);
+    setEditForm({
+      title: lot.title,
+      askingPriceINR: lot.asking_price || Math.round(lot.askingPriceAmount / 100),
+      condition: (lot.condition as any) || 'NEW',
+      category: lot.category || 'Scale Figure',
+      description: 'Verified archival anime collectible consigned to OtakuBazaar vault custody.',
+      imageUrl: lot.images[0] || lot.imageUrls[0] || '',
+    });
+  };
+
+  // Submit Edit form via PATCH /api/listings/[id]
+  const handleSaveEdit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingLot) return;
+
+    setIsSavingEdit(true);
+    setEditError(null);
+
+    try {
+      const payload: Record<string, unknown> = {
+        title: editForm.title.trim(),
+        askingPriceINR: Number(editForm.askingPriceINR),
+        condition: editForm.condition,
+        category: editForm.category.trim(),
+      };
+
+      if (editForm.description.trim()) {
+        payload['description'] = editForm.description.trim();
+      }
+
+      if (editForm.imageUrl.trim()) {
+        payload['imageUrls'] = [editForm.imageUrl.trim()];
+      }
+
+      const res = await fetch(`/api/listings/${editingLot.lot_id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to update consignment details');
+      }
+
+      // Update state locally with 0ms delay
+      setMyListings((prev) =>
+        prev.map((item) =>
+          item.lot_id === editingLot.lot_id
+            ? {
+                ...item,
+                title: editForm.title.trim(),
+                asking_price: Number(editForm.askingPriceINR),
+                askingPriceAmount: Number(editForm.askingPriceINR) * 100,
+                condition: editForm.condition,
+                category: editForm.category.trim(),
+                images: editForm.imageUrl ? [editForm.imageUrl] : item.images,
+                imageUrls: editForm.imageUrl ? [editForm.imageUrl] : item.imageUrls,
+              }
+            : item
+        )
+      );
+
+      setEditingLot(null);
+      setActionFeedback(`LOT #${editingLot.vault_id} REVISED & ANCHORED`);
+      setTimeout(() => setActionFeedback(null), 3500);
+    } catch (err: any) {
+      setEditError(err.message || 'Failed to commit revisions.');
+    } finally {
+      setIsSavingEdit(false);
+    }
+  };
+
+  // Submit Delete via DELETE /api/listings/[id]
+  const handleConfirmDelete = async () => {
+    if (!deletingLot) return;
+
+    setIsDeleting(true);
+    try {
+      const res = await fetch(`/api/listings/${deletingLot.lot_id}`, {
+        method: 'DELETE',
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || 'Failed to delete listing');
+      }
+
+      // Immediately purge from local state
+      setMyListings((prev) => prev.filter((item) => item.lot_id !== deletingLot.lot_id));
+      setActionFeedback(`LOT #${deletingLot.vault_id} DECONSIGNED & REMOVED FROM VAULT`);
+      setDeletingLot(null);
+      setTimeout(() => setActionFeedback(null), 3500);
+    } catch (err: any) {
+      setActionFeedback(`DELETE ERROR: ${err.message}`);
+      setTimeout(() => setActionFeedback(null), 4000);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const getTabButtonClass = (tab: 'MY_LISTINGS' | 'SHELF' | 'LEDGER' | 'DISPATCH' | 'INVOICES'): string => {
     const isSelected = activeTab === tab;
     return [
-      'px-5 py-3 text-[11px] uppercase tracking-[0.16em] font-semibold border cursor-pointer rounded-none whitespace-nowrap transition-none',
+      'px-5 py-3 text-[11px] uppercase tracking-[0.16em] font-semibold border cursor-pointer rounded-none whitespace-nowrap transition-none font-sans',
       isSelected
         ? 'bg-[#F2EFE9] text-[#080808] border-[#F2EFE9]'
-        : 'bg-[#0C0C0C] text-[#888888] border-[#1F1F1F]'
+        : 'bg-[#0C0C0C] text-[#888888] border-[#1F1F1F] hover:border-[#3A3A3A] hover:text-[#CCCCCC]',
     ].join(' ');
   };
+
+  const collectorHandle =
+    session?.user?.name ||
+    session?.user?.email?.split('@')[0] ||
+    'VERIFIED COLLECTOR';
 
   return (
     <div className="min-h-screen bg-[#080808] text-[#F2EFE9] select-none py-8 px-4 sm:px-6 lg:px-8 font-sans">
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Navigation Breadcrumb Bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[#1F1F1F] pb-4 gap-2 text-[10px] uppercase tracking-[0.18em] text-[#777777] font-semibold">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[#1F1F1F] pb-4 gap-2 text-[10px] uppercase tracking-[0.18em] text-[#777777] font-semibold font-sans">
           <div className="flex items-center gap-2">
             <Link href="/" className="hover:text-white transition-none no-underline text-[#777777]">
               Marketplace
@@ -178,11 +337,11 @@ export default function VaultPage(): React.JSX.Element {
 
           <div className="flex items-center gap-2">
             <span className="w-1.5 h-1.5 bg-[#10B981]" />
-            <span className="text-[#10B981]">ACCOUNT: @rengoku_vault • PAN-INDIA CUSTODY</span>
+            <span className="text-[#10B981]">ACCOUNT: @{collectorHandle} • PAN-INDIA CUSTODY</span>
           </div>
         </div>
 
-        {/* Masthead: 4-Column Balanced Grid (Strictly avoids 3-in-a-row) */}
+        {/* Masthead: 4-Column Balanced Grid */}
         <div className="bg-[#0C0C0C] border border-[#1F1F1F] p-6 sm:p-8 flex flex-col lg:flex-row lg:items-end justify-between gap-6">
           <div className="space-y-2">
             <span className="text-[10px] uppercase tracking-[0.2em] text-[#777777] font-semibold border border-[#1F1F1F] bg-[#080808] px-2.5 py-1">
@@ -207,10 +366,10 @@ export default function VaultPage(): React.JSX.Element {
             </div>
             <div className="p-3.5 border border-[#1F1F1F] bg-[#080808]">
               <span className="block text-[9px] uppercase tracking-[0.16em] text-[#777777]">
-                VAULTED LOTS
+                MY LISTED LOTS
               </span>
               <span className="font-serif text-lg sm:text-xl text-[#F2EFE9] font-bold block mt-1">
-                {shelf.length} GRAILS
+                {myListings.length} ACTIVE
               </span>
             </div>
             <div className="p-3.5 border border-[#1F1F1F] bg-[#080808]">
@@ -232,21 +391,29 @@ export default function VaultPage(): React.JSX.Element {
           </div>
         </div>
 
-        {/* Action Feedback Banner */}
+        {/* Action Feedback Toast */}
         {actionFeedback && (
-          <div className="p-3 bg-[#091812] border border-[#193829] text-[11px] text-[#10B981] uppercase tracking-[0.14em] font-semibold text-center">
+          <div className="p-3 bg-[#091812] border border-[#193829] text-[11px] text-[#10B981] uppercase tracking-[0.14em] font-semibold text-center font-sans">
             [ {actionFeedback} ]
           </div>
         )}
 
-        {/* Clean 4-Tab Navigation */}
+        {/* Clean 5-Tab Navigation Bar */}
         <div className="flex border-b border-[#1F1F1F] gap-2 overflow-x-auto scrollbar-none pb-px">
+          <button
+            type="button"
+            onClick={() => setActiveTab('MY_LISTINGS')}
+            className={getTabButtonClass('MY_LISTINGS')}
+          >
+            {`[ 01 // MY LISTED ITEMS (${myListings.length}) ]`}
+          </button>
+
           <button
             type="button"
             onClick={() => setActiveTab('SHELF')}
             className={getTabButtonClass('SHELF')}
           >
-            {`[ 01 // MY DIGITAL SHELF (${shelf.length}) ]`}
+            {`[ 02 // MY DIGITAL SHELF (${shelf.length}) ]`}
           </button>
 
           <button
@@ -254,7 +421,7 @@ export default function VaultPage(): React.JSX.Element {
             onClick={() => setActiveTab('LEDGER')}
             className={getTabButtonClass('LEDGER')}
           >
-            {`[ 02 // BARGAINING LEDGER (${offers.filter((o) => o.status === 'PENDING').length}) ]`}
+            {`[ 03 // BARGAINING LEDGER (${offers.filter((o) => o.status === 'PENDING').length}) ]`}
           </button>
 
           <button
@@ -262,7 +429,7 @@ export default function VaultPage(): React.JSX.Element {
             onClick={() => setActiveTab('DISPATCH')}
             className={getTabButtonClass('DISPATCH')}
           >
-            {`[ 03 // ESCROW DISPATCH (${dispatches.length}) ]`}
+            {`[ 04 // ESCROW DISPATCH (${dispatches.length}) ]`}
           </button>
 
           <button
@@ -270,11 +437,138 @@ export default function VaultPage(): React.JSX.Element {
             onClick={() => setActiveTab('INVOICES')}
             className={getTabButtonClass('INVOICES')}
           >
-            {`[ 04 // TAX INVOICES & RECEIPTS (${invoices.length}) ]`}
+            {`[ 05 // TAX INVOICES & RECEIPTS (${invoices.length}) ]`}
           </button>
         </div>
 
-        {/* TAB 01: MY DIGITAL SHELF & CONSIGNMENTS (2-Column Grid) */}
+        {/* TAB 01: MY LISTED ITEMS (Direct Edit & Delete) */}
+        {activeTab === 'MY_LISTINGS' && (
+          <div className="space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <span className="text-[10px] uppercase tracking-[0.18em] text-[#777777] font-semibold block mb-1">
+                  SELLER CONSIGNMENT REPOSITORY
+                </span>
+                <p className="text-xs text-[#8E8E8E]">
+                  All active lots consigned to OtakuBazaar under your collector identity.
+                </p>
+              </div>
+              <Link
+                href="/sell"
+                className="px-4 py-2 border border-[#F2EFE9] bg-[#F2EFE9] text-[#080808] hover:bg-[#EAE6DF] text-[11px] uppercase tracking-[0.14em] font-semibold transition-none no-underline self-start sm:self-auto rounded-none text-center"
+              >
+                [ + CONSIGN A LOT ]
+              </Link>
+            </div>
+
+            {isLoadingListings ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {[1, 2, 3].map((n) => (
+                  <div key={n} className="border border-[#1F1F1F] bg-[#0C0C0C] p-5 space-y-4 animate-pulse">
+                    <div className="w-full h-48 bg-[#141414]" />
+                    <div className="h-4 bg-[#1F1F1F] w-3/4" />
+                    <div className="h-3 bg-[#181818] w-1/2" />
+                    <div className="h-8 bg-[#141414] w-full" />
+                  </div>
+                ))}
+              </div>
+            ) : myListings.length === 0 ? (
+              <div className="border border-[#1F1F1F] bg-[#0C0C0C] p-12 sm:p-16 text-center space-y-4 rounded-none">
+                <div className="font-mono text-[10px] text-[#777777] tracking-[0.2em] uppercase">
+                  VAULT INDEX: 0 ACTIVE LOTS — NO LOTS LISTED BY YOUR ACCOUNT
+                </div>
+                <h3 className="font-serif text-lg sm:text-xl uppercase tracking-wider text-[#F2EFE9]">
+                  NO ACTIVE CONSIGNMENTS IN CUSTODY
+                </h3>
+                <p className="text-xs text-[#8E8E8E] max-w-md mx-auto leading-relaxed">
+                  You have not published any verified collector lots to the live vault yet. Consign your first authentic anime figure or manga grail to begin receiving escrow-backed offers.
+                </p>
+                <div className="pt-2">
+                  <Link
+                    href="/sell"
+                    className="inline-block px-5 py-2.5 bg-[#F2EFE9] text-[#080808] border border-[#F2EFE9] text-[11px] font-semibold uppercase tracking-[0.14em] transition-none rounded-none no-underline"
+                  >
+                    [ CONSIGN A LOT ]
+                  </Link>
+                </div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {myListings.map((lot) => {
+                  const thumb = optimizeImageUrl(lot.images[0] || lot.imageUrls[0], 600);
+                  const askingPaise = lot.asking_price || Math.round((lot.askingPriceAmount || 0) / 100);
+
+                  return (
+                    <div
+                      key={lot.lot_id}
+                      className="border border-[#1F1F1F] bg-[#0C0C0C] p-4 flex flex-col justify-between space-y-4 rounded-none"
+                    >
+                      {/* Image Thumbnail */}
+                      <div className="relative w-full h-56 bg-[#080808] border border-[#161616] overflow-hidden">
+                        <img
+                          src={thumb}
+                          alt={lot.title}
+                          className="w-full h-full object-cover object-top"
+                        />
+                        <div className="absolute top-2 left-2 bg-[#080808]/90 border border-[#1F1F1F] px-2 py-0.5 text-[9px] uppercase tracking-wider text-[#CCCCCC] font-mono">
+                          {lot.vault_id || lot.lot_id.slice(-8).toUpperCase()}
+                        </div>
+                        <div className="absolute top-2 right-2 bg-[#091812]/95 border border-[#193829] px-2 py-0.5 text-[9px] uppercase tracking-wider text-[#10B981] font-semibold">
+                          {lot.escrow_status || lot.status || 'ACTIVE'}
+                        </div>
+                      </div>
+
+                      {/* Content Details */}
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between text-[10px] text-[#777777] uppercase tracking-wider">
+                          <span>{lot.series || lot.category || 'Anime Collectible'}</span>
+                          <span>{lot.scale || '1/7 SCALE'}</span>
+                        </div>
+
+                        <h3 className="font-serif text-[15px] font-bold text-[#F2EFE9] uppercase tracking-[0.03em] line-clamp-2">
+                          {lot.title}
+                        </h3>
+
+                        <div className="text-[10px] text-[#888888] uppercase tracking-wide">
+                          {lot.grade || (lot.condition === 'NEW' ? 'GRADE S // MISB' : 'GRADE A // BIB')}
+                        </div>
+
+                        <div className="pt-2 border-t border-[#161616] flex items-baseline justify-between">
+                          <span className="text-[10px] uppercase tracking-[0.14em] text-[#777777]">
+                            ASKING PRICE
+                          </span>
+                          <span className="font-serif text-lg font-bold text-[#F2EFE9]">
+                            ₹{askingPaise.toLocaleString('en-IN')}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Action Buttons: Edit & Delete */}
+                      <div className="pt-3 border-t border-[#1F1F1F] grid grid-cols-2 gap-2">
+                        <button
+                          type="button"
+                          onClick={() => handleOpenEdit(lot)}
+                          className="w-full py-2 bg-[#080808] hover:bg-[#161616] text-[#CCCCCC] hover:text-[#F2EFE9] border border-[#1F1F1F] hover:border-[#F2EFE9] text-[10px] font-semibold uppercase tracking-[0.16em] transition-none cursor-pointer rounded-none text-center"
+                        >
+                          [ EDIT ]
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setDeletingLot(lot)}
+                          className="w-full py-2 bg-[#140A0A] hover:bg-[#200E0E] text-[#EF4444] border border-[#451A1A] hover:border-[#EF4444] text-[10px] font-semibold uppercase tracking-[0.16em] transition-none cursor-pointer rounded-none text-center"
+                        >
+                          [ DELETE ]
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* TAB 02: MY DIGITAL SHELF & CONSIGNMENTS */}
         {activeTab === 'SHELF' && (
           <div className="space-y-6">
             <div className="flex justify-between items-center">
@@ -283,14 +577,14 @@ export default function VaultPage(): React.JSX.Element {
               </span>
               <Link
                 href="/sell"
-                className="px-4 py-2 border border-[#1F1F1F] bg-[#0C0C0C] hover:bg-[#F2EFE9] hover:text-[#080808] hover:border-[#F2EFE9] text-[#CCCCCC] text-[11px] uppercase tracking-[0.14em] font-semibold transition-none no-underline"
+                className="px-4 py-2 border border-[#1F1F1F] bg-[#0C0C0C] hover:bg-[#F2EFE9] hover:text-[#080808] hover:border-[#F2EFE9] text-[#CCCCCC] text-[11px] uppercase tracking-[0.14em] font-semibold transition-none no-underline rounded-none"
               >
                 [ + CONSIGN NEW GRAIL ]
               </Link>
             </div>
 
             {shelf.length === 0 ? (
-              <div className="border border-[#1F1F1F] bg-[#0C0C0C] p-12 sm:p-16 text-center space-y-4">
+              <div className="border border-[#1F1F1F] bg-[#0C0C0C] p-12 sm:p-16 text-center space-y-4 rounded-none">
                 <div className="font-mono text-[10px] text-[#777777] tracking-[0.2em] uppercase">
                   VAULT PORTFOLIO // 0 ACTIVE CONSIGNMENTS
                 </div>
@@ -298,87 +592,40 @@ export default function VaultPage(): React.JSX.Element {
                   NO ACTIVE CONSIGNMENTS IN CUSTODY
                 </h3>
                 <p className="text-xs text-[#8E8E8E] max-w-md mx-auto leading-relaxed">
-                  Your digital vault shelf is currently empty. Consign verified anime scale figures, statues, or manga sets to enter vault custody.
+                  Authenticate your high-end anime scale figures, resin monuments, or complete manga sets. Every consigned lot enters escrow inspection protection.
                 </p>
                 <div className="pt-2">
                   <Link
                     href="/sell"
-                    className="inline-block px-5 py-2.5 bg-[#F2EFE9] hover:bg-[#EAE6DF] text-[#080808] border border-[#F2EFE9] text-[11px] font-semibold uppercase tracking-[0.16em] transition-none no-underline rounded-none"
+                    className="inline-block px-5 py-2.5 bg-[#F2EFE9] text-[#080808] border border-[#F2EFE9] text-[11px] font-semibold uppercase tracking-[0.14em] transition-none rounded-none no-underline"
                   >
-                    [ + CONSIGN A LOT ]
+                    [ CONSIGN A LOT ]
                   </Link>
                 </div>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {shelf.map((item) => (
-                  <div
-                    key={item.id}
-                    className="bg-[#0C0C0C] border border-[#1F1F1F] p-5 flex flex-col justify-between"
-                  >
-                    <div>
-                      <div className="flex justify-between items-center text-[10px] tracking-[0.15em] text-[#777777] mb-2 uppercase">
-                        <span>{item.lotRef}</span>
-                        <span className="text-[#10B981] font-semibold">{item.status.replace(/_/g, ' ')}</span>
-                      </div>
-
-                      <div className="relative aspect-[16/9] w-full bg-[#080808] border border-[#1A1A1A] mb-4 overflow-hidden">
-                        <Image
-                          src={item.imageUrl}
-                          alt={item.title}
-                          fill
-                          className="object-contain p-2"
-                          sizes="(max-width: 768px) 100vw, 50vw"
-                        />
-                      </div>
-
-                      <span className="text-[10px] tracking-[0.16em] uppercase text-[#888888] block">
-                        {item.series}
-                      </span>
-                      <h3 className="font-serif text-[17px] text-[#F2EFE9] uppercase tracking-[0.04em] mt-1 leading-snug">
-                        {item.title}
-                      </h3>
-
-                      <div className="mt-3 pt-3 border-t border-[#161616] space-y-1.5 text-[11px]">
-                        <div className="flex justify-between text-[#8E8E8E]">
-                          <span>Condition Grade</span>
-                          <span className="text-[#E5E5E5] font-semibold">{item.condition}</span>
-                        </div>
-                        <div className="flex justify-between text-[#8E8E8E]">
-                          <span>Box Status</span>
-                          <span className="text-[#E5E5E5]">{item.boxGrade}</span>
-                        </div>
-                        <div className="flex justify-between text-[#8E8E8E]">
-                          <span>Physical Custody Bay</span>
-                          <span className="text-[#E5E5E5]">{item.custodyBay}</span>
-                        </div>
-                      </div>
+                  <div key={item.id} className="border border-[#1F1F1F] bg-[#0C0C0C] p-5 flex flex-col sm:flex-row gap-5">
+                    <div className="w-full sm:w-36 h-48 bg-[#080808] border border-[#161616] relative shrink-0">
+                      <Image src={item.imageUrl} alt={item.title} fill className="object-cover" />
                     </div>
-
-                    <div className="mt-5 pt-3 border-t border-[#1F1F1F] flex items-center justify-between">
+                    <div className="flex-1 flex flex-col justify-between space-y-3">
                       <div>
-                        <span className="text-[9px] uppercase tracking-[0.15em] text-[#777777] block">
-                          ESTIMATED LIQUIDITY
-                        </span>
-                        <span className="font-serif text-[18px] text-[#F2EFE9] font-bold">
+                        <div className="flex justify-between items-center text-[10px] text-[#777777] tracking-[0.15em] uppercase">
+                          <span>LOT: {item.lotRef}</span>
+                          <span className="text-[#10B981]">{item.custodyBay}</span>
+                        </div>
+                        <h3 className="font-serif text-[16px] text-[#F2EFE9] uppercase tracking-[0.04em] mt-1 font-bold">
+                          {item.title}
+                        </h3>
+                        <p className="text-[11px] text-[#8E8E8E]">{item.series}</p>
+                      </div>
+                      <div className="border-t border-[#161616] pt-3 flex justify-between items-center text-xs">
+                        <span className="text-[#777777] uppercase text-[10px]">VALUATION</span>
+                        <span className="font-serif text-lg text-[#F2EFE9] font-bold">
                           ₹{item.valuation.toLocaleString('en-IN')}
                         </span>
-                      </div>
-
-                      <div className="flex items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={() => handleGenerateInvoice(item.lotRef.toLowerCase(), item.lotRef, item.title)}
-                          className="px-3 py-1.5 bg-[#080808] border border-[#1F1F1F] hover:border-[#3A3A3A] text-[10px] uppercase tracking-[0.14em] text-[#CCCCCC] transition-none cursor-pointer"
-                        >
-                          [ GET INVOICE ]
-                        </button>
-                        <Link
-                          href={`/lot/${item.lotRef.toLowerCase()}`}
-                          className="px-3 py-1.5 bg-[#F2EFE9] text-[#080808] border border-[#F2EFE9] text-[10px] uppercase tracking-[0.14em] font-semibold transition-none no-underline"
-                        >
-                          [ INSPECT ]
-                        </Link>
                       </div>
                     </div>
                   </div>
@@ -388,16 +635,20 @@ export default function VaultPage(): React.JSX.Element {
           </div>
         )}
 
-        {/* TAB 02: LIVE BARGAINING LEDGER */}
+        {/* TAB 03: BARGAINING LEDGER */}
         {activeTab === 'LEDGER' && (
           <div className="space-y-6">
+            <span className="text-[10px] uppercase tracking-[0.18em] text-[#777777] font-semibold block">
+              REAL-TIME BUYER ESCROW OFFERS (15-MIN LOCK PROTOCOL)
+            </span>
+
             {offers.length === 0 ? (
-              <div className="border border-[#1F1F1F] bg-[#0C0C0C] p-12 text-center space-y-3">
+              <div className="border border-[#1F1F1F] bg-[#0C0C0C] p-12 text-center space-y-3 rounded-none">
                 <span className="text-[10px] tracking-[0.2em] text-[#777777] uppercase block">
-                  BARGAINING LEDGER // 0 PENDING OFFERS
+                  NO PENDING BUYER OFFERS
                 </span>
                 <p className="text-xs text-[#8E8E8E] max-w-md mx-auto">
-                  No pending counterparty offers at this time. Incoming offers on your consigned lots will appear here with 24-hour escrow lock triggers.
+                  When a verified buyer tenders a serious escrow-backed offer on one of your consigned lots, it appears here for instant acceptance.
                 </p>
               </div>
             ) : (
@@ -406,28 +657,19 @@ export default function VaultPage(): React.JSX.Element {
                   <div key={offer.id} className="p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div className="space-y-1">
                       <div className="flex items-center gap-3">
-                        <span className="text-[10px] tracking-[0.15em] text-[#777777] uppercase font-semibold">
-                          {offer.lotRef}
+                        <span className="text-[10px] tracking-[0.15em] text-[#777777] uppercase">
+                          LOT: {offer.lotRef}
                         </span>
-                        <span className="text-[10px] tracking-[0.14em] text-[#CCCCCC]">
-                          BIDDER: {offer.buyerHandle}
-                        </span>
-                        <span className="border border-[#193829] bg-[#091812] px-2 py-0.5 text-[9px] text-[#10B981] font-bold uppercase">
-                          {offer.expiresInHours}H EXPIRES
+                        <span className="text-[10px] tracking-[0.12em] text-[#10B981] font-semibold uppercase">
+                          BUYER: {offer.buyerHandle}
                         </span>
                       </div>
-
                       <h3 className="font-serif text-[16px] text-[#F2EFE9] uppercase tracking-[0.04em]">
                         {offer.itemTitle}
                       </h3>
-
-                      <div className="flex items-center gap-4 text-[12px] pt-1">
-                        <span className="text-[#777777]">
-                          Asking: <strong className="text-[#CCCCCC]">₹{offer.askingPrice.toLocaleString('en-IN')}</strong>
-                        </span>
-                        <span className="text-[#10B981] font-bold">
-                          Offer: ₹{offer.offeredPrice.toLocaleString('en-IN')}
-                        </span>
+                      <div className="flex items-center gap-4 text-xs pt-1">
+                        <span className="text-[#777777]">Asking: ₹{offer.askingPrice.toLocaleString('en-IN')}</span>
+                        <span className="text-[#F2EFE9] font-bold">Tendered: ₹{offer.offeredPrice.toLocaleString('en-IN')}</span>
                       </div>
                     </div>
 
@@ -437,21 +679,21 @@ export default function VaultPage(): React.JSX.Element {
                           <button
                             type="button"
                             onClick={() => handleOfferAction(offer.id, 'ACCEPT')}
-                            className="px-4 py-2 bg-[#F2EFE9] text-[#080808] border border-[#F2EFE9] text-[11px] font-semibold uppercase tracking-[0.14em] transition-none cursor-pointer rounded-none"
+                            className="px-4 py-2 bg-[#F2EFE9] text-[#080808] border border-[#F2EFE9] text-[11px] font-semibold uppercase tracking-[0.14em] transition-none rounded-none cursor-pointer"
                           >
-                            [ ACCEPT & LOCK ]
+                            [ ACCEPT OFFER ]
                           </button>
                           <button
                             type="button"
                             onClick={() => handleOfferAction(offer.id, 'REJECT')}
-                            className="px-4 py-2 bg-[#080808] text-[#888888] hover:text-[#CCCCCC] border border-[#1F1F1F] text-[11px] font-semibold uppercase tracking-[0.14em] transition-none cursor-pointer rounded-none"
+                            className="px-4 py-2 bg-[#080808] text-[#888888] hover:text-[#F2EFE9] border border-[#1F1F1F] hover:border-[#3A3A3A] text-[11px] font-semibold uppercase tracking-[0.14em] transition-none rounded-none cursor-pointer"
                           >
                             [ DECLINE ]
                           </button>
                         </>
                       ) : (
-                        <span className="px-3 py-1.5 border border-[#1F1F1F] bg-[#080808] text-[10px] tracking-[0.15em] uppercase text-[#10B981]">
-                          {offer.status}
+                        <span className="text-[11px] uppercase tracking-wider text-[#777777] border border-[#1F1F1F] px-3 py-1">
+                          STATUS: {offer.status}
                         </span>
                       )}
                     </div>
@@ -462,60 +704,48 @@ export default function VaultPage(): React.JSX.Element {
           </div>
         )}
 
-        {/* TAB 03: ESCROW DISPATCH & AWB TRACKER */}
+        {/* TAB 04: ESCROW DISPATCH */}
         {activeTab === 'DISPATCH' && (
           <div className="space-y-6">
             <div className="border border-[#1F1F1F] bg-[#0C0C0C] p-6 space-y-4">
-              <span className="text-[10px] uppercase tracking-[0.18em] text-[#777777] font-semibold block">
-                CARRIER DISPATCH & AWB INPUT
+              <span className="text-[10px] uppercase tracking-[0.2em] text-[#777777] font-semibold border border-[#1F1F1F] bg-[#080808] px-2.5 py-1 inline-block">
+                LOGISTICS PROTOCOL
               </span>
-              <form onSubmit={handleAddAwb} className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
-                <div className="sm:col-span-4">
-                  <label className="block text-[10px] uppercase tracking-[0.14em] text-[#777777] mb-1.5 font-medium">
-                    Carrier Partner *
-                  </label>
-                  <select
-                    value={selectedCarrier}
-                    onChange={(e) => setSelectedCarrier(e.target.value as any)}
-                    className="w-full bg-[#080808] border border-[#1F1F1F] px-3 py-2.5 text-xs text-[#F2EFE9] outline-none rounded-none"
-                  >
-                    <option value="BLUEDART AIR">BlueDart Air (Tracked Express)</option>
-                    <option value="DELHIVERY SURFACE">Delhivery Surface (Tracked Standard)</option>
-                  </select>
-                </div>
-
-                <div className="sm:col-span-5">
-                  <label className="block text-[10px] uppercase tracking-[0.14em] text-[#777777] mb-1.5 font-medium">
-                    AWB Tracking Code *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g., BD-924184910-IN"
-                    value={newAwbInput}
-                    onChange={(e) => setNewAwbInput(e.target.value)}
-                    className="w-full bg-[#080808] border border-[#1F1F1F] px-3 py-2.5 text-xs text-[#F2EFE9] placeholder-[#555555] outline-none rounded-none uppercase"
-                  />
-                </div>
-
-                <div className="sm:col-span-3">
-                  <button
-                    type="submit"
-                    className="w-full py-2.5 bg-[#F2EFE9] text-[#080808] border border-[#F2EFE9] text-[11px] font-semibold uppercase tracking-[0.14em] transition-none cursor-pointer rounded-none"
-                  >
-                    [ RECORD DISPATCH ]
-                  </button>
-                </div>
+              <h2 className="font-serif text-xl sm:text-2xl text-[#F2EFE9] uppercase tracking-[0.04em]">
+                Active Air Freight Dispatch & 48-Hour Inspection Escrow
+              </h2>
+              <form onSubmit={handleAddAwb} className="flex flex-col sm:flex-row gap-3 pt-2">
+                <select
+                  value={selectedCarrier}
+                  onChange={(e) => setSelectedCarrier(e.target.value as any)}
+                  className="bg-[#080808] border border-[#1F1F1F] text-[#CCCCCC] text-xs px-3 py-2 outline-none rounded-none uppercase font-sans"
+                >
+                  <option value="BLUEDART AIR">BLUEDART AIR (INSURED CRATED)</option>
+                  <option value="DELHIVERY SURFACE">DELHIVERY SURFACE EXPRESS</option>
+                </select>
+                <input
+                  type="text"
+                  placeholder="ENTER DISPATCH AWB NUMBER..."
+                  value={newAwbInput}
+                  onChange={(e) => setNewAwbInput(e.target.value)}
+                  className="flex-1 bg-[#080808] border border-[#1F1F1F] focus:border-[#F2EFE9] text-[#F2EFE9] text-xs px-3.5 py-2 outline-none rounded-none uppercase font-sans placeholder-[#555555]"
+                />
+                <button
+                  type="submit"
+                  className="px-5 py-2 bg-[#F2EFE9] text-[#080808] border border-[#F2EFE9] text-[11px] font-semibold uppercase tracking-[0.14em] cursor-pointer rounded-none font-sans"
+                >
+                  [ RECORD AWB ]
+                </button>
               </form>
             </div>
 
             {dispatches.length === 0 ? (
-              <div className="border border-[#1F1F1F] bg-[#0C0C0C] p-12 text-center space-y-3">
+              <div className="border border-[#1F1F1F] bg-[#0C0C0C] p-12 text-center space-y-3 rounded-none">
                 <span className="text-[10px] tracking-[0.2em] text-[#777777] uppercase block">
-                  ESCROW DISPATCH // 0 SHIPMENTS IN TRANSIT
+                  NO CONSIGNMENTS CURRENTLY IN TRANSIT
                 </span>
                 <p className="text-xs text-[#8E8E8E] max-w-md mx-auto">
-                  No active shipments currently in transit. Recorded courier dispatches will display real-time 48-hour inspection windows.
+                  Orders requiring shipment tracking or pending unboxing verification will appear here.
                 </p>
               </div>
             ) : (
@@ -524,41 +754,31 @@ export default function VaultPage(): React.JSX.Element {
                   <div key={disp.id} className="p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div className="space-y-1">
                       <div className="flex items-center gap-3">
-                        <span className="text-[10px] tracking-[0.15em] text-[#777777] uppercase font-semibold">
-                          {disp.lotRef}
+                        <span className="text-[10px] font-mono tracking-[0.15em] text-[#10B981] font-bold">
+                          AWB: {disp.awbNumber}
                         </span>
-                        <span className="text-[10px] tracking-[0.14em] text-[#CCCCCC]">
-                          {disp.carrier} • {disp.awbNumber}
-                        </span>
-                        <span className="border border-[#193829] bg-[#091812] px-2 py-0.5 text-[9px] text-[#10B981] font-bold uppercase">
-                          DESTINATION: {disp.destinationCity}
+                        <span className="text-[10px] tracking-[0.14em] text-[#777777] uppercase">
+                          CARRIER: {disp.carrier}
                         </span>
                       </div>
-
                       <h3 className="font-serif text-[16px] text-[#F2EFE9] uppercase tracking-[0.04em]">
                         {disp.itemTitle}
                       </h3>
-
-                      <div className="text-[11px] text-[#8E8E8E] pt-1">
-                        {disp.status === 'INSPECTION_WINDOW_ACTIVE'
-                          ? `Buyer received specimen. 48-Hour Inspection window active (${disp.inspectionHoursLeft}h left until escrow release).`
-                          : 'Specimen in transit under carrier custody. Anti-bootleg unboxing video required upon delivery.'}
-                      </div>
+                      <p className="text-[11px] text-[#8E8E8E]">
+                        Destination: {disp.destinationCity} • Inspection Window: {disp.inspectionHoursLeft}h Remaining
+                      </p>
                     </div>
 
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
                       <button
                         type="button"
                         onClick={() => handleGenerateInvoice(disp.orderId, disp.lotRef, disp.itemTitle)}
-                        className="px-3.5 py-2 bg-[#080808] border border-[#1F1F1F] hover:border-[#3A3A3A] text-[11px] uppercase tracking-[0.14em] text-[#CCCCCC] cursor-pointer transition-none rounded-none"
+                        className="px-3.5 py-2 bg-[#080808] border border-[#1F1F1F] hover:border-[#3A3A3A] text-[11px] uppercase tracking-[0.14em] text-[#CCCCCC] cursor-pointer rounded-none font-sans"
                       >
                         [ TAX INVOICE ]
                       </button>
                       <div className="border border-[#1F1F1F] bg-[#080808] px-3.5 py-2 text-center">
-                        <span className="block text-[9px] tracking-[0.14em] text-[#777777] uppercase">
-                          ESCROW STATUS
-                        </span>
-                        <span className="font-sans text-[11px] text-[#10B981] font-semibold uppercase tracking-wider block mt-0.5">
+                        <span className="font-sans text-[11px] text-[#10B981] font-semibold uppercase tracking-wider block">
                           {disp.status.replace(/_/g, ' ')}
                         </span>
                       </div>
@@ -570,7 +790,7 @@ export default function VaultPage(): React.JSX.Element {
           </div>
         )}
 
-        {/* TAB 04: TAX INVOICES & RECEIPTS */}
+        {/* TAB 05: TAX INVOICES & RECEIPTS */}
         {activeTab === 'INVOICES' && (
           <div className="space-y-6">
             <div className="border border-[#1F1F1F] bg-[#0C0C0C] p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -587,18 +807,9 @@ export default function VaultPage(): React.JSX.Element {
               </div>
             </div>
 
-            {/* Skeleton Loading State */}
-            {isGeneratingInvoice && (
-              <div className="border border-[#1F1F1F] bg-[#0C0C0C] p-5 space-y-3 animate-pulse">
-                <div className="h-3 w-48 bg-[#161616]" />
-                <div className="h-5 w-80 bg-[#1A1A1A]" />
-                <div className="h-3 w-64 bg-[#141414]" />
-              </div>
-            )}
-
             {/* Invoices List */}
             {invoices.length === 0 && !isGeneratingInvoice ? (
-              <div className="border border-[#1F1F1F] bg-[#0C0C0C] p-12 text-center space-y-3">
+              <div className="border border-[#1F1F1F] bg-[#0C0C0C] p-12 text-center space-y-3 rounded-none">
                 <span className="text-[10px] tracking-[0.2em] text-[#777777] uppercase block">
                   NO INVOICES GENERATED YET
                 </span>
@@ -640,7 +851,7 @@ export default function VaultPage(): React.JSX.Element {
                       <a
                         href={inv.downloadUrl}
                         download
-                        className="px-4 py-2.5 bg-[#F2EFE9] text-[#080808] border border-[#F2EFE9] text-[11px] font-semibold uppercase tracking-[0.14em] transition-none rounded-none no-underline block text-center"
+                        className="px-4 py-2.5 bg-[#F2EFE9] text-[#080808] border border-[#F2EFE9] text-[11px] font-semibold uppercase tracking-[0.14em] rounded-none no-underline block text-center"
                       >
                         [ DOWNLOAD INVOICE (PDF) ]
                       </a>
@@ -652,6 +863,180 @@ export default function VaultPage(): React.JSX.Element {
           </div>
         )}
       </div>
+
+      {/* EDIT MODAL */}
+      {editingLot && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 select-none">
+          <div className="w-full max-w-xl bg-[#0C0C0C] border border-[#1F1F1F] p-6 sm:p-8 space-y-5 rounded-none max-h-[90vh] overflow-y-auto">
+            <div className="border-b border-[#161616] pb-3 flex items-center justify-between">
+              <div>
+                <span className="text-[10px] uppercase tracking-[0.2em] text-[#777777] font-semibold block">
+                  VAULT REVISION PROTOCOL
+                </span>
+                <h2 className="font-serif text-xl sm:text-2xl text-[#F2EFE9] uppercase tracking-[0.04em] mt-1">
+                  Edit Consigned Lot
+                </h2>
+              </div>
+              <span className="font-mono text-[10px] text-[#777777] uppercase border border-[#1F1F1F] px-2 py-1">
+                {editingLot.vault_id || editingLot.lot_id.slice(-8).toUpperCase()}
+              </span>
+            </div>
+
+            {editError && (
+              <div className="p-3 bg-[#180A0A] border border-[#7F1D1D] text-[#F87171] text-xs font-semibold uppercase tracking-wider text-center">
+                [ ERROR: {editError} ]
+              </div>
+            )}
+
+            <form onSubmit={handleSaveEdit} className="space-y-4">
+              <div>
+                <label className="text-[10px] uppercase tracking-[0.16em] text-[#888888] font-semibold block mb-1.5">
+                  Lot Title *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={editForm.title}
+                  onChange={(e) => setEditForm((prev) => ({ ...prev, title: e.target.value }))}
+                  className="w-full bg-[#080808] border border-[#1F1F1F] focus:border-[#F2EFE9] px-3.5 py-2.5 text-xs text-[#F2EFE9] outline-none rounded-none font-sans"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-[10px] uppercase tracking-[0.16em] text-[#888888] font-semibold block mb-1.5">
+                    Asking Price (INR ₹) *
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    min={1}
+                    value={editForm.askingPriceINR || ''}
+                    onChange={(e) => setEditForm((prev) => ({ ...prev, askingPriceINR: Number(e.target.value) }))}
+                    className="w-full bg-[#080808] border border-[#1F1F1F] focus:border-[#F2EFE9] px-3.5 py-2.5 text-xs text-[#F2EFE9] outline-none rounded-none font-sans"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-[10px] uppercase tracking-[0.16em] text-[#888888] font-semibold block mb-1.5">
+                    Category *
+                  </label>
+                  <select
+                    value={editForm.category}
+                    onChange={(e) => setEditForm((prev) => ({ ...prev, category: e.target.value }))}
+                    className="w-full bg-[#080808] border border-[#1F1F1F] focus:border-[#F2EFE9] px-3.5 py-2.5 text-xs text-[#F2EFE9] outline-none rounded-none font-sans uppercase"
+                  >
+                    <option value="Scale Figure">Scale Figure</option>
+                    <option value="Nendoroid">Nendoroid</option>
+                    <option value="Statues & Resin">Statues & Resin</option>
+                    <option value="Manga Sets">Manga Sets</option>
+                    <option value="Mecha & Gunpla">Mecha & Gunpla</option>
+                    <option value="Cosplay & Props">Cosplay & Props</option>
+                    <option value="Other">Other / Retro</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-[10px] uppercase tracking-[0.16em] text-[#888888] font-semibold block mb-1.5">
+                  Condition Grade *
+                </label>
+                <select
+                  value={editForm.condition}
+                  onChange={(e) => setEditForm((prev) => ({ ...prev, condition: e.target.value as any }))}
+                  className="w-full bg-[#080808] border border-[#1F1F1F] focus:border-[#F2EFE9] px-3.5 py-2.5 text-xs text-[#F2EFE9] outline-none rounded-none font-sans uppercase"
+                >
+                  <option value="NEW">GRADE S // MISB (FACTORY SEALED)</option>
+                  <option value="LIKE_NEW">GRADE A // BIB (CABINET DISPLAYED)</option>
+                  <option value="GOOD">GRADE B // OPEN SHELF (DISPLAYED)</option>
+                  <option value="FAIR">GRADE C // MINOR WEAR</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="text-[10px] uppercase tracking-[0.16em] text-[#888888] font-semibold block mb-1.5">
+                  Archival Provenance & Custody Notes
+                </label>
+                <textarea
+                  rows={3}
+                  value={editForm.description}
+                  onChange={(e) => setEditForm((prev) => ({ ...prev, description: e.target.value }))}
+                  className="w-full bg-[#080808] border border-[#1F1F1F] focus:border-[#F2EFE9] px-3.5 py-2.5 text-xs text-[#F2EFE9] outline-none rounded-none font-sans resize-none"
+                />
+              </div>
+
+              <div>
+                <label className="text-[10px] uppercase tracking-[0.16em] text-[#888888] font-semibold block mb-1.5">
+                  Primary Photograph URL (Optional)
+                </label>
+                <input
+                  type="text"
+                  value={editForm.imageUrl}
+                  onChange={(e) => setEditForm((prev) => ({ ...prev, imageUrl: e.target.value }))}
+                  placeholder="https://... or data:image/..."
+                  className="w-full bg-[#080808] border border-[#1F1F1F] focus:border-[#F2EFE9] px-3.5 py-2.5 text-xs text-[#F2EFE9] outline-none rounded-none font-sans placeholder-[#555555]"
+                />
+              </div>
+
+              <div className="pt-4 border-t border-[#161616] flex items-center justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => setEditingLot(null)}
+                  disabled={isSavingEdit}
+                  className="px-4 py-2.5 bg-[#080808] hover:bg-[#161616] text-[#888888] hover:text-[#CCCCCC] border border-[#1F1F1F] text-[11px] font-semibold uppercase tracking-[0.16em] cursor-pointer rounded-none"
+                >
+                  [ CANCEL ]
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSavingEdit}
+                  className="px-5 py-2.5 bg-[#F2EFE9] hover:bg-[#EAE6DF] text-[#080808] border border-[#F2EFE9] text-[11px] font-semibold uppercase tracking-[0.16em] cursor-pointer rounded-none disabled:opacity-50"
+                >
+                  {isSavingEdit ? '[ COMMITTING... ]' : '[ SAVE REVISIONS ]'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* DELETE CONFIRMATION MODAL */}
+      {deletingLot && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 select-none">
+          <div className="w-full max-w-md bg-[#0C0C0C] border border-[#7F1D1D] p-6 sm:p-8 space-y-4 rounded-none">
+            <span className="text-[10px] uppercase tracking-[0.2em] text-[#EF4444] font-semibold block">
+              WARNING // PERMANENT DECONSIGNMENT
+            </span>
+
+            <h2 className="font-serif text-xl text-[#F2EFE9] uppercase tracking-[0.04em]">
+              Confirm Lot Deletion
+            </h2>
+
+            <p className="text-xs text-[#8E8E8E] leading-relaxed">
+              Are you certain you wish to purge lot <strong className="text-[#F2EFE9]">{deletingLot.title}</strong> ({deletingLot.vault_id || deletingLot.lot_id.slice(-8)}) from the live vault? This will remove the listing and invalidate all open bargaining offers permanently.
+            </p>
+
+            <div className="pt-4 border-t border-[#161616] flex items-center justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setDeletingLot(null)}
+                disabled={isDeleting}
+                className="px-4 py-2.5 bg-[#080808] hover:bg-[#161616] text-[#888888] hover:text-[#CCCCCC] border border-[#1F1F1F] text-[11px] font-semibold uppercase tracking-[0.16em] cursor-pointer rounded-none"
+              >
+                [ ABORT ]
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmDelete}
+                disabled={isDeleting}
+                className="px-5 py-2.5 bg-[#EF4444] hover:bg-[#DC2626] text-white border border-[#EF4444] text-[11px] font-semibold uppercase tracking-[0.16em] cursor-pointer rounded-none disabled:opacity-50"
+              >
+                {isDeleting ? '[ PURGING... ]' : '[ CONFIRM DELETION ]'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="mt-20">
         <ArchivalFooter />

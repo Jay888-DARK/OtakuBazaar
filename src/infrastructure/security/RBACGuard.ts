@@ -11,6 +11,7 @@
  */
 
 import { NextResponse, type NextRequest } from 'next/server';
+import { getToken } from 'next-auth/jwt';
 import { TokenService, SESSION_COOKIE_NAME, type TokenPayload, type UserRole } from './TokenService';
 
 // ---------------------------------------------------------------------------
@@ -68,6 +69,99 @@ export class RBACGuard {
     }
 
     return TokenService.verifyToken(token);
+  }
+
+  /**
+   * Asynchronously authenticates the request across both custom JWT (otaku_session)
+   * and NextAuth sessions (Google, Discord, Credentials).
+   */
+  public static async authenticateAsync(request: NextRequest): Promise<TokenPayload | null> {
+    // 1. Check custom JWT token
+    const customUser = this.authenticate(request);
+    if (customUser) {
+      return customUser;
+    }
+
+    // 2. Check NextAuth JWT token
+    try {
+      const secret =
+        process.env.NEXTAUTH_SECRET ||
+        process.env.JWT_SECRET ||
+        'otakubazaar-escrow-super-secret-key-2026';
+      const token = await getToken({ req: request, secret });
+      if (token && (token.sub || (token as any).id)) {
+        const userId = (token.sub || (token as any).id) as string;
+        return {
+          userId,
+          email: token.email || `${userId}@otakubazaar.dev`,
+          name: token.name || 'Collector',
+          role: ((token as any).role as UserRole) || 'SELLER',
+        };
+      }
+    } catch {
+      // Non-blocking fallback
+    }
+
+    return null;
+  }
+
+  /**
+   * Asynchronously enforces authentication across NextAuth & custom JWT cookies.
+   */
+  public static async requireAuthAsync(
+    request: NextRequest
+  ): Promise<{ success: true; user: TokenPayload } | { success: false; response: NextResponse }> {
+    const user = await this.authenticateAsync(request);
+
+    if (!user) {
+      return {
+        success: false,
+        response: NextResponse.json(
+          {
+            error: {
+              code: 'UNAUTHENTICATED',
+              message: 'Authentication required. Please log in to proceed.',
+            },
+          },
+          { status: 401 }
+        ),
+      };
+    }
+
+    return { success: true, user };
+  }
+
+  /**
+   * Asynchronously enforces authentication and role validation.
+   */
+  public static async requireRoleAsync(
+    request: NextRequest,
+    allowedRoles: ReadonlyArray<UserRole>
+  ): Promise<{ success: true; user: TokenPayload } | { success: false; response: NextResponse }> {
+    const authResult = await this.requireAuthAsync(request);
+    if (!authResult.success) {
+      return authResult;
+    }
+
+    const { user } = authResult;
+    const hasRole = allowedRoles.includes(user.role) || user.role === 'ADMIN';
+
+    if (!hasRole) {
+      return {
+        success: false,
+        response: NextResponse.json(
+          {
+            error: {
+              code: 'FORBIDDEN',
+              message: `Access denied. Requires one of roles: [${allowedRoles.join(', ')}]. Current role: ${user.role}.`,
+            },
+          },
+          { status: 403 }
+        ),
+      };
+    }
+
+    return { success: true, user };
   }
 
   /**

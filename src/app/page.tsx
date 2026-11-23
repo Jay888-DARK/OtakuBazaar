@@ -8,6 +8,7 @@ import { CatalogView, type CatalogProductItem } from '@/presentation/components/
 import { HowItWorksAndFaq } from '@/presentation/components/home/HowItWorksAndFaq';
 import { ArchivalFooter } from '@/presentation/components/footer/ArchivalFooter';
 import { ListingRepository } from '@/infrastructure/database/repositories/ListingRepository';
+import { optimizeImageUrl } from '@/infrastructure/utils/imageOptimizer';
 import type { DriftWallItem } from '@/presentation/components/ui/DriftWall';
 
 export const metadata: Metadata = {
@@ -39,7 +40,9 @@ export default async function HomePage(props?: {
   try {
     const rawListings = await ListingRepository.findAllActive();
     catalogItems = rawListings.map((item) => {
-      const primaryImg = item.imageUrls[0] || '/Firefly_clean.png';
+      const rawPrimary = item.imageUrls[0] || '/Firefly_clean.png';
+      const primaryImg = optimizeImageUrl(rawPrimary, 800);
+      const optimizedImages = item.imageUrls.map((u) => optimizeImageUrl(u, 800));
       return {
         id: item.id,
         lotNumber: String(item.id).replace(/[^0-9]/g, '').padStart(4, '0').slice(-4) || '0001',
@@ -60,7 +63,7 @@ export default async function HomePage(props?: {
         series: item.title,
         manufacturer: 'Japanese Studio',
         imageUrl: primaryImg,
-        imageUrls: JSON.stringify(item.imageUrls.length > 0 ? item.imageUrls : [primaryImg]),
+        imageUrls: JSON.stringify(optimizedImages.length > 0 ? optimizedImages : [primaryImg]),
         scale: '1/7 SCALE',
         status: item.status,
         lockRemainingSeconds: item.lockRemainingSeconds,
@@ -69,7 +72,7 @@ export default async function HomePage(props?: {
 
     driftItems = rawListings.map((l) => ({
       id: l.id,
-      image: l.imageUrls[0] || '/Firefly_clean.png',
+      image: optimizeImageUrl(l.imageUrls[0] || '/Firefly_clean.png', 600),
       title: l.title,
       href: `/lot/${l.id}`,
     }));

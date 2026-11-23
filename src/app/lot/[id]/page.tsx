@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import type { MockProduct } from '@/lib/mockProducts';
 import { ListingRepository } from '@/infrastructure/database/repositories/ListingRepository';
 import { LotDetailClientView } from '@/presentation/components/products/LotDetailClientView';
+import { optimizeImageUrl } from '@/infrastructure/utils/imageOptimizer';
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -16,7 +17,9 @@ async function getProductFromDb(id: string): Promise<MockProduct | null> {
   if (!listing) return null;
 
   const priceINR = Math.round(listing.askingPriceAmount / 100);
-  const primaryImg = listing.imageUrls[0] || '/Firefly_clean.png';
+  const rawPrimary = listing.imageUrls[0] || '/Firefly_clean.png';
+  const primaryImg = optimizeImageUrl(rawPrimary, 1200);
+  const optimizedGallery = listing.imageUrls.map((url) => optimizeImageUrl(url, 1200));
 
   const categorySubtitle =
     listing.category === 'Statues & Resin'
@@ -66,8 +69,8 @@ async function getProductFromDb(id: string): Promise<MockProduct | null> {
     boxDimensions: '340 × 260 × 200 MM',
     provenance: listing.description || 'Verified Japanese imported collectible held in secure custody under 48-hour unboxing inspection escrow.',
     videoUrl: primaryImg,
-    gallery: listing.imageUrls.length > 0
-      ? listing.imageUrls.map((url, idx) => ({
+    gallery: optimizedGallery.length > 0
+      ? optimizedGallery.map((url, idx) => ({
           src: url,
           label: idx === 0 ? 'FRONT ELEVATION' : `DETAIL VIEW 0${idx}`,
           caption: `Verified inspection angle ${idx + 1} for ${listing.title}`,
