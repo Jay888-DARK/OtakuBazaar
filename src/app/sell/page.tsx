@@ -518,18 +518,18 @@ export default function SellPage(): React.JSX.Element {
   const hasErrors = Object.keys(fieldErrors).length > 0 || !!globalError;
   const firstErrorMessage = globalError || Object.values(fieldErrors)[0];
   const buttonErrorMessage = fieldErrors.title
-    ? 'ITEM TITLE (MIN 3 CHARS)'
+    ? 'PLEASE ENTER ITEM TITLE'
     : fieldErrors.askingPrice
-    ? 'ASKING PRICE (MIN ₹500)'
+    ? 'ASKING PRICE REQUIRED (MIN ₹500)'
     : fieldErrors.image
-    ? 'COLLECTIBLE SPECIMEN PHOTO'
+    ? 'PLEASE UPLOAD SPECIMEN PHOTO'
     : fieldErrors.pickupPincode
-    ? 'VALID 6-DIGIT PICKUP PINCODE'
+    ? 'VALID 6-DIGIT PINCODE REQUIRED'
     : fieldErrors.invoice
-    ? 'PURCHASE INVOICE FOR > ₹10,000'
+    ? 'PURCHASE INVOICE REQUIRED (> ₹10,000)'
     : firstErrorMessage
-    ? firstErrorMessage.slice(0, 36).toUpperCase()
-    : 'COMPLETE HIGHLIGHTED FIELDS';
+    ? firstErrorMessage.slice(0, 42).toUpperCase()
+    : 'PLEASE COMPLETE REQUIRED FIELDS';
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -678,13 +678,6 @@ export default function SellPage(): React.JSX.Element {
               payload: newListingPayload,
             });
             channel.close();
-          }
-
-          try {
-            const stored = JSON.parse(localStorage.getItem('otaku_custom_listings') || '[]');
-            localStorage.setItem('otaku_custom_listings', JSON.stringify([newListingPayload, ...stored]));
-          } catch {
-            // ignore
           }
 
           setFieldErrors({});
@@ -1604,10 +1597,10 @@ export default function SellPage(): React.JSX.Element {
                 <div className="space-y-3 pt-2">
                   <div
                     id="field-submit"
-                    className="w-full py-4 bg-[#091812] text-[#10B981] border-2 border-[#10B981] text-xs font-semibold uppercase tracking-[0.2em] flex items-center justify-center gap-2 rounded-none transition-all shadow-[0_0_24px_rgba(16,185,129,0.25)]"
+                    className="w-full py-4 bg-[#091812] text-[#10B981] border-2 border-[#10B981] text-xs font-semibold uppercase tracking-[0.2em] flex items-center justify-center gap-2 rounded-none transition-all shadow-[0_0_24px_rgba(16,185,129,0.35)] animate-pulse"
                   >
                     <span className="w-2.5 h-2.5 rounded-full bg-[#10B981] animate-ping" />
-                    <span>[ CONSIGNMENT ACCEPTED // LOT ADDED TO VAULT ]</span>
+                    <span>[ ACCEPTED // LOT ADDED TO VAULT ]</span>
                   </div>
 
                   {/* Immediate in-place confirmation block */}
@@ -1649,10 +1642,10 @@ export default function SellPage(): React.JSX.Element {
                     disabled={hasErrors || isPending || isCompressing || isUploading}
                     className={`w-full py-4 text-xs font-semibold uppercase tracking-[0.2em] transition-all rounded-none ${
                       hasErrors
-                        ? 'bg-[#851E1E] text-[#F2EFE9] border border-[#DC2626] cursor-not-allowed'
+                        ? 'bg-[#991B1B] text-[#FFF1F2] border-2 border-[#EF4444] cursor-not-allowed opacity-95'
                         : isPending || isCompressing || isUploading
                         ? 'bg-[#1F1F1F] text-[#888888] border border-[#1F1F1F] cursor-wait'
-                        : 'bg-[#F2EFE9] hover:bg-[#EAE6DF] text-[#080808] border border-[#F2EFE9] cursor-pointer active:scale-[0.99]'
+                        : 'bg-[#F2EFE9] hover:bg-[#FFFFFF] text-[#080808] border border-[#F2EFE9] cursor-pointer active:scale-[0.99]'
                     }`}
                   >
                     {isCompressing
@@ -1667,11 +1660,12 @@ export default function SellPage(): React.JSX.Element {
                   </button>
 
                   {hasErrors && (
-                    <div className="p-3.5 bg-[#180A0A] border border-[#DC2626] font-sans text-left space-y-1">
-                      <div className="text-[10px] text-[#EF4444] font-bold uppercase tracking-[0.18em]">
-                        [ ACTION REQUIRED ]
+                    <div className="p-4 bg-[#1E0B0B] border border-[#EF4444] font-sans text-left space-y-1.5 shadow-lg animate-fadeIn">
+                      <div className="flex items-center gap-2 text-[10px] text-[#FCA5A5] font-bold uppercase tracking-[0.18em]">
+                        <span className="w-2 h-2 rounded-full bg-[#EF4444]" />
+                        <span>[ ATTENTION REQUIRED ]</span>
                       </div>
-                      <p className="text-xs text-[#F2EFE9] leading-relaxed">
+                      <p className="text-xs text-[#FFF1F2] leading-relaxed">
                         {firstErrorMessage}
                       </p>
                     </div>

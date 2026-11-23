@@ -119,16 +119,15 @@ export function Navbar() {
             aria-label="OtakuBazaar Home — Authentic Anime Collectibles"
             className="flex items-center space-x-3 cursor-pointer group no-underline focus-visible:outline-none"
           >
-            {/* Pure Brand Kitsune Logo Mark (Border-free, large & crisp, blends with background) */}
-            <div className="relative flex items-center justify-center shrink-0 w-12 h-12 sm:w-14 sm:h-14">
+            {/* Pure Brand Kitsune Logo Mark (Border-free, crisp & perfectly transparent) */}
+            <div className="relative flex items-center justify-center shrink-0 w-12 h-12 sm:w-14 sm:h-14 bg-transparent border-0">
               <Image
                 src="/otakubazaar-logo.png"
                 alt="OtakuBazaar Kitsune Logo"
                 width={56}
                 height={56}
                 priority
-                style={{ mixBlendMode: 'screen' }}
-                className="w-full h-full object-contain mix-blend-screen"
+                className="w-full h-full object-contain"
               />
             </div>
 
@@ -234,23 +233,21 @@ export function Navbar() {
             [ SELL ITEM ]
           </button>
 
-          {/* My Vault Link when logged in */}
-          {session && (
-            <Link
-              href="/vault"
-              aria-label="Collector Vault Portfolio"
-              style={{
-                fontFamily: 'var(--font-sans), sans-serif',
-                fontSize: '0.72rem',
-                fontWeight: 600,
-                letterSpacing: '0.12em',
-                textTransform: 'uppercase',
-              }}
-              className="border border-[#1F1F1F] bg-[#0C0C0C] px-3.5 py-2 uppercase text-[#888888] hover:border-[#F2EFE9] hover:bg-[#F2EFE9] hover:text-[#080808] transition-colors duration-75 cursor-pointer rounded-none font-sans no-underline"
-            >
-              <span>[ MY VAULT ]</span>
-            </Link>
-          )}
+          {/* Direct Link to Collector Vault & Listed Items (Edit & Delete) */}
+          <Link
+            href="/vault"
+            aria-label="Collector Vault Portfolio & Listed Items"
+            style={{
+              fontFamily: 'var(--font-sans), sans-serif',
+              fontSize: '0.72rem',
+              fontWeight: 600,
+              letterSpacing: '0.12em',
+              textTransform: 'uppercase',
+            }}
+            className="border border-[#1F1F1F] bg-[#0C0C0C] px-3.5 py-2 uppercase text-[#888888] hover:border-[#F2EFE9] hover:bg-[#F2EFE9] hover:text-[#080808] transition-colors duration-75 cursor-pointer rounded-none font-sans no-underline"
+          >
+            <span>[ VAULT ]</span>
+          </Link>
 
           {/* Sign In / Profile */}
           {!session ? (

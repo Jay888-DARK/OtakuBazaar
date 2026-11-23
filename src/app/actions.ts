@@ -165,11 +165,15 @@ export async function createListingAction(
     const cookieStore = await cookies();
     const token = cookieStore.get(SESSION_COOKIE_NAME)?.value;
     let authenticatedUserId: string | null = null;
+    let authenticatedUserEmail: string | undefined = undefined;
+    let authenticatedUserName: string | undefined = undefined;
 
     if (token) {
       const payload = TokenService.verifyToken(token);
       if (payload?.userId) {
         authenticatedUserId = payload.userId;
+        authenticatedUserEmail = payload.email;
+        authenticatedUserName = payload.name;
       }
     }
 
@@ -178,6 +182,9 @@ export async function createListingAction(
         const session = await getServerSession(authOptions);
         if (session?.user) {
           authenticatedUserId = (session.user as { id?: string }).id || null;
+          authenticatedUserEmail = session.user.email || undefined;
+          authenticatedUserName = session.user.name || undefined;
+
           if (!authenticatedUserId && session.user.email) {
             const user = await prisma.user.findUnique({ where: { email: session.user.email } });
             if (user) authenticatedUserId = user.id;
@@ -200,6 +207,8 @@ export async function createListingAction(
     const createdRecord = await ListingRepository.create({
       id: `listing-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
       sellerId: authenticatedUserId,
+      sellerEmail: authenticatedUserEmail,
+      sellerName: authenticatedUserName,
       title: validated.title,
       description: validated.description,
       imageUrls: [validated.imageUrl],
@@ -207,6 +216,7 @@ export async function createListingAction(
       askingPriceCurrency: 'INR',
       category: validated.category,
       condition: validated.condition,
+      franchise: validated.series,
       mfcItemId: validated.mfcItemId,
       mfcUrl: validated.mfcUrl,
       originalPriceJPY: validated.originalPriceJPY,

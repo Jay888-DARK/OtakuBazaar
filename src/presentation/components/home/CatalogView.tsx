@@ -79,7 +79,7 @@ export const CatalogView: React.FC<CatalogViewProps> = ({ initialProducts }) => 
         if (!isMounted) return;
         const items = Array.isArray(data.items) ? data.items : [];
         const mapped: CatalogProductItem[] = items.map((item: any) => {
-          let img = '/Firefly_clean.png';
+          let img = '/otakubazaar-logo.png';
           if (Array.isArray(item.imageUrls) && item.imageUrls[0]) {
             img = item.imageUrls[0];
           } else if (typeof item.imageUrls === 'string') {

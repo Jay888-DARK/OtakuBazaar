@@ -82,7 +82,7 @@ export function ArchivalMerchandisingBanners({ initialListingCount }: ArchivalMe
   };
 
   // Helper to resolve an authentic image from live listings
-  const resolveListingImage = (filterFn: (l: any) => boolean, fallbackImg = '/Firefly_clean.png'): string => {
+  const resolveListingImage = (filterFn: (l: any) => boolean, fallbackImg = '/otakubazaar-logo.png'): string => {
     const match = activeListings.find(filterFn);
     if (!match) return fallbackImg;
     if (Array.isArray(match.imageUrls) && match.imageUrls[0]) return match.imageUrls[0];
@@ -104,7 +104,7 @@ export function ArchivalMerchandisingBanners({ initialListingCount }: ArchivalMe
       header: 'UNDER ₹30,000 GRAILS',
       subtitle: 'AUTHENTIC JAPANESE LOTS',
       spec: 'ENTRY-LEVEL ESCROW VERIFIED',
-      image: resolveListingImage((l) => (l.askingPriceAmount || 0) < 3000000, '/Firefly_clean.png'),
+      image: resolveListingImage((l) => (l.askingPriceAmount || 0) < 3000000, '/otakubazaar-logo.png'),
       filterType: 'filter',
       filterValue: 'UNDER_30K',
     },
@@ -113,7 +113,7 @@ export function ArchivalMerchandisingBanners({ initialListingCount }: ArchivalMe
       header: 'S-RANK FACTORY SEALED',
       subtitle: 'UNOPENED COLLECTOR VAULT',
       spec: 'VERIFIED IN-HAND CUSTODY',
-      image: resolveListingImage((l) => l.condition === 'NEW', '/Firefly_clean.png'),
+      image: resolveListingImage((l) => l.condition === 'NEW', '/otakubazaar-logo.png'),
       filterType: 'filter',
       filterValue: 'FACTORY_SEALED',
     },
@@ -122,7 +122,7 @@ export function ArchivalMerchandisingBanners({ initialListingCount }: ArchivalMe
       header: 'HIGH-SCALE STATUES',
       subtitle: 'MONUMENTAL RESIN & POLYSTONE',
       spec: 'ESCROW VERIFIED CUSTODY',
-      image: resolveListingImage((l) => (l.askingPriceAmount || 0) >= 5000000, '/Firefly_clean.png'),
+      image: resolveListingImage((l) => (l.askingPriceAmount || 0) >= 5000000, '/otakubazaar-logo.png'),
       filterType: 'filter',
       filterValue: 'PRIME_1',
     },
@@ -131,7 +131,7 @@ export function ArchivalMerchandisingBanners({ initialListingCount }: ArchivalMe
       header: 'MANGA & COLLECTIBLE EDITIONS',
       subtitle: 'COMPLETE ARCHIVAL RUNS',
       spec: 'VERIFIED PHYSICAL CONDITION',
-      image: resolveListingImage((l) => (l.category || '').toLowerCase().includes('manga'), '/Firefly_clean.png'),
+      image: resolveListingImage((l) => (l.category || '').toLowerCase().includes('manga'), '/otakubazaar-logo.png'),
       filterType: 'category',
       filterValue: 'Manga Sets',
     },

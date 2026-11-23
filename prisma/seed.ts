@@ -3,6 +3,11 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
+  if (process.env.ALLOW_DB_SEED !== 'true') {
+    console.log('[OtakuBazaar Seed] Automatic seeding disabled. Run with ALLOW_DB_SEED=true to execute manually.');
+    return;
+  }
+
   console.log('--- Initializing OtakuBazaar Database ---');
 
   // 1. Ensure verified base users exist for escrow and consignment testing

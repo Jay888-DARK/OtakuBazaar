@@ -131,7 +131,7 @@ export default function CartPage(): React.JSX.Element {
                     <div className="flex items-center gap-4">
                       <div className="relative w-16 h-16 bg-[#09090b] border border-zinc-800 shrink-0 flex items-center justify-center p-1">
                         <Image
-                          src={product?.imageUrl || product?.images?.[0] || '/Firefly_clean.png'}
+                          src={product?.imageUrl || product?.images?.[0] || '/otakubazaar-logo.png'}
                           alt={product?.title || 'Collectible'}
                           fill
                           className="object-contain p-1"

@@ -85,6 +85,7 @@ model Listing {
   releaseYear       Int?     @map("release_year")
   scale             String?
   manufacturer      String?
+  franchise         String?  @map("franchise")
   createdAt         DateTime @default(now()) @map("created_at")
   updatedAt         DateTime @updatedAt @map("updated_at")
 
@@ -93,11 +94,29 @@ model Listing {
   bargainOffers    BargainOffer[]
   orders           Order[]
   negotiations     Negotiation[]
+  listingImages    ListingImage[]
 
   @@index([sellerId])
   @@index([status])
   @@index([category])
   @@map("listings")
+}
+
+// ---------------------------------------------------------------------------
+// ListingImage (Individual persistent uploaded photo record)
+// ---------------------------------------------------------------------------
+
+model ListingImage {
+  id        String   @id @default(uuid())
+  listingId String   @map("listing_id")
+  url       String
+  position  Int      @default(0)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@index([listingId])
+  @@map("listing_images")
 }
 
 // ---------------------------------------------------------------------------

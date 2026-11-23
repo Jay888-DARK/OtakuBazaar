@@ -36,7 +36,7 @@ const DEFAULT_ROOM_ITEM: NegotiationRoomItem = {
   price: 0,
   lotRef: 'LOT-VAULT',
   condition: 'AUTHENTIC CUSTODY',
-  imageUrl: '/Firefly_clean.png',
+  imageUrl: '/otakubazaar-logo.png',
   series: 'AUTHENTIC VAULT LOT',
   fabricator: 'JAPANESE COLLECTIBLES',
 };
