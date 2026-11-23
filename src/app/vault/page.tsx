@@ -98,14 +98,14 @@ export default function VaultPage(): React.JSX.Element {
 
     const newDisp: DispatchTracker = {
       id: `disp_${Date.now()}`,
-      lotRef: 'LOT-0481',
-      itemTitle: 'Kyojuro Rengoku 1/8 Flame Breathing Scale',
+      lotRef: 'LOT-DISPATCH',
+      itemTitle: 'Insured Collectible Consignment',
       carrier: selectedCarrier,
       awbNumber: newAwbInput.trim().toUpperCase(),
       status: 'IN_TRANSIT',
       inspectionHoursLeft: 48,
       destinationCity: 'BENGALURU, KA',
-      orderId: 'lot-0481',
+      orderId: `ord_${Date.now().toString().slice(-4)}`,
     };
 
     setDispatches([newDisp, ...dispatches]);

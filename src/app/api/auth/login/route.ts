@@ -10,6 +10,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { z } from 'zod';
 import { TokenService, type UserRole } from '@/infrastructure/security/TokenService';
+import { RateLimiter } from '@/infrastructure/security/RateLimiter';
 
 // ---------------------------------------------------------------------------
 // Validation Schema
@@ -18,7 +19,7 @@ import { TokenService, type UserRole } from '@/infrastructure/security/TokenServ
 const LoginRequestSchema = z.object({
   email: z.string().email('Invalid email address format').toLowerCase().trim(),
   password: z.string().min(6, 'Password must be at least 6 characters long'),
-  // Role selector for development/testing and role switching
+  // Role selector for development/testing
   role: z.enum(['BUYER', 'SELLER', 'MODERATOR', 'ADMIN']).optional().default('BUYER'),
 });
 
@@ -48,6 +49,16 @@ const DEMO_USERS: Record<string, { userId: string; name: string; role: UserRole 
  * @returns JSON response with user profile and Set-Cookie header
  */
 export async function POST(request: NextRequest): Promise<NextResponse> {
+  // 1. Rate Limiting Protection (Anti-Brute Force)
+  const clientIp = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || '127.0.0.1';
+  const rateLimit = RateLimiter.check(`auth_login_${clientIp}`, 1500);
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      { error: { code: 'RATE_LIMIT_EXCEEDED', message: 'Too many login attempts. Please wait.' } },
+      { status: 429 }
+    );
+  }
+
   try {
     const rawBody = await request.json();
     const parseResult = LoginRequestSchema.safeParse(rawBody);
@@ -67,14 +78,25 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     const { email, role } = parseResult.data;
 
-    // Resolve user details (from demo registry or dynamic profile)
+    // Resolve user details (Strictly prevent arbitrary admin/moderator privilege escalation)
     const emailPrefix = email.split('@')[0] || 'user';
     const knownUser = DEMO_USERS[email];
+    
+    // Non-demo users can never self-assign ADMIN or MODERATOR roles
+    let assignedRole: UserRole = 'BUYER';
+    if (knownUser) {
+      assignedRole = knownUser.role;
+    } else if (role === 'SELLER') {
+      assignedRole = 'SELLER';
+    } else {
+      assignedRole = 'BUYER';
+    }
+
     const userPayload = {
       userId: knownUser?.userId || `user_${emailPrefix}_${Date.now().toString(36)}`,
       email,
       name: knownUser?.name || emailPrefix,
-      role: knownUser?.role || (role as UserRole),
+      role: assignedRole,
     };
 
     // 1. Sign JWT

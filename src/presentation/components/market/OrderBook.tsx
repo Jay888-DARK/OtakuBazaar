@@ -33,7 +33,7 @@ interface OrderBookProps {
 
 export function OrderBook({
   basePrice = 89000,
-  lotId = 'LOT-0482',
+  lotId = 'LOT-ARCHIVE',
   isSRank = true,
 }: OrderBookProps): React.JSX.Element {
   const [selectedLevel, setSelectedLevel] = useState<number | null>(null);

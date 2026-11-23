@@ -201,7 +201,7 @@ export default function ContactPage(): React.JSX.Element {
                       type="text"
                       value={orderRef}
                       onChange={(e) => setOrderRef(e.target.value)}
-                      placeholder="e.g. LOT-0482"
+                      placeholder="e.g. LOT-0001"
                       className="w-full bg-[#080808] border border-[#1F1F1F] focus:border-[#F2EFE9] px-3.5 py-2.5 text-xs text-[#F2EFE9] placeholder-[#555555] outline-none rounded-none uppercase"
                     />
                   </div>

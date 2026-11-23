@@ -22,7 +22,7 @@ interface HistoricalDataTerminalProps {
 
 export function HistoricalDataTerminal({
   basePrice = 89000,
-  lotRef = 'LOT-0482',
+  lotRef = 'LOT-ARCHIVE',
   category = 'Scale Figure',
 }: HistoricalDataTerminalProps): React.JSX.Element {
   const high52 = Math.round(basePrice * 1.18);

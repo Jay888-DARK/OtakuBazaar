@@ -21,14 +21,14 @@ interface RazorpayConfig {
 }
 
 function loadRazorpayConfig(): RazorpayConfig {
-  const keyId = (process.env['RAZORPAY_KEY_ID'] || process.env['NEXT_PUBLIC_RAZORPAY_KEY_ID'])?.trim() || 'rzp_test_TdBTiCyaOJ95KC';
-  const keySecret = process.env['RAZORPAY_KEY_SECRET']?.trim() || 'u5wkPbmPedlHMnJH0a5M7FvQ';
+  const keyId = (process.env['RAZORPAY_KEY_ID'] || process.env['NEXT_PUBLIC_RAZORPAY_KEY_ID'])?.trim() || '';
+  const keySecret = process.env['RAZORPAY_KEY_SECRET']?.trim() || '';
 
-  if (!process.env['RAZORPAY_KEY_ID']?.trim() && !process.env['NEXT_PUBLIC_RAZORPAY_KEY_ID']?.trim()) {
-    console.error('[RazorpayGateway] RAZORPAY_KEY_ID is missing from environment variables.');
+  if (!keyId && process.env.NODE_ENV === 'production') {
+    console.error('[RazorpayGateway] CRITICAL: RAZORPAY_KEY_ID is missing from environment variables.');
   }
-  if (!process.env['RAZORPAY_KEY_SECRET']?.trim()) {
-    console.error('[RazorpayGateway] RAZORPAY_KEY_SECRET is missing from environment variables.');
+  if (!keySecret && process.env.NODE_ENV === 'production') {
+    console.error('[RazorpayGateway] CRITICAL: RAZORPAY_KEY_SECRET is missing from environment variables.');
   }
 
   return { keyId, keySecret };

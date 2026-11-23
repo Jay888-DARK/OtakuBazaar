@@ -20,7 +20,7 @@ export interface AuthenticityLedgerProps {
 }
 
 export function AuthenticityLedger({
-  lotId = 'LOT-0482',
+  lotId = 'LOT-ARCHIVE',
   grader = 'Prime Inspection Escrow',
   hash = '0x8F4A...B99C',
   className = '',

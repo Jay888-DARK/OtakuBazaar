@@ -41,7 +41,7 @@ export function LiveCardPreview({
       <div>
         {/* 1. Header Row */}
         <div className="flex items-center justify-between text-[10px] tracking-[0.15em] text-[#777777] mb-2 font-sans uppercase">
-          <span>LOT #0482 • IN-HAND VERIFIED</span>
+          <span>LOT #SPECIMEN • IN-HAND VERIFIED</span>
           <span className="border border-[#2A2A2A] px-2 py-0.5 text-[10px] tracking-[0.12em] text-[#E5E5E5] bg-[#080808] uppercase">
             {conditionGrade || '[S-RANK]'}
           </span>
@@ -49,22 +49,35 @@ export function LiveCardPreview({
 
         {/* 2. Strict 4:5 Studio Portrait Well */}
         <div className="relative w-full aspect-[4/5] p-3 bg-[#0A0A0A] border border-[#1A1A1A] my-4 overflow-hidden flex items-center justify-center">
-          {!imageLoaded && (
-            <div className="absolute inset-0 bg-[#141414] animate-pulse pointer-events-none" />
+          {imageUrl && imageUrl.trim() ? (
+            <>
+              {!imageLoaded && (
+                <div className="absolute inset-0 bg-[#141414] animate-pulse pointer-events-none" />
+              )}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={imageUrl.trim()}
+                alt={displayTitle}
+                onLoad={() => setImageLoaded(true)}
+                onError={(e) => {
+                  (e.currentTarget as HTMLImageElement).src = '/Firefly_clean.png';
+                  setImageLoaded(true);
+                }}
+                className={`w-full h-full object-cover object-center transition-opacity duration-200 ${
+                  imageLoaded ? 'opacity-100' : 'opacity-0'
+                }`}
+              />
+            </>
+          ) : (
+            <div className="flex flex-col items-center justify-center p-4 text-center">
+              <span className="text-[10px] text-[#555555] uppercase tracking-[0.18em] font-mono">
+                [ AWAITING SPECIMEN PHOTOGRAPH ]
+              </span>
+              <span className="text-[9px] text-[#3a3a3a] mt-1.5 font-sans uppercase tracking-wider">
+                Upload in-hand collectible photo to preview
+              </span>
+            </div>
           )}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={displayImage}
-            alt={displayTitle}
-            onLoad={() => setImageLoaded(true)}
-            onError={(e) => {
-              (e.currentTarget as HTMLImageElement).src = '/Firefly_clean.png';
-              setImageLoaded(true);
-            }}
-            className={`w-full h-full object-cover object-center transition-opacity duration-200 ${
-              imageLoaded ? 'opacity-100' : 'opacity-0'
-            }`}
-          />
         </div>
 
         {/* 3. Editorial Metadata Block */}

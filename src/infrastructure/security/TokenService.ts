@@ -60,9 +60,14 @@ export const SESSION_COOKIE_NAME = 'otaku_session';
 /** Default token lifespan: 7 days in seconds */
 export const DEFAULT_SESSION_MAX_AGE_SECONDS = 7 * 24 * 60 * 60;
 
-/** Secret key for JWT signing; defaults to secure development secret */
+/** Secret key for JWT signing; strictly requires environment configuration in production */
 const JWT_SECRET: Secret =
-  process.env.JWT_SECRET || 'otakubazaar_dev_super_secret_jwt_key_2026_ninja_stream';
+  process.env.JWT_SECRET ||
+  (process.env.NODE_ENV === 'production'
+    ? (() => {
+        throw new Error('FATAL SECURITY ERROR: JWT_SECRET must be set in production environment variables.');
+      })()
+    : 'dev_ephemeral_jwt_secret_insecure_local_only');
 
 export class TokenService {
   /**

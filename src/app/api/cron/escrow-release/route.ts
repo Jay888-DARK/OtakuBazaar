@@ -24,10 +24,10 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
 async function handleCron(req: NextRequest): Promise<NextResponse> {
   const authHeader = req.headers.get('authorization');
-  const cronSecret = process.env.CRON_SECRET || 'otaku_bazaar_cron_secret_key';
+  const cronSecret = process.env.CRON_SECRET;
 
   // 1. Authenticate Cron Trigger
-  if (!authHeader || authHeader !== `Bearer ${cronSecret}`) {
+  if (!cronSecret || !authHeader || authHeader !== `Bearer ${cronSecret}`) {
     console.warn('[CronEscrowRelease] 401 Unauthorized: Invalid or missing CRON_SECRET');
     return NextResponse.json(
       { error: 'Unauthorized', message: 'Valid CRON_SECRET bearer token required' },

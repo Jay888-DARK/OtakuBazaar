@@ -246,7 +246,7 @@ export function BargainModal({
         {/* Digital Certificate of Authenticity (COA) */}
         <div className="mb-4">
           <AuthenticityLedger
-            lotId={`LOT-${productId.replace(/[^0-9]/g, '').padStart(4, '0').slice(-4) || '0482'}`}
+            lotId={`LOT-${productId.replace(/[^0-9]/g, '').padStart(4, '0').slice(-4) || '0001'}`}
             grader="Prime Inspection Escrow"
             hash="0x8F4A...B99C"
           />

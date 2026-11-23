@@ -58,13 +58,9 @@ export async function submitOffer({
   }
 
   if (!product) {
-    product = {
-      id: productId,
-      title: 'Authentic Anime Collectible',
-      price: 28500,
-      askingPriceAmount: 2850000,
-      sellerId: 'user_seller_rengoku',
-      minOfferPrice: 20000,
+    return {
+      success: false,
+      message: 'Collectible listing not found in vault registry.',
     };
   }
 
@@ -243,9 +239,15 @@ export async function addToCart(productId: string, userId: string = 'user_buyer_
 
 export async function removeFromCart(cartItemId: string, userId: string = 'user_buyer_tanjiro') {
   try {
+    // IDOR Protection: Ensure user owns the item before deleting
+    const existing = await withTimeout(prisma.cartItem.findUnique({ where: { id: cartItemId } }));
+    if (existing && existing.userId !== userId) {
+      return { success: false, message: 'Forbidden: You do not have permission to delete this cart item.' };
+    }
+
     await withTimeout(
-      prisma.cartItem.delete({
-        where: { id: cartItemId },
+      prisma.cartItem.deleteMany({
+        where: { id: cartItemId, userId },
       })
     );
     return { success: true };

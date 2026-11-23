@@ -325,7 +325,7 @@ export function CurioBox({
             if (id) {
               if (typeof window !== 'undefined') {
                 showVaultCartToast({
-                  lotNumber: id.replace(/[^0-9]/g, '').padStart(4, '0').slice(-4) || '0482',
+                  lotNumber: id.replace(/[^0-9]/g, '').padStart(4, '0').slice(-4) || '0001',
                   title,
                   price: askingPriceINR,
                 });

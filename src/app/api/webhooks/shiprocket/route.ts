@@ -25,7 +25,12 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     req.headers.get('x-shiprocket-signature') ||
     req.headers.get('x-api-key') ||
     req.headers.get('authorization');
-  const secret = process.env.SHIPROCKET_WEBHOOK_SECRET || 'test_shiprocket_webhook_secret';
+  const secret = process.env.SHIPROCKET_WEBHOOK_SECRET;
+
+  if (!secret) {
+    console.error('[ShiprocketWebhook] CRITICAL: SHIPROCKET_WEBHOOK_SECRET is not configured.');
+    return NextResponse.json({ error: 'Server misconfiguration: Webhook secret missing' }, { status: 500 });
+  }
 
   // 2. Webhook Security: Signature / Secret Token Verification
   const isValid = WebhookSecurityService.verifyShiprocketSignature(rawBody, signature, secret);

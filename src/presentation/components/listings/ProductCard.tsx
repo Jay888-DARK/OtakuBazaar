@@ -73,7 +73,7 @@ export function ProductCard({ product, className = '' }: ProductCardProps): Reac
   const lotNumber =
     product.lotNumber ||
     String(product.id).replace(/[^0-9]/g, '').padStart(4, '0').slice(-4) ||
-    '0482';
+    '0001';
 
   const vaultId = product.origin?.toUpperCase().includes('MUMBAI')
     ? 'IN-BOM'

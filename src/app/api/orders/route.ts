@@ -11,17 +11,25 @@
  */
 
 import { NextResponse } from 'next/server';
+import { z } from 'zod';
 import Razorpay from 'razorpay';
 import { prisma } from '@/lib/prismaClient';
+import { RateLimiter } from '@/infrastructure/security/RateLimiter';
 
-// Initialize Razorpay SDK with environment secrets
-const key_id = (process.env.RAZORPAY_KEY_ID || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID)?.trim() || 'rzp_test_TdBTiCyaOJ95KC';
-const key_secret = process.env.RAZORPAY_KEY_SECRET?.trim() || 'u5wkPbmPedlHMnJH0a5M7FvQ';
+const CreateOrderSchema = z.object({
+  lotId: z.string().trim().max(100).optional(),
+  productId: z.string().trim().max(100).optional(),
+  dealOfferId: z.string().trim().max(100).optional(),
+});
 
-if (!process.env.RAZORPAY_KEY_ID?.trim() && !process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID?.trim()) {
+// Initialize Razorpay SDK with environment secrets (strictly no hardcoded fallbacks)
+const key_id = (process.env.RAZORPAY_KEY_ID || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID)?.trim() || '';
+const key_secret = process.env.RAZORPAY_KEY_SECRET?.trim() || '';
+
+if (!key_id) {
   console.error('[Orders API] RAZORPAY_KEY_ID is undefined or missing in environment variables.');
 }
-if (!process.env.RAZORPAY_KEY_SECRET?.trim()) {
+if (!key_secret) {
   console.error('[Orders API] RAZORPAY_KEY_SECRET is undefined or missing in environment variables.');
 }
 
@@ -31,16 +39,33 @@ const razorpay = new Razorpay({
 });
 
 export async function POST(req: Request): Promise<NextResponse> {
+  // 1. Rate Limiting Protection (Checkout order creation)
+  const clientIp = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || '127.0.0.1';
+  const rateLimit = RateLimiter.check(`order_create_${clientIp}`, 1000);
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      { error: 'Rate limit exceeded. Please wait a moment before trying again.' },
+      { status: 429 }
+    );
+  }
+
   try {
-    let body: any = {};
+    let rawBody: unknown;
     try {
-      body = await req.json();
+      rawBody = await req.json();
     } catch {
       return NextResponse.json({ error: 'Malformed JSON payload' }, { status: 400 });
     }
 
-    // Explicitly reject or ignore any client-supplied amount to enforce Server Authority
-    const { lotId, productId, dealOfferId } = body;
+    const parseResult = CreateOrderSchema.safeParse(rawBody);
+    if (!parseResult.success) {
+      return NextResponse.json(
+        { error: 'Invalid order parameters', details: parseResult.error.flatten().fieldErrors },
+        { status: 400 }
+      );
+    }
+
+    const { lotId, productId, dealOfferId } = parseResult.data;
     const targetLotId = lotId || productId;
 
     if (!targetLotId && !dealOfferId) {

@@ -34,15 +34,15 @@ interface ProductDemoGalleryProps {
 
 // 4 distinct physical inspection angles for 360 turnaround
 const TURNAROUND_ANGLES = [
-  { deg: 0, label: '000° FRONT ELEVATION', src: '/showcase/guts_berserker_statue.jpg' },
-  { deg: 90, label: '090° LATERAL FLANK', src: '/showcase/bay1_clean.png' },
-  { deg: 180, label: '180° REAR CAPE & ARMOR', src: '/showcase/bay2_clean.png' },
-  { deg: 270, label: '270° WEAPON CLEARANCE', src: '/showcase/figure_umbreon.png' },
+  { deg: 0, label: '000° FRONT ELEVATION', src: '/Firefly_clean.png' },
+  { deg: 90, label: '090° LATERAL FLANK', src: '/Firefly_clean.png' },
+  { deg: 180, label: '180° REAR VIEW', src: '/Firefly_clean.png' },
+  { deg: 270, label: '270° FLANK CLEARANCE', src: '/Firefly_clean.png' },
 ];
 
 export function ProductDemoGallery({
-  initialTitle = 'Guts Berserker Armor Unleashed 1/4 Scale',
-  lotId = 'LOT-0482',
+  initialTitle = 'Authentic Japanese Collectible Specimen',
+  lotId = 'LOT-ARCHIVE',
 }: ProductDemoGalleryProps): React.JSX.Element {
   const [activeMode, setActiveMode] = useState<'360' | 'VIDEO' | 'FACTORY'>('360');
   const [currentAngleIndex, setCurrentAngleIndex] = useState<number>(0);
@@ -202,7 +202,7 @@ export function ProductDemoGallery({
             <div className="relative w-full h-full flex items-center justify-center p-6">
               <div className="relative w-full h-full border border-zinc-800 bg-[#09090b] flex flex-col items-center justify-center overflow-hidden">
                 <Image
-                  src="/showcase/guts_berserker_statue.jpg"
+                  src="/Firefly_clean.png"
                   alt="High Resolution Physical Video Inspection Frame"
                   fill
                   sizes="(max-width: 1024px) 100vw, 80vw"

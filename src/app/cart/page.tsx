@@ -139,7 +139,7 @@ export default function CartPage(): React.JSX.Element {
                       </div>
                       <div>
                         <span className="text-[10px] uppercase tracking-wider text-zinc-500 block">
-                          LOT #{product?.lotNumber || '0482'} • {product?.condition || 'MINT'}
+                          LOT #{product?.lotNumber || '0001'} • {product?.condition || 'MINT'}
                         </span>
                         <h3 className="text-xs font-semibold text-zinc-100 tracking-normal line-clamp-1">
                           {product?.title || 'Authentic Collectible'}

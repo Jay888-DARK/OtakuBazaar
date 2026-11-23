@@ -18,18 +18,23 @@
 import React from 'react';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/prismaClient';
 import { TokenService, SESSION_COOKIE_NAME } from '@/infrastructure/security/TokenService';
 
 export const dynamic = 'force-dynamic';
 
 export default async function VaultOpsPage(): Promise<React.JSX.Element> {
-  // Authentication & Clearance Check
+  // Strict Server-Side Authentication & Admin Clearance Enforcement
   const cookieStore = await cookies();
   const token = cookieStore.get(SESSION_COOKIE_NAME)?.value;
   const session = token ? TokenService.verifyToken(token) : null;
 
-  // Fetch live orders including associated buyer profile
+  if (!session || session.role !== 'ADMIN') {
+    redirect('/login?error=ACCESS_DENIED_ADMIN_REQUIRED');
+  }
+
+  // Fetch live orders including associated buyer profile (Admin restricted)
   let orders: Array<any> = [];
   let dbError: string | null = null;
 

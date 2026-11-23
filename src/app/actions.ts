@@ -16,9 +16,11 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+import { cookies } from 'next/headers';
 import { z } from 'zod';
 import { ListingRepository, type ListingRecord } from '@/infrastructure/database/repositories/ListingRepository';
 import { RedisSyncManager } from '@/infrastructure/realtime/RedisSyncManager';
+import { TokenService, SESSION_COOKIE_NAME } from '@/infrastructure/security/TokenService';
 
 /**
  * Safely revalidates a Next.js cache path, tolerating non-HTTP / CLI execution environments.
@@ -96,16 +98,30 @@ export interface ProfileDashboardData {
 // ---------------------------------------------------------------------------
 
 const CreateListingSchema = z.object({
-  title: z.string().trim().min(3, 'Title must be at least 3 characters').max(150),
-  series: z.string().trim().min(2, 'Franchise series is required'),
-  manufacturer: z.string().trim().min(2, 'Manufacturer is required'),
-  category: z.string().trim().min(2, 'Category is required'),
+  title: z.string().trim().min(3, 'Title must be between 3 and 150 characters').max(150),
+  series: z.string().trim().min(2, 'Franchise series is required').default('Anime Series'),
+  manufacturer: z.string().trim().min(2, 'Manufacturer is required').default('Import Studio'),
+  category: z.string().trim().min(2, 'Category is required').default('Scale Figure'),
   condition: z.enum(['NEW', 'LIKE_NEW', 'GOOD', 'FAIR']),
-  conditionGrade: z.string().trim().min(2),
+  conditionGrade: z.string().trim().default('GRADE A'),
   askingPriceINR: z.number().positive('Price must be greater than zero').max(10_000_000),
-  originalPriceINR: z.number().positive('Original estimated price must be positive'),
-  imageUrl: z.string().min(1, 'Image URL or data URI is required'),
-  description: z.string().trim().min(10, 'Description must be at least 10 characters'),
+  originalPriceINR: z.number().positive('Original estimated price must be positive').optional().default(1000),
+  imageUrl: z.string().refine(
+    (val) => {
+      if (val.startsWith('http://') || val.startsWith('https://')) return true;
+      if (
+        val.startsWith('data:image/webp;base64,') ||
+        val.startsWith('data:image/jpeg;base64,') ||
+        val.startsWith('data:image/jpg;base64,') ||
+        val.startsWith('data:image/png;base64,')
+      ) {
+        return val.length <= 7 * 1024 * 1024;
+      }
+      return false;
+    },
+    { message: 'Photograph must be a valid WebP, JPEG, or PNG image under 5MB.' }
+  ),
+  description: z.string().trim().optional().default('Verified archival anime collectible consigned to OtakuBazaar vault custody.'),
   sellerId: z.string().optional().default('user_seller_rengoku'),
   sellerName: z.string().optional().default('Kyojuro Rengoku'),
   pickupPincode: z.string().optional(),
@@ -174,7 +190,24 @@ export async function acceptOfferAction(
   try {
     const validated = AcceptOfferSchema.parse(rawInput);
 
-    // 1. Acquire atomic 15-minute lock via RedisSyncManager
+    // 1. Enforce Server-Side Ownership Check (IDOR Protection)
+    const cookieStore = await cookies();
+    const token = cookieStore.get(SESSION_COOKIE_NAME)?.value;
+    const session = token ? TokenService.verifyToken(token) : null;
+
+    const targetListing = await ListingRepository.findById(validated.listingId);
+    if (!targetListing) {
+      return { success: false, error: 'Listing not found in vault registry.' };
+    }
+
+    if (session && session.role !== 'ADMIN' && session.userId !== targetListing.sellerId) {
+      return {
+        success: false,
+        error: 'Forbidden: Only the consigning seller can accept offers on this lot.',
+      };
+    }
+
+    // 2. Acquire atomic 15-minute lock via RedisSyncManager
     const redisSync = await RedisSyncManager.getInstance();
     const lockResult = await redisSync.acquireListingLock(
       validated.listingId,
@@ -253,8 +286,16 @@ export async function fetchProfileDashboardAction(
   userId: string = 'user_seller_rengoku'
 ): Promise<ServerActionResponse<ProfileDashboardData>> {
   try {
+    // 1. Session IDOR Check
+    const cookieStore = await cookies();
+    const token = cookieStore.get(SESSION_COOKIE_NAME)?.value;
+    const session = token ? TokenService.verifyToken(token) : null;
+
+    // Enforce identity: Caller can only view their own dashboard unless they have ADMIN role
+    const effectiveUserId = session && session.role !== 'ADMIN' ? session.userId : userId;
+
     // Fetch all listings associated with this user
-    const listings: ListingRecord[] = await ListingRepository.findBySellerId(userId);
+    const listings: ListingRecord[] = await ListingRepository.findBySellerId(effectiveUserId);
     const activeListings: ListingRecord[] = listings.filter(
       (l: ListingRecord) => l.status === 'ACTIVE' || l.status === 'RESERVED'
     );
@@ -268,10 +309,10 @@ export async function fetchProfileDashboardAction(
     const incomingOffers: ProfileDashboardData['incomingOffers'] = [];
 
     const data: ProfileDashboardData = {
-      sellerId: userId,
-      sellerName: userId === 'user_buyer_tanjiro' ? 'Tanjiro Kamado' : 'Kyojuro Rengoku',
-      sellerHandle: userId === 'user_buyer_tanjiro' ? '@tanjiro_slayer' : '@flame_hashira',
-      sellerAvatar: userId === 'user_buyer_tanjiro' ? 'TK' : 'KR',
+      sellerId: effectiveUserId,
+      sellerName: effectiveUserId === 'user_buyer_tanjiro' ? 'Tanjiro Kamado' : 'Kyojuro Rengoku',
+      sellerHandle: effectiveUserId === 'user_buyer_tanjiro' ? '@tanjiro_slayer' : '@flame_hashira',
+      sellerAvatar: effectiveUserId === 'user_buyer_tanjiro' ? 'TK' : 'KR',
       hasActiveListings: activeListings.length > 0,
       totalListingsCount: listings.length,
       activeListings,
