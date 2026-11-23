@@ -54,6 +54,12 @@ export interface MockProduct {
   gallery: ProductMediaItem[];
   macroSlots: MacroSlotItem[];
   bundleItems?: { title: string; price: number; scale: string }[];
+  mfcItemId?: string;
+  mfcUrl?: string;
+  originalPriceJPY?: number;
+  releaseYear?: number;
+  sellerBadges?: Array<{ id: string; label: string; shortLabel: string; description: string }>;
+  isNewSeller?: boolean;
 }
 
 export const MOCK_GRAILS: MockProduct[] = [];

@@ -52,6 +52,7 @@ export default function CheckoutPage(): React.JSX.Element {
     if (typeof window === 'undefined') return;
     const searchParams = new URLSearchParams(window.location.search);
     const targetLotId = searchParams.get('lotId') || searchParams.get('id');
+    const overridePrice = searchParams.get('negotiatedPrice') || searchParams.get('price');
 
     fetch('/api/listings')
       .then((res) => (res.ok ? res.json() : { items: [] }))
@@ -62,13 +63,17 @@ export default function CheckoutPage(): React.JSX.Element {
           : items[0] || null;
 
         if (match) {
+          const finalPrice = overridePrice
+            ? parseInt(overridePrice, 10)
+            : Math.round((match.askingPriceAmount || 0) / 100);
+
           setLotItem({
             id: match.id,
             lotRef: `LOT-${String(match.id).replace(/[^0-9]/g, '').padStart(4, '0').slice(-4) || '0001'}`,
             title: match.title,
             series: match.category || 'AUTHENTIC ARCHIVAL LOT',
             condition: match.condition === 'NEW' ? 'S-RANK // MISB (FACTORY SEALED)' : 'GRADE A // BIB (DISPLAYED)',
-            price: Math.round((match.askingPriceAmount || 0) / 100),
+            price: finalPrice,
             sellerHandle: `@seller_${match.sellerId?.slice(-6) || 'vault'}`,
           });
         }

@@ -63,6 +63,11 @@ export interface CreateListingInput {
   readonly weightKg?: number;
   readonly dimensionsCm?: string;
   readonly invoiceProofUrl?: string;
+  readonly mfcItemId?: string;
+  readonly mfcUrl?: string;
+  readonly originalPriceJPY?: number;
+  readonly releaseYear?: number;
+  readonly scale?: string;
 }
 
 export interface AcceptOfferInput {
@@ -131,6 +136,11 @@ const CreateListingSchema = z.object({
   weightKg: z.number().optional(),
   dimensionsCm: z.string().optional(),
   invoiceProofUrl: z.string().optional(),
+  mfcItemId: z.string().optional(),
+  mfcUrl: z.string().optional(),
+  originalPriceJPY: z.number().int().optional(),
+  releaseYear: z.number().int().optional(),
+  scale: z.string().optional(),
 });
 
 const AcceptOfferSchema = z.object({
@@ -197,6 +207,12 @@ export async function createListingAction(
       askingPriceCurrency: 'INR',
       category: validated.category,
       condition: validated.condition,
+      mfcItemId: validated.mfcItemId,
+      mfcUrl: validated.mfcUrl,
+      originalPriceJPY: validated.originalPriceJPY,
+      releaseYear: validated.releaseYear,
+      scale: validated.scale,
+      manufacturer: validated.manufacturer,
     });
 
     // Revalidate frontend caches

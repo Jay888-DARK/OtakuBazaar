@@ -41,6 +41,8 @@ export interface CatalogProductItem {
   imageUrls?: string | null;
   scale?: string;
   status?: string;
+  mfcItemId?: string;
+  mfcUrl?: string;
   lockRemainingSeconds?: number;
 }
 

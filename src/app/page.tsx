@@ -61,11 +61,13 @@ export default async function HomePage(props?: {
         ownerCount: '1ST OWNER',
         franchise: item.category || 'Anime',
         series: item.title,
-        manufacturer: 'Japanese Studio',
+        manufacturer: item.manufacturer || 'Japanese Studio',
         imageUrl: primaryImg,
         imageUrls: JSON.stringify(optimizedImages.length > 0 ? optimizedImages : [primaryImg]),
-        scale: '1/7 SCALE',
+        scale: item.scale || '1/7 SCALE',
         status: item.status,
+        mfcItemId: item.mfcItemId || undefined,
+        mfcUrl: item.mfcUrl || (item.mfcItemId ? `https://myfigurecollection.net/item/${item.mfcItemId}` : undefined),
         lockRemainingSeconds: item.lockRemainingSeconds,
       };
     });

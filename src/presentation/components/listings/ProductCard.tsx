@@ -18,6 +18,8 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { showVaultCartToast } from '@/presentation/components/cart/VaultCartToast';
 import { addToCart } from '@/app/actions/dealActions';
+import { SellerBadgeGroup } from '@/presentation/components/badges/SellerBadgeGroup';
+import type { BadgeDefinition } from '@/domain/services/sellerBadgeService';
 
 export interface ProductCardProps {
   product: {
@@ -41,6 +43,10 @@ export interface ProductCardProps {
     manufacturer?: string;
     imageUrl?: string;
     imageUrls?: string | null;
+    mfcItemId?: string;
+    mfcUrl?: string;
+    sellerBadges?: BadgeDefinition[];
+    isNewSeller?: boolean;
   };
   className?: string;
 }
@@ -188,6 +194,22 @@ export function ProductCard({ product, className = '' }: ProductCardProps): Reac
           {/* Row 3: Studio & Collector Custody Specs */}
           <div className="text-[10px] tracking-[0.12em] text-[#666666] uppercase truncate font-sans">
             STUDIO: {studio} • {custodyOrigin} • {boxGrade}
+          </div>
+
+          {/* Row 4: MFC Badge & Seller Reputation Badges */}
+          <div className="pt-1 flex flex-wrap items-center gap-1.5">
+            {product.mfcItemId && (
+              <a
+                href={product.mfcUrl || `https://myfigurecollection.net/item/${product.mfcItemId}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="inline-flex items-center text-[9px] text-[#38BDF8] border border-[#38BDF8]/40 bg-[#061118] px-1.5 py-0.5 tracking-wider uppercase font-semibold no-underline hover:border-[#38BDF8]"
+              >
+                [ MFC LINKED ↗ ]
+              </a>
+            )}
+            <SellerBadgeGroup badges={product.sellerBadges} isNewSeller={product.isNewSeller} compact />
           </div>
         </div>
 

@@ -23,6 +23,7 @@ import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { LiveCardPreview } from '@/presentation/components/listings/LiveCardPreview';
 import { createListingAction } from '@/app/actions';
+import { fetchMfcMetadataAction } from '@/app/actions/mfcActions';
 import { ArchivalFooter } from '@/presentation/components/footer/ArchivalFooter';
 
 // ---------------------------------------------------------------------------
@@ -55,17 +56,15 @@ const CATEGORIES = [
 ] as const;
 
 const MANUFACTURERS = [
-  'Good Smile Company',
-  'MegaHouse Japan',
-  'Aniplex+ Exclusive',
-  'Kotobukiya',
   'Alter',
-  'eStream / Shibuya Scramble',
-  'Bandai Spirits / Tamashii Nations',
-  'Prime 1 Studio',
-  'Dark Horse Manga',
+  'MegaHouse',
+  'Good Smile Company',
+  'Kotobukiya',
+  'Bandai Spirits',
   'Other',
 ] as const;
+
+const SCALES = ['1/4', '1/6', '1/7', '1/8', 'Non-scale'] as const;
 
 interface ConditionOption {
   readonly rank: string;
@@ -222,6 +221,18 @@ export default function SellPage(): React.JSX.Element {
   const [customCategory, setCustomCategory] = useState('');
   const [manufacturer, setManufacturer] = useState<string>(MANUFACTURERS[0]);
   const [customManufacturer, setCustomManufacturer] = useState('');
+  const [scale, setScale] = useState<string>('1/7');
+  const [releaseYear, setReleaseYear] = useState<string>('');
+  const [originalPriceJPY, setOriginalPriceJPY] = useState<string>('');
+
+  // MFC Integration State
+  const [mfcInputUrl, setMfcInputUrl] = useState('');
+  const [mfcItemId, setMfcItemId] = useState('');
+  const [mfcUrl, setMfcUrl] = useState('');
+  const [isMfcLoading, setIsMfcLoading] = useState(false);
+  const [mfcError, setMfcError] = useState<string | null>(null);
+  const [mfcSuccessBanner, setMfcSuccessBanner] = useState<string | null>(null);
+
   const [selectedGrade, setSelectedGrade] = useState<ConditionOption>(CONDITION_GRADES[0]!);
   const [selectedBoxGrade, setSelectedBoxGrade] = useState<string>(BOX_GRADES[0].id);
   const [askingPrice, setAskingPrice] = useState('');
@@ -285,9 +296,69 @@ export default function SellPage(): React.JSX.Element {
     setInvoiceFileName('');
     setInvoicePreviewUrl('');
     setInvoiceUploaded(false);
+    setMfcInputUrl('');
+    setMfcItemId('');
+    setMfcUrl('');
+    setMfcError(null);
+    setMfcSuccessBanner(null);
+    setScale('1/7');
+    setReleaseYear('');
+    setOriginalPriceJPY('');
     setFieldErrors({});
     setGlobalError(null);
     setIsPublished(false);
+  };
+
+  const handleMfcAutofill = async () => {
+    if (!mfcInputUrl.trim()) {
+      setMfcError('Please paste an MFC URL (e.g. https://myfigurecollection.net/item/123456 or /item/123456).');
+      return;
+    }
+
+    setMfcError(null);
+    setMfcSuccessBanner(null);
+    setIsMfcLoading(true);
+
+    try {
+      const res = await fetchMfcMetadataAction(mfcInputUrl.trim());
+      if (!res.success || !res.data) {
+        setMfcError(res.error || 'Failed to auto-fill from MyFigureCollection.');
+        return;
+      }
+
+      const meta = res.data;
+      setMfcItemId(meta.mfcItemId);
+      setMfcUrl(meta.mfcUrl);
+
+      // Pre-fill editable fields
+      if (!title.trim() && meta.name) {
+        setTitle(meta.name);
+        clearFieldError('title');
+      }
+      if (meta.manufacturer) {
+        setManufacturer(meta.manufacturer);
+      }
+      if (meta.scale) {
+        setScale(meta.scale);
+      }
+      if (meta.releaseYear) {
+        setReleaseYear(String(meta.releaseYear));
+      }
+      if (meta.originalPriceJPY) {
+        setOriginalPriceJPY(String(meta.originalPriceJPY));
+      }
+      if (meta.imageUrl && !imageUrl && !customImageUrl) {
+        setCustomImageUrl(meta.imageUrl);
+        setActiveUploadTab('LINK');
+        clearFieldError('image');
+      }
+
+      setMfcSuccessBanner('Auto-filled from MFC, please verify');
+    } catch {
+      setMfcError('Could not reach MyFigureCollection. Please proceed with manual specification entry.');
+    } finally {
+      setIsMfcLoading(false);
+    }
   };
 
   const hasErrors = Object.keys(fieldErrors).length > 0 || !!globalError;
@@ -400,6 +471,7 @@ export default function SellPage(): React.JSX.Element {
             series: activeFranchise,
             category: activeCategory,
             manufacturer: activeManufacturer,
+            scale,
             condition: selectedGrade.internalValue,
             conditionGrade: selectedGrade.rank,
             askingPriceINR: priceNum,
@@ -410,6 +482,10 @@ export default function SellPage(): React.JSX.Element {
             weightKg: parseFloat(shippingWeightKg) || 1.5,
             dimensionsCm: `${boxLengthCm}x${boxWidthCm}x${boxHeightCm}`,
             invoiceProofUrl: invoicePreviewUrl || undefined,
+            mfcItemId: mfcItemId || undefined,
+            mfcUrl: mfcUrl || undefined,
+            originalPriceJPY: originalPriceJPY ? parseInt(originalPriceJPY, 10) : undefined,
+            releaseYear: releaseYear ? parseInt(releaseYear, 10) : undefined,
           });
 
           if (!result.success) {
@@ -603,6 +679,72 @@ export default function SellPage(): React.JSX.Element {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Left Column: Consignment Configuration Form */}
           <form onSubmit={handlePublish} className="lg:col-span-7 space-y-8" noValidate>
+            {/* MyFigureCollection (MFC) Auto-Fill Card (Optional) */}
+            <div className="bg-[#0C0C0C] border border-[#1F1F1F] p-6 space-y-4">
+              <div className="border-b border-[#161616] pb-3 flex justify-between items-center">
+                <div className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#38BDF8]" />
+                  <span className="text-[10px] uppercase tracking-[0.2em] text-[#38BDF8] font-bold">
+                    MYFIGURECOLLECTION (MFC) AUTO-FILL
+                  </span>
+                </div>
+                <span className="text-[10px] text-[#777777] uppercase tracking-wider font-semibold">
+                  OPTIONAL ARCHIVAL SYNC
+                </span>
+              </div>
+
+              <p className="text-[12px] text-[#888888] leading-relaxed">
+                Paste an item URL from <span className="text-[#CCCCCC]">myfigurecollection.net</span> (e.g., <code className="text-[#38BDF8] font-mono text-[11px]">/item/1983344</code>) to auto-populate manufacturer, scale, release year, and original JPY MSRP.
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-2">
+                <input
+                  type="text"
+                  value={mfcInputUrl}
+                  onChange={(e) => {
+                    setMfcInputUrl(e.target.value);
+                    if (mfcError) setMfcError(null);
+                  }}
+                  placeholder="https://myfigurecollection.net/item/123456 or /item/123456"
+                  className="flex-1 bg-[#080808] border border-[#1F1F1F] focus:border-[#38BDF8] px-4 py-3 text-xs text-[#F2EFE9] placeholder-[#555555] outline-none rounded-none font-mono"
+                />
+                <button
+                  type="button"
+                  onClick={handleMfcAutofill}
+                  disabled={isMfcLoading}
+                  className="px-5 py-3 bg-[#111C24] hover:bg-[#162733] border border-[#38BDF8]/50 hover:border-[#38BDF8] text-[#38BDF8] text-[11px] font-bold uppercase tracking-[0.16em] transition-colors cursor-pointer rounded-none disabled:opacity-50 shrink-0"
+                >
+                  {isMfcLoading ? '[ FETCHING MFC DATA... ]' : '[ AUTO-FILL FROM MFC ]'}
+                </button>
+              </div>
+
+              {mfcError && (
+                <div className="p-3 bg-[#180A0A] border border-[#EF4444] text-[#EF4444] text-xs font-sans tracking-wide">
+                  [ MFC SYNC: {mfcError} ]
+                </div>
+              )}
+
+              {mfcSuccessBanner && (
+                <div className="p-3 bg-[#06140D] border border-[#10B981] text-[#10B981] text-xs font-sans tracking-wide flex items-center justify-between">
+                  <span className="font-semibold uppercase tracking-wider">
+                    ✓ {mfcSuccessBanner}
+                  </span>
+                  {mfcItemId && (
+                    <a
+                      href={mfcUrl || `https://myfigurecollection.net/item/${mfcItemId}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[10px] text-[#38BDF8] underline uppercase"
+                    >
+                      View MFC Entry #{mfcItemId} ↗
+                    </a>
+                  )}
+                </div>
+              )}
+
+              {/* TODO: Barcode (JAN / EAN-13) lookup is out of scope for now; planned for v2.2 */}
+            </div>
+
             {/* Section 01: Item Identity & Series */}
             <div className="bg-[#0C0C0C] border border-[#1F1F1F] p-6 space-y-5">
               <div className="border-b border-[#161616] pb-3 flex justify-between items-center">
@@ -692,30 +834,82 @@ export default function SellPage(): React.JSX.Element {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-[11px] uppercase tracking-[0.14em] text-[#888888] mb-2 font-medium">
-                  Studio / Manufacturer *
-                </label>
-                <select
-                  value={manufacturer}
-                  onChange={(e) => setManufacturer(e.target.value)}
-                  className="w-full bg-[#080808] border border-[#1F1F1F] focus:border-[#F2EFE9] px-4 py-3 text-xs text-[#F2EFE9] outline-none rounded-none cursor-pointer"
-                >
-                  {MANUFACTURERS.map((m) => (
-                    <option key={m} value={m} className="bg-[#080808] text-[#F2EFE9]">
-                      {m}
-                    </option>
-                  ))}
-                </select>
-                {manufacturer === 'Other' && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[11px] uppercase tracking-[0.14em] text-[#888888] mb-2 font-medium">
+                    Studio / Manufacturer *
+                  </label>
+                  <select
+                    value={manufacturer}
+                    onChange={(e) => setManufacturer(e.target.value)}
+                    className="w-full bg-[#080808] border border-[#1F1F1F] focus:border-[#F2EFE9] px-4 py-3 text-xs text-[#F2EFE9] outline-none rounded-none cursor-pointer"
+                  >
+                    {MANUFACTURERS.map((m) => (
+                      <option key={m} value={m} className="bg-[#080808] text-[#F2EFE9]">
+                        {m}
+                      </option>
+                    ))}
+                  </select>
+                  {manufacturer === 'Other' && (
+                    <input
+                      type="text"
+                      placeholder="Custom studio name..."
+                      value={customManufacturer}
+                      onChange={(e) => setCustomManufacturer(e.target.value)}
+                      className="w-full mt-2 bg-[#080808] border border-[#1F1F1F] focus:border-[#F2EFE9] px-4 py-2 text-xs text-[#F2EFE9] outline-none"
+                    />
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-[11px] uppercase tracking-[0.14em] text-[#888888] mb-2 font-medium">
+                    Scale Specification *
+                  </label>
+                  <select
+                    value={scale}
+                    onChange={(e) => setScale(e.target.value)}
+                    className="w-full bg-[#080808] border border-[#1F1F1F] focus:border-[#F2EFE9] px-4 py-3 text-xs text-[#F2EFE9] outline-none rounded-none cursor-pointer"
+                  >
+                    {SCALES.map((s) => (
+                      <option key={s} value={s} className="bg-[#080808] text-[#F2EFE9]">
+                        {s}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Archival Specification Reference Row (Pre-filled via MFC or manual) */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-[#161616]">
+                <div>
+                  <label className="block text-[11px] uppercase tracking-[0.14em] text-[#888888] mb-2 font-medium">
+                    Release Year (Optional)
+                  </label>
                   <input
-                    type="text"
-                    placeholder="Custom studio name..."
-                    value={customManufacturer}
-                    onChange={(e) => setCustomManufacturer(e.target.value)}
-                    className="w-full mt-2 bg-[#080808] border border-[#1F1F1F] focus:border-[#F2EFE9] px-4 py-2 text-xs text-[#F2EFE9] outline-none"
+                    type="number"
+                    min="1980"
+                    max="2035"
+                    value={releaseYear}
+                    onChange={(e) => setReleaseYear(e.target.value)}
+                    placeholder="e.g., 2023"
+                    className="w-full bg-[#080808] border border-[#1F1F1F] focus:border-[#F2EFE9] px-4 py-3 text-xs text-[#F2EFE9] placeholder-[#555555] outline-none rounded-none"
                   />
-                )}
+                </div>
+
+                <div>
+                  <label className="block text-[11px] uppercase tracking-[0.14em] text-[#888888] mb-2 font-medium">
+                    Original MSRP in JPY (Optional Reference)
+                  </label>
+                  <input
+                    type="number"
+                    min="100"
+                    max="500000"
+                    value={originalPriceJPY}
+                    onChange={(e) => setOriginalPriceJPY(e.target.value)}
+                    placeholder="e.g., 24000 (¥ JPY)"
+                    className="w-full bg-[#080808] border border-[#1F1F1F] focus:border-[#F2EFE9] px-4 py-3 text-xs text-[#F2EFE9] placeholder-[#555555] outline-none rounded-none"
+                  />
+                </div>
               </div>
             </div>
 
@@ -1155,10 +1349,10 @@ export default function SellPage(): React.JSX.Element {
                 <div className="space-y-3 pt-2">
                   <div
                     id="field-submit"
-                    className="w-full py-4 bg-[#091812] text-[#10B981] border-2 border-[#10B981] text-xs font-semibold uppercase tracking-[0.2em] flex items-center justify-center gap-2 rounded-none transition-all shadow-[0_0_20px_rgba(16,185,129,0.2)]"
+                    className="w-full py-4 bg-[#091812] text-[#10B981] border-2 border-[#10B981] text-xs font-semibold uppercase tracking-[0.2em] flex items-center justify-center gap-2 rounded-none transition-all shadow-[0_0_24px_rgba(16,185,129,0.25)]"
                   >
-                    <span className="w-2 h-2 rounded-full bg-[#10B981] animate-ping" />
-                    <span>[ CONSIGNMENT ACCEPTED // LIVE IN VAULT ]</span>
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#10B981] animate-ping" />
+                    <span>[ CONSIGNMENT ACCEPTED // LOT ADDED TO VAULT ]</span>
                   </div>
 
                   {/* Immediate in-place confirmation block */}
@@ -1200,7 +1394,7 @@ export default function SellPage(): React.JSX.Element {
                     disabled={hasErrors || isPending || isCompressing || isUploading}
                     className={`w-full py-4 text-xs font-semibold uppercase tracking-[0.2em] transition-all rounded-none ${
                       hasErrors
-                        ? 'bg-[#7F1D1D] hover:bg-[#7F1D1D] text-[#F2EFE9] border border-[#EF4444] cursor-not-allowed'
+                        ? 'bg-[#851E1E] text-[#F2EFE9] border border-[#DC2626] cursor-not-allowed'
                         : isPending || isCompressing || isUploading
                         ? 'bg-[#1F1F1F] text-[#888888] border border-[#1F1F1F] cursor-wait'
                         : 'bg-[#F2EFE9] hover:bg-[#EAE6DF] text-[#080808] border border-[#F2EFE9] cursor-pointer active:scale-[0.99]'
@@ -1213,14 +1407,14 @@ export default function SellPage(): React.JSX.Element {
                       : isPending
                       ? '[ PUBLISHING CONSIGNMENT TO LIVE VAULT... ]'
                       : hasErrors
-                      ? `[ REQUIRED: ${buttonErrorMessage} ]`
+                      ? `[ ${buttonErrorMessage} ]`
                       : '[ PUBLISH CONSIGNMENT TO LIVE VAULT ]'}
                   </button>
 
                   {hasErrors && (
-                    <div className="p-3.5 bg-[#180A0A] border border-[#EF4444] font-sans text-left space-y-1">
+                    <div className="p-3.5 bg-[#180A0A] border border-[#DC2626] font-sans text-left space-y-1">
                       <div className="text-[10px] text-[#EF4444] font-bold uppercase tracking-[0.18em]">
-                        [ SPECIFICATION REQUIRED BEFORE PUBLISHING ]
+                        [ ACTION REQUIRED ]
                       </div>
                       <p className="text-xs text-[#F2EFE9] leading-relaxed">
                         {firstErrorMessage}

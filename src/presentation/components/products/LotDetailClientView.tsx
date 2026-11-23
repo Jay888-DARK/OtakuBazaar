@@ -19,6 +19,8 @@ import { addToCart } from '@/app/actions/dealActions';
 import { openCartDrawer } from '@/presentation/components/cart/CartDrawer';
 import { showVaultCartToast } from '@/presentation/components/cart/VaultCartToast';
 import { ArchivalFooter } from '@/presentation/components/footer/ArchivalFooter';
+import { SellerBadgeGroup } from '@/presentation/components/badges/SellerBadgeGroup';
+import { NegotiationModal } from '@/presentation/components/negotiation/NegotiationModal';
 
 interface LotDetailClientViewProps {
   product: MockProduct;
@@ -35,6 +37,7 @@ export function LotDetailClientView({ product }: LotDetailClientViewProps): Reac
   const [isOfferSubmitted, setIsOfferSubmitted] = useState<boolean>(false);
   const [isAddingDirect, setIsAddingDirect] = useState<boolean>(false);
   const [showBundleModal, setShowBundleModal] = useState<boolean>(false);
+  const [isNegotiationOpen, setIsNegotiationOpen] = useState<boolean>(false);
 
   // Pincode Shipping Estimate State (Task 4)
   const [pincodeInput, setPincodeInput] = useState<string>('');
@@ -385,23 +388,49 @@ export function LotDetailClientView({ product }: LotDetailClientViewProps): Reac
                     </span>
                   </div>
 
-                  {/* Ledger Row 3: Seller Profile Link & Rating (Task 4) */}
-                  <div className="p-3 flex justify-between items-center">
+                  {/* Ledger Row 3: MFC Archival Record (if linked) */}
+                  {product.mfcItemId && (
+                    <div className="p-3 flex justify-between items-center">
+                      <span className="text-[#777777] uppercase tracking-[0.12em]">MFC ARCHIVAL RECORD:</span>
+                      <a
+                        href={product.mfcUrl || `https://myfigurecollection.net/item/${product.mfcItemId}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 px-2 py-0.5 border border-[#38BDF8]/40 bg-[#061118] text-[#38BDF8] hover:border-[#38BDF8] text-[10px] uppercase tracking-wider font-semibold no-underline"
+                      >
+                        <span>[ MFC #{product.mfcItemId} ↗ ]</span>
+                      </a>
+                    </div>
+                  )}
+
+                  {/* Ledger Row 4: Original JPY MSRP (if available) */}
+                  {product.originalPriceJPY && (
+                    <div className="p-3 flex justify-between items-center">
+                      <span className="text-[#777777] uppercase tracking-[0.12em]">ORIGINAL JPY MSRP:</span>
+                      <span className="text-[#E5E5E5] font-mono text-[11px]">
+                        ¥{product.originalPriceJPY.toLocaleString('ja-JP')} <span className="text-[#666666] text-[9px]">(REFERENCE ONLY)</span>
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Ledger Row 5: Seller Profile Link & Real Reputation Badges */}
+                  <div className="p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <span className="text-[#777777] uppercase tracking-[0.12em]">CONSIGNING SELLER:</span>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       <Link
                         href="/profile"
                         className="text-[#F2EFE9] hover:underline font-mono text-[11px] no-underline"
                       >
                         {product.sellerHandle}
                       </Link>
-                      <span className="text-[#10B981] font-semibold text-[10px] bg-[#091812] border border-[#193829] px-1.5 py-0.5">
-                        ★ 4.9 (18 sales)
-                      </span>
+                      <SellerBadgeGroup
+                        badges={product.sellerBadges as any}
+                        isNewSeller={product.isNewSeller}
+                      />
                     </div>
                   </div>
 
-                  {/* Ledger Row 4: Indian City Dispatch */}
+                  {/* Ledger Row 6: Indian City Dispatch */}
                   <div className="p-3 flex justify-between items-center">
                     <span className="text-[#777777] uppercase tracking-[0.12em]">CUSTODY LOCATION:</span>
                     <span className="text-[#F2EFE9] font-medium tracking-wide">
@@ -409,7 +438,7 @@ export function LotDetailClientView({ product }: LotDetailClientViewProps): Reac
                     </span>
                   </div>
 
-                  {/* Ledger Row 5: Owner Count */}
+                  {/* Ledger Row 7: Owner Count */}
                   <div className="p-3 flex justify-between items-center">
                     <span className="text-[#777777] uppercase tracking-[0.12em]">PROVENANCE:</span>
                     <span className="text-[#F2EFE9] font-medium tracking-wide">
@@ -417,7 +446,7 @@ export function LotDetailClientView({ product }: LotDetailClientViewProps): Reac
                     </span>
                   </div>
 
-                  {/* Ledger Row 6: Dispatch SLA */}
+                  {/* Ledger Row 8: Dispatch SLA */}
                   <div className="p-3 flex justify-between items-center">
                     <span className="text-[#777777] uppercase tracking-[0.12em]">DISPATCH SLA:</span>
                     <span className="text-[#10B981] font-semibold tracking-wide">
@@ -441,54 +470,37 @@ export function LotDetailClientView({ product }: LotDetailClientViewProps): Reac
                     : `[ ACQUIRE AT ASKING — ₹${product.price.toLocaleString('en-IN')} ]`}
                 </button>
 
-                {/* Bargain Section */}
+                {/* Real-Time Bargain Section */}
                 <div className="border border-[#1F1F1F] bg-[#0C0C0C] p-4 space-y-3 font-sans">
                   <div className="flex items-center justify-between text-[10px] tracking-[0.16em] uppercase">
                     <span className="text-[#CCCCCC] font-semibold">
-                      MAKE ESCROW OFFER (24H BINDING)
+                      REAL-TIME ESCROW BARGAIN (COUNTER-OFFER)
                     </span>
                     <span className="text-[#777777]">
-                      FLOOR: ₹{Math.round(product.price * 0.75).toLocaleString('en-IN')}
+                      FLOOR: ₹{Math.round(product.price * 0.7).toLocaleString('en-IN')}
                     </span>
                   </div>
 
-                  {isOfferSubmitted ? (
-                    <div className="p-3 bg-[#091812] border border-[#193829] text-[11px] text-[#10B981] uppercase tracking-[0.12em] font-semibold text-center">
-                      [ OFFER OF ₹{Number(offerInput).toLocaleString('en-IN')} TRANSMITTED TO SELLER ]
-                    </div>
-                  ) : (
-                    <form onSubmit={handleOfferSubmit} className="space-y-3">
-                      {/* Quick Discount Presets */}
-                      <div className="grid grid-cols-3 gap-2">
-                        {[5, 10, 15].map((pct) => (
-                          <button
-                            key={pct}
-                            type="button"
-                            onClick={() => handlePresetOffer(pct)}
-                            className="py-1.5 border border-[#1F1F1F] hover:border-[#F2EFE9] bg-[#080808] text-[10px] text-[#888888] hover:text-[#F2EFE9] uppercase tracking-wider transition-none cursor-pointer rounded-none"
-                          >
-                            -{pct}% (₹{Math.round(product.price * (1 - pct / 100)).toLocaleString('en-IN')})
-                          </button>
-                        ))}
-                      </div>
+                  <p className="text-[11px] text-[#888888] leading-relaxed">
+                    Make an escrow offer with 5 alternating counter rounds and 15-minute distributed lock upon mutual agreement.
+                  </p>
 
-                      <div className="flex gap-2">
-                        <input
-                          type="number"
-                          value={offerInput}
-                          onChange={(e) => setOfferInput(e.target.value)}
-                          placeholder={`Offer in ₹ (e.g. ${Math.round(product.price * 0.9)})`}
-                          className="flex-1 bg-[#080808] border border-[#1F1F1F] focus:border-[#F2EFE9] px-3 py-2 text-xs text-[#F2EFE9] placeholder-[#555555] outline-none rounded-none font-mono"
-                        />
-                        <button
-                          type="submit"
-                          className="px-4 py-2 bg-[#080808] hover:bg-[#161616] text-[#CCCCCC] hover:text-white border border-[#1F1F1F] hover:border-[#3A3A3A] text-[10px] uppercase font-semibold tracking-wider transition-none cursor-pointer rounded-none"
-                        >
-                          [ SUBMIT OFFER ]
-                        </button>
-                      </div>
-                    </form>
-                  )}
+                  <div className="flex gap-2">
+                    <input
+                      type="number"
+                      value={offerInput}
+                      onChange={(e) => setOfferInput(e.target.value)}
+                      placeholder={`Offer in ₹ (e.g. ${Math.round(product.price * 0.85)})`}
+                      className="flex-1 bg-[#080808] border border-[#1F1F1F] focus:border-[#F2EFE9] px-3 py-2 text-xs text-[#F2EFE9] placeholder-[#555555] outline-none rounded-none font-mono"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setIsNegotiationOpen(true)}
+                      className="px-4 py-2 bg-[#F2EFE9] hover:bg-white text-[#080808] text-[10px] uppercase font-bold tracking-wider transition-colors cursor-pointer rounded-none"
+                    >
+                      [ OPEN BARGAIN TERMINAL ]
+                    </button>
+                  </div>
                 </div>
 
                 {/* Collection Bundle Option */}
@@ -506,6 +518,15 @@ export function LotDetailClientView({ product }: LotDetailClientViewProps): Reac
           </div>
         </div>
       </div>
+
+      {/* Real-Time Bargain (Counter-Offer) Terminal Modal */}
+      <NegotiationModal
+        listingId={product.id}
+        askingPriceINR={product.price}
+        productTitle={product.title}
+        isOpen={isNegotiationOpen}
+        onClose={() => setIsNegotiationOpen(false)}
+      />
 
       <div className="mt-20">
         <ArchivalFooter />

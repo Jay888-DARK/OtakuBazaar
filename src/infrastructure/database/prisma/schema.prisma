@@ -31,6 +31,9 @@ model User {
   rating          Float           @default(0)
   totalSales      Int             @default(0) @map("total_sales")
   totalPurchases  Int             @default(0) @map("total_purchases")
+  role            String          @default("USER")
+  sellerBadges    String?         @map("seller_badges") // JSON array of earned badges
+  revokedBadges   String?         @map("revoked_badges") // JSON array of badges revoked by admin
   verifiedUpiVpa  String?         @map("verified_upi_vpa")
   upiVerifiedAt   DateTime?       @map("upi_verified_at")
   createdAt       DateTime        @default(now()) @map("created_at")
@@ -52,6 +55,10 @@ model User {
   sellerDeals     DealOffer[]     @relation("SellerDeals")
   chatMessages    ChatMessage[]
   cartItems       CartItem[]
+  disputesAsSeller Dispute[]      @relation("SellerDisputes")
+  disputesAsBuyer  Dispute[]      @relation("BuyerDisputes")
+  buyerNegotiations Negotiation[] @relation("BuyerNegotiations")
+  sellerNegotiations Negotiation[] @relation("SellerNegotiations")
 
   @@map("users")
 }
@@ -72,6 +79,12 @@ model Listing {
   category          String
   condition         String
   reservedByBuyerId String?  @map("reserved_by_buyer_id")
+  mfcItemId         String?  @map("mfc_item_id")
+  mfcUrl            String?  @map("mfc_url")
+  originalPriceJPY  Int?     @map("original_price_jpy")
+  releaseYear       Int?     @map("release_year")
+  scale             String?
+  manufacturer      String?
   createdAt         DateTime @default(now()) @map("created_at")
   updatedAt         DateTime @updatedAt @map("updated_at")
 
@@ -79,6 +92,7 @@ model Listing {
   seller           User           @relation("SellerListings", fields: [sellerId], references: [id])
   bargainOffers    BargainOffer[]
   orders           Order[]
+  negotiations     Negotiation[]
 
   @@index([sellerId])
   @@index([status])
@@ -147,6 +161,9 @@ model Order {
   payoutReferenceId    String?             @map("payout_reference_id")
   payoutCompletedAt    DateTime?           @map("payout_completed_at")
 
+  paidAt               DateTime?           @map("paid_at")
+  shippedAt            DateTime?           @map("shipped_at")
+
   createdAt            DateTime            @default(now()) @map("created_at")
   updatedAt            DateTime            @updatedAt @map("updated_at")
 
@@ -155,6 +172,7 @@ model Order {
   buyer                User                @relation("BuyerOrders", fields: [buyerId], references: [id])
   seller               User                @relation("SellerOrders", fields: [sellerId], references: [id])
   ledgerEntries        EscrowLedgerEntry[]
+  disputes             Dispute[]
 
   @@index([userId])
   @@index([buyerId])
@@ -353,4 +371,85 @@ model CartItem {
   @@index([userId])
   @@index([productId])
   @@map("cart_items")
+}
+
+// ---------------------------------------------------------------------------
+// Order Dispute Management
+// ---------------------------------------------------------------------------
+
+model Dispute {
+  id          String    @id @default(uuid())
+  orderId     String    @map("order_id")
+  sellerId    String    @map("seller_id")
+  buyerId     String    @map("buyer_id")
+  status      String    @default("RAISED") // RAISED, UPHELD, DISMISSED
+  reason      String
+  createdAt   DateTime  @default(now()) @map("created_at")
+  resolvedAt  DateTime? @map("resolved_at")
+
+  order       Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  seller      User      @relation("SellerDisputes", fields: [sellerId], references: [id], onDelete: Cascade)
+  buyer       User      @relation("BuyerDisputes", fields: [buyerId], references: [id], onDelete: Cascade)
+
+  @@index([sellerId])
+  @@index([buyerId])
+  @@index([orderId])
+  @@map("disputes")
+}
+
+// ---------------------------------------------------------------------------
+// Real-Time Counter-Offer Negotiation & Escrow Lock Engine
+// ---------------------------------------------------------------------------
+
+model Negotiation {
+  id                 String             @id @default(uuid())
+  listingId          String             @map("listing_id")
+  buyerId            String             @map("buyer_id")
+  sellerId           String             @map("seller_id")
+  status             String             @default("ACTIVE") // ACTIVE, ACCEPTED, DECLINED, EXPIRED
+  currentPrice       Int                @map("current_price") // INR
+  currentTurnActorId String             @map("current_turn_actor_id")
+  roundCount         Int                @default(1) @map("round_count")
+  lockedUntil        DateTime?          @map("locked_until")
+  createdAt          DateTime           @default(now()) @map("created_at")
+  updatedAt          DateTime           @updatedAt @map("updated_at")
+
+  listing            Listing            @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  buyer              User               @relation("BuyerNegotiations", fields: [buyerId], references: [id], onDelete: Cascade)
+  seller             User               @relation("SellerNegotiations", fields: [sellerId], references: [id], onDelete: Cascade)
+  events             NegotiationEvent[]
+
+  @@index([listingId])
+  @@index([buyerId])
+  @@index([sellerId])
+  @@index([status])
+  @@map("negotiations")
+}
+
+model NegotiationEvent {
+  id            String      @id @default(uuid())
+  negotiationId String      @map("negotiation_id")
+  actorId       String      @map("actor_id")
+  type          String      // OFFER, COUNTER, ACCEPT, DECLINE, EXPIRE
+  amount        Int         // in INR
+  message       String?
+  createdAt     DateTime    @default(now()) @map("created_at")
+
+  negotiation   Negotiation @relation(fields: [negotiationId], references: [id], onDelete: Cascade)
+
+  @@index([negotiationId])
+  @@map("negotiation_events")
+}
+
+// ---------------------------------------------------------------------------
+// MFC (MyFigureCollection) Item Metadata Cache
+// ---------------------------------------------------------------------------
+
+model MfcCache {
+  mfcItemId String   @id @map("mfc_item_id")
+  data      String   // JSON string of FigureMetadata
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("mfc_cache")
 }

@@ -21,6 +21,12 @@ export interface ListingRecord {
   category: string;
   condition: 'NEW' | 'LIKE_NEW' | 'GOOD' | 'FAIR' | 'POOR';
   reservedByBuyerId: string | null;
+  mfcItemId?: string | null;
+  mfcUrl?: string | null;
+  originalPriceJPY?: number | null;
+  releaseYear?: number | null;
+  scale?: string | null;
+  manufacturer?: string | null;
   createdAt: Date;
   updatedAt: Date;
   lockRemainingSeconds?: number;
@@ -74,6 +80,12 @@ function toRecord(row: PrismaListingRow): ListingRecord {
     category: row.category,
     condition: row.condition as ListingRecord['condition'],
     reservedByBuyerId: row.reservedByBuyerId,
+    mfcItemId: row.mfcItemId,
+    mfcUrl: row.mfcUrl,
+    originalPriceJPY: row.originalPriceJPY,
+    releaseYear: row.releaseYear,
+    scale: row.scale,
+    manufacturer: row.manufacturer,
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
   };
@@ -203,6 +215,12 @@ export class ListingRepository {
           category: listing.category,
           condition: listing.condition,
           reservedByBuyerId: null,
+          mfcItemId: listing.mfcItemId || null,
+          mfcUrl: listing.mfcUrl || null,
+          originalPriceJPY: listing.originalPriceJPY || null,
+          releaseYear: listing.releaseYear || null,
+          scale: listing.scale || null,
+          manufacturer: listing.manufacturer || null,
         },
       });
 
@@ -221,6 +239,12 @@ export class ListingRepository {
         category: listing.category,
         condition: listing.condition,
         reservedByBuyerId: null,
+        mfcItemId: listing.mfcItemId || null,
+        mfcUrl: listing.mfcUrl || null,
+        originalPriceJPY: listing.originalPriceJPY || null,
+        releaseYear: listing.releaseYear || null,
+        scale: listing.scale || null,
+        manufacturer: listing.manufacturer || null,
         createdAt: new Date(),
         updatedAt: new Date(),
       };

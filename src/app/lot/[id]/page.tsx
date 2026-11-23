@@ -5,6 +5,7 @@ import type { MockProduct } from '@/lib/mockProducts';
 import { ListingRepository } from '@/infrastructure/database/repositories/ListingRepository';
 import { LotDetailClientView } from '@/presentation/components/products/LotDetailClientView';
 import { optimizeImageUrl } from '@/infrastructure/utils/imageOptimizer';
+import { recomputeAndSaveSellerBadges } from '@/domain/services/sellerBadgeService';
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -31,7 +32,8 @@ async function getProductFromDb(id: string): Promise<MockProduct | null> {
           : 'AUTHENTIC JAPANESE IMPORT';
 
   const scale =
-    listing.title.includes('1/4')
+    listing.scale ||
+    (listing.title.includes('1/4')
       ? '1/4 SCALE'
       : listing.title.includes('1/6')
         ? '1/6 SCALE'
@@ -39,7 +41,13 @@ async function getProductFromDb(id: string): Promise<MockProduct | null> {
           ? '1/8 SCALE'
           : listing.title.includes('1/7')
             ? '1/7 SCALE'
-            : 'NON-SCALE';
+            : 'NON-SCALE');
+
+  const badgeResult = await recomputeAndSaveSellerBadges(listing.sellerId).catch(() => ({
+    badges: [],
+    isNewSeller: true,
+    rawBadgeIds: [],
+  }));
 
   return {
     id: listing.id,
@@ -61,14 +69,20 @@ async function getProductFromDb(id: string): Promise<MockProduct | null> {
     ownerCount: '1ST OWNER',
     sellerHandle: `@vault_seller_${listing.sellerId.slice(-6)}`,
     dispatchSla: '48H INSURED BLUEDART AIR (CRATED)',
-    scale,
+    scale: (scale as any) || 'NON-SCALE',
     weight: '2.4 KG',
     seal: 'TAMPER-EVIDENT HOLOGRAPHIC SEAL VERIFIED',
     sculptor: 'Authentic Studio Artisans',
-    manufacturer: 'Japanese Manufacturer',
+    manufacturer: listing.manufacturer || 'Japanese Manufacturer',
     boxDimensions: '340 × 260 × 200 MM',
     provenance: listing.description || 'Verified Japanese imported collectible held in secure custody under 48-hour unboxing inspection escrow.',
     videoUrl: primaryImg,
+    mfcItemId: listing.mfcItemId || undefined,
+    mfcUrl: listing.mfcUrl || (listing.mfcItemId ? `https://myfigurecollection.net/item/${listing.mfcItemId}` : undefined),
+    originalPriceJPY: listing.originalPriceJPY || undefined,
+    releaseYear: listing.releaseYear || undefined,
+    sellerBadges: badgeResult.badges,
+    isNewSeller: badgeResult.isNewSeller,
     gallery: optimizedGallery.length > 0
       ? optimizedGallery.map((url, idx) => ({
           src: url,

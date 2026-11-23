@@ -181,14 +181,42 @@ export async function POST(req: Request): Promise<NextResponse> {
     }
 
     // 2. Order Creation
-    const { price, amount, productId, lotId, dealOfferId, receipt } = body;
+    const { price, amount, productId, lotId, dealOfferId, negotiationId, receipt } = body;
     const targetLotId = productId || lotId;
 
     let authoritativePriceINR = 0;
     let itemTitle = 'OtakuBazaar Authentic Collectible';
 
-    // A. Check deal offer if applicable
-    if (dealOfferId) {
+    // A. Check negotiation or deal offer if applicable
+    const targetNegId = negotiationId || (dealOfferId && dealOfferId.startsWith('neg_') ? dealOfferId : null);
+    if (targetNegId) {
+      try {
+        const negotiation = await prisma.negotiation.findUnique({
+          where: { id: targetNegId },
+          include: { listing: true },
+        });
+        if (negotiation) {
+          if (negotiation.status !== 'ACCEPTED') {
+            return NextResponse.json(
+              { error: 'Escrow payment locked: Negotiation offer has not been accepted.' },
+              { status: 403 }
+            );
+          }
+          if (negotiation.lockedUntil && new Date() > new Date(negotiation.lockedUntil)) {
+            return NextResponse.json(
+              { error: 'Escrow payment lock expired: The 15-minute checkout window has elapsed.' },
+              { status: 410 }
+            );
+          }
+          authoritativePriceINR = Math.round(negotiation.currentPrice / 100);
+          if (negotiation.listing?.title) {
+            itemTitle = negotiation.listing.title;
+          }
+        }
+      } catch (err) {
+        console.warn('[Razorpay Order] Negotiation lookup notice:', err);
+      }
+    } else if (dealOfferId) {
       try {
         const dealOffer = await prisma.dealOffer.findUnique({
           where: { id: dealOfferId },

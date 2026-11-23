@@ -194,8 +194,15 @@ export default function ProfilePage() {
             </div>
 
             <Link
-              href="/sell"
+              href="/vault"
               className="px-5 py-2.5 bg-zinc-900 hover:bg-zinc-800 text-zinc-200 hover:text-white border border-zinc-700 text-xs font-bold uppercase tracking-wider no-underline transition-colors flex items-center gap-1.5"
+            >
+              <span>[ MY LISTED ITEMS ]</span>
+            </Link>
+
+            <Link
+              href="/sell"
+              className="px-5 py-2.5 bg-zinc-100 hover:bg-white text-zinc-950 text-xs font-bold uppercase tracking-wider no-underline transition-colors flex items-center gap-1.5"
             >
               <span>Drop a Grail</span>
             </Link>
