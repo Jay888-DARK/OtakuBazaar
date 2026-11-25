@@ -98,16 +98,16 @@ export function ProductCard({ product, className = '' }: ProductCardProps): Reac
                 : 'IN-VERIFIED';
 
   // Format Condition Grade
-  const rawGrade = product.gradeCondition || (product.condition === 'NEW' ? 'GRADE S (MINT)' : 'GRADE A');
-  let gradeBadge = '[S-RANK]';
-  if (rawGrade.toUpperCase().includes('SEALED') || rawGrade.toUpperCase().includes('MISB')) {
-    gradeBadge = '[FACTORY SEALED]';
+  const rawGrade = product.gradeCondition || (product.condition === 'NEW' ? 'New, sealed box' : 'Like new');
+  let gradeBadge = 'New, sealed box';
+  if (rawGrade.toUpperCase().includes('SEALED') || rawGrade.toUpperCase().includes('MISB') || rawGrade.toUpperCase().includes('NEW')) {
+    gradeBadge = 'New, sealed box';
   } else if (rawGrade.toUpperCase().includes('GRADE S') || rawGrade.toUpperCase().includes('MINT')) {
-    gradeBadge = '[S-RANK]';
-  } else if (rawGrade.toUpperCase().includes('GRADE A') || rawGrade.toUpperCase().includes('BIB')) {
-    gradeBadge = '[A-RANK]';
-  } else if (rawGrade.toUpperCase().includes('GRADE B')) {
-    gradeBadge = '[B-RANK]';
+    gradeBadge = 'Pristine';
+  } else if (rawGrade.toUpperCase().includes('GRADE A') || rawGrade.toUpperCase().includes('BIB') || rawGrade.toUpperCase().includes('LIKE_NEW')) {
+    gradeBadge = 'Like new';
+  } else if (rawGrade.toUpperCase().includes('GRADE B') || rawGrade.toUpperCase().includes('GOOD')) {
+    gradeBadge = 'Good condition';
   }
 
   // Derive Franchise & Category
@@ -145,11 +145,11 @@ export function ProductCard({ product, className = '' }: ProductCardProps): Reac
     >
       <div>
         {/* 1. Header Row */}
-        <div className="flex items-center justify-between text-[10px] tracking-[0.15em] text-[#777777] mb-2 font-sans uppercase">
+        <div className="flex items-center justify-between text-[10px] tracking-wider text-[#9CA3AF] mb-2 font-sans uppercase">
           <span>
-            LOT #{lotNumber} • VAULT ID: {vaultId}
+            ITEM #{lotNumber} • {vaultId}
           </span>
-          <span className="border border-[#2A2A2A] px-2 py-0.5 text-[10px] tracking-[0.12em] text-[#E5E5E5] bg-[#080808] uppercase">
+          <span className="border border-[#2A2A2A] px-2 py-0.5 text-[10px] tracking-wider text-[#E5E5E5] bg-[#080808] uppercase">
             {gradeBadge}
           </span>
         </div>
@@ -177,10 +177,10 @@ export function ProductCard({ product, className = '' }: ProductCardProps): Reac
           </div>
         </Link>
 
-        {/* 3. Editorial Metadata Block */}
+        {/* 3. Metadata Block */}
         <div className="space-y-1.5">
           {/* Row 1: Franchise & Category */}
-          <div className="text-[10px] tracking-[0.14em] text-[#888888] uppercase truncate font-sans">
+          <div className="text-[10px] tracking-wider text-[#9CA3AF] uppercase truncate font-sans">
             {franchise} • {category}
           </div>
 
@@ -191,9 +191,9 @@ export function ProductCard({ product, className = '' }: ProductCardProps): Reac
             </h3>
           </Link>
 
-          {/* Row 3: Studio & Collector Custody Specs */}
-          <div className="text-[10px] tracking-[0.12em] text-[#666666] uppercase truncate font-sans">
-            STUDIO: {studio} • {custodyOrigin} • {boxGrade}
+          {/* Row 3: Studio & Collector Specs */}
+          <div className="text-[10px] tracking-wider text-[#A1A1AA] uppercase truncate font-sans">
+            {studio} • {custodyOrigin}
           </div>
 
           {/* Row 4: MFC Badge & Seller Reputation Badges */}
@@ -206,25 +206,25 @@ export function ProductCard({ product, className = '' }: ProductCardProps): Reac
                 onClick={(e) => e.stopPropagation()}
                 className="inline-flex items-center text-[9px] text-[#38BDF8] border border-[#38BDF8]/40 bg-[#061118] px-1.5 py-0.5 tracking-wider uppercase font-semibold no-underline hover:border-[#38BDF8]"
               >
-                [ MFC LINKED ↗ ]
+                MFC Linked ↗
               </a>
             )}
             <SellerBadgeGroup badges={product.sellerBadges} isNewSeller={product.isNewSeller} compact />
           </div>
         </div>
 
-        {/* 4. Escrow & Valuation Footer */}
+        {/* 4. Escrow & Price Footer */}
         <div className="mt-4 pt-3 border-t border-[#161616]">
           {/* Status Line */}
-          <div className="flex items-center justify-between text-[10px] tracking-[0.14em] font-sans uppercase">
-            <span className="text-[#10B981] font-semibold">ESCROW VERIFIED</span>
-            <span className="text-[#777777]">48H INSPECTION</span>
+          <div className="flex items-center justify-between text-[10px] tracking-wider font-sans uppercase">
+            <span className="text-[#10B981] font-semibold">Safe Escrow</span>
+            <span className="text-[#9CA3AF]">48h Inspection</span>
           </div>
 
           {/* Price Box */}
           <div className="border border-[#1F1F1F] bg-[#0C0C0C] px-3.5 py-2.5 mt-3 flex justify-between items-center">
-            <span className="text-[10px] tracking-[0.15em] text-[#888888] font-sans uppercase">
-              ASKING / OFFER
+            <span className="text-[10px] tracking-wider text-[#9CA3AF] font-sans uppercase">
+              Price
             </span>
             <span className="font-serif text-[18px] text-[#F2EFE9] tracking-wider">
               ₹{displayPrice.toLocaleString('en-IN')}
@@ -233,7 +233,7 @@ export function ProductCard({ product, className = '' }: ProductCardProps): Reac
         </div>
       </div>
 
-      {/* 5. Consistent Actions: Instant [ ADD TO CART ] & [ INSPECT ] */}
+      {/* 5. Consistent Actions: Instant Add To Cart & View Item */}
       <div className="mt-3 grid grid-cols-2 gap-2">
         <button
           type="button"
@@ -250,15 +250,15 @@ export function ProductCard({ product, className = '' }: ProductCardProps): Reac
             }
             addToCart(product.id).catch(() => { });
           }}
-          className="w-full py-2.5 text-center border border-[#1F1F1F] bg-[#080808] hover:bg-[#161616] hover:border-[#3A3A3A] text-[#E5E5E5] text-[10px] tracking-[0.14em] uppercase transition-colors duration-75 block font-sans cursor-pointer rounded-none"
+          className="w-full py-2.5 text-center border border-[#1F1F1F] bg-[#080808] hover:bg-[#161616] hover:border-[#3A3A3A] text-[#E5E5E5] text-[10px] tracking-wider uppercase transition-colors duration-75 block font-sans cursor-pointer rounded-none"
         >
-          [ ADD TO CART ]
+          Add to Cart
         </button>
         <Link
           href={lotRoute}
-          className="w-full py-2.5 text-center border border-[#1F1F1F] bg-[#080808] hover:bg-[#F2EFE9] hover:text-[#080808] hover:border-[#F2EFE9] text-[#888888] text-[10px] tracking-[0.14em] uppercase transition-colors duration-75 block no-underline font-sans cursor-pointer rounded-none"
+          className="w-full py-2.5 text-center border border-[#1F1F1F] bg-[#080808] hover:bg-[#F2EFE9] hover:text-[#080808] hover:border-[#F2EFE9] text-[#9CA3AF] text-[10px] tracking-wider uppercase transition-colors duration-75 block no-underline font-sans cursor-pointer rounded-none"
         >
-          [ INSPECT ]
+          View Item
         </Link>
       </div>
     </div>

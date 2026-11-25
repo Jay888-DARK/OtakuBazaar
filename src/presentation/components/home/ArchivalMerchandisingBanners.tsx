@@ -219,12 +219,12 @@ export const ArchivalMerchandisingBanners: React.FC<ArchivalMerchandisingBanners
               </div>
 
               {/* Bottom: Clean Hairline Row with Spec & Action Link */}
-              <div className="border-t border-[#161616] pt-3.5 flex justify-between items-center text-[10px] tracking-[0.14em] uppercase">
-                <span className="font-sans text-[#777777] truncate mr-2">
+              <div className="border-t border-[#161616] pt-3.5 flex justify-between items-center text-[10px] tracking-wider uppercase">
+                <span className="font-sans text-[#9CA3AF] truncate mr-2">
                   {banner.spec}
                 </span>
                 <span className="font-sans text-[#F2EFE9] font-medium shrink-0 group-hover:text-white">
-                  [ VIEW LOT INDEX ]
+                  View Items
                 </span>
               </div>
             </div>

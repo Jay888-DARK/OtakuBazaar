@@ -75,7 +75,7 @@ export function LotDetailClientView({ product }: LotDetailClientViewProps): Reac
     if (product.macroSlots && product.macroSlots.length >= 4) {
       return [
         {
-          slot: '[ 00 // MAIN SPECIMEN ]',
+          slot: 'Main Photo',
           title: 'Full Collectible Elevation',
           src: product.imageUrl,
           description: 'Full elevation studio portrait of authenticated figure.',
@@ -85,31 +85,31 @@ export function LotDetailClientView({ product }: LotDetailClientViewProps): Reac
     }
     return [
       {
-        slot: '[ 00 // MAIN SPECIMEN ]',
+        slot: 'Main Photo',
         title: 'Full Collectible Elevation',
         src: product.imageUrl,
         description: 'Full elevation studio portrait of authenticated figure.',
       },
       {
-        slot: '[ 01 // STUDIO SCULPT ]',
+        slot: 'Sculpt Detail',
         title: 'Studio Sculpt Macro',
         src: product.imageUrl,
         description: 'High magnification surface sculpt inspection and joint tolerances.',
       },
       {
-        slot: '[ 02 // HOLOGRAM STICKER MACRO ]',
+        slot: 'Authenticity Hologram',
         title: 'Hologram Sticker Macro',
         src: '/showcase/bay3_clean.png',
         description: 'Tamper-evident holographic authenticity seal with sequential serial.',
       },
       {
-        slot: '[ 03 // BASE COPYRIGHT STAMP ]',
+        slot: 'Copyright Stamp',
         title: 'Base Copyright Stamp',
         src: '/showcase/bay1_clean.png',
         description: 'Debossed factory copyright stamp verification.',
       },
       {
-        slot: '[ 04 // HANDWRITTEN TIMESTAMP ]',
+        slot: 'Timestamp Proof',
         title: 'Handwritten Timestamp',
         src: '/showcase/bay2_clean.png',
         description: 'Physical ledger verification card with seller handle and date.',
@@ -374,15 +374,15 @@ export function LotDetailClientView({ product }: LotDetailClientViewProps): Reac
                 <div className="border border-[#1F1F1F] bg-[#0C0C0C] divide-y divide-[#161616] font-sans text-[11px]">
                   {/* Ledger Row 1: Figure Grade */}
                   <div className="p-3 flex justify-between items-center">
-                    <span className="text-[#777777] uppercase tracking-[0.12em]">FIGURE GRADE:</span>
+                    <span className="text-[#9CA3AF] uppercase tracking-wider text-[10px]">Condition:</span>
                     <span className="text-[#F2EFE9] font-medium tracking-wide">
-                      {product.figureGrade || 'MISB (FACTORY SEALED)'}
+                      {product.figureGrade || 'New, sealed box'}
                     </span>
                   </div>
 
                   {/* Ledger Row 2: Packaging Grade (Fixed for Books/Manga) */}
                   <div className="p-3 flex justify-between items-center">
-                    <span className="text-[#777777] uppercase tracking-[0.12em]">PACKAGING GRADE:</span>
+                    <span className="text-[#9CA3AF] uppercase tracking-wider text-[10px]">Packaging:</span>
                     <span className="text-[#F2EFE9] font-medium tracking-wide">
                       {displayBoxCondition}
                     </span>
@@ -391,24 +391,24 @@ export function LotDetailClientView({ product }: LotDetailClientViewProps): Reac
                   {/* Ledger Row 3: MFC Archival Record (if linked) */}
                   {product.mfcItemId && (
                     <div className="p-3 flex justify-between items-center">
-                      <span className="text-[#777777] uppercase tracking-[0.12em]">MFC ARCHIVAL RECORD:</span>
+                      <span className="text-[#9CA3AF] uppercase tracking-wider text-[10px]">MFC Record:</span>
                       <a
                         href={product.mfcUrl || `https://myfigurecollection.net/item/${product.mfcItemId}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-1.5 px-2 py-0.5 border border-[#38BDF8]/40 bg-[#061118] text-[#38BDF8] hover:border-[#38BDF8] text-[10px] uppercase tracking-wider font-semibold no-underline"
                       >
-                        <span>[ MFC #{product.mfcItemId} ↗ ]</span>
+                        <span>MFC #{product.mfcItemId} ↗</span>
                       </a>
                     </div>
                   )}
 
-                  {/* Ledger Row 4: Original JPY MSRP (if available) */}
+                  {/* Ledger Row 4: Original Japanese price (if available) */}
                   {product.originalPriceJPY && (
                     <div className="p-3 flex justify-between items-center">
-                      <span className="text-[#777777] uppercase tracking-[0.12em]">ORIGINAL JPY MSRP:</span>
+                      <span className="text-[#9CA3AF] uppercase tracking-wider text-[10px]">Original Japanese Price:</span>
                       <span className="text-[#E5E5E5] font-mono text-[11px]">
-                        ¥{product.originalPriceJPY.toLocaleString('ja-JP')} <span className="text-[#666666] text-[9px]">(REFERENCE ONLY)</span>
+                        ¥{product.originalPriceJPY.toLocaleString('ja-JP')} <span className="text-[#A1A1AA] text-[9px]">(reference only)</span>
                       </span>
                     </div>
                   )}
@@ -463,26 +463,26 @@ export function LotDetailClientView({ product }: LotDetailClientViewProps): Reac
                   type="button"
                   disabled={isAddingDirect}
                   onClick={handleDirectAcquisition}
-                  className="w-full py-4 bg-[#F2EFE9] hover:bg-[#EAE6DF] text-[#080808] border border-[#F2EFE9] font-sans font-semibold text-[12px] uppercase tracking-[0.18em] transition-none cursor-pointer rounded-none disabled:opacity-50"
+                  className="w-full py-4 bg-[#F2EFE9] hover:bg-[#EAE6DF] text-[#080808] border border-[#F2EFE9] font-sans font-semibold text-[12px] uppercase tracking-wider transition-none cursor-pointer rounded-none disabled:opacity-50"
                 >
                   {isAddingDirect
-                    ? '[ LOCKING ESCROW CART... ]'
-                    : `[ ACQUIRE AT ASKING — ₹${product.price.toLocaleString('en-IN')} ]`}
+                    ? 'Adding to cart...'
+                    : `Buy Now — ₹${product.price.toLocaleString('en-IN')}`}
                 </button>
 
                 {/* Real-Time Bargain Section */}
                 <div className="border border-[#1F1F1F] bg-[#0C0C0C] p-4 space-y-3 font-sans">
-                  <div className="flex items-center justify-between text-[10px] tracking-[0.16em] uppercase">
+                  <div className="flex items-center justify-between text-[10px] tracking-wider uppercase">
                     <span className="text-[#CCCCCC] font-semibold">
-                      REAL-TIME ESCROW BARGAIN (COUNTER-OFFER)
+                      Make an Offer (Safe Escrow)
                     </span>
-                    <span className="text-[#777777]">
-                      FLOOR: ₹{Math.round(product.price * 0.7).toLocaleString('en-IN')}
+                    <span className="text-[#9CA3AF]">
+                      Floor: ₹{Math.round(product.price * 0.7).toLocaleString('en-IN')}
                     </span>
                   </div>
 
-                  <p className="text-[11px] text-[#888888] leading-relaxed">
-                    Make an escrow offer with 5 alternating counter rounds and 15-minute distributed lock upon mutual agreement.
+                  <p className="text-[11px] text-[#A1A1AA] leading-relaxed">
+                    We hold your payment until you check your order. Make an offer to negotiate directly with the seller in real time.
                   </p>
 
                   <div className="flex gap-2">
@@ -491,14 +491,14 @@ export function LotDetailClientView({ product }: LotDetailClientViewProps): Reac
                       value={offerInput}
                       onChange={(e) => setOfferInput(e.target.value)}
                       placeholder={`Offer in ₹ (e.g. ${Math.round(product.price * 0.85)})`}
-                      className="flex-1 bg-[#080808] border border-[#1F1F1F] focus:border-[#F2EFE9] px-3 py-2 text-xs text-[#F2EFE9] placeholder-[#555555] outline-none rounded-none font-mono"
+                      className="flex-1 bg-[#080808] border border-[#1F1F1F] focus:border-[#F2EFE9] px-3 py-2 text-xs text-[#F2EFE9] placeholder-[#71717A] outline-none rounded-none font-mono"
                     />
                     <button
                       type="button"
                       onClick={() => setIsNegotiationOpen(true)}
                       className="px-4 py-2 bg-[#F2EFE9] hover:bg-white text-[#080808] text-[10px] uppercase font-bold tracking-wider transition-colors cursor-pointer rounded-none"
                     >
-                      [ OPEN BARGAIN TERMINAL ]
+                      Make Offer
                     </button>
                   </div>
                 </div>
@@ -508,9 +508,9 @@ export function LotDetailClientView({ product }: LotDetailClientViewProps): Reac
                   <button
                     type="button"
                     onClick={() => setShowBundleModal(true)}
-                    className="w-full py-2.5 bg-[#0C0C0C] hover:bg-[#141414] text-[#888888] hover:text-[#CCCCCC] border border-[#1F1F1F] text-[10px] uppercase tracking-[0.14em] font-semibold transition-none cursor-pointer rounded-none"
+                    className="w-full py-2.5 bg-[#0C0C0C] hover:bg-[#141414] text-[#A1A1AA] hover:text-[#FFFFFF] border border-[#1F1F1F] text-[10px] uppercase tracking-wider font-semibold transition-none cursor-pointer rounded-none"
                   >
-                    [ VIEW SELLER&apos;S FULL VAULT BUNDLE (SAVE 12%) ]
+                    View Seller Bundle (Save 12%)
                   </button>
                 )}
               </div>

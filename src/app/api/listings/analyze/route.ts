@@ -149,19 +149,19 @@ RULES:
 // Image Extraction via Google Gemini Vision API
 // ---------------------------------------------------------------------------
 
+const USER_FRIENDLY_ERROR = "We couldn't read your photo. Please enter the details yourself.";
+
 async function callGeminiVision(
   apiKey: string,
   base64Data: string,
   mimeType: string
 ): Promise<string> {
   const models = [
-    'gemini-3.5-flash-lite',
-    'gemini-3.8-flash',
-    'gemini-3.5-flash',
-    'gemini-flash-latest',
-    'gemini-flash-lite-latest',
     'gemini-2.5-flash',
     'gemini-1.5-flash',
+    'gemini-3.5-flash-lite',
+    'gemini-3.8-flash',
+    'gemini-flash-latest',
   ];
   let lastError: Error | null = null;
 
@@ -192,6 +192,7 @@ async function callGeminiVision(
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
+        signal: AbortSignal.timeout(15000),
       });
 
       if (!response.ok) {
@@ -206,7 +207,7 @@ async function callGeminiVision(
       }
     } catch (err: unknown) {
       lastError = err instanceof Error ? err : new Error(String(err));
-      // Try next model if available
+      console.warn(`[AI Vision] Gemini model ${model} attempt failed:`, lastError.message);
     }
   }
 
@@ -257,6 +258,7 @@ async function callAnthropicVision(
       'anthropic-version': '2023-06-01',
     },
     body: JSON.stringify(payload),
+    signal: AbortSignal.timeout(15000),
   });
 
   if (!response.ok) {
@@ -298,19 +300,20 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       );
     }
 
-    // 3. Resolve API Key (supporting Google_API_Key from .env.local, GOOGLE_API_KEY, GEMINI_API_KEY, or ANTHROPIC_API_KEY)
+    // 3. Resolve API Key (prefer GOOGLE_API_KEY and ANTHROPIC_API_KEY)
     const googleApiKey =
-      process.env.Google_API_Key ||
       process.env.GOOGLE_API_KEY ||
+      process.env.Google_API_Key ||
       process.env.GEMINI_API_KEY;
 
     const anthropicApiKey = process.env.ANTHROPIC_API_KEY;
 
     if (!googleApiKey && !anthropicApiKey) {
+      console.error('[AI Vision] Error: Missing AI vision provider key. Set GOOGLE_API_KEY or ANTHROPIC_API_KEY.');
       return NextResponse.json(
         {
-          error:
-            'AI Vision provider is not configured. Please configure Google_API_Key or ANTHROPIC_API_KEY in your environment variables.',
+          success: false,
+          error: USER_FRIENDLY_ERROR,
         },
         { status: 503 }
       );
@@ -331,19 +334,21 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       const rawImages: string[] = Array.isArray(body.images)
         ? body.images
         : body.image
-        ? [body.image]
-        : [];
+          ? [body.image]
+          : [];
 
       if (rawImages.length === 0) {
+        console.warn('[AI Vision] Validation error: No images provided in payload.');
         return NextResponse.json(
-          { error: 'At least one image photograph is required for AI analysis.' },
+          { success: false, error: USER_FRIENDLY_ERROR },
           { status: 400 }
         );
       }
 
       if (rawImages.length > 5) {
+        console.warn('[AI Vision] Validation error: Exceeded 5 images limit.');
         return NextResponse.json(
-          { error: 'Maximum 5 images allowed per analysis request.' },
+          { success: false, error: USER_FRIENDLY_ERROR },
           { status: 400 }
         );
       }
@@ -351,16 +356,18 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       for (const uri of rawImages) {
         const match = uri.match(/^data:(image\/[a-zA-Z0-9.+]+);base64,(.+)$/);
         if (!match || !match[1] || !match[2]) {
+          console.warn('[AI Vision] Validation error: Malformed data URI format.');
           return NextResponse.json(
-            { error: 'Invalid image format. Must be a base64 encoded JPG, PNG, or WebP image.' },
+            { success: false, error: USER_FRIENDLY_ERROR },
             { status: 400 }
           );
         }
 
         const mime = match[1].toLowerCase();
         if (!['image/jpeg', 'image/jpg', 'image/png', 'image/webp'].includes(mime)) {
+          console.warn(`[AI Vision] Validation error: Unsupported image MIME type: ${mime}`);
           return NextResponse.json(
-            { error: `Unsupported image type (${mime}). Only JPG, PNG, and WebP are accepted.` },
+            { success: false, error: USER_FRIENDLY_ERROR },
             { status: 400 }
           );
         }
@@ -368,8 +375,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         const b64 = match[2];
         const approxBytes = (b64.length * 3) / 4;
         if (approxBytes > 5 * 1024 * 1024) {
+          console.warn(`[AI Vision] Validation error: Image exceeds 5MB size limit (~${approxBytes} bytes).`);
           return NextResponse.json(
-            { error: 'Each image must be under 5MB in size.' },
+            { success: false, error: USER_FRIENDLY_ERROR },
             { status: 400 }
           );
         }
@@ -385,30 +393,34 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       const files = formData.getAll('images') as File[];
 
       if (files.length === 0) {
+        console.warn('[AI Vision] Validation error: No image files provided in form-data.');
         return NextResponse.json(
-          { error: 'At least one image file is required.' },
+          { success: false, error: USER_FRIENDLY_ERROR },
           { status: 400 }
         );
       }
 
       if (files.length > 5) {
+        console.warn('[AI Vision] Validation error: Exceeded 5 files limit in form-data.');
         return NextResponse.json(
-          { error: 'Maximum 5 images allowed per analysis request.' },
+          { success: false, error: USER_FRIENDLY_ERROR },
           { status: 400 }
         );
       }
 
       for (const file of files) {
         if (!['image/jpeg', 'image/jpg', 'image/png', 'image/webp'].includes(file.type.toLowerCase())) {
+          console.warn(`[AI Vision] Validation error: Unsupported file type: ${file.name} (${file.type})`);
           return NextResponse.json(
-            { error: `File ${file.name} is not a valid JPG, PNG, or WebP photograph.` },
+            { success: false, error: USER_FRIENDLY_ERROR },
             { status: 400 }
           );
         }
 
         if (file.size > 5 * 1024 * 1024) {
+          console.warn(`[AI Vision] Validation error: File ${file.name} exceeds 5MB size limit (${file.size} bytes).`);
           return NextResponse.json(
-            { error: `File ${file.name} exceeds the 5MB size limit.` },
+            { success: false, error: USER_FRIENDLY_ERROR },
             { status: 400 }
           );
         }
@@ -425,8 +437,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         });
       }
     } else {
+      console.warn(`[AI Vision] Validation error: Unsupported content type: ${contentType}`);
       return NextResponse.json(
-        { error: 'Content-Type must be application/json or multipart/form-data.' },
+        { success: false, error: USER_FRIENDLY_ERROR },
         { status: 400 }
       );
     }
@@ -492,7 +505,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     if (finalDrafts.length === 0) {
       return NextResponse.json({
         success: false,
-        error: "Couldn't read this image, please fill in manually.",
+        error: USER_FRIENDLY_ERROR,
         drafts: [],
         remainingHourlyQuota: rateCheck.remainingHourly,
       });
@@ -510,12 +523,11 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     });
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : 'Unknown server error during AI photo analysis.';
-    console.error('[AI Vision Analyze Error]', err);
+    console.error('[AI Vision Server Error Details]:', errorMsg, err);
     return NextResponse.json(
       {
         success: false,
-        error: "Couldn't read this image, please fill in manually.",
-        details: errorMsg,
+        error: USER_FRIENDLY_ERROR,
       },
       { status: 500 }
     );

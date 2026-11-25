@@ -387,11 +387,10 @@ export const CatalogView: React.FC<CatalogViewProps> = ({ initialProducts }) => 
                     >
                       <div className="flex items-center gap-2.5">
                         <div
-                          className={`w-3 h-3 rounded-none border transition-colors flex items-center justify-center ${
-                            isSelected
+                          className={`w-3 h-3 rounded-none border transition-colors flex items-center justify-center ${isSelected
                               ? 'border-[#F2EFE9] bg-[#F2EFE9]'
                               : 'border-[#333333] bg-[#080808]'
-                          }`}
+                            }`}
                         >
                           {isSelected && <div className="w-1.5 h-1.5 bg-[#080808]" />}
                         </div>
@@ -424,11 +423,10 @@ export const CatalogView: React.FC<CatalogViewProps> = ({ initialProducts }) => 
                     >
                       <div className="flex items-center gap-2.5">
                         <div
-                          className={`w-3 h-3 rounded-none border transition-colors flex items-center justify-center ${
-                            isChecked
+                          className={`w-3 h-3 rounded-none border transition-colors flex items-center justify-center ${isChecked
                               ? 'border-[#F2EFE9] bg-[#F2EFE9]'
                               : 'border-[#333333] bg-[#080808]'
-                          }`}
+                            }`}
                         >
                           {isChecked && <div className="w-1.5 h-1.5 bg-[#080808]" />}
                         </div>
@@ -462,11 +460,10 @@ export const CatalogView: React.FC<CatalogViewProps> = ({ initialProducts }) => 
                     >
                       <div className="flex items-center gap-2.5">
                         <div
-                          className={`w-3 h-3 rounded-none border transition-colors flex items-center justify-center ${
-                            isChecked
+                          className={`w-3 h-3 rounded-none border transition-colors flex items-center justify-center ${isChecked
                               ? 'border-[#F2EFE9] bg-[#F2EFE9]'
                               : 'border-[#333333] bg-[#080808]'
-                          }`}
+                            }`}
                         >
                           {isChecked && <div className="w-1.5 h-1.5 bg-[#080808]" />}
                         </div>
@@ -496,11 +493,10 @@ export const CatalogView: React.FC<CatalogViewProps> = ({ initialProducts }) => 
                     >
                       <div className="flex items-center gap-2.5">
                         <div
-                          className={`w-3 h-3 rounded-none border transition-colors flex items-center justify-center ${
-                            isChecked
+                          className={`w-3 h-3 rounded-none border transition-colors flex items-center justify-center ${isChecked
                               ? 'border-[#F2EFE9] bg-[#F2EFE9]'
                               : 'border-[#333333] bg-[#080808]'
-                          }`}
+                            }`}
                         >
                           {isChecked && <div className="w-1.5 h-1.5 bg-[#080808]" />}
                         </div>
@@ -537,31 +533,31 @@ export const CatalogView: React.FC<CatalogViewProps> = ({ initialProducts }) => 
                 <h3 className="font-serif text-[18px] sm:text-[22px] text-[#F2EFE9] uppercase tracking-[0.06em] mb-3">
                   VAULT INDEX: 0 ACTIVE LOTS — NEW CONSIGNMENTS UNDERGOING AUTHENTICATION
                 </h3>
-                <p className="font-sans text-[12px] text-[#8E8E8E] max-w-lg mx-auto mb-6 leading-relaxed">
-                  ALL VAULT LOTS UNDER CUSTODY HAVE BEEN SETTLED OR ARE CURRENTLY IN TRANSIT. SELLERS CAN CONSIGN GRAILS FOR ESCROW-BACKED ACQUISITIONS.
+                <p className="font-sans text-[12px] text-[#A1A1AA] max-w-lg mx-auto mb-6 leading-relaxed">
+                  All items are currently reserved or in transit. Collectors and sellers can list items with escrow protection.
                 </p>
                 <Link
                   href="/sell"
-                  className="inline-block px-6 py-3 border border-[#F2EFE9] bg-[#080808] text-[#F2EFE9] hover:bg-[#F2EFE9] hover:text-[#080808] transition-colors font-sans text-[11px] tracking-[0.16em] uppercase font-semibold no-underline"
+                  className="inline-block px-6 py-3 border border-[#F2EFE9] bg-[#080808] text-[#F2EFE9] hover:bg-[#F2EFE9] hover:text-[#080808] transition-colors font-sans text-[11px] tracking-wider uppercase font-semibold no-underline"
                 >
-                  [ CONSIGN A LOT ]
+                  Sell An Item
                 </Link>
               </div>
             ) : filteredProducts.length === 0 ? (
               /* Filter Criteria Zero Matches Empty State */
               <div className="p-12 sm:p-16 border border-[#1F1F1F] bg-[#0C0C0C] text-center my-4">
                 <p className="font-serif text-[18px] text-[#F2EFE9] uppercase tracking-[0.06em] mb-2">
-                  No Archival Lots Found
+                  No Items Found
                 </p>
-                <p className="font-sans text-[12px] text-[#8E8E8E] max-w-sm mx-auto mb-6">
-                  No collectibles match your active criteria and facet selections.
+                <p className="font-sans text-[12px] text-[#A1A1AA] max-w-sm mx-auto mb-6">
+                  No collectibles match your current filter selections.
                 </p>
                 <button
                   type="button"
                   onClick={handleResetFilters}
-                  className="px-5 py-2.5 border border-[#1F1F1F] bg-[#080808] text-[#F2EFE9] hover:bg-[#F2EFE9] hover:text-[#080808] hover:border-[#F2EFE9] transition-colors cursor-pointer rounded-none font-sans text-[11px] tracking-[0.14em] uppercase"
+                  className="px-5 py-2.5 border border-[#1F1F1F] bg-[#080808] text-[#F2EFE9] hover:bg-[#F2EFE9] hover:text-[#080808] hover:border-[#F2EFE9] transition-colors cursor-pointer rounded-none font-sans text-[11px] tracking-wider uppercase"
                 >
-                  [ RESET ALL FILTERS ]
+                  Reset All Filters
                 </button>
               </div>
             ) : (

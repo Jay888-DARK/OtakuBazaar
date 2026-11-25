@@ -17,55 +17,51 @@
 import React, { useState, useEffect } from 'react';
 
 const FILTER_TABS = [
-  { id: 'ALL', label: '[ ALL ARCHIVAL LOTS ]' },
-  { id: 'S_RANK', label: '[ S-RANK ONLY ]' },
-  { id: 'FACTORY_SEALED', label: '[ FACTORY SEALED ]' },
-  { id: 'ESCROW_VERIFIED', label: '[ VERIFIED ESCROW ]' },
-  { id: 'UNDER_30K', label: '[ UNDER ₹30,000 ]' },
-  { id: 'PRIME_1', label: '[ PRIME 1 RESIN ]' },
+  { id: 'ALL', label: 'All Items' },
+  { id: 'S_RANK', label: 'Pristine' },
+  { id: 'FACTORY_SEALED', label: 'New, Sealed Box' },
+  { id: 'ESCROW_VERIFIED', label: 'Safe Escrow' },
+  { id: 'UNDER_30K', label: 'Under ₹30,000' },
+  { id: 'PRIME_1', label: 'High-Scale Statues' },
 ];
 
-const CATEGORY_TABS = [
-  {
-    id: 'ALL',
-    label: 'ALL ARCHIVAL LOTS',
-    count: '[9 LOTS]',
-  },
-  {
-    id: 'Scale Figure',
-    label: 'SCALE FIGURES',
-    count: '[6 LOTS]',
-  },
-  {
-    id: 'Manga Sets',
-    label: 'MANGA SETS',
-    count: '[1 LOTS]',
-  },
-  {
-    id: 'Nendoroid',
-    label: 'NENDOROIDS',
-    count: '[1 LOTS]',
-  },
-  {
-    id: 'Statues & Resin',
-    label: 'STATUES & RESIN',
-    count: '[2 LOTS]',
-  },
-  {
-    id: 'Mecha & Gunpla',
-    label: 'MECHA & GUNPLA',
-    count: '[1 LOTS]',
-  },
-  {
-    id: 'Cosplay & Props',
-    label: 'COSPLAY & PROPS',
-    count: '[1 LOTS]',
-  },
+const BASE_CATEGORIES = [
+  { id: 'ALL', label: 'All Collectibles' },
+  { id: 'Scale Figure', label: 'Scale Figures' },
+  { id: 'Manga Sets', label: 'Manga Editions' },
+  { id: 'Nendoroid', label: 'Nendoroids' },
+  { id: 'Statues & Resin', label: 'Statues & Resin' },
+  { id: 'Mecha & Gunpla', label: 'Mecha & Gunpla' },
+  { id: 'Cosplay & Props', label: 'Cosplay & Props' },
 ];
 
 export function MarketplaceFilterNav(): React.JSX.Element {
   const [activeFilter, setActiveFilter] = useState<string>('ALL');
   const [activeCategory, setActiveCategory] = useState<string>('ALL');
+  const [totalCount, setTotalCount] = useState<number>(9);
+  const [countsMap, setCountsMap] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    let isMounted = true;
+    fetch('/api/listings')
+      .then((res) => (res.ok ? res.json() : { items: [] }))
+      .then((data) => {
+        if (!isMounted) return;
+        const items = Array.isArray(data.items) ? data.items : [];
+        setTotalCount(items.length);
+        const map: Record<string, number> = {};
+        for (const item of items) {
+          const c = item.category || 'Scale Figure';
+          map[c] = (map[c] || 0) + 1;
+        }
+        setCountsMap(map);
+      })
+      .catch(() => {});
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -117,12 +113,12 @@ export function MarketplaceFilterNav(): React.JSX.Element {
 
   return (
     <div className="sticky top-20 z-40 w-full border-b border-[#1F1F1F] bg-[#080808] select-none">
-      {/* Tier 1: CRITERIA Pills Bar */}
+      {/* Tier 1: Criteria Bar */}
       <div className="border-b border-[#1F1F1F] bg-[#080808] px-4 sm:px-6 lg:px-8 py-2.5">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
           <div className="flex items-center gap-2 overflow-x-auto scrollbar-none py-0.5">
-            <span className="shrink-0 mr-1 font-sans uppercase text-[10px] tracking-[0.15em] text-[#777777] font-semibold">
-              CRITERIA:
+            <span className="shrink-0 mr-1 font-sans uppercase text-[10px] tracking-wider text-[#9CA3AF] font-semibold">
+              Filter:
             </span>
 
             {FILTER_TABS.map((tab) => {
@@ -132,10 +128,10 @@ export function MarketplaceFilterNav(): React.JSX.Element {
                   key={tab.id}
                   type="button"
                   onClick={() => handleFilterClick(tab.id)}
-                  className={`px-3 py-1.5 uppercase border transition-colors duration-75 shrink-0 cursor-pointer rounded-none font-sans text-[10px] tracking-[0.14em] ${
+                  className={`px-3 py-1.5 uppercase border transition-colors duration-75 shrink-0 cursor-pointer rounded-none font-sans text-[10px] tracking-wider ${
                     isActive
                       ? 'border-[#F2EFE9] bg-[#F2EFE9] text-[#080808] font-semibold'
-                      : 'border-[#1F1F1F] bg-[#0C0C0C] text-[#888888] hover:border-[#333333] hover:text-[#F2EFE9]'
+                      : 'border-[#1F1F1F] bg-[#0C0C0C] text-[#9CA3AF] hover:border-[#333333] hover:text-[#F2EFE9]'
                   }`}
                 >
                   {tab.label}
@@ -147,32 +143,33 @@ export function MarketplaceFilterNav(): React.JSX.Element {
           {/* Right Status Badge */}
           <div className="hidden md:flex items-center gap-2 shrink-0 border border-[#193829] bg-[#091812] px-3 py-1">
             <span className="w-1.5 h-1.5 rounded-none bg-[#10B981] inline-block" />
-            <span className="font-sans uppercase text-[10px] tracking-[0.15em] text-[#10B981] font-semibold">
-              INDEX ACTIVE: 9 VERIFIED LOTS
+            <span className="font-sans uppercase text-[10px] tracking-wider text-[#10B981] font-semibold">
+              {totalCount} Items Live in Catalog
             </span>
           </div>
         </div>
       </div>
 
-      {/* Tier 2: Pure Typographic Category Bar (No Muddy Micro-Thumbnails, Complete Width Clearance) */}
+      {/* Tier 2: Typographic Category Bar */}
       <div className="bg-[#080808] px-4 sm:px-6 lg:px-8 py-3 overflow-x-auto scrollbar-none">
         <div className="mx-auto flex max-w-7xl items-center gap-2.5 flex-nowrap pb-1">
-          {CATEGORY_TABS.map((cat) => {
+          {BASE_CATEGORIES.map((cat) => {
             const isActive = activeCategory === cat.id;
+            const count = cat.id === 'ALL' ? totalCount : countsMap[cat.id] || 0;
             return (
               <button
                 key={cat.id}
                 type="button"
                 onClick={() => handleCategoryClick(cat.id)}
-                className={`flex items-center gap-2 px-4 py-2.5 border transition-colors duration-75 shrink-0 cursor-pointer rounded-none uppercase font-sans text-[11px] tracking-[0.14em] ${
+                className={`flex items-center gap-2 px-4 py-2.5 border transition-colors duration-75 shrink-0 cursor-pointer rounded-none uppercase font-sans text-[11px] tracking-wider ${
                   isActive
                     ? 'border-[#F2EFE9] bg-[#F2EFE9] text-[#080808] font-semibold'
-                    : 'border-[#1F1F1F] bg-[#0C0C0C] text-[#888888] hover:border-[#333333] hover:text-[#F2EFE9]'
+                    : 'border-[#1F1F1F] bg-[#0C0C0C] text-[#9CA3AF] hover:border-[#333333] hover:text-[#F2EFE9]'
                 }`}
               >
                 <span>{cat.label}</span>
-                <span className={isActive ? 'text-[#080808]/75 text-[10px] font-medium' : 'text-[#555555] text-[10px]'}>
-                  {cat.count}
+                <span className={isActive ? 'text-[#080808]/75 text-[10px] font-medium' : 'text-[#A1A1AA] text-[10px]'}>
+                  ({count})
                 </span>
               </button>
             );

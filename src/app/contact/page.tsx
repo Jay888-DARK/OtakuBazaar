@@ -27,11 +27,29 @@ export default function ContactPage(): React.JSX.Element {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    // Simulate submission to support desk
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, orderRef, topic, message }),
+      });
+      if (res.ok) {
+        setIsSuccess(true);
+      } else {
+        // Fallback to mailto if API fails
+        window.location.href = `mailto:jaybhatt8826@gmail.com?subject=${encodeURIComponent(
+          `[OtakuBazaar Inquiry] ${topic}: ${name} (${orderRef || 'No Order Ref'})`
+        )}&body=${encodeURIComponent(message)}`;
+        setIsSuccess(true);
+      }
+    } catch {
+      window.location.href = `mailto:jaybhatt8826@gmail.com?subject=${encodeURIComponent(
+        `[OtakuBazaar Inquiry] ${topic}: ${name} (${orderRef || 'No Order Ref'})`
+      )}&body=${encodeURIComponent(message)}`;
       setIsSuccess(true);
-    }, 800);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -78,19 +96,19 @@ export default function ContactPage(): React.JSX.Element {
               <div className="space-y-1">
                 <span className="text-[11px] text-[#8E8E8E] block">Customer Support Email:</span>
                 <a
-                  href="mailto:support@otakubazaar.com"
+                  href="mailto:jaybhatt8826@gmail.com"
                   className="font-mono text-[13px] text-[#F2EFE9] hover:underline block"
                 >
-                  support@otakubazaar.com
+                  jaybhatt8826@gmail.com
                 </a>
               </div>
               <div className="space-y-1 pt-2 border-t border-[#161616]">
                 <span className="text-[11px] text-[#8E8E8E] block">Dispute &amp; Unboxing Escalations:</span>
                 <a
-                  href="mailto:disputes@otakubazaar.com"
+                  href="mailto:jaybhatt8826@gmail.com"
                   className="font-mono text-[13px] text-[#F2EFE9] hover:underline block"
                 >
-                  disputes@otakubazaar.com
+                  jaybhatt8826@gmail.com
                 </a>
               </div>
               <div className="pt-2 text-[10px] text-[#777777] uppercase tracking-wider">
@@ -112,13 +130,12 @@ export default function ContactPage(): React.JSX.Element {
                 In accordance with the Information Technology Act, 2000 and the Consumer Protection (E-Commerce) Rules, 2020:
               </p>
               <div className="text-[11px] space-y-1 text-[#CCCCCC]">
-                <div><strong className="text-[#F2EFE9]">Grievance Officer:</strong> Grievance Redressal Officer</div>
-                <div><strong className="text-[#F2EFE9]">Email:</strong> <a href="mailto:grievance@otakubazaar.com" className="text-[#F2EFE9] underline">grievance@otakubazaar.com</a></div>
+                <div><strong className="text-[#F2EFE9]">Grievance Officer:</strong> Jay Bhatt (Grievance Redressal Officer)</div>
+                <div><strong className="text-[#F2EFE9]">Email:</strong> <a href="mailto:jaybhatt8826@gmail.com" className="text-[#F2EFE9] underline">jaybhatt8826@gmail.com</a></div>
                 <div><strong className="text-[#F2EFE9]">Response SLA:</strong> Acknowledged within 48 hours; resolved within 30 days.</div>
               </div>
-              {/* TODO: Lawyer review - Verify registered entity name and office address upon incorporation */}
-              <div className="pt-2 border-t border-[#161616] text-[10px] text-[#666666] leading-tight">
-                Corporate Entity: OtakuBazaar Internet Services Private Limited (Proposed) • Mumbai, Maharashtra, India
+              <div className="pt-2 border-t border-[#161616] text-[10px] text-[#999999] leading-tight">
+                OtakuBazaar is operated by Jay Bhatt, an individual based in India.
               </div>
             </div>
           </div>
@@ -132,18 +149,28 @@ export default function ContactPage(): React.JSX.Element {
             {isSuccess ? (
               <div className="p-6 bg-[#091812] border border-[#193829] text-center space-y-3">
                 <span className="text-[11px] tracking-[0.16em] uppercase text-[#10B981] font-bold block">
-                  [ INQUIRY TRANSMITTED SUCCESSFULLY ]
+                  Inquiry Transmitted Successfully
                 </span>
                 <p className="text-xs text-[#8E8E8E]">
-                  Our support team has logged your ticket and will respond via email to <strong className="text-[#F2EFE9]">{email}</strong> within 24–48 business hours.
+                  Your inquiry has been routed to <strong className="text-[#F2EFE9]">jaybhatt8826@gmail.com</strong>. We will respond to <strong className="text-[#F2EFE9]">{email}</strong> within 24–48 business hours.
                 </p>
-                <button
-                  type="button"
-                  onClick={() => setIsSuccess(false)}
-                  className="mt-3 px-4 py-2 bg-[#F2EFE9] text-[#080808] border border-[#F2EFE9] text-[10px] uppercase tracking-wider font-semibold"
-                >
-                  [ SUBMIT ANOTHER INQUIRY ]
-                </button>
+                <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+                  <a
+                    href={`mailto:jaybhatt8826@gmail.com?subject=${encodeURIComponent(
+                      `[OtakuBazaar Inquiry] ${topic}: ${name} (${orderRef || 'No Order Ref'})`
+                    )}&body=${encodeURIComponent(message)}`}
+                    className="px-4 py-2 bg-[#F2EFE9] text-[#080808] border border-[#F2EFE9] text-[10px] uppercase tracking-wider font-semibold no-underline"
+                  >
+                    Open in Your Email Client
+                  </a>
+                  <button
+                    type="button"
+                    onClick={() => setIsSuccess(false)}
+                    className="px-4 py-2 bg-transparent text-[#CCCCCC] border border-[#333333] hover:border-[#666666] text-[10px] uppercase tracking-wider font-semibold"
+                  >
+                    Submit Another Inquiry
+                  </button>
+                </div>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4">
@@ -226,7 +253,7 @@ export default function ContactPage(): React.JSX.Element {
                   disabled={isSubmitting}
                   className="w-full py-3 bg-[#F2EFE9] hover:bg-[#EAE6DF] text-[#080808] border border-[#F2EFE9] font-semibold text-[11px] uppercase tracking-[0.16em] transition-none cursor-pointer rounded-none disabled:opacity-50"
                 >
-                  {isSubmitting ? '[ TRANSMITTING INQUIRY... ]' : '[ SEND MESSAGE TO SUPPORT ]'}
+                  {isSubmitting ? 'Transmitting inquiry...' : 'Send message to support'}
                 </button>
               </form>
             )}
