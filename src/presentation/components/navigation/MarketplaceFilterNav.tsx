@@ -38,7 +38,7 @@ const BASE_CATEGORIES = [
 export function MarketplaceFilterNav(): React.JSX.Element {
   const [activeFilter, setActiveFilter] = useState<string>('ALL');
   const [activeCategory, setActiveCategory] = useState<string>('ALL');
-  const [totalCount, setTotalCount] = useState<number>(9);
+  const [totalCount, setTotalCount] = useState<number>(0);
   const [countsMap, setCountsMap] = useState<Record<string, number>>({});
 
   useEffect(() => {

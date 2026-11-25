@@ -16,12 +16,12 @@ export interface CategoryItem {
 }
 
 export const CATEGORIES: CategoryItem[] = [
-  { id: 'ALL', name: 'All Collectibles', count: 9 },
-  { id: 'Scale Figure', name: 'Scale Figures', count: 6 },
-  { id: 'Statues & Resin', name: 'Statues & Resin', count: 2 },
-  { id: 'Manga Sets', name: 'Manga Editions', count: 1 },
-  { id: 'Nendoroid', name: 'Nendoroids', count: 1 },
-  { id: 'Cosplay & Props', name: 'Cosplay & Props', count: 1 },
+  { id: 'ALL', name: 'All Collectibles', count: 0 },
+  { id: 'Scale Figure', name: 'Scale Figures', count: 0 },
+  { id: 'Statues & Resin', name: 'Statues & Resin', count: 0 },
+  { id: 'Manga Sets', name: 'Manga Editions', count: 0 },
+  { id: 'Nendoroid', name: 'Nendoroids', count: 0 },
+  { id: 'Cosplay & Props', name: 'Cosplay & Props', count: 0 },
 ];
 
 interface VisualCategoryBarProps {
