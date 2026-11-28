@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createRazorpayOrder } from '@/app/actions/paymentActions';
+import { usePaymentsEnabled } from '@/presentation/hooks/usePaymentsEnabled';
 
 declare global {
   interface Window {
@@ -60,6 +61,7 @@ export function CheckoutButton({
   disabled = false,
 }: CheckoutButtonProps) {
   const router = useRouter();
+  const { paymentsEnabled, message: paymentsDisabledMessage } = usePaymentsEnabled();
   const [isLoading, setIsLoading] = useState(false);
   const loading = isLoading;
   const setLoading = setIsLoading;
@@ -170,10 +172,12 @@ export function CheckoutButton({
         id="pay-securely-btn"
         data-testid="pay-securely-button"
         onClick={handleCheckout}
-        disabled={disabled || isLoading}
+        disabled={disabled || isLoading || !paymentsEnabled}
         className={className || defaultClasses}
       >
-        {loading ? (
+        {!paymentsEnabled ? (
+          <span>{paymentsDisabledMessage}</span>
+        ) : loading ? (
           <>
             <svg
               className="animate-spin h-4 w-4 text-current"

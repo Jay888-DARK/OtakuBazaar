@@ -4,6 +4,7 @@ import Razorpay from 'razorpay';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { prisma } from '@/lib/prismaClient';
+import { isPaymentsEnabled, PAYMENTS_COMING_SOON_MESSAGE } from '@/infrastructure/payment/paymentConfig';
 
 /**
  * Creates a Razorpay Order on the server enforcing Server-Side Price Authority.
@@ -21,6 +22,10 @@ export async function createRazorpayOrder(
   lotId?: string,
   dealOfferId?: string
 ): Promise<string> {
+  if (!isPaymentsEnabled()) {
+    throw new Error(PAYMENTS_COMING_SOON_MESSAGE);
+  }
+
   const session = await getServerSession(authOptions);
   const userId = (session?.user as { id?: string } | undefined)?.id;
   if (!userId) {
@@ -36,6 +41,10 @@ export async function createRazorpayOrder(
       `keySecret=${keySecret ? 'present' : 'MISSING'}.`
     );
     throw new Error('Razorpay credentials are not configured in environment variables.');
+  }
+
+  if (keyId.startsWith('rzp_live_') && process.env.ALLOW_LIVE_RAZORPAY !== 'true') {
+    throw new Error('Live Razorpay keys (rzp_live_) are blocked until live payments are approved.');
   }
 
   let truePriceINR = 0;
@@ -63,9 +72,9 @@ export async function createRazorpayOrder(
     }
   }
 
-  // 3. Fallback to amount if no ID was provided
+  // 3. Reject if no authoritative server-side price could be resolved
   if (truePriceINR <= 0) {
-    truePriceINR = amount > 0 ? amount : 999;
+    throw new Error('Unable to resolve authoritative item or deal price on the server.');
   }
 
   const razorpay = new Razorpay({

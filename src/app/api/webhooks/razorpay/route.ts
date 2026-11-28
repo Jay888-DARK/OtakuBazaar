@@ -135,11 +135,24 @@ export async function POST(req: Request): Promise<NextResponse> {
         console.warn('[RazorpayWebhook] Note updating order repo:', orderErr);
       }
 
-      // 3. Record Double-Entry Accounting Ledger Records
-      try {
-        await EscrowLedgerService.recordPaymentCapture(orderId, amountInPaise, currency, paymentId);
-      } catch (ledgerErr) {
-        console.warn('[RazorpayWebhook] Note recording ledger:', ledgerErr);
+      // 3. Record Double-Entry Accounting Ledger Records (skip if already ESCROW_LOCKED / HELD_IN_ESCROW)
+      const preExistingOrder = await prisma.order.findFirst({
+        where: {
+          OR: [
+            { id: orderId },
+            { razorpayOrderId: orderId },
+            ...(paymentId ? [{ razorpayPaymentId: paymentId }] : []),
+          ],
+        },
+        select: { id: true, status: true, escrowStatus: true },
+      });
+
+      if (!preExistingOrder || preExistingOrder.escrowStatus !== 'HELD_IN_ESCROW') {
+        try {
+          await EscrowLedgerService.recordPaymentCapture(orderId, amountInPaise, currency, paymentId);
+        } catch (ledgerErr) {
+          console.warn('[RazorpayWebhook] Note recording ledger:', ledgerErr);
+        }
       }
 
       // 4. Silent Account Provisioning for Guest Buyers & Order Synchronization

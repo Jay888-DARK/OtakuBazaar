@@ -16,6 +16,7 @@ import Razorpay from 'razorpay';
 import { prisma } from '@/lib/prismaClient';
 import { RateLimiter } from '@/infrastructure/security/RateLimiter';
 import { RBACGuard } from '@/infrastructure/security/RBACGuard';
+import { isPaymentsEnabled, PAYMENTS_COMING_SOON_MESSAGE } from '@/infrastructure/payment/paymentConfig';
 
 const CreateOrderSchema = z.object({
   lotId: z.string().trim().max(100).optional(),
@@ -31,10 +32,21 @@ function getRazorpayClient(): Razorpay {
     throw new Error('RAZORPAY_KEY_ID or RAZORPAY_KEY_SECRET is missing in environment variables.');
   }
 
+  if (key_id.startsWith('rzp_live_') && process.env.ALLOW_LIVE_RAZORPAY !== 'true') {
+    throw new Error('Live Razorpay keys (rzp_live_) are blocked until live payments are approved.');
+  }
+
   return new Razorpay({ key_id, key_secret });
 }
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
+  if (!isPaymentsEnabled()) {
+    return NextResponse.json(
+      { error: PAYMENTS_COMING_SOON_MESSAGE, paymentsEnabled: false },
+      { status: 503 }
+    );
+  }
+
   const authResult = await RBACGuard.requireAuthAsync(req);
   if (!authResult.success) {
     return authResult.response;
@@ -144,6 +156,9 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     const order = await razorpay.orders.create(options);
     return NextResponse.json(order);
   } catch (error) {
+    if (error instanceof Error && error.message.includes('rzp_live_')) {
+      return NextResponse.json({ error: error.message }, { status: 403 });
+    }
     console.error('[API /api/orders] Escrow initialization failed:', error);
     return NextResponse.json({ error: 'Escrow initialization failed' }, { status: 500 });
   }

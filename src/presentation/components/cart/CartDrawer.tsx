@@ -13,6 +13,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { getCartItems, removeFromCart } from '@/app/actions/dealActions';
+import { usePaymentsEnabled } from '@/presentation/hooks/usePaymentsEnabled';
 import { BargainChatDrawer } from '@/presentation/components/chat/BargainChatDrawer';
 
 export interface CartProduct {
@@ -68,6 +69,7 @@ function getValidThumbnail(imageUrls?: string | null): string {
 
 export function CartDrawer(): React.JSX.Element | null {
   const router = useRouter();
+  const { paymentsEnabled, message: paymentsDisabledMessage } = usePaymentsEnabled();
   const [isOpen, setIsOpen] = useState(false);
   const [cartItems, setCartItems] = useState<CartItemData[]>([]);
   const [loading, setLoading] = useState(false);
@@ -374,10 +376,11 @@ export function CartDrawer(): React.JSX.Element | null {
 
                 <button
                   type="button"
+                  disabled={!paymentsEnabled}
                   onClick={handleCheckout}
-                  className="w-full py-3 bg-[#F2EFE9] hover:bg-[#EAE6DF] text-[#080808] border border-[#F2EFE9] text-[11px] font-semibold uppercase tracking-[0.2em] transition-colors duration-75 cursor-pointer flex items-center justify-center font-sans rounded-none"
+                  className="w-full py-3 bg-[#F2EFE9] hover:bg-[#EAE6DF] text-[#080808] border border-[#F2EFE9] text-[11px] font-semibold uppercase tracking-[0.2em] transition-colors duration-75 cursor-pointer flex items-center justify-center font-sans rounded-none disabled:opacity-40 disabled:cursor-not-allowed"
                 >
-                  <span>[ PROCEED TO ESCROW CHECKOUT ]</span>
+                  <span>{paymentsEnabled ? '[ PROCEED TO ESCROW CHECKOUT ]' : paymentsDisabledMessage}</span>
                 </button>
               </div>
             )}

@@ -15,6 +15,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { ArchivalFooter } from '@/presentation/components/footer/ArchivalFooter';
+import { usePaymentsEnabled } from '@/presentation/hooks/usePaymentsEnabled';
 
 interface CheckoutItem {
   id: string;
@@ -27,6 +28,7 @@ interface CheckoutItem {
 }
 
 export default function CheckoutPage(): React.JSX.Element {
+  const { paymentsEnabled, message: paymentsDisabledMessage } = usePaymentsEnabled();
   // Address Form State
   const [fullName, setFullName] = useState('Tanjiro Kamado');
   const [phone, setPhone] = useState('9876543210');
@@ -495,14 +497,22 @@ export default function CheckoutPage(): React.JSX.Element {
                 </div>
               </div>
 
+              {!paymentsEnabled && (
+                <div className="p-3 border border-[#2F2F2F] bg-[#121212] text-[#F2EFE9] text-xs uppercase tracking-wider text-center font-semibold">
+                  {paymentsDisabledMessage}
+                </div>
+              )}
+
               {/* Primary CTA */}
               <button
                 type="button"
                 onClick={handleEscrowPayment}
-                disabled={!unboxingConfirmed || isProcessing || !isFormValid}
+                disabled={!paymentsEnabled || !unboxingConfirmed || isProcessing || !isFormValid}
                 className="w-full py-3.5 bg-[#F2EFE9] text-[#080808] border border-[#F2EFE9] text-xs font-semibold uppercase tracking-wider transition-none cursor-pointer rounded-none disabled:opacity-30 flex items-center justify-center font-sans"
               >
-                {isProcessing
+                {!paymentsEnabled
+                  ? paymentsDisabledMessage
+                  : isProcessing
                   ? 'Securing escrow...'
                   : 'Pay via Razorpay (Escrow Protected)'}
               </button>

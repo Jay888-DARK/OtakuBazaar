@@ -174,14 +174,21 @@ test('Security: old hardcoded secret and rotated-out NextAuth JWT tokens are rej
 });
 
 test('Security: unauthenticated POST /api/checkout/razorpay is rejected with 401', async () => {
-  const req = new NextRequest('https://otakubazaar.jaybhatt.me/api/checkout/razorpay', {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ productId: 'lot_123', price: 1 }),
-  });
+  const prevPayments = process.env.PAYMENTS_ENABLED;
+  process.env.PAYMENTS_ENABLED = 'true';
+  try {
+    const req = new NextRequest('https://otakubazaar.jaybhatt.me/api/checkout/razorpay', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ productId: 'lot_123', price: 1 }),
+    });
 
-  const res = await razorpayCheckout(req);
-  assert.equal(res.status, 401, 'POST /api/checkout/razorpay must require authentication');
+    const res = await razorpayCheckout(req);
+    assert.equal(res.status, 401, 'POST /api/checkout/razorpay must require authentication');
+  } finally {
+    if (prevPayments !== undefined) process.env.PAYMENTS_ENABLED = prevPayments;
+    else delete process.env.PAYMENTS_ENABLED;
+  }
 });
 
 test('SEO: middleware permanently redirects *.vercel.app to otakubazaar.jaybhatt.me while preserving auth and webhooks', async () => {

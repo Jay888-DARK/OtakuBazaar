@@ -16,6 +16,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { usePaymentsEnabled } from '@/presentation/hooks/usePaymentsEnabled';
 
 export interface InstantCheckoutProps {
   productId: string;
@@ -38,6 +39,7 @@ export function InstantCheckoutDrawer({
   onSuccess,
   initialWallet,
 }: InstantCheckoutProps): React.JSX.Element | null {
+  const { paymentsEnabled, message: paymentsDisabledMessage } = usePaymentsEnabled();
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
@@ -180,7 +182,7 @@ export function InstantCheckoutDrawer({
       const serverKey = responseData.key_id?.trim();
       const envClientKey = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID?.trim();
 
-      let effectiveKey = envClientKey || serverKey || 'rzp_test_TjnMsPZWKcfEdt';
+      let effectiveKey = envClientKey || serverKey || '';
       if (envClientKey && serverKey) {
         const isServerTest = serverKey.startsWith('rzp_test_');
         const isClientTest = envClientKey.startsWith('rzp_test_');
@@ -193,9 +195,12 @@ export function InstantCheckoutDrawer({
         }
       }
 
-      const activeKey = (process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID?.trim() || effectiveKey || '').trim();
+      const activeKey = effectiveKey.trim();
       if (!activeKey) {
         throw new Error('Razorpay Public Key is missing or invalid.');
+      }
+      if (activeKey.startsWith('rzp_live_') && process.env.NEXT_PUBLIC_ALLOW_LIVE_RAZORPAY !== 'true') {
+        throw new Error('Live Razorpay keys (rzp_live_) are blocked in test-only mode.');
       }
 
       const orderData = responseData;
@@ -519,15 +524,22 @@ export function InstantCheckoutDrawer({
 
             {/* Payment Trigger CTA */}
             <div className="space-y-3 pt-2">
+              {!paymentsEnabled && (
+                <div className="p-2.5 bg-zinc-900 border border-zinc-700 text-zinc-200 text-[10px] uppercase tracking-wider font-semibold text-center">
+                  {paymentsDisabledMessage}
+                </div>
+              )}
               <button
                 type="button"
                 id="instant-pay-trigger"
                 onClick={() => handleInstantPay()}
-                disabled={loading}
+                disabled={loading || !paymentsEnabled}
                 style={{ fontFamily: "'Satoshi', sans-serif" }}
                 className="w-full py-4 bg-[#f4f4f4] hover:bg-[#EAE6DF] text-black font-bold text-xs sm:text-sm uppercase tracking-[0.15em] border border-[#f4f4f4] cursor-pointer rounded-none transition-none flex items-center justify-center gap-2 disabled:opacity-50 disabled:pointer-events-none"
               >
-                {loading ? (
+                {!paymentsEnabled ? (
+                  <span>{paymentsDisabledMessage}</span>
+                ) : loading ? (
                   <>
                     <svg
                       className="animate-spin h-4 w-4 text-black"
