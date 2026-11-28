@@ -20,13 +20,19 @@ import { VaultCartToast } from '@/presentation/components/cart/VaultCartToast';
 import { ProvenanceManifestModal } from '@/presentation/components/provenance/ProvenanceManifestModal';
 import { RazorpayScript } from '@/presentation/components/payments/RazorpayScript';
 import { AnalyticsAndMonitoring } from '@/presentation/components/telemetry/AnalyticsAndMonitoring';
+import { getSiteUrl } from '@/infrastructure/utils/siteUrl';
+
+const siteUrl = getSiteUrl();
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://otakubazaar.jaybhatt.me'),
+  metadataBase: new URL(siteUrl),
   alternates: {
     canonical: '/',
   },
-  title: 'OtakuBazaar — Anime Figures & Collectibles Marketplace India',
+  title: {
+    template: '%s | OtakuBazaar',
+    default: 'OtakuBazaar — Anime Figures & Collectibles Marketplace India',
+  },
   description:
     'Buy, sell, and negotiate anime scale figures, Nendoroids, manga box sets, and collectibles from Indian collectors with a 48-hour unboxing inspection window.',
   icons: {
@@ -40,13 +46,13 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'OtakuBazaar — Anime Figures & Collectibles Marketplace India',
     description: 'Collector-to-collector anime scale figures, Nendoroids, and manga in India.',
-    url: 'https://otakubazaar.jaybhatt.me',
+    url: siteUrl,
     siteName: 'OtakuBazaar',
     locale: 'en_IN',
     type: 'website',
     images: [
       {
-        url: 'https://otakubazaar.jaybhatt.me/opengraph-image',
+        url: `${siteUrl}/opengraph-image`,
         width: 1200,
         height: 630,
         alt: 'OtakuBazaar — Anime Figures & Collectibles Marketplace India',
@@ -57,7 +63,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'OtakuBazaar — Anime Figures & Collectibles Marketplace India',
     description: 'Collector-to-collector anime scale figures, Nendoroids, and manga in India.',
-    images: ['https://otakubazaar.jaybhatt.me/opengraph-image'],
+    images: [`${siteUrl}/opengraph-image`],
   },
 };
 

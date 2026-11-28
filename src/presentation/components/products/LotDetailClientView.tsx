@@ -204,16 +204,16 @@ export function LotDetailClientView({ product }: LotDetailClientViewProps): Reac
                       }}
                     />
                   ) : (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={activeMedia.src}
-                      alt={`${product.title} — ${activeMedia.title}`}
+                    <Image
+                      src={activeMedia.src || '/otakubazaar-logo.png'}
+                      alt={`${product.title}${product.manufacturer ? ` by ${product.manufacturer}` : ''} — ${activeMedia.title}`}
+                      fill
+                      priority
+                      sizes="(max-width: 1024px) 100vw, 58vw"
+                      unoptimized={Boolean(activeMedia.src?.startsWith('data:'))}
                       onLoad={() => setImageLoaded(true)}
-                      onError={(e) => {
-                        (e.currentTarget as HTMLImageElement).src = '/otakubazaar-logo.png';
-                        setImageLoaded(true);
-                      }}
-                      className={`w-full h-full object-cover object-center transition-opacity duration-150 ${
+                      onError={() => setImageLoaded(true)}
+                      className={`object-cover object-center transition-opacity duration-150 ${
                         imageLoaded ? 'opacity-100' : 'opacity-0'
                       }`}
                     />
