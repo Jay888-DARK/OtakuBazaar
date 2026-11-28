@@ -15,9 +15,11 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { getCartItems, removeFromCart } from '@/app/actions/dealActions';
+import { usePaymentsEnabled } from '@/presentation/hooks/usePaymentsEnabled';
 
 export default function CartPage(): React.JSX.Element {
   const router = useRouter();
+  const { paymentsEnabled, message: paymentsDisabledMessage } = usePaymentsEnabled();
   const [cartItems, setCartItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -191,13 +193,19 @@ export default function CartPage(): React.JSX.Element {
                   </div>
                 </div>
 
-                <div className="pt-3">
+                <div className="pt-3 space-y-2">
+                  {!paymentsEnabled && (
+                    <p className="text-xs text-zinc-400 uppercase tracking-wider text-center">
+                      {paymentsDisabledMessage}
+                    </p>
+                  )}
                   <button
                     type="button"
+                    disabled={!paymentsEnabled}
                     onClick={() => router.push('/checkout')}
-                    className="w-full py-3 bg-[#f4f4f4] hover:bg-[#EAE6DF] text-black text-xs font-bold uppercase tracking-wider border border-[#f4f4f4] transition-none cursor-pointer text-center block rounded-none"
+                    className="w-full py-3 bg-[#f4f4f4] hover:bg-[#EAE6DF] text-black text-xs font-bold uppercase tracking-wider border border-[#f4f4f4] transition-none cursor-pointer text-center block rounded-none disabled:opacity-40 disabled:cursor-not-allowed"
                   >
-                    Proceed to Escrow Checkout →
+                    {paymentsEnabled ? 'Proceed to Escrow Checkout →' : paymentsDisabledMessage}
                   </button>
                 </div>
               </div>

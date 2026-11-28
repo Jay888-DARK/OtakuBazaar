@@ -1,16 +1,29 @@
 import type { MetadataRoute } from 'next';
+import { getSiteUrl } from '@/infrastructure/utils/siteUrl';
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || 'https://otakubazaar.jaybhatt.me').replace(/\/$/, '');
+  const siteUrl = getSiteUrl();
 
   return {
     rules: [
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/api/', '/checkout/', '/cart/', '/profile/', '/vault-ops/', '/vault/', '/login/', '/sell/'],
+        disallow: [
+          '/api/',
+          '/admin',
+          '/dashboard',
+          '/account',
+          '/checkout',
+          '/cart',
+          '/profile',
+          '/vault-ops',
+          '/vault',
+          '/login',
+          '/sell',
+        ],
       },
     ],
-    sitemap: `${baseUrl}/sitemap.xml`,
+    sitemap: `${siteUrl}/sitemap.xml`,
   };
 }

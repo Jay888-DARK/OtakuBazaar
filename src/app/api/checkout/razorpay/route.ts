@@ -12,6 +12,7 @@ import { prisma } from '@/lib/prismaClient';
 import { OrderRepository } from '@/infrastructure/database/repositories/OrderRepository';
 import { EscrowLedgerService } from '@/infrastructure/payment/EscrowLedgerService';
 import { RBACGuard } from '@/infrastructure/security/RBACGuard';
+import { isPaymentsEnabled, PAYMENTS_COMING_SOON_MESSAGE } from '@/infrastructure/payment/paymentConfig';
 
 function getRazorpayClient() {
   const key_id = process.env.RAZORPAY_KEY_ID?.trim() || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID?.trim();
@@ -31,11 +32,14 @@ function getRazorpayClient() {
     );
   }
 
-  // Key mode check (test vs live)
+  // Key mode check (block live keys unless explicitly approved)
+  if (key_id && key_id.startsWith('rzp_live_') && process.env.ALLOW_LIVE_RAZORPAY !== 'true') {
+    throw new Error('Live Razorpay keys (rzp_live_) are blocked until live payments are approved.');
+  }
+
   if (key_id) {
     const isTestKey = key_id.startsWith('rzp_test_');
-    const isLiveKey = key_id.startsWith('rzp_live_');
-    if (!isTestKey && !isLiveKey) {
+    if (!isTestKey && !key_id.startsWith('rzp_live_')) {
       console.warn(`[Razorpay Configuration] Unrecognized Razorpay key format: ${key_id.substring(0, 8)}...`);
     }
   }
@@ -54,6 +58,13 @@ function getRazorpayClient() {
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
   try {
+    if (!isPaymentsEnabled()) {
+      return NextResponse.json(
+        { error: PAYMENTS_COMING_SOON_MESSAGE, paymentsEnabled: false },
+        { status: 503 }
+      );
+    }
+
     const authResult = await RBACGuard.requireAuthAsync(req);
     if (!authResult.success) {
       return authResult.response;
@@ -265,18 +276,12 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       }
     }
 
-    // C. Fallback to client-provided price or amount if no entity ID resolved
+    // C. Reject if no authoritative server-side price was resolved from DB
     if (authoritativePriceINR <= 0) {
-      const rawPrice = price ?? amount;
-      const cleanPrice = typeof rawPrice === 'string'
-        ? rawPrice.replace(/,/g, '').replace(/₹/g, '').trim()
-        : rawPrice;
-      const numericPrice = Number(cleanPrice);
-      if (!isNaN(numericPrice) && numericPrice > 0) {
-        authoritativePriceINR = numericPrice;
-      } else {
-        authoritativePriceINR = 999;
-      }
+      return NextResponse.json(
+        { error: 'Unable to resolve authoritative item or offer price on the server.' },
+        { status: 400 }
+      );
     }
 
     // STRICT REQUIREMENT: Amount passed to Razorpay is strictly an integer in paise: Math.round(Number(price) * 100)

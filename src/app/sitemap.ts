@@ -1,10 +1,11 @@
 import type { MetadataRoute } from 'next';
 import { ListingRepository } from '@/infrastructure/database/repositories/ListingRepository';
+import { getSiteUrl } from '@/infrastructure/utils/siteUrl';
 
 export const dynamic = 'force-dynamic';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || 'https://otakubazaar.jaybhatt.me').replace(/\/$/, '');
+  const siteUrl = getSiteUrl();
 
   const staticRoutes = [
     '',
@@ -22,8 +23,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     '/legal/privacy',
     '/legal/refunds',
   ].map((route) => ({
-    url: `${baseUrl}${route}`,
-    lastModified: new Date(),
+    url: `${siteUrl}${route}`,
     changeFrequency: (route === '' || route === '/catalog' ? 'daily' : 'weekly') as 'daily' | 'weekly',
     priority: route === '' ? 1.0 : route === '/catalog' ? 0.9 : 0.7,
   }));
@@ -34,13 +34,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     productRoutes = activeListings
       .filter(
         (listing) =>
+          (listing.status === 'ACTIVE' || listing.status === 'RESERVED') &&
+          Boolean(listing.updatedAt) &&
           !listing.id.toLowerCase().startsWith('demo') &&
           !listing.sellerId.startsWith('user_seller_') &&
           !listing.sellerId.startsWith('user_admin_')
       )
       .map((listing) => ({
-        url: `${baseUrl}/lot/${listing.id}`,
-        lastModified: listing.updatedAt || new Date(),
+        url: `${siteUrl}/lot/${listing.id}`,
+        lastModified: listing.updatedAt,
         changeFrequency: 'weekly' as const,
         priority: 0.9,
       }));

@@ -19,7 +19,7 @@ import { EscrowLedgerService } from '../../infrastructure/payment/EscrowLedgerSe
 import { OrderRepository } from '../../infrastructure/database/repositories/OrderRepository';
 import { EscrowReleaseJob } from '../../infrastructure/jobs/EscrowReleaseJob';
 import { POST as razorpayPostHandler } from '../../app/api/webhooks/razorpay/route';
-import { POST as shiprocketPostHandler } from '../../app/api/webhooks/shiprocket/route';
+import { POST as shiprocketPostHandler } from '../../app/api/webhooks/courier/route';
 
 const RAZORPAY_SECRET = 'test_razorpay_secret_12345';
 const SHIPROCKET_SECRET = 'test_shiprocket_secret_67890';
@@ -195,7 +195,7 @@ async function runFintechVerification(): Promise<void> {
   });
 
   const shiprocketSignature = computeHmacSha256(shiprocketPayload, SHIPROCKET_SECRET);
-  const shiprocketReq = new NextRequest('http://localhost:3000/api/webhooks/shiprocket', {
+  const shiprocketReq = new NextRequest('http://localhost:3000/api/webhooks/courier', {
     method: 'POST',
     headers: {
       'content-type': 'application/json',

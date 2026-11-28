@@ -6,6 +6,11 @@ import { ListingRepository } from '@/infrastructure/database/repositories/Listin
 import { LotDetailClientView } from '@/presentation/components/products/LotDetailClientView';
 import { optimizeImageUrl } from '@/infrastructure/utils/imageOptimizer';
 import { recomputeAndSaveSellerBadges } from '@/domain/services/sellerBadgeService';
+import {
+  getSiteUrl,
+  buildListingSeoTitle,
+  buildListingMetaDescription,
+} from '@/infrastructure/utils/siteUrl';
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -121,41 +126,49 @@ async function getProductFromDb(id: string): Promise<MockProduct | null> {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params;
+  const siteUrl = getSiteUrl();
   const product = await getProductFromDb(id);
 
   if (!product) {
     return {
-      title: 'Listing Not Found — OtakuBazaar',
-      description: 'The requested collectible listing does not exist or is no longer available.',
+      title: 'Listing Not Found',
+      description: 'The requested collectible listing does not exist or is no longer available on OtakuBazaar India.',
     };
   }
 
-  const title = `${product.title} — ₹${product.price.toLocaleString('en-IN')} | OtakuBazaar`;
-  const description = `Buy ${product.title} (${product.category}, ${product.gradeCondition}) for ₹${product.price.toLocaleString('en-IN')} in India on OtakuBazaar.`;
+  const title = buildListingSeoTitle(product.title);
+  const description = buildListingMetaDescription({
+    title: product.title,
+    brand: product.manufacturer,
+    series: product.series,
+    condition: product.condition,
+    priceINR: product.price,
+  });
+  const canonicalUrl = `${siteUrl}/lot/${id}`;
 
   return {
     title,
     description,
     alternates: {
-      canonical: `/lot/${id}`,
+      canonical: canonicalUrl,
     },
     openGraph: {
-      title,
+      title: `${title} | OtakuBazaar`,
       description,
-      url: `https://otakubazaar.jaybhatt.me/lot/${id}`,
+      url: canonicalUrl,
       images: [
         {
           url: product.imageUrl,
           width: 800,
           height: 1000,
-          alt: product.title,
+          alt: `${product.title}${product.manufacturer ? ` — ${product.manufacturer}` : ''}`,
         },
       ],
       type: 'website',
     },
     twitter: {
       card: 'summary_large_image',
-      title,
+      title: `${title} | OtakuBazaar`,
       description,
       images: [product.imageUrl],
     },
@@ -164,11 +177,17 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function LotDetailPage({ params }: PageProps): Promise<React.JSX.Element> {
   const { id } = await params;
+  const siteUrl = getSiteUrl();
   const product = await getProductFromDb(id);
 
   if (!product) {
     notFound();
   }
+
+  const itemCondition =
+    product.condition === 'NEW'
+      ? 'https://schema.org/NewCondition'
+      : 'https://schema.org/UsedCondition';
 
   // Schema.org Product JSON-LD (real listings only, no fake reviews)
   const jsonLd = {
@@ -179,17 +198,18 @@ export default async function LotDetailPage({ params }: PageProps): Promise<Reac
     image: [product.imageUrl],
     description: product.provenance || product.categorySubtitle,
     category: product.category,
+    itemCondition,
     brand: {
       '@type': 'Brand',
       name: product.manufacturer || 'Japanese Collectibles',
     },
     offers: {
       '@type': 'Offer',
-      url: `https://otakubazaar.jaybhatt.me/lot/${product.id}`,
+      url: `${siteUrl}/lot/${product.id}`,
       price: product.price,
       priceCurrency: 'INR',
       availability: 'https://schema.org/InStock',
-      itemCondition: product.condition === 'NEW' ? 'https://schema.org/NewCondition' : 'https://schema.org/UsedCondition',
+      itemCondition,
       seller: {
         '@type': 'Person',
         name: product.sellerHandle,

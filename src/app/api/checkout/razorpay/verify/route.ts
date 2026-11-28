@@ -11,9 +11,17 @@ import crypto from 'crypto';
 import { prisma } from '@/lib/prismaClient';
 import { OrderRepository } from '@/infrastructure/database/repositories/OrderRepository';
 import { EscrowLedgerService } from '@/infrastructure/payment/EscrowLedgerService';
+import { isPaymentsEnabled, PAYMENTS_COMING_SOON_MESSAGE } from '@/infrastructure/payment/paymentConfig';
 
 export async function POST(req: Request): Promise<NextResponse> {
   try {
+    if (!isPaymentsEnabled()) {
+      return NextResponse.json(
+        { error: PAYMENTS_COMING_SOON_MESSAGE, paymentsEnabled: false },
+        { status: 503 }
+      );
+    }
+
     let body: any = {};
     try {
       body = await req.json();
@@ -109,10 +117,16 @@ export async function POST(req: Request): Promise<NextResponse> {
       console.warn('[Razorpay Verify] Order repository update note:', orderErr);
     }
 
-    // Record in double-entry accounting ledger
+    // Record in double-entry accounting ledger using authoritative DB order amount
     try {
-      const amountPaise = body.amount ? Math.round(Number(body.amount)) : 0;
-      await EscrowLedgerService.recordPaymentCapture(orderId, amountPaise, 'INR', paymentId);
+      const dbOrder = await prisma.order.findFirst({
+        where: { OR: [{ razorpayOrderId: orderId }, { id: orderId }] },
+        select: { totalAmount: true },
+      });
+      const amountPaise = dbOrder?.totalAmount ?? 0;
+      if (amountPaise > 0) {
+        await EscrowLedgerService.recordPaymentCapture(orderId, amountPaise, 'INR', paymentId);
+      }
     } catch (ledgerErr) {
       console.warn('[Razorpay Verify] Ledger update note:', ledgerErr);
     }

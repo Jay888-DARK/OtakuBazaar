@@ -1,12 +1,12 @@
 /**
- * @file src/app/api/webhooks/shiprocket/route.ts
+ * @file src/app/api/webhooks/courier/route.ts
  *
- * Next.js 15 App Router Route Handler for Shiprocket Logistics Webhooks.
+ * Next.js App Router Route Handler for Courier / Shiprocket Logistics Webhooks.
  *
  * Enforces:
- *   1. HMAC-SHA256 signature verification / secret token check (401 on mismatch).
+ *   1. `x-api-key` (or HMAC-SHA256 signature) verification against `SHIPROCKET_WEBHOOK_SECRET` (401 on mismatch).
  *   2. Idempotency logging via `IdempotencyLog` (HTTP 200 no-op on duplicates).
- *   3. Logistics lifecycle transition to `DELIVERED_INSPECTION` upon `shipment.delivered`.
+ *   3. Logistics lifecycle transition to `DELIVERED_INSPECTION` upon delivery.
  *   4. Automated 48-Hour Inspection Timer initialization (`inspection_ends_at = NOW + 48h`).
  */
 
@@ -17,58 +17,56 @@ import { OrderRepository } from '@/infrastructure/database/repositories/OrderRep
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
   const timestamp = new Date().toISOString();
-  console.info(`[ShiprocketWebhook] Received webhook at ${timestamp}`);
+  console.info(`[CourierWebhook] Received webhook at ${timestamp}`);
 
-  // 1. Read Raw Body
+  // 1. Read Raw Body & Verify x-api-key / signature against SHIPROCKET_WEBHOOK_SECRET
   const rawBody = await req.text();
   const signature =
-    req.headers.get('x-shiprocket-signature') ||
     req.headers.get('x-api-key') ||
+    req.headers.get('x-shiprocket-signature') ||
     req.headers.get('authorization');
   const secret = process.env.SHIPROCKET_WEBHOOK_SECRET;
 
   if (!secret) {
-    console.error('[ShiprocketWebhook] CRITICAL: SHIPROCKET_WEBHOOK_SECRET is not configured.');
+    console.error('[CourierWebhook] CRITICAL: SHIPROCKET_WEBHOOK_SECRET is not configured.');
     return NextResponse.json({ error: 'Server misconfiguration: Webhook secret missing' }, { status: 500 });
   }
 
-  // 2. Webhook Security: Signature / Secret Token Verification
   const isValid = WebhookSecurityService.verifyShiprocketSignature(rawBody, signature, secret);
 
   if (!isValid) {
-    console.warn('[ShiprocketWebhook] 401 Unauthorized: Invalid or missing Shiprocket signature');
+    console.warn('[CourierWebhook] 401 Unauthorized: Invalid or missing x-api-key / signature');
     return NextResponse.json(
       {
         error: 'Unauthorized',
-        message: 'Shiprocket webhook authentication failed',
+        message: 'Courier webhook authentication failed',
       },
       { status: 401 }
     );
   }
 
-  // 3. Parse JSON Event Payload
+  // 2. Parse JSON Event Payload
   let payload: Record<string, unknown>;
   try {
     payload = JSON.parse(rawBody) as Record<string, unknown>;
   } catch (err) {
-    console.error('[ShiprocketWebhook] Failed to parse JSON body:', err);
+    console.error('[CourierWebhook] Failed to parse JSON body:', err);
     return NextResponse.json({ error: 'Bad Request', message: 'Malformed JSON payload' }, { status: 400 });
   }
 
-  // Shiprocket sends tracking updates with current_status or event
   const currentStatus = String(payload.current_status || payload.event || payload.status || '').toUpperCase();
-  const orderId = String(payload.order_id || payload.channel_order_id || payload.reference_id || '');
+  // Prefer channel_order_id / reference_id (our internal Order.id) over courier's numeric order_id
+  const orderId = String(payload.channel_order_id || payload.reference_id || payload.order_id || '');
   const awb = String(payload.awb_code || payload.awb || payload.courier_awb || '');
   const shipmentId = payload.shipment_id ? String(payload.shipment_id) : undefined;
-  void shipmentId; // Referenced for logistics payload audit trail
+  void shipmentId;
 
-  // Composite event identifier for idempotency
   const eventId = `sr_${orderId || 'no_order'}_${awb || 'no_awb'}_${currentStatus}`;
 
-  // 4. Idempotency Check
+  // 3. Idempotency Check
   const alreadyProcessed = await IdempotencyService.isEventProcessed('SHIPROCKET', eventId);
   if (alreadyProcessed) {
-    console.info(`[ShiprocketWebhook] Idempotent hit: Event ${eventId} already processed. Returning HTTP 200.`);
+    console.info(`[CourierWebhook] Idempotent hit: Event ${eventId} already processed. Returning HTTP 200.`);
     return NextResponse.json(
       {
         status: 'ok',
@@ -79,40 +77,29 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     );
   }
 
-  // 5. Process Shipment Lifecycle
+  // 4. Process Shipment Lifecycle
   try {
     const isDelivered =
       currentStatus === 'DELIVERED' ||
       currentStatus === 'SHIPMENT.DELIVERED' ||
-      payload.current_status_id === 7 || // Shiprocket standard delivered code
+      payload.current_status_id === 7 ||
       currentStatus.includes('DELIVERED');
 
     if (isDelivered) {
       if (!orderId) {
-        throw new Error('Missing order_id in Shiprocket delivery webhook');
+        throw new Error('Missing order_id in courier delivery webhook');
       }
 
-      // Initialize 48-Hour Inspection Window: NOW() + 48 HOURS
       const inspectionDurationMs = 48 * 60 * 60 * 1000;
       const inspectionEndsAt = new Date(Date.now() + inspectionDurationMs);
 
-      console.info(
-        `[ShiprocketWebhook] Processing shipment.delivered for Order ${orderId}. Inspection window ends at ${inspectionEndsAt.toISOString()}`
-      );
-
-      // Atomically update Order status to DELIVERED_INSPECTION with inspection expiration timestamp
       await OrderRepository.updateEscrowStatus(orderId, {
         escrowStatus: 'DELIVERED_INSPECTION',
         inspectionEndsAt,
         shiprocketAwb: awb || undefined,
       });
 
-      // Record in IdempotencyLog
       await IdempotencyService.recordEventProcessed('SHIPROCKET', eventId, rawBody);
-
-      console.info(
-        `[ShiprocketWebhook] Order ${orderId} moved to DELIVERED_INSPECTION. 48h inspection countdown started.`
-      );
 
       return NextResponse.json(
         {
@@ -127,8 +114,6 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       );
     }
 
-    // Acknowledge other statuses (e.g. IN_TRANSIT, OUT_FOR_DELIVERY)
-    console.info(`[ShiprocketWebhook] Status "${currentStatus}" recorded. Order ${orderId}.`);
     await IdempotencyService.recordEventProcessed('SHIPROCKET', eventId, rawBody);
 
     return NextResponse.json(
@@ -141,7 +126,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     );
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Failed to process logistics webhook event';
-    console.error(`[ShiprocketWebhook] Server processing failure for event ${eventId}:`, error);
+    console.error(`[CourierWebhook] Server processing failure for event ${eventId}:`, error);
     return NextResponse.json(
       {
         error: 'Internal Server Error',
