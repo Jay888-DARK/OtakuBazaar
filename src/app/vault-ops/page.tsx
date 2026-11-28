@@ -16,21 +16,20 @@
  */
 
 import React from 'react';
-import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { prisma } from '@/lib/prismaClient';
-import { TokenService, SESSION_COOKIE_NAME } from '@/infrastructure/security/TokenService';
 
 export const dynamic = 'force-dynamic';
 
 export default async function VaultOpsPage(): Promise<React.JSX.Element> {
-  // Strict Server-Side Authentication & Admin Clearance Enforcement
-  const cookieStore = await cookies();
-  const token = cookieStore.get(SESSION_COOKIE_NAME)?.value;
-  const session = token ? TokenService.verifyToken(token) : null;
+  // Strict Server-Side Authentication & Admin Clearance Enforcement via NextAuth
+  const session = await getServerSession(authOptions);
+  const userRole = (session?.user as { role?: string } | undefined)?.role;
 
-  if (!session || session.role !== 'ADMIN') {
+  if (!session?.user || userRole !== 'ADMIN') {
     redirect('/login?error=ACCESS_DENIED_ADMIN_REQUIRED');
   }
 
@@ -138,7 +137,7 @@ export default async function VaultOpsPage(): Promise<React.JSX.Element> {
               ACTIVE OPERATOR SESSION
             </span>
             <span className="text-xs font-bold text-zinc-300 uppercase tracking-wider block truncate mt-1">
-              {session?.name || session?.email || 'SYSTEM AUTOMATION ENGINE'}
+              {session.user?.name || session.user?.email || 'SYSTEM AUTOMATION ENGINE'}
             </span>
           </div>
         </div>

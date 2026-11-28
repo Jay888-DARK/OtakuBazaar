@@ -14,51 +14,14 @@
  */
 
 import { NextResponse, type NextRequest } from 'next/server';
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { prisma } from '@/infrastructure/database/prismaClient';
 import { RBACGuard } from '@/infrastructure/security/RBACGuard';
-import { TokenService } from '@/infrastructure/security/TokenService';
 
 export async function DELETE(request: NextRequest): Promise<NextResponse> {
   try {
-    let targetUserId: string | null = null;
-    let targetUserEmail: string | null = null;
-
-    // 1. Verify Active NextAuth Session
-    const session = await getServerSession(authOptions);
-    if (session?.user) {
-      targetUserId = (session.user as { id?: string }).id ?? null;
-      targetUserEmail = session.user.email ?? null;
-    }
-
-    // 2. Fallback to HttpOnly Token Auth if NextAuth session is not found
-    if (!targetUserId && !targetUserEmail) {
-      const rawToken = RBACGuard.extractToken(request);
-      if (rawToken) {
-        const payload = TokenService.verifyToken(rawToken);
-        if (payload) {
-          targetUserId = payload.userId;
-          targetUserEmail = payload.email;
-        }
-      }
-    }
-
-    // 3. Fallback for demo/persona switching if authenticated via demo headers or body
-    if (!targetUserId && !targetUserEmail) {
-      try {
-        const body = await request.clone().json().catch(() => null);
-        if (body?.demoUserId && typeof body.demoUserId === 'string') {
-          // Allow demo persona deletion only in non-production/demo testing
-          targetUserId = body.demoUserId;
-        }
-      } catch {
-        // Ignore json parse error
-      }
-    }
-
-    // If still unauthorized, return 401
-    if (!targetUserId && !targetUserEmail) {
+    // 1. Strictly Verify Active NextAuth JWT Session (OAuth only; legacy cookies rejected)
+    const authResult = await RBACGuard.requireAuthAsync(request);
+    if (!authResult.success) {
       return NextResponse.json(
         {
           success: false,
@@ -67,6 +30,9 @@ export async function DELETE(request: NextRequest): Promise<NextResponse> {
         { status: 401 }
       );
     }
+
+    const targetUserId: string | null = authResult.user.userId ?? null;
+    const targetUserEmail: string | null = authResult.user.email ?? null;
 
     // Resolve user ID if only email is present
     let finalUserId = targetUserId;

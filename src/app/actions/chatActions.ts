@@ -7,6 +7,8 @@
 
 'use server';
 
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { prisma } from '@/infrastructure/database/prismaClient';
 import { pusherServer } from '@/infrastructure/services/pusherServer';
 
@@ -37,31 +39,32 @@ export interface ChatActionResult<T = unknown> {
 export async function sendMessage(
   orderId: string,
   text: string,
-  senderId: string
+  _senderId?: string
 ): Promise<ChatActionResult<ChatMessageRecord>> {
   if (!text || text.trim().length === 0) {
     return { success: false, error: 'Message cannot be empty.' };
   }
 
   try {
-    // Ensure sender user record exists to satisfy foreign key integrity
-    await prisma.user.upsert({
-      where: { id: senderId },
-      update: {},
-      create: {
-        id: senderId,
-        name: senderId.includes('buyer')
-          ? 'Buyer Collector'
-          : senderId.includes('seller')
-          ? 'Seller Collector'
-          : 'Verified Collector',
-        displayName: senderId.includes('tanjiro')
-          ? 'Tanjiro Kamado'
-          : senderId.includes('rengoku')
-          ? 'Kyojuro Rengoku'
-          : 'Collector',
-      },
+    const session = await getServerSession(authOptions);
+    const sessionUser = session?.user as { id?: string; role?: string } | undefined;
+    if (!sessionUser?.id) {
+      return { success: false, error: '401 Unauthorized: Please sign in to send messages.' };
+    }
+
+    const senderId = sessionUser.id;
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+      select: { buyerId: true, sellerId: true },
     });
+    if (
+      order &&
+      sessionUser.role !== 'ADMIN' &&
+      order.buyerId !== senderId &&
+      order.sellerId !== senderId
+    ) {
+      return { success: false, error: '403 Forbidden: You are not a participant in this order.' };
+    }
 
     // 1. Save to Database
     const savedMessage = await prisma.message.create({
@@ -114,6 +117,25 @@ export async function fetchOrderMessages(
   orderId: string
 ): Promise<ChatActionResult<ChatMessageRecord[]>> {
   try {
+    const session = await getServerSession(authOptions);
+    const sessionUser = session?.user as { id?: string; role?: string } | undefined;
+    if (!sessionUser?.id) {
+      return { success: false, error: '401 Unauthorized: Please sign in to view order messages.' };
+    }
+
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+      select: { buyerId: true, sellerId: true },
+    });
+    if (
+      order &&
+      sessionUser.role !== 'ADMIN' &&
+      order.buyerId !== sessionUser.id &&
+      order.sellerId !== sessionUser.id
+    ) {
+      return { success: false, error: '403 Forbidden: You are not a participant in this order.' };
+    }
+
     const messages = await prisma.message.findMany({
       where: { orderId },
       orderBy: { createdAt: 'asc' },

@@ -165,7 +165,9 @@ export function ProductCard({ product, className = '' }: ProductCardProps): Reac
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={currentImage}
-              alt={product.title}
+              alt={`${product.title} — ${category} (${gradeBadge})`}
+              loading="lazy"
+              decoding="async"
               onLoad={() => setImageLoaded(true)}
               onError={(e) => {
                 setCurrentImage('/otakubazaar-logo.png');
@@ -217,7 +219,7 @@ export function ProductCard({ product, className = '' }: ProductCardProps): Reac
         <div className="mt-4 pt-3 border-t border-[#161616]">
           {/* Status Line */}
           <div className="flex items-center justify-between text-[10px] tracking-wider font-sans uppercase">
-            <span className="text-[#10B981] font-semibold">Safe Escrow</span>
+            <span className="text-[#10B981] font-semibold">48h Inspection</span>
             <span className="text-[#9CA3AF]">48h Inspection</span>
           </div>
 

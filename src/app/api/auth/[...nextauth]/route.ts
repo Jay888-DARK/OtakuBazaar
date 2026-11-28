@@ -14,7 +14,6 @@ import NextAuth, { type AuthOptions } from 'next-auth';
 import type { Provider } from 'next-auth/providers/index';
 import GoogleProvider from 'next-auth/providers/google';
 import DiscordProvider from 'next-auth/providers/discord';
-import CredentialsProvider from 'next-auth/providers/credentials';
 import { PrismaAdapter } from '@auth/prisma-adapter';
 import { prisma } from '@/infrastructure/database/prismaClient';
 import type { Adapter } from 'next-auth/adapters';
@@ -34,7 +33,7 @@ function getCanonicalBaseUrl(): string {
     return `https://${process.env.VERCEL_URL.replace(/\/$/, '')}`;
   }
   if (process.env.NODE_ENV === 'production') {
-    return 'https://otaku-bazaar.vercel.app';
+    return 'https://otakubazaar.jaybhatt.me';
   }
   return (process.env.NEXTAUTH_URL || 'http://localhost:3000').replace(/\/$/, '');
 }
@@ -82,104 +81,6 @@ if (discordClientId && discordClientSecret) {
     })
   );
 }
-
-// 3. Email & Password Credentials Provider
-providers.push(
-  CredentialsProvider({
-    id: 'credentials',
-    name: 'Collector Credentials',
-    credentials: {
-      email: { label: 'Collector Email', type: 'email', placeholder: 'collector@otakubazaar.com' },
-      password: { label: 'Vault Passphrase', type: 'password' },
-    },
-    async authorize(credentials) {
-      if (!credentials?.email || !credentials?.password) {
-        return null;
-      }
-
-      const cleanEmail = credentials.email.trim().toLowerCase();
-
-      // Search database for the user via Prisma
-      let user = await prisma.user.findUnique({
-        where: { email: cleanEmail },
-      });
-
-      // Auto-provision a new user account if this is a first-time collector
-      if (!user) {
-        try {
-          user = await prisma.user.create({
-            data: {
-              email: cleanEmail,
-              name: cleanEmail.split('@')[0],
-              displayName: cleanEmail.split('@')[0],
-              avatarUrl: '/otakubazaar-logo.png',
-            },
-          });
-        } catch {
-          // If created concurrently by another worker
-          user = await prisma.user.findUnique({
-            where: { email: cleanEmail },
-          });
-        }
-      }
-
-      if (!user) {
-        return null;
-      }
-
-      return {
-        id: user.id,
-        name: user.name || user.displayName || cleanEmail.split('@')[0],
-        email: user.email,
-        image: user.image || user.avatarUrl || '/otakubazaar-logo.png',
-      };
-    },
-  })
-);
-
-// 4. Phone OTP Credentials Provider (Mobile fallback)
-providers.push(
-  CredentialsProvider({
-    id: 'phone-otp',
-    name: 'Phone OTP',
-    credentials: {
-      phone: { label: 'Phone', type: 'text' },
-      otp: { label: 'OTP', type: 'text' },
-    },
-    async authorize(credentials) {
-      if (!credentials?.phone || !credentials?.otp) return null;
-      const cleanPhone = credentials.phone.replace(/\D/g, '');
-      if (cleanPhone.length < 10) return null;
-      if (credentials.otp.trim().length !== 6) return null;
-
-      const userEmail = `${cleanPhone.slice(-10)}@otakubazaar.in`;
-      let user = await prisma.user.findUnique({ where: { phone: cleanPhone } });
-
-      if (!user) {
-        try {
-          user = await prisma.user.create({
-            data: {
-              phone: cleanPhone,
-              email: userEmail,
-              name: `Collector (+91 ${cleanPhone.slice(-10)})`,
-              displayName: `Collector (+91 ${cleanPhone.slice(-10)})`,
-              avatarUrl: '/otakubazaar-logo.png',
-            },
-          });
-        } catch {
-          user = await prisma.user.findUnique({ where: { phone: cleanPhone } });
-        }
-      }
-
-      return {
-        id: user?.id || `user_phone_${cleanPhone.slice(-10)}`,
-        name: user?.name || `Collector (+91 ${cleanPhone.slice(-10)})`,
-        email: user?.email || userEmail,
-        image: user?.image || user?.avatarUrl || '/otakubazaar-logo.png',
-      };
-    },
-  })
-);
 
 export const authOptions: AuthOptions = {
   adapter: PrismaAdapter(prisma) as Adapter,
@@ -231,10 +132,7 @@ export const authOptions: AuthOptions = {
       return session;
     },
   },
-  secret:
-    process.env.NEXTAUTH_SECRET ||
-    process.env.JWT_SECRET ||
-    'otakubazaar-escrow-super-secret-key-2026',
+  secret: process.env.NEXTAUTH_SECRET,
 };
 
 const handler = NextAuth(authOptions);

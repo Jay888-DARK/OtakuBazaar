@@ -5,12 +5,13 @@
  * Enforces Server-Side Price Authority and strict integer paise calculations.
  */
 
-import { NextResponse } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
 import crypto from 'crypto';
 import Razorpay from 'razorpay';
 import { prisma } from '@/lib/prismaClient';
 import { OrderRepository } from '@/infrastructure/database/repositories/OrderRepository';
 import { EscrowLedgerService } from '@/infrastructure/payment/EscrowLedgerService';
+import { RBACGuard } from '@/infrastructure/security/RBACGuard';
 
 function getRazorpayClient() {
   const key_id = process.env.RAZORPAY_KEY_ID?.trim() || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID?.trim();
@@ -51,8 +52,13 @@ function getRazorpayClient() {
   };
 }
 
-export async function POST(req: Request): Promise<NextResponse> {
+export async function POST(req: NextRequest): Promise<NextResponse> {
   try {
+    const authResult = await RBACGuard.requireAuthAsync(req);
+    if (!authResult.success) {
+      return authResult.response;
+    }
+
     let body: any = {};
     try {
       body = await req.json();

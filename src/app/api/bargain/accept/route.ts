@@ -51,7 +51,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
   try {
     // 1. Enforce Authentication
-    const authResult = RBACGuard.requireAuth(request);
+    const authResult = await RBACGuard.requireAuthAsync(request);
     if (!authResult.success) {
       return authResult.response;
     }

@@ -25,7 +25,7 @@ export async function GET(
   context: { params: Promise<{ id: string }> | { id: string } }
 ): Promise<NextResponse> {
   // 1. Point 1: Authentication Enforcement
-  const auth = RBACGuard.requireAuth(request);
+  const auth = await RBACGuard.requireAuthAsync(request);
   if (!auth.success) {
     return auth.response;
   }

@@ -10,11 +10,12 @@
  * the SQLite/Postgres database or verified catalog models.
  */
 
-import { NextResponse } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
 import { z } from 'zod';
 import Razorpay from 'razorpay';
 import { prisma } from '@/lib/prismaClient';
 import { RateLimiter } from '@/infrastructure/security/RateLimiter';
+import { RBACGuard } from '@/infrastructure/security/RBACGuard';
 
 const CreateOrderSchema = z.object({
   lotId: z.string().trim().max(100).optional(),
@@ -22,23 +23,23 @@ const CreateOrderSchema = z.object({
   dealOfferId: z.string().trim().max(100).optional(),
 });
 
-// Initialize Razorpay SDK with environment secrets (strictly no hardcoded fallbacks)
-const key_id = (process.env.RAZORPAY_KEY_ID || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID)?.trim() || '';
-const key_secret = process.env.RAZORPAY_KEY_SECRET?.trim() || '';
+function getRazorpayClient(): Razorpay {
+  const key_id = (process.env.RAZORPAY_KEY_ID || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID)?.trim() || '';
+  const key_secret = process.env.RAZORPAY_KEY_SECRET?.trim() || '';
 
-if (!key_id) {
-  console.error('[Orders API] RAZORPAY_KEY_ID is undefined or missing in environment variables.');
+  if (!key_id || !key_secret) {
+    throw new Error('RAZORPAY_KEY_ID or RAZORPAY_KEY_SECRET is missing in environment variables.');
+  }
+
+  return new Razorpay({ key_id, key_secret });
 }
-if (!key_secret) {
-  console.error('[Orders API] RAZORPAY_KEY_SECRET is undefined or missing in environment variables.');
-}
 
-const razorpay = new Razorpay({
-  key_id,
-  key_secret,
-});
+export async function POST(req: NextRequest): Promise<NextResponse> {
+  const authResult = await RBACGuard.requireAuthAsync(req);
+  if (!authResult.success) {
+    return authResult.response;
+  }
 
-export async function POST(req: Request): Promise<NextResponse> {
   // 1. Rate Limiting Protection (Checkout order creation)
   const clientIp = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || '127.0.0.1';
   const rateLimit = RateLimiter.check(`order_create_${clientIp}`, 1000);
@@ -139,6 +140,7 @@ export async function POST(req: Request): Promise<NextResponse> {
       },
     };
 
+    const razorpay = getRazorpayClient();
     const order = await razorpay.orders.create(options);
     return NextResponse.json(order);
   } catch (error) {

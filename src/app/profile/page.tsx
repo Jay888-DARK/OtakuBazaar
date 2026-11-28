@@ -30,11 +30,9 @@ export default function ProfilePage() {
     setIsDeletingAccount(true);
     setDeleteAccountError(null);
     try {
-      const userId = activePersona === 'SELLER' ? 'user_seller_rengoku' : 'user_buyer_tanjiro';
       const res = await fetch('/api/user/delete', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ demoUserId: userId }),
       });
       const data = await res.json();
       if (res.ok && data.success) {
@@ -56,9 +54,9 @@ export default function ProfilePage() {
   };
 
   // Load profile dashboard data via Server Action
-  const loadDashboard = useCallback(async (userId: string) => {
+  const loadDashboard = useCallback(async (_userId?: string) => {
     setIsLoading(true);
-    const res = await fetchProfileDashboardAction(userId);
+    const res = await fetchProfileDashboardAction();
     if (res.success && res.data) {
       setDashboardData(res.data);
     }
@@ -67,9 +65,8 @@ export default function ProfilePage() {
 
   useEffect(() => {
     let ignore = false;
-    const userId = activePersona === 'SELLER' ? 'user_seller_rengoku' : 'user_buyer_tanjiro';
 
-    fetchProfileDashboardAction(userId).then((res) => {
+    fetchProfileDashboardAction().then((res) => {
       if (!ignore && res.success && res.data) {
         setDashboardData(res.data);
       }

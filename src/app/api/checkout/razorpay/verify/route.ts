@@ -11,7 +11,6 @@ import crypto from 'crypto';
 import { prisma } from '@/lib/prismaClient';
 import { OrderRepository } from '@/infrastructure/database/repositories/OrderRepository';
 import { EscrowLedgerService } from '@/infrastructure/payment/EscrowLedgerService';
-import { TokenService } from '@/infrastructure/security/TokenService';
 
 export async function POST(req: Request): Promise<NextResponse> {
   try {
@@ -237,25 +236,6 @@ export async function POST(req: Request): Promise<NextResponse> {
       paymentId,
       provisionedUser: provisionedUser ? { id: provisionedUser.id, name: provisionedUser.name } : null,
     });
-
-    // Set secure authentication cookie for subsequent visits
-    if (provisionedUser) {
-      const token = TokenService.signToken({
-        userId: provisionedUser.id,
-        email: provisionedUser.email || buyerEmail,
-        name: provisionedUser.name || buyerName,
-        role: 'BUYER',
-      });
-
-      const cookieOpts = TokenService.getSessionCookieOptions(token);
-      response.cookies.set(cookieOpts.name, cookieOpts.value, {
-        httpOnly: cookieOpts.httpOnly,
-        secure: cookieOpts.secure,
-        sameSite: cookieOpts.sameSite,
-        path: cookieOpts.path,
-        maxAge: cookieOpts.maxAge,
-      });
-    }
 
     // Store saved delivery profile cookie so subsequent visits bypass form input
     if (buyerName || buyerPhone || body.address || body.pinCode) {
