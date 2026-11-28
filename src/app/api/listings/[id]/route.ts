@@ -14,7 +14,7 @@ import { z } from 'zod';
 import { ListingRepository, type ListingRecord } from '@/infrastructure/database/repositories/ListingRepository';
 import { RBACGuard } from '@/infrastructure/security/RBACGuard';
 import { RateLimiter } from '@/infrastructure/security/RateLimiter';
-import { toPublicLotDTO } from '@/app/api/listings/route';
+import { toPublicLotDTO, toPrivateLotDTO } from '@/app/api/listings/route';
 
 const UpdateListingSchema = z.object({
   title: z.string().trim().min(3).max(150).optional(),
@@ -44,7 +44,15 @@ export async function GET(
       return NextResponse.json({ error: 'Listing not found in vault registry' }, { status: 404 });
     }
 
-    return NextResponse.json({ lot: toPublicLotDTO(listing) }, { status: 200 });
+    const auth = await RBACGuard.authenticateAsync(_req);
+    const canViewPrivate = Boolean(
+      auth && (auth.role === 'ADMIN' || auth.userId === listing.sellerId)
+    );
+
+    return NextResponse.json(
+      { lot: canViewPrivate ? toPrivateLotDTO(listing) : toPublicLotDTO(listing) },
+      { status: 200 }
+    );
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Internal Server Error';
     return NextResponse.json({ error: message }, { status: 500 });

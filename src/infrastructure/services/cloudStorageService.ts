@@ -2,9 +2,9 @@
  * @file src/infrastructure/services/cloudStorageService.ts
  *
  * Cloud Object Storage Service for OtakuBazaar.
- * Stores uploaded collectible photographs permanently in Cloud Storage
- * (Supabase Storage bucket, Cloudinary, or Vercel Blob) rather than on local disk.
- * Returns public HTTPS URLs to persist directly in PostgreSQL.
+ * Stores uploaded collectible photographs in public Cloud Storage
+ * (Supabase Storage or Cloudinary) and stores purchase invoices
+ * in a private Supabase Storage bucket accessible only via server-side RBAC.
  */
 
 import crypto from 'crypto';
@@ -12,32 +12,45 @@ import crypto from 'crypto';
 export interface UploadResult {
   success: boolean;
   url?: string;
-  provider?: 'SUPABASE' | 'CLOUDINARY' | 'VERCEL_BLOB';
+  provider?: 'SUPABASE' | 'CLOUDINARY';
   error?: string;
+}
+
+const IMAGE_MIME_TYPES = new Set(['image/jpeg', 'image/jpg', 'image/png', 'image/webp']);
+const INVOICE_MIME_TYPES = new Set(['application/pdf', 'image/jpeg', 'image/jpg', 'image/png', 'image/webp']);
+
+function getExtensionForMime(mimeType: string): string {
+  if (mimeType === 'application/pdf') return 'pdf';
+  if (mimeType.includes('png')) return 'png';
+  if (mimeType.includes('webp')) return 'webp';
+  return 'jpg';
 }
 
 export class CloudStorageService {
   /**
-   * Uploads an image buffer or base64 data URI to persistent Cloud Storage.
-   *
-   * Provider precedence:
-   * 1. Supabase Storage (if SUPABASE_URL & SUPABASE_KEY / SUPABASE_SERVICE_ROLE_KEY are configured)
-   * 2. Cloudinary (if CLOUDINARY_CLOUD_NAME & CLOUDINARY_API_KEY are configured)
-   * 3. Vercel Blob (if BLOB_READ_WRITE_TOKEN is configured)
+   * Uploads a public collectible photograph to Supabase Storage or Cloudinary.
    */
   public static async uploadImage(
     buffer: Buffer,
     mimeType: string,
     filenamePrefix = 'lot'
   ): Promise<UploadResult> {
-    const ext = mimeType.includes('png') ? 'png' : mimeType.includes('webp') ? 'webp' : 'jpg';
+    if (!IMAGE_MIME_TYPES.has(mimeType.toLowerCase())) {
+      return {
+        success: false,
+        error: 'Unsupported image format. Only JPEG, PNG, and WebP images are allowed.',
+      };
+    }
+
+    const ext = getExtensionForMime(mimeType);
     const filename = `${filenamePrefix}_${Date.now()}_${crypto.randomBytes(4).toString('hex')}.${ext}`;
 
-    // -------------------------------------------------------------------------
-    // 1. Supabase Storage Provider
-    // -------------------------------------------------------------------------
+    // 1. Supabase Storage Provider (Public bucket for listing photos)
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
-    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    const supabaseKey =
+      process.env.SUPABASE_SERVICE_ROLE_KEY ||
+      process.env.SUPABASE_KEY ||
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
     const supabaseBucket = process.env.SUPABASE_STORAGE_BUCKET || 'listings';
 
     if (supabaseUrl && supabaseKey) {
@@ -72,9 +85,7 @@ export class CloudStorageService {
       }
     }
 
-    // -------------------------------------------------------------------------
-    // 2. Cloudinary Provider (Configured in .env.local)
-    // -------------------------------------------------------------------------
+    // 2. Cloudinary Provider
     const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
     const apiKey = process.env.CLOUDINARY_API_KEY;
     const apiSecret = process.env.CLOUDINARY_API_SECRET;
@@ -118,30 +129,147 @@ export class CloudStorageService {
       }
     }
 
-    // -------------------------------------------------------------------------
-    // 3. Fallback: If no external cloud credentials provided in dev
-    // -------------------------------------------------------------------------
     return {
       success: false,
       error:
-        'Cloud storage provider not configured. Please set SUPABASE_URL & SUPABASE_SERVICE_ROLE_KEY or CLOUDINARY credentials in your environment variables.',
+        'Cloud storage provider not configured. Set SUPABASE_URL & SUPABASE_SERVICE_ROLE_KEY (or Cloudinary credentials) in your environment variables.',
     };
   }
 
   /**
-   * Parses a base64 Data URI or buffer and uploads to persistent storage.
+   * Uploads a private invoice proof (PDF, JPEG, PNG, or WebP) to a private Supabase bucket.
+   * Returns an internal `private://supabase/<bucket>/<filename>` reference (never a public URL).
+   */
+  public static async uploadPrivateFile(
+    buffer: Buffer,
+    mimeType: string,
+    filenamePrefix = 'invoice'
+  ): Promise<UploadResult> {
+    const normalizedMime = mimeType.toLowerCase();
+    if (!INVOICE_MIME_TYPES.has(normalizedMime)) {
+      return {
+        success: false,
+        error: 'Unsupported invoice format. Only PDF, JPEG, PNG, and WebP files are allowed.',
+      };
+    }
+
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
+    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const privateBucket = process.env.SUPABASE_INVOICES_BUCKET || 'private-invoices';
+
+    if (!supabaseUrl || !serviceRoleKey) {
+      return {
+        success: false,
+        error:
+          'Private invoice storage is not configured. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in your environment variables.',
+      };
+    }
+
+    const ext = getExtensionForMime(normalizedMime);
+    const filename = `${filenamePrefix}_${Date.now()}_${crypto.randomBytes(4).toString('hex')}.${ext}`;
+    const cleanBaseUrl = supabaseUrl.replace(/\/$/, '');
+    const uploadEndpoint = `${cleanBaseUrl}/storage/v1/object/${privateBucket}/${filename}`;
+
+    try {
+      const uploadRes = await fetch(uploadEndpoint, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${serviceRoleKey}`,
+          apikey: serviceRoleKey,
+          'Content-Type': normalizedMime,
+          'x-upsert': 'true',
+        },
+        body: new Uint8Array(buffer),
+      });
+
+      if (!uploadRes.ok) {
+        const errText = await uploadRes.text();
+        return {
+          success: false,
+          error: `Private invoice upload failed (${uploadRes.status}): ${errText}`,
+        };
+      }
+
+      return {
+        success: true,
+        url: `private://supabase/${privateBucket}/${filename}`,
+        provider: 'SUPABASE',
+      };
+    } catch (err) {
+      return {
+        success: false,
+        error: err instanceof Error ? err.message : 'Private invoice upload failed.',
+      };
+    }
+  }
+
+  /**
+   * Downloads a private invoice file from Supabase private storage using the service role key.
+   */
+  public static async fetchPrivateFile(
+    privateRef: string
+  ): Promise<{ success: true; buffer: Buffer; contentType: string } | { success: false; error: string }> {
+    const match = privateRef.match(/^private:\/\/supabase\/([^/]+)\/(.+)$/);
+    if (!match || !match[1] || !match[2]) {
+      return { success: false, error: 'Invalid private storage reference.' };
+    }
+
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
+    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    if (!supabaseUrl || !serviceRoleKey) {
+      return { success: false, error: 'Private storage credentials are not configured.' };
+    }
+
+    const cleanBaseUrl = supabaseUrl.replace(/\/$/, '');
+    const bucket = match[1];
+    const objectPath = match[2];
+    const endpoint = `${cleanBaseUrl}/storage/v1/object/${bucket}/${objectPath}`;
+
+    try {
+      const res = await fetch(endpoint, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${serviceRoleKey}`,
+          apikey: serviceRoleKey,
+        },
+      });
+
+      if (!res.ok) {
+        return { success: false, error: `Failed to retrieve private invoice (${res.status}).` };
+      }
+
+      const arrayBuf = await res.arrayBuffer();
+      const contentType = res.headers.get('content-type') || 'application/octet-stream';
+      return {
+        success: true,
+        buffer: Buffer.from(arrayBuf),
+        contentType,
+      };
+    } catch (err) {
+      return {
+        success: false,
+        error: err instanceof Error ? err.message : 'Failed to fetch private invoice.',
+      };
+    }
+  }
+
+  /**
+   * Parses a base64 Data URI and uploads to persistent storage.
    */
   public static async uploadDataUri(dataUri: string, prefix = 'lot'): Promise<UploadResult> {
-    const match = dataUri.match(/^data:(image\/[a-zA-Z0-9.+]+);base64,(.+)$/);
+    const match = dataUri.match(/^data:((?:image\/[a-zA-Z0-9.+]+)|(?:application\/pdf));base64,(.+)$/);
     if (!match || !match[1] || !match[2]) {
       return {
         success: false,
-        error: 'Invalid data URI image string format.',
+        error: 'Invalid data URI format.',
       };
     }
 
     const mimeType = match[1];
     const buffer = Buffer.from(match[2], 'base64');
+    if (mimeType === 'application/pdf') {
+      return this.uploadPrivateFile(buffer, mimeType, prefix);
+    }
     return this.uploadImage(buffer, mimeType, prefix);
   }
 }

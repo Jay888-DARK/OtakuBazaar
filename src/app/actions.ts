@@ -53,10 +53,9 @@ export interface CreateListingInput {
   readonly conditionGrade: string;
   readonly askingPriceINR: number;
   readonly originalPriceINR: number;
-  readonly imageUrl: string;
+  readonly imageUrls?: readonly string[];
+  readonly imageUrl?: string;
   readonly description: string;
-  readonly sellerId?: string;
-  readonly sellerName?: string;
   readonly pickupPincode?: string;
   readonly weightKg?: number;
   readonly dimensionsCm?: string;
@@ -103,6 +102,24 @@ export interface ProfileDashboardData {
 // Validation Schemas
 // ---------------------------------------------------------------------------
 
+const listingImageValidator = z.string().refine(
+  (val) => val.startsWith('http://') || val.startsWith('https://'),
+  { message: 'Photograph must be uploaded to cloud storage (HTTP/HTTPS URL required).' }
+);
+
+const invoiceProofValidator = z
+  .string()
+  .trim()
+  .refine(
+    (val) =>
+      val === '' ||
+      val.startsWith('private://') ||
+      val.startsWith('https://') ||
+      val.startsWith('http://'),
+    { message: 'Invoice proof must be uploaded to private storage before publishing.' }
+  )
+  .optional();
+
 const CreateListingSchema = z.object({
   title: z.string().trim().min(3, 'Title must be between 3 and 150 characters').max(150),
   series: z.string().trim().min(2, 'Franchise series is required').default('Anime Series'),
@@ -112,28 +129,13 @@ const CreateListingSchema = z.object({
   conditionGrade: z.string().trim().default('GRADE A'),
   askingPriceINR: z.number().positive('Price must be greater than zero').max(10_000_000),
   originalPriceINR: z.number().positive('Original estimated price must be positive').optional().default(1000),
-  imageUrl: z.string().refine(
-    (val) => {
-      if (val.startsWith('http://') || val.startsWith('https://')) return true;
-      if (
-        val.startsWith('data:image/webp;base64,') ||
-        val.startsWith('data:image/jpeg;base64,') ||
-        val.startsWith('data:image/jpg;base64,') ||
-        val.startsWith('data:image/png;base64,')
-      ) {
-        return val.length <= 7 * 1024 * 1024;
-      }
-      return false;
-    },
-    { message: 'Photograph must be a valid WebP, JPEG, or PNG image under 5MB.' }
-  ),
-  description: z.string().trim().optional().default('Verified archival anime collectible consigned to OtakuBazaar vault custody.'),
-  sellerId: z.string().optional().default('user_seller_rengoku'),
-  sellerName: z.string().optional().default('Kyojuro Rengoku'),
-  pickupPincode: z.string().optional(),
-  weightKg: z.number().optional(),
-  dimensionsCm: z.string().optional(),
-  invoiceProofUrl: z.string().optional(),
+  imageUrls: z.array(listingImageValidator).max(10, 'Maximum of 10 photographs allowed.').optional(),
+  imageUrl: listingImageValidator.optional(),
+  description: z.string().trim().max(5000).optional().default(''),
+  pickupPincode: z.string().trim().regex(/^[1-9][0-9]{5}$/, 'Pickup PIN code must be a valid 6-digit Indian PIN code').optional(),
+  weightKg: z.number().positive('Weight must be positive').max(500).optional(),
+  dimensionsCm: z.string().trim().max(64).optional(),
+  invoiceProofUrl: invoiceProofValidator,
   mfcItemId: z.string().optional(),
   mfcUrl: z.string().optional(),
   originalPriceJPY: z.number().int().optional(),
@@ -189,6 +191,25 @@ export async function createListingAction(
 
     const validated = CreateListingSchema.parse(rawInput);
 
+    // Preserve all uploaded photos in order (supporting both imageUrls[] and legacy single imageUrl)
+    const rawImages = [
+      ...(validated.imageUrls ?? []),
+      ...(validated.imageUrl ? [validated.imageUrl] : []),
+    ];
+    const resolvedImageUrls: string[] = [];
+    for (const img of rawImages) {
+      const trimmed = img.trim();
+      if (trimmed && !resolvedImageUrls.includes(trimmed)) {
+        resolvedImageUrls.push(trimmed);
+      }
+    }
+    if (resolvedImageUrls.length === 0) {
+      return {
+        success: false,
+        error: 'At least 1 valid collectible photograph is required.',
+      };
+    }
+
     const createdRecord = await ListingRepository.create({
       id: `listing-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
       sellerId: authenticatedUserId,
@@ -196,7 +217,7 @@ export async function createListingAction(
       sellerName: authenticatedUserName,
       title: validated.title,
       description: validated.description,
-      imageUrls: [validated.imageUrl],
+      imageUrls: resolvedImageUrls,
       askingPriceAmount: Math.round(validated.askingPriceINR * 100),
       askingPriceCurrency: 'INR',
       category: validated.category,
@@ -208,6 +229,10 @@ export async function createListingAction(
       releaseYear: validated.releaseYear,
       scale: validated.scale,
       manufacturer: validated.manufacturer,
+      pickupPincode: validated.pickupPincode ?? null,
+      weightKg: validated.weightKg ?? null,
+      dimensionsCm: validated.dimensionsCm ?? null,
+      invoiceProofUrl: validated.invoiceProofUrl ?? null,
     });
 
     // Revalidate frontend caches

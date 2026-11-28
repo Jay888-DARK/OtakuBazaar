@@ -29,6 +29,10 @@ export interface ListingRecord {
   releaseYear?: number | null;
   scale?: string | null;
   manufacturer?: string | null;
+  pickupPincode?: string | null;
+  weightKg?: number | null;
+  dimensionsCm?: string | null;
+  invoiceProofUrl?: string | null;
   createdAt: Date;
   updatedAt: Date;
   lockRemainingSeconds?: number;
@@ -89,13 +93,17 @@ function toRecord(row: PrismaListingRow): ListingRecord {
     releaseYear: row.releaseYear,
     scale: row.scale,
     manufacturer: row.manufacturer,
+    pickupPincode: (row as any).pickupPincode ?? null,
+    weightKg: (row as any).weightKg ?? null,
+    dimensionsCm: (row as any).dimensionsCm ?? null,
+    invoiceProofUrl: (row as any).invoiceProofUrl ?? null,
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
   };
 }
 
 export interface CreateListingInput {
-  sellerId?: string;
+  sellerId: string;
   sellerEmail?: string;
   sellerName?: string;
   title: string;
@@ -112,6 +120,10 @@ export interface CreateListingInput {
   releaseYear?: number | null;
   scale?: string | null;
   manufacturer?: string | null;
+  pickupPincode?: string | null;
+  weightKg?: number | null;
+  dimensionsCm?: string | null;
+  invoiceProofUrl?: string | null;
   id?: string;
 }
 
@@ -162,6 +174,8 @@ export class ListingRepository {
         mfcUrl: true,
         originalPriceJPY: true,
         releaseYear: true,
+        weightKg: true,
+        dimensionsCm: true,
         reservedByBuyerId: true,
         createdAt: true,
         updatedAt: true,
@@ -212,9 +226,12 @@ export class ListingRepository {
    */
   public static async create(listing: CreateListingInput): Promise<ListingRecord> {
     const id = listing.id ?? `listing-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
-    const sellerId = listing.sellerId || 'user_seller_rengoku';
-    const sellerEmail = listing.sellerEmail || `${sellerId}@otakubazaar.dev`;
-    const sellerName = listing.sellerName || 'Kyojuro Rengoku';
+    if (!listing.sellerId || !listing.sellerId.trim()) {
+      throw new Error('Authenticated sellerId is required to create a listing.');
+    }
+    const sellerId = listing.sellerId.trim();
+    const sellerEmail = listing.sellerEmail?.trim() || undefined;
+    const sellerName = listing.sellerName?.trim() || 'Collector';
 
     // 1. Ensure seller User record exists in PostgreSQL via upsert
     try {
@@ -224,23 +241,24 @@ export class ListingRepository {
         create: {
           id: sellerId,
           displayName: sellerName,
-          email: sellerEmail,
-          avatarUrl: '/avatars/rengoku.png',
+          ...(sellerEmail ? { email: sellerEmail } : {}),
           rating: 5.0,
           totalSales: 0,
           totalPurchases: 0,
-          verifiedUpiVpa: 'rengoku@upi',
         },
       });
     } catch (userErr) {
       console.warn('[ListingRepository] User upsert notice (fallback by email):', userErr);
-      const existingByEmail = await prisma.user.findUnique({ where: { email: sellerEmail } });
+      const existingByEmail = sellerEmail
+        ? await prisma.user.findUnique({ where: { email: sellerEmail } })
+        : null;
       if (!existingByEmail) {
         throw new Error(`Failed to associate listing with seller account: ${userErr instanceof Error ? userErr.message : String(userErr)}`);
       }
     }
 
-    // 2. Upload any base64 images to persistent Cloud Storage (Supabase Storage / Cloudinary)
+    // 2. Upload any base64 images to persistent Cloud Storage (Supabase Storage / Cloudinary / Vercel Blob)
+    //    Fail explicitly if any upload fails instead of silently falling back.
     const persistentUrls: string[] = [];
     const rawUrls = Array.isArray(listing.imageUrls) ? listing.imageUrls : [listing.imageUrls || ''];
 
@@ -250,7 +268,7 @@ export class ListingRepository {
         if (uploadRes.success && uploadRes.url) {
           persistentUrls.push(uploadRes.url);
         } else {
-          persistentUrls.push(imgUrl);
+          throw new Error(uploadRes.error || 'Image upload failed. Please check storage configuration and try again.');
         }
       } else if (imgUrl && imgUrl.trim()) {
         persistentUrls.push(imgUrl.trim());
@@ -258,7 +276,18 @@ export class ListingRepository {
     }
 
     if (persistentUrls.length === 0) {
-      persistentUrls.push('/otakubazaar-logo.png');
+      throw new Error('At least one valid listing photo is required.');
+    }
+
+    // 2b. Upload invoice proof if provided as a data URI
+    let persistedInvoiceUrl: string | null = listing.invoiceProofUrl?.trim() || null;
+    if (persistedInvoiceUrl && persistedInvoiceUrl.startsWith('data:')) {
+      const invoiceUpload = await CloudStorageService.uploadDataUri(persistedInvoiceUrl, 'invoice');
+      if (invoiceUpload.success && invoiceUpload.url) {
+        persistedInvoiceUrl = invoiceUpload.url;
+      } else {
+        throw new Error(invoiceUpload.error || 'Invoice proof upload failed. Please try again.');
+      }
     }
 
     // 3. Insert Listing into PostgreSQL
@@ -283,6 +312,10 @@ export class ListingRepository {
           releaseYear: listing.releaseYear || null,
           scale: listing.scale || null,
           manufacturer: listing.manufacturer || null,
+          pickupPincode: listing.pickupPincode?.trim() || null,
+          weightKg: listing.weightKg ?? null,
+          dimensionsCm: listing.dimensionsCm?.trim() || null,
+          invoiceProofUrl: persistedInvoiceUrl,
         },
       });
 

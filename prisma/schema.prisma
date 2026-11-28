@@ -86,6 +86,10 @@ model Listing {
   scale             String?
   manufacturer      String?
   franchise         String?  @map("franchise")
+  pickupPincode     String?  @map("pickup_pincode")
+  weightKg          Float?   @map("weight_kg")
+  dimensionsCm      String?  @map("dimensions_cm")
+  invoiceProofUrl   String?  @map("invoice_proof_url")
   createdAt         DateTime @default(now()) @map("created_at")
   updatedAt         DateTime @updatedAt @map("updated_at")
 

@@ -34,7 +34,7 @@ const CreateListingSchema = z.object({
     .trim()
     .max(5000, 'Description must not exceed 5000 characters')
     .optional()
-    .default('Verified archival anime collectible consigned to OtakuBazaar vault custody.'),
+    .default(''),
   imageUrls: z
     .array(
       z.string().refine(
@@ -168,6 +168,26 @@ export function toPublicLotDTO(listing: any): PublicLotDTO {
   };
 }
 
+export interface PrivateLotDTO extends PublicLotDTO {
+  pickupPincode: string | null;
+  invoiceProofUrl: string | null;
+  weightKg: number | null;
+  dimensionsCm: string | null;
+}
+
+/**
+ * Seller/Admin-only DTO that includes private logistics (pickupPincode) and invoice proof.
+ */
+export function toPrivateLotDTO(listing: any): PrivateLotDTO {
+  return {
+    ...toPublicLotDTO(listing),
+    pickupPincode: listing.pickupPincode ?? null,
+    invoiceProofUrl: listing.invoiceProofUrl ? `/api/listings/${listing.id}/invoice` : null,
+    weightKg: listing.weightKg ?? null,
+    dimensionsCm: listing.dimensionsCm ?? null,
+  };
+}
+
 // ---------------------------------------------------------------------------
 // Route Handlers
 // ---------------------------------------------------------------------------
@@ -198,7 +218,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       listings = await ListingRepository.findAllActive();
     }
 
-    const publicItems = listings.map(toPublicLotDTO);
+    const publicItems = listings.map((item) =>
+      my === 'true' ? toPrivateLotDTO(item) : toPublicLotDTO(item)
+    );
     return NextResponse.json(
       {
         total: publicItems.length,

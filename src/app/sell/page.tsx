@@ -279,7 +279,7 @@ export default function SellPage(): React.JSX.Element {
   const activeFranchise = franchise === 'Other / Retro' ? customFranchise || 'Anime Series' : franchise;
   const activeCategory = category === 'Other' ? customCategory || 'Other' : category;
   const activeManufacturer = manufacturer === 'Other' ? customManufacturer || 'Import Studio' : manufacturer;
-  const activeImageUrl = (customImageUrl.trim() || imageUrl || aiPhotoPreviews[0] || '') as string;
+  const activeImageUrl = (customImageUrl.trim() || imageUrl || '') as string;
   const priceNum = parseInt(askingPrice, 10) || 0;
   const originalEst = Math.round(priceNum * 1.25);
 
@@ -550,18 +550,35 @@ export default function SellPage(): React.JSX.Element {
     if (!file) return;
 
     setInvoiceFileName(file.name);
-    setInvoiceUploaded(true);
     clearFieldError('invoice');
 
     if (file.type.startsWith('image/')) {
       try {
         const sanitized = await compressAndStripExif(file, 1200, 0.75);
         setInvoicePreviewUrl(sanitized);
-      } catch {
-        setInvoicePreviewUrl(URL.createObjectURL(file));
+        setInvoiceUploaded(true);
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : 'Failed to process invoice image.';
+        setInvoiceUploaded(false);
+        setInvoicePreviewUrl('');
+        setFieldErrors((prev) => ({ ...prev, invoice: msg }));
       }
     } else {
-      setInvoicePreviewUrl(URL.createObjectURL(file));
+      try {
+        const dataUri = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(String(reader.result || ''));
+          reader.onerror = () => reject(new Error('Failed to read invoice file.'));
+          reader.readAsDataURL(file);
+        });
+        setInvoicePreviewUrl(dataUri);
+        setInvoiceUploaded(true);
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : 'Failed to read invoice file.';
+        setInvoiceUploaded(false);
+        setInvoicePreviewUrl('');
+        setFieldErrors((prev) => ({ ...prev, invoice: msg }));
+      }
     }
   };
 
@@ -616,7 +633,71 @@ export default function SellPage(): React.JSX.Element {
 
       startTransition(async () => {
         try {
-          const cleanDesc = description.trim() || 'Verified archival anime collectible consigned to OtakuBazaar vault custody.';
+          const cleanDesc = description.trim();
+          const selectedImages: string[] = [];
+          for (const candidate of [activeImageUrl, ...extraImageUrls]) {
+            const trimmed = (candidate || '').trim();
+            if (trimmed && !selectedImages.includes(trimmed)) {
+              selectedImages.push(trimmed);
+            }
+          }
+
+          // Helper to upload a single data URI via multipart/form-data to /api/upload
+          const uploadSingleAsset = async (
+            assetValue: string,
+            purpose: 'photo' | 'invoice'
+          ): Promise<string> => {
+            if (!assetValue.startsWith('data:')) {
+              return assetValue;
+            }
+            const blobRes = await fetch(assetValue);
+            const blob = await blobRes.blob();
+            if (blob.size > 4 * 1024 * 1024) {
+              throw new Error(
+                `${purpose === 'invoice' ? 'Invoice file' : 'Photo'} exceeds the 4MB upload limit.`
+              );
+            }
+            const ext =
+              blob.type === 'application/pdf'
+                ? 'pdf'
+                : blob.type.includes('png')
+                  ? 'png'
+                  : blob.type.includes('webp')
+                    ? 'webp'
+                    : 'jpg';
+            const formData = new FormData();
+            formData.append('file', blob, `${purpose}.${ext}`);
+            formData.append('purpose', purpose);
+
+            const uploadRes = await fetch(`/api/upload?purpose=${purpose}`, {
+              method: 'POST',
+              body: formData,
+            });
+            const uploadJson = await uploadRes.json().catch(() => ({}));
+            if (!uploadRes.ok || !uploadJson.url) {
+              throw new Error(
+                uploadJson.error || `Failed to upload ${purpose} (${uploadRes.status}).`
+              );
+            }
+            return uploadJson.url as string;
+          };
+
+          setIsUploading(true);
+          let uploadedImageUrls: string[] = [];
+          let uploadedInvoiceRef: string | undefined = undefined;
+          try {
+            // Upload each photo separately to respect Vercel's 4.5MB request size limit
+            for (const img of selectedImages) {
+              const url = await uploadSingleAsset(img, 'photo');
+              uploadedImageUrls.push(url);
+            }
+            if (invoicePreviewUrl) {
+              uploadedInvoiceRef = await uploadSingleAsset(invoicePreviewUrl, 'invoice');
+            }
+          } finally {
+            setIsUploading(false);
+          }
+
           const result = await createListingAction({
             title: `[${activeFranchise}] ${title.trim()}`,
             series: activeFranchise,
@@ -627,12 +708,12 @@ export default function SellPage(): React.JSX.Element {
             conditionGrade: selectedGrade.rank,
             askingPriceINR: priceNum,
             originalPriceINR: originalEst,
-            imageUrl: activeImageUrl,
+            imageUrls: uploadedImageUrls,
             description: cleanDesc,
             pickupPincode: pickupPincode.trim(),
             weightKg: parseFloat(shippingWeightKg) || 1.5,
             dimensionsCm: `${boxLengthCm}x${boxWidthCm}x${boxHeightCm}`,
-            invoiceProofUrl: invoicePreviewUrl || undefined,
+            invoiceProofUrl: uploadedInvoiceRef,
             mfcItemId: mfcItemId || undefined,
             mfcUrl: mfcUrl || undefined,
             originalPriceJPY: originalPriceJPY ? parseInt(originalPriceJPY, 10) : undefined,
@@ -644,6 +725,7 @@ export default function SellPage(): React.JSX.Element {
             return;
           }
 
+          const persistedImages = result.data?.imageUrls?.length ? result.data.imageUrls : uploadedImageUrls;
           const newListingPayload = {
             id: result.data?.id || `listing_${Date.now()}`,
             title: `[${activeFranchise}] ${title.trim()}`,
@@ -658,14 +740,12 @@ export default function SellPage(): React.JSX.Element {
             askingPriceAmount: priceNum * 100,
             price: priceNum,
             originalPriceINR: originalEst,
-            imageUrl: activeImageUrl,
-            image: activeImageUrl,
-            imageUrls: [activeImageUrl, ...extraImageUrls.filter((url) => url.trim().length > 0)],
+            imageUrl: persistedImages[0] || activeImageUrl,
+            image: persistedImages[0] || activeImageUrl,
+            imageUrls: persistedImages,
             status: 'ACTIVE',
             badge: selectedGrade.rank,
-            sellerName: 'Kyojuro Rengoku',
-            sellerRating: '5.0 (42 Verified Sales)',
-            sellerAvatar: 'KR',
+            sellerName: session?.user?.name || 'Collector',
           };
 
           if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
