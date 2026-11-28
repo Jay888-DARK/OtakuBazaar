@@ -29,6 +29,12 @@ export default function TermsOfServicePage(): React.JSX.Element {
           </div>
         </div>
 
+        {/* Draft Notice for Legal Review */}
+        <div className="p-3 bg-[#1A1410] border border-[#F85B1A]/40 text-[#F0E8DA] text-xs flex items-center justify-between">
+          <span><strong>DRAFT FOR LEGAL REVIEW:</strong> These terms are pending final legal and regulatory review.</span>
+          <span className="text-[10px] uppercase font-mono tracking-wider bg-[#F85B1A]/20 text-[#F85B1A] px-2 py-0.5 border border-[#F85B1A]/40">DRAFT</span>
+        </div>
+
         {/* Header */}
         <div className="bg-[#0C0C0C] border border-[#1F1F1F] p-6 sm:p-8">
           <span className="text-[10px] uppercase tracking-[0.2em] text-[#777777] font-semibold border border-[#1F1F1F] bg-[#080808] px-2.5 py-1 inline-block mb-3">
@@ -137,16 +143,14 @@ export default function TermsOfServicePage(): React.JSX.Element {
               </span>
             </div>
             <div className="space-y-2 text-[#8E8E8E] text-[12px]">
-              {/* TODO: Lawyer review - Verify registered entity name and office address upon incorporation */}
               <p>
-                <strong className="text-[#F2EFE9]">Operating Entity:</strong> OtakuBazaar Internet Services Private Limited (Proposed). Registered address: Mumbai, Maharashtra, India.
-              </p>
-              {/* TODO: Lawyer review - Governing law and jurisdiction */}
-              <p>
-                <strong className="text-[#F2EFE9]">Governing Law &amp; Jurisdiction:</strong> Governed by the laws of India. Courts of Mumbai, Maharashtra have exclusive jurisdiction over any disputes.
+                <strong className="text-[#F2EFE9]">Operating Entity:</strong> OtakuBazaar is operated by Jay Bhatt, an individual based in India.
               </p>
               <p>
-                <strong className="text-[#F2EFE9]">Grievance Officer:</strong> In compliance with the Information Technology Act, 2000: Grievance Redressal Officer (<a href="mailto:grievance@otakubazaar.com" className="text-[#F2EFE9] underline">grievance@otakubazaar.com</a>). Grievances acknowledged within 48 hours; resolved within 30 days.
+                <strong className="text-[#F2EFE9]">Governing Law &amp; Jurisdiction:</strong> Governed by the laws of India. Courts of India have jurisdiction over any disputes.
+              </p>
+              <p>
+                <strong className="text-[#F2EFE9]">Grievance Officer:</strong> In compliance with the Information Technology Act, 2000: Jay Bhatt, Grievance Redressal Officer (<a href="mailto:jaybhatt8826@gmail.com" className="text-[#F2EFE9] underline">jaybhatt8826@gmail.com</a>). Grievances acknowledged within 48 hours; resolved within 30 days.
               </p>
             </div>
           </section>

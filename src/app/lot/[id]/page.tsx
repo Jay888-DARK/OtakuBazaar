@@ -57,25 +57,25 @@ async function getProductFromDb(id: string): Promise<MockProduct | null> {
     series: listing.title,
     category: (listing.category as any) || 'Scale Figure',
     categorySubtitle,
-    edition: 'VERIFIED ARCHIVAL CUSTODY',
+    edition: 'COLLECTOR LISTING',
     price: priceINR,
     imageUrl: primaryImg,
     condition: (listing.condition as any) || 'NEW',
     gradeCondition: listing.condition === 'NEW' ? 'GRADE S // MISB (FACTORY SEALED)' : 'GRADE A // BIB (DISPLAYED)',
     figureGrade: listing.condition === 'NEW' ? 'MISB (FACTORY SEALED)' : 'BIB (CABINET DISPLAYED)',
     boxCondition: listing.condition === 'NEW' ? 'FACTORY CARTON SEALED' : 'MINT BOX (BLISTER INTACT)',
-    origin: 'PAN-INDIA VAULT • IN-HAND',
+    origin: 'INDIA • IN-HAND',
     indianLocation: 'MUMBAI, MH',
     ownerCount: '1ST OWNER',
     sellerHandle: `@vault_seller_${listing.sellerId.slice(-6)}`,
-    dispatchSla: '48H INSURED BLUEDART AIR (CRATED)',
+    dispatchSla: '48H TRACKED COURIER DISPATCH',
     scale: (scale as any) || 'NON-SCALE',
     weight: '2.4 KG',
-    seal: 'TAMPER-EVIDENT HOLOGRAPHIC SEAL VERIFIED',
-    sculptor: 'Authentic Studio Artisans',
+    seal: 'PUBLISHER HOLOGRAPHIC SEAL PHOTO',
+    sculptor: 'Studio Artisans',
     manufacturer: listing.manufacturer || 'Japanese Manufacturer',
     boxDimensions: '340 × 260 × 200 MM',
-    provenance: listing.description || 'Verified Japanese imported collectible held in secure custody under 48-hour unboxing inspection escrow.',
+    provenance: listing.description || 'Collector-listed Japanese collectible with 48-hour unboxing inspection window.',
     videoUrl: primaryImg,
     mfcItemId: listing.mfcItemId || undefined,
     mfcUrl: listing.mfcUrl || (listing.mfcItemId ? `https://myfigurecollection.net/item/${listing.mfcItemId}` : undefined),
@@ -125,20 +125,24 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   if (!product) {
     return {
-      title: 'Lot Not Found — OtakuBazaar Escrow Marketplace',
-      description: 'The requested collectible lot does not exist or has been settled.',
+      title: 'Listing Not Found — OtakuBazaar',
+      description: 'The requested collectible listing does not exist or is no longer available.',
     };
   }
 
-  const title = `${product.title} — OtakuBazaar Escrow Marketplace`;
-  const description = `Buy authentic ${product.title} (${product.category}, ${product.gradeCondition}) for ₹${product.price.toLocaleString('en-IN')}. Protected by 48-hour unboxing inspection escrow.`;
+  const title = `${product.title} — ₹${product.price.toLocaleString('en-IN')} | OtakuBazaar`;
+  const description = `Buy ${product.title} (${product.category}, ${product.gradeCondition}) for ₹${product.price.toLocaleString('en-IN')} in India on OtakuBazaar.`;
 
   return {
     title,
     description,
+    alternates: {
+      canonical: `/lot/${id}`,
+    },
     openGraph: {
       title,
       description,
+      url: `https://otakubazaar.jaybhatt.me/lot/${id}`,
       images: [
         {
           url: product.imageUrl,
@@ -166,11 +170,12 @@ export default async function LotDetailPage({ params }: PageProps): Promise<Reac
     notFound();
   }
 
-  // Schema.org Product JSON-LD
+  // Schema.org Product JSON-LD (real listings only, no fake reviews)
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: product.title,
+    sku: product.id,
     image: [product.imageUrl],
     description: product.provenance || product.categorySubtitle,
     category: product.category,
@@ -180,6 +185,7 @@ export default async function LotDetailPage({ params }: PageProps): Promise<Reac
     },
     offers: {
       '@type': 'Offer',
+      url: `https://otakubazaar.jaybhatt.me/lot/${product.id}`,
       price: product.price,
       priceCurrency: 'INR',
       availability: 'https://schema.org/InStock',

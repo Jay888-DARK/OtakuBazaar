@@ -50,17 +50,16 @@ export function LegalSupportFooter(): React.JSX.Element {
           {/* Business Entity Details */}
           <div className="space-y-1.5 bg-[#111114] p-4 border border-zinc-800">
             <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-zinc-300 m-0">
-              Corporate Entity (Proposed)
+              Operating Entity
             </h3>
             <p className="font-semibold text-zinc-100 m-0">
-              OtakuBazaar Internet Services Private Limited
+              OtakuBazaar
             </p>
             <p className="text-zinc-400 m-0 leading-relaxed text-[11px]">
-              {/* TODO: Lawyer review - Verify registered entity name and office address upon incorporation */}
-              Registered Office: Mumbai, Maharashtra, India
+              OtakuBazaar is operated by Jay Bhatt, an individual based in India.
             </p>
             <p className="text-[10px] text-zinc-500 pt-1 m-0 uppercase tracking-wider">
-              Jurisdiction: Courts of Mumbai, Maharashtra
+              Jurisdiction: Courts of India
             </p>
           </div>
 
@@ -72,25 +71,25 @@ export function LegalSupportFooter(): React.JSX.Element {
             <p className="m-0">
               <strong className="text-zinc-100">Customer Support:</strong>{' '}
               <a
-                href="mailto:support@otakubazaar.com"
+                href="mailto:jaybhatt8826@gmail.com"
                 className="text-zinc-300 hover:text-white underline font-medium focus-visible:outline-none px-0.5"
-                aria-label="Email Customer Support at support@otakubazaar.com"
+                aria-label="Email Customer Support at jaybhatt8826@gmail.com"
               >
-                support@otakubazaar.com
+                jaybhatt8826@gmail.com
               </a>
             </p>
             <p className="m-0">
               <strong className="text-zinc-100">Grievance Officer:</strong>{' '}
-              <span className="text-zinc-400">Grievance Redressal Officer</span>
+              <span className="text-zinc-400">Jay Bhatt (Grievance Redressal Officer)</span>
             </p>
             <p className="m-0">
               <strong className="text-zinc-100">Grievance Desk:</strong>{' '}
               <a
-                href="mailto:grievance@otakubazaar.com"
+                href="mailto:jaybhatt8826@gmail.com"
                 className="text-zinc-300 hover:text-white underline font-medium focus-visible:outline-none px-0.5"
-                aria-label="Email Grievance Officer at grievance@otakubazaar.com"
+                aria-label="Email Grievance Officer at jaybhatt8826@gmail.com"
               >
-                grievance@otakubazaar.com
+                jaybhatt8826@gmail.com
               </a>
             </p>
             <p className="text-[10px] text-zinc-500 pt-1 m-0 uppercase tracking-wider">
@@ -129,7 +128,7 @@ export function LegalSupportFooter(): React.JSX.Element {
         </div>
 
         <span className="text-[11px] text-zinc-500 uppercase tracking-widest">
-          © {new Date().getFullYear()} OtakuBazaar Technologies Pvt. Ltd. All rights reserved.
+          © {new Date().getFullYear()} OtakuBazaar. All rights reserved.
         </span>
       </div>
     </footer>

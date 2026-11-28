@@ -25,12 +25,6 @@ export interface UserPersona {
   readonly handle: string;
 }
 
-export const DEMO_PERSONAS: Record<UserRole, UserPersona> = {
-  BUYER: { id: 'user_buyer_tanjiro', name: 'Tanjiro Kamado', role: 'BUYER', avatar: 'TK', handle: '@tanjiro_slayer' },
-  SELLER: { id: 'user_seller_rengoku', name: 'Kyojuro Rengoku', role: 'SELLER', avatar: 'KR', handle: '@flame_hashira' },
-  ADMIN: { id: 'user_admin_allmight', name: 'Toshinori Yagi', role: 'ADMIN', avatar: 'TY', handle: '@allmight_auth' },
-};
-
 export function Navbar() {
   const router = useRouter();
   const { data: session } = useSession();
@@ -46,7 +40,7 @@ export function Navbar() {
           setCartItemCount(items.length);
         }
       })
-      .catch(() => {});
+      .catch(() => { });
 
     // Listen for instant cart update events
     const handleCartUpdate = (e: Event) => {
@@ -66,7 +60,7 @@ export function Navbar() {
       if (Array.isArray(stored)) {
         setWatchlistCount(stored.length);
       }
-    } catch {}
+    } catch { }
 
     const handleWatchlistUpdate = (e: Event) => {
       const customEvent = e as CustomEvent<{ ids?: string[] }>;
@@ -195,9 +189,9 @@ export function Navbar() {
               letterSpacing: '0.12em',
               textTransform: 'uppercase',
             }}
-            className="hidden md:flex items-center border border-[#1F1F1F] bg-[#0C0C0C] px-3.5 py-2 uppercase text-[#888888] hover:border-[#F2EFE9] hover:bg-[#F2EFE9] hover:text-[#080808] transition-colors duration-75 cursor-pointer rounded-none font-sans no-underline"
+            className="hidden md:flex items-center border border-[#1F1F1F] bg-[#0C0C0C] px-3.5 py-2 uppercase text-[#9CA3AF] hover:border-[#F2EFE9] hover:bg-[#F2EFE9] hover:text-[#080808] transition-colors duration-75 cursor-pointer rounded-none font-sans no-underline"
           >
-            <span>[ SAVED {watchlistCount} ]</span>
+            <span>Saved ({watchlistCount})</span>
           </Link>
 
           {/* Cart Drawer Trigger */}
@@ -212,9 +206,9 @@ export function Navbar() {
               letterSpacing: '0.12em',
               textTransform: 'uppercase',
             }}
-            className="flex items-center border border-[#1F1F1F] bg-[#0C0C0C] px-3.5 py-2 uppercase text-[#888888] hover:border-[#F2EFE9] hover:bg-[#F2EFE9] hover:text-[#080808] transition-colors duration-75 cursor-pointer rounded-none font-sans"
+            className="flex items-center border border-[#1F1F1F] bg-[#0C0C0C] px-3.5 py-2 uppercase text-[#9CA3AF] hover:border-[#F2EFE9] hover:bg-[#F2EFE9] hover:text-[#080808] transition-colors duration-75 cursor-pointer rounded-none font-sans"
           >
-            <span>[ CART {cartItemCount} ]</span>
+            <span>Cart ({cartItemCount})</span>
           </button>
 
           {/* Monochromatic Primary CTA */}
@@ -228,9 +222,9 @@ export function Navbar() {
               letterSpacing: '0.12em',
               textTransform: 'uppercase',
             }}
-            className="hidden sm:inline-flex border border-[#1F1F1F] bg-[#0C0C0C] px-3.5 py-2 uppercase text-[#888888] hover:border-[#F2EFE9] hover:bg-[#F2EFE9] hover:text-[#080808] transition-colors duration-75 cursor-pointer rounded-none font-sans"
+            className="hidden sm:inline-flex border border-[#1F1F1F] bg-[#0C0C0C] px-3.5 py-2 uppercase text-[#9CA3AF] hover:border-[#F2EFE9] hover:bg-[#F2EFE9] hover:text-[#080808] transition-colors duration-75 cursor-pointer rounded-none font-sans"
           >
-            [ SELL ITEM ]
+            Sell Item
           </button>
 
           {/* Direct Link to Collector Vault & Listed Items (Edit & Delete) */}
@@ -244,9 +238,9 @@ export function Navbar() {
               letterSpacing: '0.12em',
               textTransform: 'uppercase',
             }}
-            className="border border-[#1F1F1F] bg-[#0C0C0C] px-3.5 py-2 uppercase text-[#888888] hover:border-[#F2EFE9] hover:bg-[#F2EFE9] hover:text-[#080808] transition-colors duration-75 cursor-pointer rounded-none font-sans no-underline"
+            className="border border-[#1F1F1F] bg-[#0C0C0C] px-3.5 py-2 uppercase text-[#9CA3AF] hover:border-[#F2EFE9] hover:bg-[#F2EFE9] hover:text-[#080808] transition-colors duration-75 cursor-pointer rounded-none font-sans no-underline"
           >
-            <span>[ VAULT ]</span>
+            <span>Vault</span>
           </Link>
 
           {/* Sign In / Profile */}
@@ -261,9 +255,9 @@ export function Navbar() {
                 letterSpacing: '0.12em',
                 textTransform: 'uppercase',
               }}
-              className="border border-[#1F1F1F] bg-[#0C0C0C] px-3.5 py-2 uppercase text-[#888888] hover:border-[#F2EFE9] hover:bg-[#F2EFE9] hover:text-[#080808] transition-colors duration-75 cursor-pointer rounded-none font-sans"
+              className="border border-[#1F1F1F] bg-[#0C0C0C] px-3.5 py-2 uppercase text-[#9CA3AF] hover:border-[#F2EFE9] hover:bg-[#F2EFE9] hover:text-[#080808] transition-colors duration-75 cursor-pointer rounded-none font-sans"
             >
-              [ SIGN IN ]
+              Sign In
             </button>
           ) : (
             <div className="flex items-center gap-2 pl-2 pr-2 py-1 bg-[#0C0C0C] border border-[#1F1F1F] shrink-0">
@@ -289,7 +283,7 @@ export function Navbar() {
                   letterSpacing: '0.12em',
                   textTransform: 'uppercase',
                 }}
-                className="hidden lg:inline-block max-w-[80px] truncate uppercase text-[#888888] font-sans"
+                className="hidden lg:inline-block max-w-[80px] truncate uppercase text-[#9CA3AF] font-sans"
               >
                 {session.user?.name}
               </span>
@@ -304,10 +298,10 @@ export function Navbar() {
                   letterSpacing: '0.12em',
                   textTransform: 'uppercase',
                 }}
-                className="uppercase text-[#888888] hover:text-[#080808] px-2 py-0.5 border border-[#1F1F1F] bg-[#080808] hover:bg-[#F2EFE9] hover:border-[#F2EFE9] transition-colors duration-75 cursor-pointer shrink-0 whitespace-nowrap rounded-none font-sans"
+                className="uppercase text-[#9CA3AF] hover:text-[#080808] px-2 py-0.5 border border-[#1F1F1F] bg-[#080808] hover:bg-[#F2EFE9] hover:border-[#F2EFE9] transition-colors duration-75 cursor-pointer shrink-0 whitespace-nowrap rounded-none font-sans"
                 title="Sign out of OtakuBazaar"
               >
-                [ SIGN OUT ]
+                Sign Out
               </button>
             </div>
           )}

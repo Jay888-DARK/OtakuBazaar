@@ -3,6 +3,24 @@
 A production-grade Next.js 15 (App Router) + TypeScript C2C marketplace for anime figures, manga, cosplay gear, and collectibles, built with Clean Architecture and real-time multi-window sync.
 
 
+## Environment Variables
+
+Configure the following variables in your `.env.local` or Vercel dashboard:
+
+```bash
+# AI Vision Auto-Fill (Server-side only — never use NEXT_PUBLIC_)
+GOOGLE_API_KEY="AIzaSy..."
+ANTHROPIC_API_KEY="sk-ant-..."
+
+# Database & Storage
+DATABASE_URL="postgresql://..."
+SUPABASE_URL="https://..."
+SUPABASE_SERVICE_ROLE_KEY="..."
+CLOUDINARY_CLOUD_NAME="..."
+CLOUDINARY_API_KEY="..."
+CLOUDINARY_API_SECRET="..."
+```
+
 ## Getting Started
 
 First, run the development server:

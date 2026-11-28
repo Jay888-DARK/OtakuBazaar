@@ -12,9 +12,12 @@ import { optimizeImageUrl } from '@/infrastructure/utils/imageOptimizer';
 import type { DriftWallItem } from '@/presentation/components/ui/DriftWall';
 
 export const metadata: Metadata = {
-  title: 'OtakuBazaar — India’s C2C Marketplace for Authentic Anime Figures & Collectibles',
+  title: 'OtakuBazaar — Buy & Sell Anime Figures and Collectibles in India',
   description:
-    'India’s dedicated C2C marketplace for verified anime scale figures and collectibles, backed by 48-hour unboxing inspection and secure escrow payments.',
+    'India’s collector-to-collector marketplace for anime scale figures, Nendoroids, statues, and manga sets with a 48-hour unboxing inspection window.',
+  alternates: {
+    canonical: '/',
+  },
 };
 
 export const dynamic = 'force-dynamic';
@@ -50,8 +53,8 @@ export default async function HomePage(props?: {
         price: Math.round(item.askingPriceAmount / 100),
         askingPriceAmount: item.askingPriceAmount,
         category: item.category || 'Scale Figure',
-        categorySubtitle: 'AUTHENTIC JAPANESE IMPORT',
-        edition: 'VERIFIED CUSTODY',
+        categorySubtitle: 'JAPANESE IMPORT COLLECTIBLE',
+        edition: 'COLLECTOR LISTING',
         condition: item.condition || 'NEW',
         gradeCondition: item.condition === 'NEW' ? 'FACTORY SEALED' : 'GRADE A',
         figureGrade: item.condition === 'NEW' ? 'MISB (FACTORY SEALED)' : 'BIB (CABINET DISPLAYED)',

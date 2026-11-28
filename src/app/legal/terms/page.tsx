@@ -29,6 +29,12 @@ export default function TermsOfServicePage() {
   return (
     <div className="min-h-screen py-10 px-4 sm:px-6 lg:px-8 bg-[#0a0806] text-[#F0E8DA]">
       <div className="max-w-4xl mx-auto">
+        {/* Draft Notice for Legal Review */}
+        <div className="mb-6 p-3 bg-amber-950/40 border border-amber-600/50 text-amber-200 text-xs flex items-center justify-between">
+          <span><strong>DRAFT FOR LEGAL REVIEW:</strong> These terms are pending final legal and regulatory advisory review.</span>
+          <span className="text-[10px] uppercase font-mono tracking-wider bg-amber-900/60 px-2 py-0.5 border border-amber-700/60">DRAFT</span>
+        </div>
+
         {/* Navigation Breadcrumb / Return Button */}
         <div className="mb-8">
           <Link
@@ -150,20 +156,18 @@ export default function TermsOfServicePage() {
               <span>7.</span> Legal Entity, Governing Law &amp; Grievance Redressal
             </h2>
             <div className="space-y-3 text-stone-300">
-              {/* TODO: Lawyer review - Verify registered entity name and office address upon incorporation */}
               <p>
-                <strong className="text-white">Operating Entity:</strong> OtakuBazaar Internet Services Private Limited (Proposed). Registered address: Mumbai, Maharashtra, India.
+                <strong className="text-white">Operating Entity:</strong> OtakuBazaar is operated by Jay Bhatt, an individual based in India.
               </p>
-              {/* TODO: Lawyer review - Governing law and exclusive dispute jurisdiction */}
               <p>
-                <strong className="text-white">Governing Law &amp; Jurisdiction:</strong> These Terms shall be governed by and construed in accordance with the laws of India. Any disputes arising out of these terms shall be subject to the exclusive jurisdiction of the competent courts in Mumbai, Maharashtra.
+                <strong className="text-white">Governing Law &amp; Jurisdiction:</strong> These Terms shall be governed by and construed in accordance with the laws of India. Any disputes arising out of these terms shall be subject to the exclusive jurisdiction of the competent courts in India.
               </p>
               <p>
                 <strong className="text-white">Grievance Officer:</strong> In compliance with the Information Technology Act, 2000 and rules made thereunder:
               </p>
               <div className="p-3 bg-zinc-900 border border-zinc-700 text-xs space-y-1">
-                <div>Name: Grievance Redressal Officer, OtakuBazaar</div>
-                <div>Email: <a href="mailto:grievance@otakubazaar.com" className="text-amber-300 underline">grievance@otakubazaar.com</a></div>
+                <div>Name: Jay Bhatt, Grievance Redressal Officer, OtakuBazaar</div>
+                <div>Email: <a href="mailto:jaybhatt8826@gmail.com" className="text-amber-300 underline">jaybhatt8826@gmail.com</a></div>
                 <div>Turnaround: Grievances acknowledged within 48 hours; resolved within 30 days.</div>
               </div>
             </div>

@@ -56,38 +56,24 @@ export class RBACGuard {
   }
 
   /**
-   * Authenticates the request without throwing or returning early error responses.
-   * Useful for routes that have optional authentication or public read with personalized state.
-   *
-   * @param request - Incoming Next.js HTTP request
-   * @returns Authenticated TokenPayload or null
+   * Synchronous legacy cookie auth is disabled.
+   * Old `otaku_session` cookies from /api/auth/login are no longer accepted.
    */
-  public static authenticate(request: NextRequest): TokenPayload | null {
-    const token = this.extractToken(request);
-    if (!token) {
-      return null;
-    }
-
-    return TokenService.verifyToken(token);
+  public static authenticate(_request: NextRequest): TokenPayload | null {
+    return null;
   }
 
   /**
-   * Asynchronously authenticates the request across both custom JWT (otaku_session)
-   * and NextAuth sessions (Google, Discord, Credentials).
+   * Asynchronously authenticates the request strictly via verified NextAuth JWT sessions (OAuth).
+   * Old `otaku_session` cookies are rejected.
    */
   public static async authenticateAsync(request: NextRequest): Promise<TokenPayload | null> {
-    // 1. Check custom JWT token
-    const customUser = this.authenticate(request);
-    if (customUser) {
-      return customUser;
+    const secret = process.env.NEXTAUTH_SECRET;
+    if (!secret) {
+      return null;
     }
 
-    // 2. Check NextAuth JWT token
     try {
-      const secret =
-        process.env.NEXTAUTH_SECRET ||
-        process.env.JWT_SECRET ||
-        'otakubazaar-escrow-super-secret-key-2026';
       const token = await getToken({ req: request, secret });
       if (token && (token.sub || (token as any).id)) {
         const userId = (token.sub || (token as any).id) as string;
@@ -95,11 +81,11 @@ export class RBACGuard {
           userId,
           email: token.email || `${userId}@otakubazaar.dev`,
           name: token.name || 'Collector',
-          role: ((token as any).role as UserRole) || 'SELLER',
+          role: ((token as any).role as UserRole) || 'BUYER',
         };
       }
     } catch {
-      // Non-blocking fallback
+      // Fail closed on invalid or tampered NextAuth JWT
     }
 
     return null;

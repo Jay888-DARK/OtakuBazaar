@@ -30,11 +30,9 @@ export default function ProfilePage() {
     setIsDeletingAccount(true);
     setDeleteAccountError(null);
     try {
-      const userId = activePersona === 'SELLER' ? 'user_seller_rengoku' : 'user_buyer_tanjiro';
       const res = await fetch('/api/user/delete', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ demoUserId: userId }),
       });
       const data = await res.json();
       if (res.ok && data.success) {
@@ -56,9 +54,9 @@ export default function ProfilePage() {
   };
 
   // Load profile dashboard data via Server Action
-  const loadDashboard = useCallback(async (userId: string) => {
+  const loadDashboard = useCallback(async (_userId?: string) => {
     setIsLoading(true);
-    const res = await fetchProfileDashboardAction(userId);
+    const res = await fetchProfileDashboardAction();
     if (res.success && res.data) {
       setDashboardData(res.data);
     }
@@ -67,9 +65,8 @@ export default function ProfilePage() {
 
   useEffect(() => {
     let ignore = false;
-    const userId = activePersona === 'SELLER' ? 'user_seller_rengoku' : 'user_buyer_tanjiro';
 
-    fetchProfileDashboardAction(userId).then((res) => {
+    fetchProfileDashboardAction().then((res) => {
       if (!ignore && res.success && res.data) {
         setDashboardData(res.data);
       }
@@ -102,7 +99,7 @@ export default function ProfilePage() {
         setAuraOfferId(null);
 
         if (res.success) {
-          setNotification(`Offer of ₹${offer.offeredPriceINR.toLocaleString()} accepted! 15-minute checkout lock engaged.`);
+          setNotification(`Offer of ₹${offer.offeredPriceINR.toLocaleString('en-IN')} accepted! 15-minute checkout lock engaged.`);
           loadDashboard('user_seller_rengoku');
         } else {
           setNotification(`${res.error ?? 'Failed to accept offer'}`);
@@ -297,7 +294,7 @@ export default function ProfilePage() {
               <div className="bg-[#111114] border border-zinc-800 p-5">
                 <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Active Escrow</span>
                 <div className="text-2xl font-extrabold text-zinc-100 mt-1">
-                  ₹{dashboardData?.escrowVaultHeldINR?.toLocaleString() || 0}
+                  ₹{dashboardData?.escrowVaultHeldINR?.toLocaleString('en-IN') || 0}
                 </div>
                 <span className="text-[10px] font-semibold text-zinc-500 flex items-center gap-1 mt-2">Secured Funds</span>
               </div>
@@ -351,8 +348,8 @@ export default function ProfilePage() {
                             Negotiating: <span className="font-bold text-zinc-100">{offer.listingTitle}</span>
                           </p>
                           <div className="flex items-baseline gap-2 mt-1">
-                            <span className="text-base font-bold text-zinc-100">₹{offer.offeredPriceINR.toLocaleString()}</span>
-                            <span className="text-xs text-zinc-500 line-through">₹{offer.originalAskingPriceINR.toLocaleString()}</span>
+                            <span className="text-base font-bold text-zinc-100">₹{offer.offeredPriceINR.toLocaleString('en-IN')}</span>
+                            <span className="text-xs text-zinc-500 line-through">₹{offer.originalAskingPriceINR.toLocaleString('en-IN')}</span>
                           </div>
                           <p className="text-xs text-zinc-400 italic mt-1 mb-0">&ldquo;{offer.message}&rdquo;</p>
                         </div>
@@ -395,7 +392,7 @@ export default function ProfilePage() {
                         <span className="text-[10px] font-medium text-zinc-500 uppercase tracking-wider">{item.category} • {item.condition}</span>
                         <h4 className="text-sm font-bold text-zinc-100 my-1.5 line-clamp-1 uppercase tracking-wide">{item.title}</h4>
                         <div className="mt-auto pt-3 border-t border-zinc-800 flex items-center justify-between">
-                          <span className="text-base font-bold text-zinc-100">₹{Math.round(item.askingPriceAmount / 100).toLocaleString()}</span>
+                          <span className="text-base font-bold text-zinc-100">₹{Math.round(item.askingPriceAmount / 100).toLocaleString('en-IN')}</span>
                         </div>
                         <div className="mt-4 pt-3 border-t border-zinc-800 flex justify-end items-center">
                           <button type="button" onClick={async () => { try { await fetch(`/api/listings/${item.id}`, { method: 'DELETE' }); window.location.reload(); } catch { alert('Failed to delete listing.'); } }} className="px-3 py-1.5 bg-zinc-900 hover:bg-rose-950/60 text-zinc-400 hover:text-rose-300 text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer border border-zinc-800 hover:border-rose-800">

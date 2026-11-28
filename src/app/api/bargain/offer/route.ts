@@ -5,14 +5,20 @@
  * Transmits real-time bargain offers over Pusher with rate limiting protection.
  */
 
-import { NextResponse } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
 import { prisma } from '@/lib/prismaClient';
 import { pusherServer } from '@/lib/pusherServer';
+import { RBACGuard } from '@/infrastructure/security/RBACGuard';
 
 // Basic in-memory rate store (Note: In serverless deployments, use Redis for persistent rate limiting)
 const rateLimit = new Map<string, number>();
 
-export async function POST(req: Request): Promise<NextResponse> {
+export async function POST(req: NextRequest): Promise<NextResponse> {
+  const authResult = await RBACGuard.requireAuthAsync(req);
+  if (!authResult.success) {
+    return authResult.response;
+  }
+
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? '127.0.0.1';
   const now = Date.now();
   const windowMs = 3000; // 3 seconds cooldown window
@@ -34,7 +40,8 @@ export async function POST(req: Request): Promise<NextResponse> {
       return NextResponse.json({ error: 'Malformed JSON payload' }, { status: 400 });
     }
 
-    const { productId, offeredPrice, buyerId = 'user_buyer_tanjiro', message } = body;
+    const { productId, offeredPrice, message } = body;
+    const buyerId = authResult.user.userId;
 
     if (!productId || typeof offeredPrice !== 'number' || offeredPrice <= 0) {
       return NextResponse.json(

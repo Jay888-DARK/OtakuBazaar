@@ -1,5 +1,7 @@
 'use server';
 
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { prisma } from '@/infrastructure/database/prismaClient';
 import { pusherServer } from '@/infrastructure/services/pusherServer';
 
@@ -11,6 +13,12 @@ export interface CreateDealOfferInput {
 
 export async function createDealOffer(input: CreateDealOfferInput) {
   try {
+    const session = await getServerSession(authOptions);
+    const buyerId = (session?.user as { id?: string } | undefined)?.id;
+    if (!buyerId) {
+      return { success: false, error: '401 Unauthorized: Please sign in to submit an offer.' };
+    }
+
     const { productId, offeredPrice, message } = input;
 
     // Find the product or listing in parallel
@@ -20,14 +28,11 @@ export async function createDealOffer(input: CreateDealOfferInput) {
     ]);
 
     let product = dbProduct;
-    let originalPrice = 0;
-    let sellerId = 'user_seller_rengoku';
+    let sellerId: string | null = null;
 
     if (product) {
-      originalPrice = Math.round(product.askingPriceAmount / 100);
-      if (product.sellerId) sellerId = product.sellerId;
+      sellerId = product.sellerId;
     } else if (dbListing) {
-      originalPrice = Math.round(dbListing.askingPriceAmount / 100);
       sellerId = dbListing.sellerId;
       // Also ensure product mirror exists
       product = await prisma.product.upsert({
@@ -47,11 +52,13 @@ export async function createDealOffer(input: CreateDealOfferInput) {
       });
     }
 
-    if (!product) {
+    if (!product || !sellerId) {
       throw new Error('Collectible not found in catalog');
     }
 
-    const buyerId = 'user_buyer_tanjiro';
+    if (sellerId === buyerId) {
+      return { success: false, error: 'You cannot make an offer on your own listing.' };
+    }
 
     const dealOffer = await prisma.dealOffer.create({
       data: {
@@ -103,6 +110,20 @@ export async function respondToDealOffer(
   counterPrice?: number
 ) {
   try {
+    const session = await getServerSession(authOptions);
+    const sessionUser = session?.user as { id?: string; role?: string } | undefined;
+    if (!sessionUser?.id) {
+      return { success: false, error: '401 Unauthorized: Please sign in to respond to offers.' };
+    }
+
+    const existing = await prisma.dealOffer.findUnique({ where: { id: dealOfferId } });
+    if (!existing) {
+      return { success: false, error: 'Deal offer not found.' };
+    }
+    if (sessionUser.role !== 'ADMIN' && existing.sellerId !== sessionUser.id) {
+      return { success: false, error: '403 Forbidden: Only the seller can respond to this offer.' };
+    }
+
     const status = action === 'ACCEPT' ? 'ACCEPTED' : action === 'REJECT' ? 'REJECTED' : 'COUNTERED';
     const updatedOffer = await prisma.dealOffer.update({
       where: { id: dealOfferId },

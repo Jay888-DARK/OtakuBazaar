@@ -15,7 +15,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { signOut } from 'next-auth/react';
 import { useTheme, type ThemeMode } from '@/presentation/components/providers/ThemeProvider';
-import { DEMO_PERSONAS, type UserRole, type UserPersona } from '@/presentation/components/Navbar';
 
 interface SettingsModalProps {
   readonly isOpen: boolean;
@@ -72,23 +71,12 @@ function KatanaSwordIcon({ active = true, size = 20 }: { active?: boolean; size?
 
 export function SettingsModal({ isOpen, onClose, isSoundOn, onToggleSound }: SettingsModalProps) {
   const { theme, setTheme } = useTheme();
-  const [activePersonaRole, setActivePersonaRole] = useState<UserRole>('BUYER');
   const [bgmPlaying, setBgmPlaying] = useState<boolean>(false);
   const [bgmVolume, setBgmVolume] = useState<number>(0.2);
   const [isSlashing, setIsSlashing] = useState<boolean>(false);
   const [isConfirmingDelete, setIsConfirmingDelete] = useState<boolean>(false);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const [deleteStatus, setDeleteStatus] = useState<string | null>(null);
-
-  // Sync initial persona from localStorage
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const savedRole = localStorage.getItem('otaku_user_role') as UserRole | null;
-      if (savedRole && DEMO_PERSONAS[savedRole]) {
-        setActivePersonaRole(savedRole);
-      }
-    }
-  }, [isOpen]);
 
   // Sync BGM state via custom events
   useEffect(() => {
@@ -134,15 +122,6 @@ export function SettingsModal({ isOpen, onClose, isSoundOn, onToggleSound }: Set
     };
   }, [isOpen]);
 
-  // Switch persona handler
-  const handleSelectPersona = (role: UserRole) => {
-    setActivePersonaRole(role);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('otaku_user_role', role);
-      window.dispatchEvent(new CustomEvent('otaku_persona_change', { detail: DEMO_PERSONAS[role] }));
-    }
-  };
-
   // Test slash visual feedback (audio engine disabled)
   const handleTestSlash = useCallback(() => {
     if (typeof window === 'undefined') return;
@@ -179,11 +158,9 @@ export function SettingsModal({ isOpen, onClose, isSoundOn, onToggleSound }: Set
     setIsDeleting(true);
     setDeleteStatus(null);
     try {
-      const activePersona = DEMO_PERSONAS[activePersonaRole];
       const res = await fetch('/api/user/delete', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ demoUserId: activePersona?.id }),
       });
       const data = await res.json();
       if (res.ok && data.success) {
@@ -417,41 +394,7 @@ export function SettingsModal({ isOpen, onClose, isSoundOn, onToggleSound }: Set
             </div>
           </div>
 
-          {/* 3. COLLECTOR PERSONA SWITCHER */}
-          <div className="space-y-2.5 pt-2 border-t border-zinc-800">
-            <span className="text-xs font-bold uppercase tracking-wider text-[#C9943E] flex items-center gap-1.5">
-              Active Vault Persona
-            </span>
-
-            <div className="grid grid-cols-3 gap-2">
-              {(Object.keys(DEMO_PERSONAS) as UserRole[]).map((role) => {
-                const persona = DEMO_PERSONAS[role];
-                const isSelected = activePersonaRole === role;
-                return (
-                  <button
-                    key={role}
-                    type="button"
-                    onClick={() => handleSelectPersona(role)}
-                    className={`p-2.5 border flex flex-col items-center gap-1 transition-colors cursor-pointer text-center ${
-                      isSelected
-                        ? 'border-[#C9943E] bg-[#141416] text-[#E8C36A]'
-                        : 'border-zinc-800 bg-black/50 hover:border-zinc-700 text-zinc-400'
-                    }`}
-                  >
-                    <span className="text-xs font-bold border border-zinc-700 bg-zinc-900 px-1.5 py-0.5 text-zinc-200">
-                      {persona.avatar}
-                    </span>
-                    <span className="text-[11px] font-bold truncate max-w-full uppercase">{persona.name.split(' ')[0]}</span>
-                    <span className="text-[8px] font-bold uppercase tracking-wider px-1.5 py-0.2 bg-black border border-zinc-800 text-[#C9943E]">
-                      {persona.role}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* 4. DANGER ZONE: DATA & ACCOUNT DELETION */}
+          {/* 3. DANGER ZONE: DATA & ACCOUNT DELETION */}
           <div className="p-3.5 border border-rose-900/60 bg-rose-950/20 text-xs space-y-2.5">
             <div className="flex items-center justify-between">
               <span className="font-bold uppercase tracking-wider text-rose-400 flex items-center gap-1.5">

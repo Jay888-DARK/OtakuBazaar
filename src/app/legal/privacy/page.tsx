@@ -26,6 +26,12 @@ export default function PrivacyPolicyPage() {
   return (
     <div className="min-h-screen py-10 px-4 sm:px-6 lg:px-8 bg-[#0a0806] text-[#F0E8DA]">
       <div className="max-w-4xl mx-auto">
+        {/* Draft Notice for Legal Review */}
+        <div className="mb-6 p-3 bg-amber-950/40 border border-amber-600/50 text-amber-200 text-xs flex items-center justify-between">
+          <span><strong>DRAFT FOR LEGAL REVIEW:</strong> This Privacy Policy is pending final legal and regulatory advisory review.</span>
+          <span className="text-[10px] uppercase font-mono tracking-wider bg-amber-900/60 px-2 py-0.5 border border-amber-700/60">DRAFT</span>
+        </div>
+
         {/* Navigation Breadcrumb / Return Button */}
         <div className="mb-8">
           <Link
@@ -98,6 +104,9 @@ export default function PrivacyPolicyPage() {
                 <li>
                   <strong className="text-white">Collector Communication:</strong> Real-time post-bid messages exchanged between buyers and sellers within the platform chat.
                 </li>
+                <li>
+                  <strong className="text-white">Listing Photos &amp; AI Processing:</strong> Photos uploaded to auto-fill listing details are transmitted over encrypted HTTPS to Google Gemini AI strictly to extract figure metadata (title, series, character, manufacturer, scale, condition). Photos are processed transiently and are never used to train public AI models.
+                </li>
               </ul>
             </div>
           </section>
@@ -105,19 +114,19 @@ export default function PrivacyPolicyPage() {
           {/* Section 2: Third-Party Service Providers */}
           <section className="p-6 bg-[#111114] border border-zinc-800">
             <h2 className="text-base sm:text-lg font-black text-[#E8C36A] mb-3 flex items-center gap-2">
-              <span>2.</span> Integrated Infrastructure: Razorpay & Shiprocket
+              <span>2.</span> Integrated Infrastructure: Razorpay &amp; Shiprocket
             </h2>
             <div className="space-y-3">
               <p>
-                To provide institutional-grade escrow and secure fulfillment, OtakuBazaar integrates with regulated external service partners:
+                To provide secure fulfillment and escrow holding, OtakuBazaar integrates with regulated external service partners:
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
                 <div className="p-4 bg-[#141416] border border-zinc-800">
                   <h3 className="text-xs font-black uppercase text-[#F85B1A] mb-1">
-                    Razorpay Payment Aggregator
+                    Razorpay Payment Gateway
                   </h3>
                   <p className="text-xs text-stone-300 leading-relaxed m-0">
-                    Payment processing, UPI payouts, and escrow fund holding are handled via PCI-DSS compliant Razorpay APIs. OtakuBazaar never stores raw credit card details or bank account passwords on internal servers.
+                    Payment processing, UPI payouts, and custodial fund holding are handled via PCI-DSS compliant Razorpay APIs. OtakuBazaar never stores raw credit card details or bank account passwords on internal servers.
                   </p>
                 </div>
                 <div className="p-4 bg-[#141416] border border-zinc-800">
@@ -135,21 +144,26 @@ export default function PrivacyPolicyPage() {
           {/* Section 3: Cookies & Consent Architecture */}
           <section className="p-6 bg-[#111114] border border-zinc-800">
             <h2 className="text-base sm:text-lg font-black text-[#E8C36A] mb-3 flex items-center gap-2">
-              <span>3.</span> Cookies & Tracking Consent
+              <span>3.</span> Cookies &amp; Tracking Consent
             </h2>
             <p>
-              OtakuBazaar utilizes cookies solely for essential session integrity, concurrent reservation lock prevention, and user preference storage (such as theme and Katana sound effects). We adhere to explicit opt-in standards: analytical cookies require your express &apos;Accept&apos; choice via our compliance banner. You may decline non-essential cookies without losing access to browse or purchase.
+              OtakuBazaar utilizes cookies solely for essential session integrity, concurrent reservation lock prevention, and user preference storage. We adhere to explicit opt-in standards: analytical cookies require your express &apos;Accept&apos; choice via our compliance banner. You may decline non-essential cookies without losing access to browse or purchase.
             </p>
           </section>
 
-          {/* Section 4: User Data Deletion & The Right to be Forgotten */}
+          {/* Section 4: Data Retention & User Deletion Rights */}
           <section className="p-6 bg-[#111114] border border-zinc-800">
             <h2 className="text-base sm:text-lg font-black text-[#E8C36A] mb-3 flex items-center gap-2">
-              <span>4.</span> Data Deletion & Permanent Erasure
+              <span>4.</span> Data Retention &amp; Permanent Erasure
             </h2>
-            <p>
-              Every collector has the unencumbered right to request permanent erasure of their account data. Initiating the &apos;Delete Account Data&apos; procedure from the Settings Modal or Profile Hub executes an atomic deletion across our PostgreSQL database, wiping chat history, session tokens, and personal credentials in compliance with applicable data protection laws.
-            </p>
+            <div className="space-y-2 text-stone-300 text-xs leading-relaxed">
+              <p>
+                Every user has the right to request permanent erasure of their personal account data. You may initiate deletion from your Profile or by emailing <a href="mailto:jaybhatt8826@gmail.com" className="text-amber-300 underline">jaybhatt8826@gmail.com</a>. Upon verification, profile credentials, active sessions, and communication histories are purged within 30 days.
+              </p>
+              <p>
+                <strong className="text-white">Statutory Data Retention:</strong> Transaction records, invoices, delivery records, and dispute audit logs are retained for up to 7 years in compliance with applicable Indian tax and accounting regulations.
+              </p>
+            </div>
           </section>
         </div>
 

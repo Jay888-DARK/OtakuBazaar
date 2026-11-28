@@ -1,6 +1,8 @@
 'use server';
 
 import { headers } from 'next/headers';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { prisma } from '@/lib/prismaClient';
 import { pusherServer } from '@/lib/pusherServer';
 import { RateLimiter } from '@/infrastructure/security/RateLimiter';
@@ -20,12 +22,21 @@ async function withTimeout<T>(promise: Promise<T>, timeoutMs = 1500): Promise<T>
 export async function submitOffer({
   productId,
   offeredPrice,
-  buyerId,
+  buyerId: _ignoredBuyerId,
 }: {
   productId: string;
   offeredPrice: number;
-  buyerId: string;
+  buyerId?: string;
 }) {
+  const session = await getServerSession(authOptions);
+  const buyerId = (session?.user as { id?: string } | undefined)?.id;
+  if (!buyerId) {
+    return {
+      success: false,
+      message: '401 Unauthorized: Please sign in to submit an offer.',
+    };
+  }
+
   const reqHeaders = await headers();
   const ip = reqHeaders.get('x-forwarded-for')?.split(',')[0]?.trim() ?? buyerId ?? '127.0.0.1';
   const rateLimit = RateLimiter.check(ip, 3000);
@@ -127,6 +138,22 @@ export async function submitOffer({
 
 export async function acceptOffer(offerId: string) {
   try {
+    const session = await getServerSession(authOptions);
+    const sessionUser = session?.user as { id?: string; role?: string } | undefined;
+    if (!sessionUser?.id) {
+      return { success: false, error: '401 Unauthorized: Please sign in to accept offers.' };
+    }
+
+    const existing = await withTimeout(
+      prisma.dealOffer.findUnique({ where: { id: offerId } })
+    );
+    if (!existing) {
+      return { success: false, error: 'Offer not found.' };
+    }
+    if (sessionUser.role !== 'ADMIN' && existing.sellerId !== sessionUser.id) {
+      return { success: false, error: '403 Forbidden: Only the seller can accept this offer.' };
+    }
+
     const offer = await withTimeout(
       prisma.dealOffer.update({
         where: { id: offerId },
@@ -168,6 +195,12 @@ export async function acceptOffer(offerId: string) {
 }
 
 export async function getOffer(offerId: string) {
+  const session = await getServerSession(authOptions);
+  const sessionUser = session?.user as { id?: string; role?: string } | undefined;
+  if (!sessionUser?.id) {
+    return null;
+  }
+
   try {
     const offer = await withTimeout(
       prisma.dealOffer.findUnique({
@@ -175,14 +208,27 @@ export async function getOffer(offerId: string) {
         include: { product: true, messages: true },
       })
     );
-    if (offer) return offer;
+    if (
+      offer &&
+      (sessionUser.role === 'ADMIN' ||
+        offer.buyerId === sessionUser.id ||
+        offer.sellerId === sessionUser.id)
+    ) {
+      return offer;
+    }
   } catch {}
 
-  return inMemoryOffers.get(offerId) || null;
+  return null;
 }
 
 // Cart actions for Slide-Over Cart Drawer
-export async function getCartItems(userId: string = 'user_buyer_tanjiro') {
+export async function getCartItems(_userId?: string) {
+  const session = await getServerSession(authOptions);
+  const userId = (session?.user as { id?: string } | undefined)?.id;
+  if (!userId) {
+    return [];
+  }
+
   try {
     const items = await withTimeout(
       prisma.cartItem.findMany({
@@ -212,7 +258,13 @@ export async function getCartItems(userId: string = 'user_buyer_tanjiro') {
   return [];
 }
 
-export async function addToCart(productId: string, userId: string = 'user_buyer_tanjiro') {
+export async function addToCart(productId: string, _userId?: string) {
+  const session = await getServerSession(authOptions);
+  const userId = (session?.user as { id?: string } | undefined)?.id;
+  if (!userId) {
+    return { success: false, message: '401 Unauthorized: Please sign in to add items to your cart.' };
+  }
+
   try {
     const cartItem = await withTimeout(
       prisma.cartItem.upsert({
@@ -237,7 +289,13 @@ export async function addToCart(productId: string, userId: string = 'user_buyer_
   }
 }
 
-export async function removeFromCart(cartItemId: string, userId: string = 'user_buyer_tanjiro') {
+export async function removeFromCart(cartItemId: string, _userId?: string) {
+  const session = await getServerSession(authOptions);
+  const userId = (session?.user as { id?: string } | undefined)?.id;
+  if (!userId) {
+    return { success: false, message: '401 Unauthorized: Please sign in to modify your cart.' };
+  }
+
   try {
     // IDOR Protection: Ensure user owns the item before deleting
     const existing = await withTimeout(prisma.cartItem.findUnique({ where: { id: cartItemId } }));

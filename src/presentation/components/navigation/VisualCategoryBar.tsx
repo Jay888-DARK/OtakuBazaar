@@ -16,12 +16,12 @@ export interface CategoryItem {
 }
 
 export const CATEGORIES: CategoryItem[] = [
-  { id: 'ALL', name: 'All Collectibles', count: 9 },
-  { id: 'Scale Figure', name: 'Scale Figures', count: 6 },
-  { id: 'Statues & Resin', name: 'Statues & Resin', count: 2 },
-  { id: 'Manga Sets', name: 'Manga Editions', count: 1 },
-  { id: 'Nendoroid', name: 'Nendoroids', count: 1 },
-  { id: 'Cosplay & Props', name: 'Cosplay & Props', count: 1 },
+  { id: 'ALL', name: 'All Collectibles', count: 0 },
+  { id: 'Scale Figure', name: 'Scale Figures', count: 0 },
+  { id: 'Statues & Resin', name: 'Statues & Resin', count: 0 },
+  { id: 'Manga Sets', name: 'Manga Editions', count: 0 },
+  { id: 'Nendoroid', name: 'Nendoroids', count: 0 },
+  { id: 'Cosplay & Props', name: 'Cosplay & Props', count: 0 },
 ];
 
 interface VisualCategoryBarProps {
@@ -34,6 +34,34 @@ export function VisualCategoryBar({
   onSelectCategory,
 }: VisualCategoryBarProps): React.JSX.Element {
   const [selectedId, setSelectedId] = useState<string>(activeCategory);
+  const [categoryItems, setCategoryItems] = useState<CategoryItem[]>(CATEGORIES);
+
+  useEffect(() => {
+    let isMounted = true;
+    fetch('/api/listings')
+      .then((res) => (res.ok ? res.json() : { items: [] }))
+      .then((data) => {
+        if (!isMounted) return;
+        const items = Array.isArray(data.items) ? data.items : [];
+        const counts: Record<string, number> = {};
+        for (const item of items) {
+          const c = item.category || 'Scale Figure';
+          counts[c] = (counts[c] || 0) + 1;
+        }
+
+        setCategoryItems(
+          CATEGORIES.map((cat) => ({
+            ...cat,
+            count: cat.id === 'ALL' ? items.length : counts[cat.id] || 0,
+          }))
+        );
+      })
+      .catch(() => {});
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -75,7 +103,7 @@ export function VisualCategoryBar({
           <span className="text-[10px] uppercase tracking-[0.2em] text-zinc-500 font-semibold pr-2">
             Categories:
           </span>
-          {CATEGORIES.map((cat) => {
+          {categoryItems.map((cat) => {
             const isActive = (onSelectCategory ? activeCategory : selectedId) === cat.id;
 
             return (

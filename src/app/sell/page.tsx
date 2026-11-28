@@ -77,21 +77,21 @@ interface ConditionOption {
 
 const CONDITION_GRADES: ConditionOption[] = [
   {
-    rank: '[S-RANK // MISB]',
-    englishLabel: 'MISB (Factory Sealed)',
-    description: 'Never opened. Pristine original manufacturer seals with intact security hologram foil.',
+    rank: 'New, sealed box',
+    englishLabel: 'New, sealed box',
+    description: 'Never opened. Original factory seals and packaging intact.',
     internalValue: 'NEW',
   },
   {
-    rank: '[A-RANK // BIB]',
-    englishLabel: 'BIB (Glass Cabinet Displayed)',
-    description: 'Back in Box. Maintained inside UV-filtered glass Moducase. Flawless figure, complete blister tray.',
+    rank: 'Like new',
+    englishLabel: 'Like new (cabinet displayed)',
+    description: 'Displayed in a clean glass cabinet. Collectible is in excellent condition with original packaging.',
     internalValue: 'LIKE_NEW',
   },
   {
-    rank: '[B-RANK // OPEN]',
-    englishLabel: 'Open Shelf (Displayed)',
-    description: 'Kept on open shelf. Micro-dust or minor paint contact possible. Complete original packaging.',
+    rank: 'Good condition',
+    englishLabel: 'Good (shelf displayed)',
+    description: 'Displayed on a shelf. Minor dust or light handling wear, includes original box.',
     internalValue: 'GOOD',
   },
 ];
@@ -212,9 +212,6 @@ export default function SellPage(): React.JSX.Element {
     }
   }, [status, router]);
 
-  // Consignment Type Toggle
-  const [consignType, setConsignType] = useState<'SINGLE' | 'BUNDLE'>('SINGLE');
-
   // Form Field States
   const [title, setTitle] = useState('');
   const [franchise, setFranchise] = useState<string>(FRANCHISES[0]);
@@ -282,7 +279,7 @@ export default function SellPage(): React.JSX.Element {
   const activeFranchise = franchise === 'Other / Retro' ? customFranchise || 'Anime Series' : franchise;
   const activeCategory = category === 'Other' ? customCategory || 'Other' : category;
   const activeManufacturer = manufacturer === 'Other' ? customManufacturer || 'Import Studio' : manufacturer;
-  const activeImageUrl = (customImageUrl.trim() || imageUrl || '') as string;
+  const activeImageUrl = (customImageUrl.trim() || imageUrl || aiPhotoPreviews[0] || '') as string;
   const priceNum = parseInt(askingPrice, 10) || 0;
   const originalEst = Math.round(priceNum * 1.25);
 
@@ -736,70 +733,48 @@ export default function SellPage(): React.JSX.Element {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Page Header */}
         <div className="mb-8 border-b border-[#1F1F1F] pb-6">
-          <div className="inline-flex items-center gap-2 px-3 py-1 border border-[#1F1F1F] bg-[#0C0C0C] text-[#777777] text-[10px] tracking-[0.2em] uppercase mb-3 font-semibold font-sans">
-            <span>VAULT CONSIGNMENT STUDIO</span>
+          <div className="inline-flex items-center gap-2 px-3 py-1 border border-[#1F1F1F] bg-[#0C0C0C] text-[#9CA3AF] text-[10px] tracking-wider uppercase mb-3 font-semibold font-sans">
+            <span>Sell Your Item</span>
             <span>•</span>
-            <span>ESCROW AUTHENTICATED</span>
+            <span className="text-[#10B981]">Safe Escrow</span>
           </div>
           <h1 className="font-serif text-3xl md:text-4xl font-bold text-[#F2EFE9] uppercase tracking-[0.08em] mb-2">
-            Vault Consignment
+            Sell Your Item
           </h1>
-          <p className="font-sans text-[13px] text-[#8E8E8E] font-normal leading-relaxed max-w-2xl">
-            List your authentic anime collectible with escrow security and real-time buyer bargaining.
+          <p className="font-sans text-[13px] text-[#9CA3AF] font-normal leading-relaxed max-w-2xl">
+            List your anime collectible for buyers across India. We hold the buyer&apos;s payment safely until they inspect their delivery.
           </p>
-
-          {/* Consignment Mode Toggle */}
-          <div className="flex gap-3 mt-6">
-            <button
-              type="button"
-              onClick={() => setConsignType('SINGLE')}
-              className={`px-4 py-2 text-[11px] font-sans uppercase tracking-[0.14em] font-semibold border transition-colors cursor-pointer rounded-none ${
-                consignType === 'SINGLE'
-                  ? 'bg-[#F2EFE9] text-[#080808] border-[#F2EFE9]'
-                  : 'bg-[#0C0C0C] text-[#888888] border-[#1F1F1F] hover:border-[#3A3A3A]'
-              }`}
-            >
-              [ 01 // SINGLE LOT CONSIGNMENT ]
-            </button>
-            <button
-              type="button"
-              onClick={() => setConsignType('BUNDLE')}
-              className={`px-4 py-2 text-[11px] font-sans uppercase tracking-[0.14em] font-semibold border transition-colors cursor-pointer rounded-none ${
-                consignType === 'BUNDLE'
-                  ? 'bg-[#F2EFE9] text-[#080808] border-[#F2EFE9]'
-                  : 'bg-[#0C0C0C] text-[#888888] border-[#1F1F1F] hover:border-[#3A3A3A]'
-              }`}
-            >
-              [ 02 // MULTI-FIGURE SHELF BUNDLE ]
-            </button>
+          <div className="mt-3 flex items-center gap-2 text-[11px] text-[#A1A1AA] font-sans">
+            <span className="w-1.5 h-1.5 bg-[#10B981] inline-block" />
+            <span>Currently delivering within India only. Prices shown in ₹ (INR).</span>
           </div>
         </div>
 
-        {/* Global Error Banner (Only for network/server action exceptions) */}
+        {/* Global Error Banner */}
         {globalError && (
-          <div className="bg-[#180A0A] border border-[#EF4444] p-4 mb-6 font-sans text-xs text-[#EF4444] uppercase tracking-wider">
-            [ ERROR: {globalError} ]
+          <div className="bg-[#180A0A] border border-[#EF4444] p-4 mb-6 font-sans text-xs text-[#EF4444] tracking-wide">
+            {globalError}
           </div>
         )}
 
         {/* Success Notification */}
         {isPublished && (
           <div className="bg-[#091812] border border-[#10B981] p-8 mb-8 text-center font-sans">
-            <span className="text-[#10B981] text-[10px] tracking-[0.2em] uppercase font-bold block mb-2">
-              [ LOT AUTHENTICATED &amp; CONSIGNED ]
+            <span className="text-[#10B981] text-[10px] tracking-wider uppercase font-bold block mb-2">
+              Item Listed Successfully
             </span>
             <h2 className="font-serif text-[22px] text-[#F2EFE9] uppercase tracking-[0.06em] mb-2">
-              Grail Consigned Successfully
+              Your Item is Now Live
             </h2>
-            <p className="text-xs text-[#8E8E8E] max-w-lg mx-auto mb-6 leading-relaxed">
-              Your lot is now live in the global vault catalog and synchronized across all active buyer windows.
+            <p className="text-xs text-[#9CA3AF] max-w-lg mx-auto mb-6 leading-relaxed">
+              Your collectible is now visible in the marketplace for collectors across India.
             </p>
             <div className="flex items-center justify-center gap-4">
               <Link
                 href="/vault"
-                className="px-6 py-2.5 bg-[#F2EFE9] text-[#080808] font-sans text-[11px] font-semibold uppercase tracking-[0.18em] transition-colors no-underline"
+                className="px-6 py-2.5 bg-[#F2EFE9] text-[#080808] font-sans text-[11px] font-semibold uppercase tracking-wider transition-colors no-underline"
               >
-                [ VIEW IN COLLECTOR VAULT ]
+                View Your Listed Items
               </Link>
               <button
                 type="button"
@@ -814,9 +789,9 @@ export default function SellPage(): React.JSX.Element {
                   setInvoiceFileName('');
                   setInvoicePreviewUrl('');
                 }}
-                className="px-6 py-2.5 bg-[#0C0C0C] text-[#CCCCCC] border border-[#1F1F1F] font-sans text-[11px] uppercase tracking-[0.18em] transition-colors cursor-pointer"
+                className="px-6 py-2.5 bg-[#0C0C0C] text-[#CCCCCC] border border-[#1F1F1F] font-sans text-[11px] uppercase tracking-wider transition-colors cursor-pointer"
               >
-                [ + CONSIGN ANOTHER LOT ]
+                + List Another Item
               </button>
             </div>
           </div>
@@ -859,8 +834,8 @@ export default function SellPage(): React.JSX.Element {
                     <div className="border border-dashed border-[#2F2F2F] hover:border-[#10B981] bg-[#080808] px-4 py-3 text-center transition-colors">
                       <span className="text-xs text-[#CCCCCC] font-sans">
                         {aiPhotoFiles.length > 0
-                          ? `[ ${aiPhotoFiles.length} PHOTO${aiPhotoFiles.length > 1 ? 'S' : ''} SELECTED — CLICK TO CHANGE ]`
-                          : '[ SELECT 1–5 SPECIMEN PHOTOS OR PRICE LISTS (MAX 5MB) ]'}
+                          ? `${aiPhotoFiles.length} photo${aiPhotoFiles.length > 1 ? 's' : ''} selected — click to change`
+                          : 'Select 1–5 item photos or price lists (max 5MB each)'}
                       </span>
                     </div>
                   </label>
@@ -869,15 +844,15 @@ export default function SellPage(): React.JSX.Element {
                     type="button"
                     onClick={handleRunAiAnalysis}
                     disabled={isAnalyzingAi || aiPhotoPreviews.length === 0}
-                    className={`px-5 py-3 text-[11px] font-sans font-bold uppercase tracking-[0.16em] transition-all rounded-none ${
+                    className={`px-5 py-3 text-[11px] font-sans font-bold uppercase tracking-wider transition-all rounded-none ${
                       isAnalyzingAi
                         ? 'bg-[#10B981]/20 text-[#10B981] border border-[#10B981] cursor-wait'
                         : aiPhotoPreviews.length === 0
-                        ? 'bg-[#1F1F1F] text-[#555555] border border-[#1F1F1F] cursor-not-allowed'
+                        ? 'bg-[#1F1F1F] text-[#71717A] border border-[#1F1F1F] cursor-not-allowed'
                         : 'bg-[#10B981] hover:bg-[#0ea572] text-[#080808] border border-[#10B981] cursor-pointer'
                     }`}
                   >
-                    {isAnalyzingAi ? '[ ANALYZING PHOTOS (EST. 3-6S)... ]' : '[ AUTO-FILL FROM PHOTO ]'}
+                    {isAnalyzingAi ? 'Analyzing photos...' : 'Fill details'}
                   </button>
                 </div>
 
@@ -960,15 +935,15 @@ export default function SellPage(): React.JSX.Element {
                   type="button"
                   onClick={handleMfcAutofill}
                   disabled={isMfcLoading}
-                  className="px-5 py-3 bg-[#111C24] hover:bg-[#162733] border border-[#38BDF8]/50 hover:border-[#38BDF8] text-[#38BDF8] text-[11px] font-bold uppercase tracking-[0.16em] transition-colors cursor-pointer rounded-none disabled:opacity-50 shrink-0"
+                  className="px-5 py-3 bg-[#111C24] hover:bg-[#162733] border border-[#38BDF8]/50 hover:border-[#38BDF8] text-[#38BDF8] text-[11px] font-bold uppercase tracking-wider transition-colors cursor-pointer rounded-none disabled:opacity-50 shrink-0"
                 >
-                  {isMfcLoading ? '[ FETCHING MFC DATA... ]' : '[ AUTO-FILL FROM MFC ]'}
+                  {isMfcLoading ? 'Fetching MFC data...' : 'Auto-fill from MFC'}
                 </button>
               </div>
 
               {mfcError && (
                 <div className="p-3 bg-[#180A0A] border border-[#EF4444] text-[#EF4444] text-xs font-sans tracking-wide">
-                  [ MFC SYNC: {mfcError} ]
+                  {mfcError}
                 </div>
               )}
 
@@ -996,11 +971,11 @@ export default function SellPage(): React.JSX.Element {
             {/* Section 01: Item Identity & Series */}
             <div className="bg-[#0C0C0C] border border-[#1F1F1F] p-6 space-y-5">
               <div className="border-b border-[#161616] pb-3 flex justify-between items-center">
-                <span className="text-[10px] uppercase tracking-[0.2em] text-[#777777] font-semibold">
-                  SECTION 01 // ITEM IDENTITY &amp; SERIES
+                <span className="text-[10px] uppercase tracking-[0.2em] text-[#9CA3AF] font-semibold">
+                  01. Item Details
                 </span>
                 <span className="text-[10px] text-[#10B981] font-semibold uppercase tracking-wider">
-                  MANDATORY
+                  Required
                 </span>
               </div>
 
@@ -1164,11 +1139,11 @@ export default function SellPage(): React.JSX.Element {
             {/* Section 02: Collector Condition Grading */}
             <div className="bg-[#0C0C0C] border border-[#1F1F1F] p-6 space-y-5">
               <div className="border-b border-[#161616] pb-3">
-                <span className="text-[10px] uppercase tracking-[0.2em] text-[#777777] font-semibold block mb-1">
-                  SECTION 02 // COLLECTOR CONDITION GRADING
+                <span className="text-[10px] uppercase tracking-[0.2em] text-[#9CA3AF] font-semibold block mb-1">
+                  02. Condition &amp; Packaging
                 </span>
-                <p className="text-[12px] text-[#8E8E8E]">
-                  Select the verifiable figure condition and packaging state:
+                <p className="text-[12px] text-[#A1A1AA]">
+                  Select the item condition and packaging state:
                 </p>
               </div>
 
@@ -1236,11 +1211,11 @@ export default function SellPage(): React.JSX.Element {
             {/* Section 03: Photo & Authenticity Proof Uploads */}
             <div className="bg-[#0C0C0C] border border-[#1F1F1F] p-6 space-y-5">
               <div className="border-b border-[#161616] pb-3 flex justify-between items-center">
-                <span className="text-[10px] uppercase tracking-[0.2em] text-[#777777] font-semibold">
-                  SECTION 03 // PHOTO &amp; PROOF VERIFICATION
+                <span className="text-[10px] uppercase tracking-[0.2em] text-[#9CA3AF] font-semibold">
+                  03. Photos &amp; Proof
                 </span>
                 <span className="text-[10px] text-[#10B981] font-semibold uppercase tracking-wider">
-                  48H ESCROW REQUIREMENT
+                  Safe Escrow Inspection
                 </span>
               </div>
 
@@ -1422,15 +1397,15 @@ export default function SellPage(): React.JSX.Element {
             {/* Section 04: Shipping & Logistics */}
             <div className="bg-[#0C0C0C] border border-[#1F1F1F] p-6 space-y-5">
               <div className="border-b border-[#161616] pb-3 flex justify-between items-center">
-                <span className="text-[10px] uppercase tracking-[0.2em] text-[#777777] font-semibold">
-                  SECTION 04 // LOGISTICS &amp; PICKUP SPEC
+                <span className="text-[10px] uppercase tracking-[0.2em] text-[#9CA3AF] font-semibold">
+                  04. Pickup &amp; Delivery (India Only)
                 </span>
                 <span className="text-[10px] text-[#10B981] font-semibold uppercase tracking-wider">
-                  SHIPROCKET DIRECT C2C
+                  Direct C2C Courier
                 </span>
               </div>
-              <p className="text-[12px] text-[#8E8E8E]">
-                Enter your pickup pincode and package dimensions for automated courier pickup and weight verification:
+              <p className="text-[12px] text-[#A1A1AA]">
+                Enter your pickup pincode and package dimensions for automated courier pickup across India:
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1528,11 +1503,11 @@ export default function SellPage(): React.JSX.Element {
             {/* Section 05: Valuation & Settlement */}
             <div className="bg-[#0C0C0C] border border-[#1F1F1F] p-6 space-y-5">
               <div className="border-b border-[#161616] pb-3">
-                <span className="text-[10px] uppercase tracking-[0.2em] text-[#777777] font-semibold block mb-1">
-                  SECTION 05 // VALUATION &amp; SETTLEMENT
+                <span className="text-[10px] uppercase tracking-[0.2em] text-[#9CA3AF] font-semibold block mb-1">
+                  05. Price &amp; Escrow
                 </span>
-                <p className="text-[12px] text-[#8E8E8E]">
-                  Specify your public asking price and optional automated bargaining minimum (5% seller platform fee applies upon escrow completion):
+                <p className="text-[12px] text-[#A1A1AA]">
+                  Set your price in ₹ (INR). We hold buyer payment in escrow until they check their order:
                 </p>
               </div>
 
@@ -1559,7 +1534,7 @@ export default function SellPage(): React.JSX.Element {
                   />
                   {fieldErrors.askingPrice && (
                     <p className="text-[10px] text-[#EF4444] font-mono mt-1.5 tracking-wider">
-                      [ ERROR: {fieldErrors.askingPrice} ]
+                      Error: {fieldErrors.askingPrice}
                     </p>
                   )}
                 </div>
@@ -1578,6 +1553,24 @@ export default function SellPage(): React.JSX.Element {
                   />
                 </div>
               </div>
+
+              {/* 5% Seller Commission & Expected Payout Breakdown */}
+              {Number(askingPrice) >= 500 && (
+                <div className="p-3 bg-[#080808] border border-[#1F1F1F] space-y-1.5 text-xs font-sans">
+                  <div className="flex justify-between text-[#8E8E8E]">
+                    <span>Asking Price:</span>
+                    <span className="text-[#F2EFE9]">₹{Number(askingPrice).toLocaleString('en-IN')}</span>
+                  </div>
+                  <div className="flex justify-between text-[#8E8E8E]">
+                    <span>Platform Commission (5%):</span>
+                    <span className="text-[#EF4444]">- ₹{Math.round(Number(askingPrice) * 0.05).toLocaleString('en-IN')}</span>
+                  </div>
+                  <div className="flex justify-between font-semibold border-t border-[#1F1F1F] pt-1.5 text-[#F2EFE9]">
+                    <span>Expected Seller Payout:</span>
+                    <span className="text-[#10B981]">₹{Math.round(Number(askingPrice) * 0.95).toLocaleString('en-IN')}</span>
+                  </div>
+                </div>
+              )}
 
               <div>
                 <label className="block text-[11px] uppercase tracking-[0.14em] text-[#888888] mb-2 font-medium">
@@ -1649,21 +1642,21 @@ export default function SellPage(): React.JSX.Element {
                     }`}
                   >
                     {isCompressing
-                      ? '[ COMPRESSING SPECIMEN IMAGES... ]'
+                      ? 'Compressing images...'
                       : isUploading
-                      ? '[ UPLOADING SPECIMEN TO VAULT... ]'
+                      ? 'Uploading photos...'
                       : isPending
-                      ? '[ PUBLISHING CONSIGNMENT TO LIVE VAULT... ]'
+                      ? 'Listing item...'
                       : hasErrors
-                      ? `[ ${buttonErrorMessage} ]`
-                      : '[ PUBLISH CONSIGNMENT TO LIVE VAULT ]'}
+                      ? buttonErrorMessage
+                      : 'List Item For Sale'}
                   </button>
 
                   {hasErrors && (
                     <div className="p-4 bg-[#1E0B0B] border border-[#EF4444] font-sans text-left space-y-1.5 shadow-lg animate-fadeIn">
-                      <div className="flex items-center gap-2 text-[10px] text-[#FCA5A5] font-bold uppercase tracking-[0.18em]">
+                      <div className="flex items-center gap-2 text-[10px] text-[#FCA5A5] font-bold uppercase tracking-wider">
                         <span className="w-2 h-2 rounded-full bg-[#EF4444]" />
-                        <span>[ ATTENTION REQUIRED ]</span>
+                        <span>Please check your details</span>
                       </div>
                       <p className="text-xs text-[#FFF1F2] leading-relaxed">
                         {firstErrorMessage}

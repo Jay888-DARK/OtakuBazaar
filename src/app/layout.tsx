@@ -22,10 +22,13 @@ import { RazorpayScript } from '@/presentation/components/payments/RazorpayScrip
 import { AnalyticsAndMonitoring } from '@/presentation/components/telemetry/AnalyticsAndMonitoring';
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://otaku-bazaar.vercel.app'),
-  title: 'OtakuBazaar — Premium Anime Collectibles Marketplace',
+  metadataBase: new URL('https://otakubazaar.jaybhatt.me'),
+  alternates: {
+    canonical: '/',
+  },
+  title: 'OtakuBazaar — Anime Figures & Collectibles Marketplace India',
   description:
-    'Buy, sell, and negotiate authentic anime scale figures, Nendoroids, manga box sets, and grails with 15-minute checkout locks and 48-hour escrow protection.',
+    'Buy, sell, and negotiate anime scale figures, Nendoroids, manga box sets, and collectibles from Indian collectors with a 48-hour unboxing inspection window.',
   icons: {
     icon: [
       { url: '/icon.png' },
@@ -35,26 +38,26 @@ export const metadata: Metadata = {
     apple: '/otakubazaar-logo.png',
   },
   openGraph: {
-    title: 'OtakuBazaar — Authenticated Anime Figures & Collectibles',
-    description: '0% Bootleg Tolerance • 48h Escrow Protection • Pan-India Insured Delivery',
-    url: 'https://otaku-bazaar.vercel.app',
+    title: 'OtakuBazaar — Anime Figures & Collectibles Marketplace India',
+    description: 'Collector-to-collector anime scale figures, Nendoroids, and manga in India.',
+    url: 'https://otakubazaar.jaybhatt.me',
     siteName: 'OtakuBazaar',
     locale: 'en_IN',
     type: 'website',
     images: [
       {
-        url: 'https://otaku-bazaar.vercel.app/opengraph-image',
+        url: 'https://otakubazaar.jaybhatt.me/opengraph-image',
         width: 1200,
         height: 630,
-        alt: 'OtakuBazaar — Authenticated Anime Figures & Collectibles',
+        alt: 'OtakuBazaar — Anime Figures & Collectibles Marketplace India',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'OtakuBazaar — Authenticated Anime Figures & Collectibles',
-    description: '0% Bootleg Tolerance • 48h Escrow Protection • Pan-India Insured Delivery',
-    images: ['https://otaku-bazaar.vercel.app/opengraph-image'],
+    title: 'OtakuBazaar — Anime Figures & Collectibles Marketplace India',
+    description: 'Collector-to-collector anime scale figures, Nendoroids, and manga in India.',
+    images: ['https://otakubazaar.jaybhatt.me/opengraph-image'],
   },
 };
 

@@ -17,7 +17,7 @@ import { RBACGuard } from '@/infrastructure/security/RBACGuard';
  * @returns JSON response with current user profile or 401
  */
 export async function GET(request: NextRequest): Promise<NextResponse> {
-  const authResult = RBACGuard.requireAuth(request);
+  const authResult = await RBACGuard.requireAuthAsync(request);
 
   if (!authResult.success) {
     return authResult.response;

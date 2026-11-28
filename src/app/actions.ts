@@ -16,14 +16,12 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { cookies } from 'next/headers';
 import { z } from 'zod';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { prisma } from '@/infrastructure/database/prismaClient';
 import { ListingRepository, type ListingRecord } from '@/infrastructure/database/repositories/ListingRepository';
 import { RedisSyncManager } from '@/infrastructure/realtime/RedisSyncManager';
-import { TokenService, SESSION_COOKIE_NAME } from '@/infrastructure/security/TokenService';
 
 /**
  * Safely revalidates a Next.js cache path, tolerating non-HTTP / CLI execution environments.
@@ -161,38 +159,25 @@ export async function createListingAction(
   rawInput: CreateListingInput
 ): Promise<ServerActionResponse<ListingRecord>> {
   try {
-    // 1. Enforce Server-Side Authentication
-    const cookieStore = await cookies();
-    const token = cookieStore.get(SESSION_COOKIE_NAME)?.value;
+    // 1. Enforce Server-Side Authentication strictly via NextAuth
     let authenticatedUserId: string | null = null;
     let authenticatedUserEmail: string | undefined = undefined;
     let authenticatedUserName: string | undefined = undefined;
 
-    if (token) {
-      const payload = TokenService.verifyToken(token);
-      if (payload?.userId) {
-        authenticatedUserId = payload.userId;
-        authenticatedUserEmail = payload.email;
-        authenticatedUserName = payload.name;
-      }
-    }
+    try {
+      const session = await getServerSession(authOptions);
+      if (session?.user) {
+        authenticatedUserId = (session.user as { id?: string }).id || null;
+        authenticatedUserEmail = session.user.email || undefined;
+        authenticatedUserName = session.user.name || undefined;
 
-    if (!authenticatedUserId) {
-      try {
-        const session = await getServerSession(authOptions);
-        if (session?.user) {
-          authenticatedUserId = (session.user as { id?: string }).id || null;
-          authenticatedUserEmail = session.user.email || undefined;
-          authenticatedUserName = session.user.name || undefined;
-
-          if (!authenticatedUserId && session.user.email) {
-            const user = await prisma.user.findUnique({ where: { email: session.user.email } });
-            if (user) authenticatedUserId = user.id;
-          }
+        if (!authenticatedUserId && session.user.email) {
+          const user = await prisma.user.findUnique({ where: { email: session.user.email } });
+          if (user) authenticatedUserId = user.id;
         }
-      } catch {
-        // Fallback
       }
+    } catch {
+      // Fail closed
     }
 
     if (!authenticatedUserId) {
@@ -254,17 +239,19 @@ export async function acceptOfferAction(
   try {
     const validated = AcceptOfferSchema.parse(rawInput);
 
-    // 1. Enforce Server-Side Ownership Check (IDOR Protection)
-    const cookieStore = await cookies();
-    const token = cookieStore.get(SESSION_COOKIE_NAME)?.value;
-    const session = token ? TokenService.verifyToken(token) : null;
+    // 1. Enforce Server-Side Authentication & Ownership Check (IDOR Protection)
+    const nextAuthSession = await getServerSession(authOptions);
+    const sessionUser = nextAuthSession?.user as { id?: string; role?: string } | undefined;
+    if (!sessionUser?.id) {
+      return { success: false, error: '401 Unauthorized: Please sign in to accept offers.' };
+    }
 
     const targetListing = await ListingRepository.findById(validated.listingId);
     if (!targetListing) {
       return { success: false, error: 'Listing not found in vault registry.' };
     }
 
-    if (session && session.role !== 'ADMIN' && session.userId !== targetListing.sellerId) {
+    if (sessionUser.role !== 'ADMIN' && sessionUser.id !== targetListing.sellerId) {
       return {
         success: false,
         error: 'Forbidden: Only the consigning seller can accept offers on this lot.',
@@ -347,16 +334,19 @@ export async function rejectOfferAction(
  * Fetches dashboard analytics, active listings, and incoming offers for a unified profile.
  */
 export async function fetchProfileDashboardAction(
-  userId: string = 'user_seller_rengoku'
+  userId?: string
 ): Promise<ServerActionResponse<ProfileDashboardData>> {
   try {
-    // 1. Session IDOR Check
-    const cookieStore = await cookies();
-    const token = cookieStore.get(SESSION_COOKIE_NAME)?.value;
-    const session = token ? TokenService.verifyToken(token) : null;
+    // 1. Session IDOR Check via NextAuth
+    const nextAuthSession = await getServerSession(authOptions);
+    const sessionUser = nextAuthSession?.user as { id?: string; role?: string } | undefined;
+    if (!sessionUser?.id) {
+      return { success: false, error: '401 Unauthorized: Please sign in to view your dashboard.' };
+    }
 
     // Enforce identity: Caller can only view their own dashboard unless they have ADMIN role
-    const effectiveUserId = session && session.role !== 'ADMIN' ? session.userId : userId;
+    const effectiveUserId =
+      sessionUser.role === 'ADMIN' && userId ? userId : sessionUser.id;
 
     // Fetch all listings associated with this user
     const listings: ListingRecord[] = await ListingRepository.findBySellerId(effectiveUserId);
